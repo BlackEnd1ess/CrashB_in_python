@@ -23,7 +23,7 @@ class CrashB(Entity):
 		if self.freezed or status.is_dying:
 			return
 		if key == 'space' and not self.block_input:
-			if not self.warped:
+			if not self.warped or status.p_in_air(self):
 				return
 			Audio(snd.snd_jump)
 			self.block_input=True
@@ -31,7 +31,6 @@ class CrashB(Entity):
 			self.first_land=True
 		if key == 'alt' and not self.is_attack:
 			self.is_attack=True
-			self.move_speed=1.2
 			Audio(snd.snd_attk)
 		if key == 'tab':
 			status.show_wumpas=5
@@ -45,6 +44,8 @@ class CrashB(Entity):
 			status.pause=False
 		if key == 'b':
 			EditorCamera()
+		if key == 'u':
+			self.move_speed=5
 	def move(self):
 		if status.is_dying or not self.warped:
 			return
@@ -128,6 +129,7 @@ class CrashB(Entity):
 			else:
 				self.alpha=1
 	def update(self):
+		print(self.position)
 		if status.pause or status.level_solved:
 			return
 		self.aku_y=self.y+.5

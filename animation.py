@@ -34,7 +34,6 @@ def spin(d):
 	if d.spin_anim > 11.75:
 		d.spin_anim=0
 		d.is_attack=False
-		d.move_speed=1.8
 	d.texture=af+'_spn/crash.tga'
 	d.model=af+'_spn/'+str(int(d.spin_anim))+'.ply'
 
@@ -71,11 +70,6 @@ def player_death(d):
 	d.model=af+'death/'+str(int(d.death_anim))+'.ply'
 
 ## crate animation
-def crate_break(c):
-	c.hide()
-	anim=FrameAnimation3d(cf+'break/break_',texture=c.texture,fps=40,scale=c.scale,position=c.position,rotation_y=90,color=gr)
-	invoke(anim.disable,delay=.3)
-
 def crate_bounce(c):
 	c.hide()
 	P=.45
@@ -90,6 +84,27 @@ def spring_animation(c):
 	invoke(anim.disable,delay=W)
 	invoke(c.show,delay=W-.017)
 
+class CrateBreak(Entity):
+	def __init__(self,cr):
+		if cr.vnum == 12:
+			bco=color.green
+		if cr.vnum == 11:
+			bco=color.red
+		if cr.vnum == 3:
+			bco=color.rgb(80,50,0)
+		else:
+			bco=color.rgb(90,90,0)
+		super().__init__(model=cf+'break/0.ply',texture=cf+'break/break.tga',rotation_x=-90,scale=.0005,color=bco,position=cr.position,unlit=True)
+		self.frame_break=0
+	def update(self):
+		if not status.pause or status.loading:
+			self.frame_break+=time.dt*20
+			if self.frame_break > 13.75:
+				self.frame_break=0
+				self.parent=None
+				self.disable()
+				return
+			self.model=cf+'break/'+str(int(self.frame_break))+'.ply'
 
 ## npc animation
 def npc_walking(m):
@@ -132,3 +147,6 @@ def door_open(do):
 			do.door.collider=None
 			do.door1.collider=None
 			do.door_move=False
+
+def warp_vortex(d):
+	print(d)

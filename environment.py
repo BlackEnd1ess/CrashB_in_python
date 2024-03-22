@@ -30,9 +30,10 @@ class SkyBox(Sky):
 
 class ShadowMap(DirectionalLight):
 	def __init__(self,c):
-		RS=1024*2
+		RS=2048
 		super().__init__(shadows=True,shadow_map_resolution=(RS,RS),color=c,rotation_x=-260,position=(0,10,64))
-		invoke(lambda:setattr(window,'render_mode','default'),delay=.2)
+		invoke(lambda:setattr(window,'render_mode','default'),delay=.1)
+		status.loading=False
 
 class LightAmbience(AmbientLight):
 	def __init__(self,d):
@@ -42,7 +43,7 @@ class LightAmbience(AmbientLight):
 				'dark':color.rgb(150,150,150),
 				'rain':color.gray,
 				'woods':color.rgb(80,140,80),
-				'bonus':color.rgb(250,130,130)}
+				'bonus':color.rgb(150,150,150)}
 		super().__init__(color=self.bg_col[d])
 	def update(self):
 		self.color=self.bg_col[status.day_mode]
@@ -84,6 +85,7 @@ class RainFall(Animation):
 			self.soundR.volume=0
 		else:
 			self.show()
+			self.soundR.pitch=random.uniform(.9,1)
 			self.soundR.volume=.5
 
 class SnowFall(Entity):

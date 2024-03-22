@@ -79,3 +79,7 @@ def p_idle(d):
 	if not d.walking and not d.jumping and not d.is_attack and not p_walk(d) and d.landed:
 		return True
 	return False
+def gproc():
+	if loading or pause:
+		return True
+	return False

@@ -3,9 +3,7 @@ from ursina.shaders import *
 from ursina import *
 
 pp='res/crate/crate_'
-b='box'
 ic=(.15,.2)
-cs=0.16
 cc=_core
 sn=sound
 
@@ -34,8 +32,10 @@ def place_crate(p,ID,m=None,l=None,pse=None):
 			status.crates_in_level-=1
 
 def destroy_event(c):
-	status.d_delay=.1
+	CRPO=c
+	status.d_delay=.3
 	c.collider=None
+	c.hide()
 	if not c.poly == 1:
 		status.C_RESET.append(c)
 	if status.bonus_round:
@@ -44,9 +44,12 @@ def destroy_event(c):
 		status.crate_to_sv+=1
 		status.crate_count+=1
 		status.show_crates=5
+	animation.CrateBreak(cr=c)
 	Audio(sn.snd_break)
-	animation.crate_break(c)
-	cc.check_crates_over(c)
+	cc.check_crates_over(CRPO)
+	scene.entities.remove(c)
+	c.parent=None
+	c.disable()
 
 def block_destroy(c):
 	if not c.p_snd:
@@ -64,9 +67,8 @@ def spawn_ico(c):
 class Iron(Entity):
 	def __init__(self,pos,pse):
 		_in='iron'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',scale=cs,position=pos,collider=b)
-		self.spawn_pos=pos
-		self.poly=pse
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.p_snd=False
 		self.vnum=0
 	def destroy(self):
@@ -75,9 +77,8 @@ class Iron(Entity):
 class Normal(Entity):
 	def __init__(self,pos,pse):
 		_in='normal'
-		super().__init__(model=pp+_in+'.obj',texture=pp+'wooden.png',scale=cs,collider=b,position=pos,shader=lit_with_shadows_shader)
-		self.spawn_pos=pos
-		self.poly=pse
+		super().__init__(model=pp+_in+'.obj',texture=pp+'wooden.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=1
 	def destroy(self):
 		item.WumpaFruit(pos=self.position)
@@ -86,9 +87,8 @@ class Normal(Entity):
 class QuestionMark(Entity):
 	def __init__(self,pos,pse):
 		_in='sup'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',scale=cs,collider=b,position=pos)
-		self.spawn_pos=pos
-		self.poly=pse
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=2
 	def destroy(self):
 		for _w in range(random.randint(5,10)):
@@ -98,9 +98,8 @@ class QuestionMark(Entity):
 class Bounce(Entity):
 	def __init__(self,pos,pse):
 		_in='bounce'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',scale=cs,collider=b,position=pos)
-		self.spawn_pos=pos
-		self.poly=pse
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=3
 		self.ltime=0
 		self._empty=5
@@ -127,9 +126,8 @@ class Bounce(Entity):
 class ExtraLife(Entity):
 	def __init__(self,pos,pse):
 		_in='live'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',scale=cs,collider=b,position=pos)
-		self.spawn_pos=pos
-		self.poly=pse
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=4
 	def destroy(self):
 		item.ExtraLive(pos=(self.x,self.y+.25,self.z))
@@ -138,9 +136,8 @@ class ExtraLife(Entity):
 class AkuAku(Entity):
 	def __init__(self,pos,pse):
 		_in='aku'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',scale=cs,collider=b,position=pos)
-		self.spawn_pos=pos
-		self.poly=pse
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=5
 	def destroy(self):
 		if status.aku_hit < 3:
@@ -153,9 +150,8 @@ class AkuAku(Entity):
 class Checkpoint(Entity):
 	def __init__(self,pos,pse):
 		_in='checkp'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',scale=cs,collider=b,position=pos)
-		self.spawn_pos=pos
-		self.poly=pse
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=6
 	def destroy(self):
 		status.checkpoint=(self.x,self.y+1,self.z)
@@ -168,9 +164,8 @@ class Checkpoint(Entity):
 class SpringWood(Entity):
 	def __init__(self,pos,pse):
 		_in='spring'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',scale=cs,collider=b,position=pos)
-		self.spawn_pos=pos
-		self.poly=pse
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=7
 	def destroy(self):
 		item.WumpaFruit(pos=self.position)
@@ -179,9 +174,8 @@ class SpringWood(Entity):
 class SpringIron(Entity):
 	def __init__(self,pos,pse):
 		_in='spring_iron'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',scale=cs,collider=b,position=pos)
-		self.spawn_pos=pos
-		self.poly=pse
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.p_snd=False
 		self.vnum=8
 	def destroy(self):
@@ -190,9 +184,8 @@ class SpringIron(Entity):
 class SwitchEmpty(Entity):
 	def __init__(self,pos,m,pse):
 		self._in='switch'
-		super().__init__(model=pp+self._in+'.obj',texture=pp+self._in+'.png',scale=cs,collider=b,position=pos)
-		self.spawn_pos=pos
-		self.poly=pse
+		super().__init__(model=pp+self._in+'.obj',texture=pp+self._in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.p_snd=False
 		self.activ=False
 		self.vnum=9
@@ -216,12 +209,11 @@ class SwitchEmpty(Entity):
 class SwitchNitro(Entity):
 	def __init__(self,pos,pse):
 		self._in='switch_n'
-		super().__init__(model=pp+self._in+'.obj',texture=pp+self._in+'.png',scale=cs,collider=b,position=pos)
-		self.spawn_pos=pos
+		super().__init__(model=pp+self._in+'.obj',texture=pp+self._in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.p_snd=False
-		self.vnum=10
 		self.activ=False
-		self.poly=pse
+		self.vnum=10
 	def c_reset(self):
 		self.texture=pp+self._in+'.png'
 		self.color=color.white
@@ -241,17 +233,15 @@ class SwitchNitro(Entity):
 class TNT(Entity):
 	def __init__(self,pos,pse):
 		_in='tnt'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',scale=cs,collider=b,position=pos,shader=None)
-		self.spawn_pos=pos
-		self.vnum=11
-		self.c_audio=Audio(sn.snd_c_tnt,autoplay=False)
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.activ=False
 		self.countdown=0
-		self.poly=pse
+		self.vnum=11
 	def destroy(self):
 		self.activ=True
 		self.color=color.hsv(0,0,2,1)
-		self.c_audio.play()
+		Audio(sn.snd_c_tnt)
 		self.countdown=3.99
 		self.shader=unlit_shader
 	def empty_destroy(self):
@@ -271,12 +261,11 @@ class Nitro(Entity):
 	def __init__(self,pos,pse):
 		_in='nitro'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',scale=cs,collider=b,position=pos,shadows=False,color=color.hsv(0,0,1,1),shader=unlit_shader)
-		self.spawn_pos=pos
-		self.vnum=12
-		self.acustic=False
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.start_y=self.y
+		self.acustic=False
 		self.snd_time=1
-		self.poly=pse
+		self.vnum=12
 	def destroy(self):
 		Explosion(p=self.position,c=color.green)
 		destroy_event(self)
@@ -294,12 +283,11 @@ class Nitro(Entity):
 class Air(Entity):
 	def __init__(self,pos,m,l,pse):
 		_in='air'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',scale=cs,collider=None,position=pos)
-		self.spawn_pos=pos
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',collider=None)
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=13
 		self.mark=m
 		self.c_ID=l
-		self.poly=pse
 	def destroy(self):
 		status.C_RESET.append(self)
 		place_crate(p=self.position,ID=self.c_ID,pse=1)

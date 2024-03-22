@@ -1,5 +1,5 @@
 import ui,crate,item,status,animation,level,sound,npc
-from math import atan2
+from math import atan2,sqrt
 from ursina import *
 
 map_coordinate=None
@@ -17,7 +17,7 @@ def set_val(d):
 	for _v in ['block_input','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured']:
 		setattr(d,_v,False)
 	d.lpos=None
-	d.move_speed=1.8
+	d.move_speed=2
 	playerInstance.append(d)
 def set_jump_type(d,t):
 	d.jumping=True
@@ -171,30 +171,19 @@ def check_ground(c):
 					crate_action(c=c,e=hte)
 				return
 			if hw in ['water_hit','falling_zone']:
-				if not status.is_dying:
-					status.is_dying=True
-					Audio(sound.snd_woah,pitch=.8)
-					c.collider=None
+				death_zone(c=c,e=hte)
 				return
-			if hw == 'moss_platform':
-				c.x=hte.x
-				c.z=hte.z
 			if hw in npc.npc_list:
-				if hw in ['saw_turtle','lizard'] or hw == 'hedgehog' and hte.defend_mode:
-					get_damage(c)
-				else:
-					kill_by_jump(m=hte,c=c)
+				jump_enemy(c=c,e=hte)
 				return
 			if hw == 'level_finish':
-				if not status.LEVEL_CLEAN:
-					status.LEVEL_CLEAN=True
-					clear_level(passed=True)
-					return
+				jump_levelfin()
+				return
 			if hw == 'bonus_platform' and not status.bonus_solved or hw == 'gem_platform':
-				if not c.freezed:
-					c.freezed=True
-					hte.catch_player=True
+				freeze_by_platform(c=c,e=hte)
 			else:
+				if hw == 'moss_platform' and hte.movable:
+					platform_sync(c=c,e=hte)
 				c.landing()
 				c.y=hit_info.world_point.y
 	else:
@@ -227,6 +216,10 @@ def check_wall(c):
 		if wH and not wH == Vec3(0,1,0):
 			if not wE in item.item_list:
 				vecL[wH]()
+def platform_sync(c,e):
+	if e.movable:
+		c.x=e.x
+		c.z=e.z
 def platform_floating(m,c):
 	m.air_time+=time.dt
 	m.y+=time.dt
@@ -245,9 +238,27 @@ def platform_floating(m,c):
 			enter_bonus(c=m.target)
 		else:
 			print('go to death route')
-#			#enter_death_route(c=m.target)
+def jump_enemy(c,e):
+	e0=str(e)
+	if e0 in ['saw_turtle','lizard'] or e0 == 'hedgehog' and e.defend_mode:
+		get_damage(c)
+		return
+	kill_by_jump(m=e,c=c)
+def jump_levelfin(c,e):
+	if not status.LEVEL_CLEAN:
+		status.LEVEL_CLEAN=True
+		clear_level(passed=True)
+def death_zone(c,e):
+	if not status.is_dying:
+		status.is_dying=True
+		Audio(sound.snd_woah,pitch=.8)
+		c.collider=None
+def freeze_by_platform(c,e):
+	if not c.freezed:
+		c.freezed=True
+		e.catch_player=True
 
-## interface, collectables
+## interface,collectables
 def wumpa_count(n):
 	if status.bonus_round:
 		status.wumpa_bonus+=n
@@ -264,6 +275,12 @@ def give_extra_live():
 		status.show_lives=5
 
 ## crate actions
+def crate_set_val(cR,Cpos,Cpse):
+	cR.spawn_pos=Cpos
+	cR.position=Cpos
+	cR.collider='box'
+	cR.poly=Cpse
+	cR.scale=.16
 def is_crate(e):
 	cck=[C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
 		C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,
@@ -280,13 +297,9 @@ def crate_action(c,e):
 		e.destroy()
 def check_crates_over(c):
 	for co in scene.entities[:]:
-		if is_crate(co) and not str(co) == 'bounce':
-			if co.x == c.x and co.z == c.z:
-				if co.y > c.y+.32:
-					co.animate_y(co.y-0.32,duration=.1)
-	c.parent=None
-	scene.entities.remove(c)
-	c.disable()
+		if is_crate(co) and not c.vnum == 3:
+			if c.x == co.x and c.z == co.z and co.y > c.y:
+				co.animate_y(co.y-co.scale_y*2,duration=.15)
 
 ## bonus level
 def enter_bonus(c):
@@ -358,7 +371,7 @@ def npc_action(m):
 			animation.npc_walking(m)
 		npc_walk(m)
 	else:
-		m.collider=None
+		#m.collider=None
 		fly_away(m)
 def npc_purge(m):
 	u=60
@@ -409,6 +422,14 @@ def rotate_to_crash(m):
 	m.rotation_x=-90
 def fly_away(n):
 	n.z+=time.dt*20
+	J=n.intersects()
+	if J:
+		PNL=J.entity
+		if is_crate(PNL):
+			if PNL.vnum in [3,12]:
+				PNL.empty_destroy()
+			else:
+				PNL.destroy()
 	if n.z >= n.spawn_point[2]+10:
 		npc_purge(n)
 def kill_by_jump(m,c):

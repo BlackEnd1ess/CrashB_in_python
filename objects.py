@@ -29,6 +29,9 @@ def platform_move(d):
 			if d.x <= d.spawn_pos[0]-1:
 				d.turn=0
 
+def bush(pos,s,c):
+	Entity(model='quad',texture=omf+'bush/bush1.png',position=pos,scale=s,color=c)
+
 class MossPlatform(Entity):
 	def __init__(self,p,MO,TU):
 		super().__init__(model=omf+'p_moss/moss.ply',texture=omf+'p_moss/moss.tga',rotation_x=-90,scale=0.00075,position=p,collider=b,unlit=False)
@@ -37,6 +40,9 @@ class MossPlatform(Entity):
 		self.direct=0
 		self.speed=.7
 		self.turn=TU
+		if not self.movable:
+			self.collider=None
+			self.pgnd=Entity(model='cube',scale=(.6,1,.6),position=(self.x,self.y-.48,self.z),collider=b,visible=False)
 	def update(self):
 		if self.movable:
 			platform_move(self)
@@ -79,7 +85,7 @@ class BackgroundWall(Entity):
 
 class MapTerrain(Entity):
 	def __init__(self,MAP,size,t,co):
-		super().__init__(model=Terrain(terra_path+MAP,skip=16),collider=m,scale=size,texture=t,texture_scale=(size[0]*2,size[2]*2),color=co)
+		super().__init__(model=Terrain(terra_path+MAP,skip=16),collider=m,scale=size,texture=t,texture_scale=(size[0],size[2]),color=co)
 		cc.map_zone=self
 		cc.map_coordinate=self.model.height_values
 		cc.map_size=self.scale
@@ -95,16 +101,23 @@ class MapHills(Entity):##player block zone
 
 class BigPlatform(Entity):
 	def __init__(self,p,s):
-		super().__init__(model=omf+'ground/ground01.obj',texture='grass',scale=(s[0],.5,s[2]),collider=b,position=p)
-		self.front_wall=Entity(model=omf+'ground/ground_wall.obj',texture=texp+'bricks.png',scale=(self.scale_x,self.scale_y*2,self.scale_z),color=color.rgb(170,200,170),collider=b)
+		super().__init__(model=omf+'ground/ground01.obj',texture=terra_path+'texture/grass.png',scale=(s[0],.5,s[2]),collider=b,position=p)
+		self.front_wall=Entity(model=omf+'ground/ground_wall.obj',texture=texp+'bricks.png',scale=(self.scale_x-.01,self.scale_y*2,self.scale_z-.01),color=color.rgb(170,200,170),collider=b)
 		self.front_wall.position=(self.x,self.y-self.scale_y+.075,self.z)
 		self.front_wall.texture_scale=(8,8)
-		self.texture_scale=(s[0]*2,s[2]*2)
+		self.texture_scale=(32,32)
 		self.color=color.rgb(0,130,0)
 
-class WoodCorridor(Entity):
+class Corridor(Entity):
 	def __init__(self,pos):
 		super().__init__(model=omf+'w_corr/corridor.obj',texture=omf+'w_corr/f_room.tga',scale=.1,position=pos,rotation_y=-90,double_sided=True)
+
+class TreeScene(Entity):
+	def __init__(self,pos,c,s):
+		super().__init__(model=omf+'tree/scene_w.obj',texture=omf+'tree/wood_scene.tga',scale=s,position=pos,color=c,double_sided=True)
+		bush(pos=(self.x,self.y+1.3,self.z-.25),c=color.green,s=2)
+		bush(pos=(self.x-.6,self.y+.8,self.z-.249),c=color.yellow,s=1)
+		bush(pos=(self.x+.6,self.y+.8,self.z-.249),c=color.orange,s=1)
 
 ## important objects
 class IndoorZone(Entity):
@@ -155,18 +168,20 @@ class CrateScore(Entity):## game finish
 		self.cc_text=Text(parent=scene,position=(self.x-.2,self.y+.25,self.z),text=None,font='res/ui/font.ttf',color=color.rgb(255,255,128),scale=10)
 	def update(self):
 		self.cc_text.text=str(st.crate_count)+'/'+str(st.crates_in_level)
-		if not status.pause:
+		if not st.gproc():
 			self.rotation_y-=120*time.dt
-		if st.crates_in_level > 0:
-			if st.crate_count >= st.crates_in_level:
-				Audio(sound.snd_rward)
-				item.GemStone(pos=(self.x,self.y,self.z),c=0)
-				self.cc_text.disable()
-				self.disable()
-				return
-		else:
-			self.visible=False
-			self.cc_text.visible=False
+		if st.crates_in_level > 0 and st.crate_count >= st.crates_in_level:
+			Audio(sound.snd_rward)
+			item.GemStone(pos=(self.x,self.y,self.z),c=0)
+			self.cc_text.disable()
+			self.disable()
+			return
+		if st.level_index == 1 and st.crate_count <= 0 or st.crates_in_level <= 0:
+			self.hide()
+			self.cc_text.hide()
+			return
+		self.show()
+		self.cc_text.show()
 
 class StartRoom(Entity): ## game spawn point
 	def __init__(self,pos):
@@ -211,6 +226,34 @@ class RewardRoom(Entity):
 		self.door=Entity(model=omf+'door1/0.ply',texture=omf+'door1/door.tga',position=(self.x+.2,self.y+.8,self.z-1.3),scale=.001,rotation=(90,0,0),collider=b,unlit=False)
 		self.door1=Entity(model=omf+'door/0.ply',texture=omf+'door/door.tga',position=(self.x+.2,self.y+.9,self.z-1.3),scale=.001,rotation_x=90,collider=b,unlit=False)
 		IndoorZone(pos=(self.x+.1,self.y,self.z+1.8),ty=1)
+		self.gived_gem=False
+		self.door_open=False
+		self.door_move=False
+		self.door_time=.7
+		CrateScore(pos=(self.x+.15,self.y-.35,self.z+3.4))
+		if status.level_index == 1:
+			item.GemStone(pos=(self.x+.15,self.y-.35,self.z+3.4),c=4)
+	def update(self):
+		if not self.door_open and cc.is_nearby_pc(self,DX=3,DY=3):
+			self.door_open=True
+			self.door_move=True
+			Audio(sound.snd_d_opn)
+		if self.door_move:
+			animation.door_open(self)
+
+class EndRoom(Entity):
+	def __init__(self,pos,c):
+		eR=omf+'e_room/e_room2'
+		super().__init__(model=eR+'.obj',texture=eR+'.tga',scale=.013,rotation_y=-90,position=pos,double_sided=True,color=c,unlit=False)
+		self.door=Entity(model=omf+'door1/0.ply',texture=omf+'door1/door.tga',position=(self.x-.3,self.y+.4,self.z+.6),scale=.001,rotation=(90,0,0),collider=b,unlit=False)
+		self.door1=Entity(model=omf+'door/0.ply',texture=omf+'door/door.tga',position=(self.x-.3,self.y+.5,self.z+.6),scale=.001,rotation_x=90,collider=b,unlit=False)
+		self.rgnd0=Entity(model='cube',scale=(5,.5,3),position=(self.x,self.y-1.37,self.z+1.6),collider=b,visible=False)
+		self.rgnd1=Entity(model='cube',scale=(2,.5,1.5),position=(self.x-.5,self.y-.9,self.z+2.8),collider=b,visible=False)
+		self.rcln=Entity(model='cube',scale=(5,.5,3),position=(self.x,self.y+.6,self.z+1.6),collider=b,visible=False)
+		self.rwall1=Entity(model='cube',scale=(3,3,4),position=(self.x-2.5,self.y,self.z+1.6),collider=b,visible=False)
+		self.rwall2=Entity(model='cube',scale=(3,3,4),position=(self.x+1.9,self.y,self.z+1.6),collider=b,visible=False)
+		self.rfront=Entity(model='cube',scale=(5,3,1),position=(self.x,self.y,self.z+4),collider=b,visible=False)
+		IndoorZone(pos=(self.x+.1,self.y,self.z+1.8),ty=1)
 		self.door_open=False
 		self.door_move=False
 		self.door_time=.7
@@ -219,11 +262,6 @@ class RewardRoom(Entity):
 			self.door_open=True
 			self.door_move=True
 			Audio(sound.snd_d_opn)
-			if status.level_index == 1 and status.crate_count <= 0:
-				##BLUE GEM
-				return
-			CrateScore(pos=(self.x+.15,self.y-.35,self.z+3.4))
-			return
 		if self.door_move:
 			animation.door_open(self)
 
@@ -254,11 +292,10 @@ class GemPlatform(Entity): ## gem platform
 		self.orginal_pos=self.position
 		self.catch_player=False
 		self.air_time=0
-		if self.is_enabled:
-			self.color=GMC[t]
-		else:
+		self.color=GMC[t]
+		if not self.is_enabled:
 			self.collider=None
-			self.color=color.white
+			#self.color=color.white
 			self.bg_darkness.hide()
 	def update(self):
 		if self.is_enabled:

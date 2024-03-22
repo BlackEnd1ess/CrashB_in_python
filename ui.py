@@ -298,8 +298,8 @@ class PauseMenu(Entity):
 class CollectedGem(Animation):
 	def __init__(self):
 		super().__init__(_icn+'crystal.gif',parent=camera.ui,scale=.15,color=color.magenta,visible=False,position=(0,-.4,-1))
-		cGLI={1:'gem.gif',2:'gem1.gif',3:'gem2.gif',4:'gem3.gif',5:'gem.gif',6:'gem.gif'}
-		cGLO={1:color.rgb(O,0,0),2:color.rgb(0,O,0),3:color.rgb(O,0,O),4:color.rgb(0,0,O),5:color.rgb(O,O,0),6:color.rgb(O,0,0)}
+		cGLI={1:'gem3.gif',2:'gem1.gif',3:'gem2.gif',4:'gem.gif',5:'gem.gif',6:'gem.gif'}
+		cGLO={1:color.rgb(0,0,O),2:color.rgb(0,O,0),3:color.rgb(O,0,O),4:color.rgb(O,0,0),5:color.rgb(O,O,0),6:color.rgb(O,0,0)}
 		self.colored_gem=Animation(_icn+cGLI[status.level_index],parent=camera.ui,position=(self.x-.1,self.y,self.z),scale=self.scale,color=cGLO[status.level_index],visible=False)
 		self.clear_gem=Animation(_icn+'gem.gif',parent=camera.ui,position=(self.x+.1,self.y,self.z),scale=self.scale,color=color.rgb(100,100,170),visible=False)
 		if status.level_index == 5:
