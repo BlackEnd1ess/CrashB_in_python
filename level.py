@@ -9,6 +9,11 @@ o=objects
 c=crate
 N=npc
 
+def free_level():
+	cc.check_cstack()
+	status.loading=False
+	cc.level_ready=True
+
 def ambience(thunder,weather,daymode):
 	status.day_mode=daymode
 	dm={'day':color.cyan,
@@ -20,40 +25,38 @@ def ambience(thunder,weather,daymode):
 	env.SkyBox(m=dm[daymode],t=thunder)
 	env.LightAmbience(d=daymode)
 	env.Fog(d=daymode)
-	env.ShadowMap(c=dm[daymode])
+	env.ShadowMap(d=daymode)
 	wthr={0:lambda:print('rain, snow disabled'),
 		1:lambda:env.RainFall(),
 		2:lambda:env.SnowFall()}
 	wthr[weather]()
 
 ##levels
-def developer_level():
+def developer_level():## fixx crate x-z fall pos
 	cc.preload_objects()
 	status.level_index=6
 	ambience(thunder=0,weather=0,daymode='day')
 	status.loading=True
-	o.StartRoom(pos=(-.5,0,-8.2))##start
-	status.loading=False
-	o.LevelFinish(p=(-2,0,-1))##end
-	o.MapTerrain(MAP='map/lv1.png',size=(16,1.5,16),t='white_cube',co=color.rgb(150,150,150))
-	o.CrateScore(pos=(-1,.25,-1))##clear gem
-	o.BonusPlatform(pos=(0,.1,-1))
+	o.StartRoom(pos=(0,0,-16.2))##start
+	o.RewardRoom(pos=(0,1,15),c=color.rgb(80,100,80))##reward
+	o.EndRoom(pos=(0,1.5,27),c=color.rgb(80,100,80))##end
+	o.MapTerrain(MAP='map/0.png',size=(8,1,64),t='white_cube',co=color.rgb(150,150,150))
+	o.BonusPlatform(pos=(-2,0,-1))
 	for CC in range(14):
-		c.place_crate(ID=CC,p=(-7+CC/2,0,7),m=1,l=1)
+		c.place_crate(ID=CC,p=(-3+CC/2,0,2),m=1,l=1)
+		c.place_crate(ID=CC,p=(-3+CC/2,1.6,2),m=2,l=1)
 	for GS in range(6):
-		item.GemStone(pos=(1.5+GS/2,.25,7),c=GS)
+		item.GemStone(pos=(-3+GS/2,.25,3),c=GS)
+	item.EnergyCrystal(pos=(0,.5,3)) ##crystal
 	for MM in range(12):
-		npc.spawn(pos=(-7+MM,0,4),mID=MM,mDirec=1,mTurn=0)
-	item.EnergyCrystal(pos=(1,.5,7)) ##crystal
+		npc.spawn(pos=(0,0,5+MM),mID=MM,mDirec=0,mTurn=0)
 	for TR in range(3):
-		item.TimeRelic(pos=(4.5+TR/2,.25,7),t=TR)
-	for WX in range(4):
-		for WY in range(4):
-			item.WumpaFruit(pos=(1+WX/3,+WY/3,0))
+		item.TimeRelic(pos=(1+TR/2,.25,3),t=TR)
+	mt.wumpa_double_row(POS=(-3,0,1),CNT=20)
 	for gPL in range(6):
-		o.GemPlatform(pos=(0+gPL,.25,-3),t=gPL)
-	sound.LevelMusic(T=5)
-	cc.level_ready=True
+		o.GemPlatform(pos=(-2+gPL,.25,-5),t=gPL)
+	sound.LevelMusic(T=1)
+	invoke(free_level,delay=1)
 
 def test():
 	status.level_index=1
@@ -63,22 +66,13 @@ def test():
 	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='grass',co=color.rgb(130,150,130))
 	o.CrateScore(pos=(-1,.25,-1))
 	sound.LevelMusic(T=status.level_index)
-	#item.WumpaFruit(pos=(0,.2,0))
-	#mt.steel_bridge(POS=(-2,0,0),CNT=10)
-	#mt.crate_stair(ID=0,POS=(8.16,0,6),CNT=5,WAY=0)
-	mt.crate_row(ID=1,POS=(0,0,-1),CNT=10,WAY=2)
-	mt.crate_row(ID=1,POS=(1,0,-1),CNT=10,WAY=2)
-	mt.crate_row(ID=1,POS=(2,0,-1),CNT=10,WAY=2)
-	#mt.crate_wall(ID=1,POS=(3,0,7),CNT=4)
-	#mt.bounce_twin(POS=(-7,0,6),CNT=5)
-	#mt.crate_block(ID=1,POS=(-3,0,3),CNT=3)
-	#mt.crate_plane(ID=2,POS=(2,0,1),CNT=6)
-	#mt.wumpa_row(POS=(0,0,0),CNT=5,WAY=0)
-	#mt.wumpa_row(POS=(6,0,0),CNT=5,WAY=1)
-	#mt.wumpa_double_row(POS=(0,0,-1),CNT=5)
-	#mt.wumpa_plane(POS=(4,0,-2),CNT=5)
-	status.loading=False
-	cc.level_ready=True
+	mt.crate_row(ID=1,POS=(0,0,-1),CNT=5,WAY=2)
+	mt.crate_row(ID=1,POS=(1,0,-1),CNT=5,WAY=2)
+	mt.crate_row(ID=1,POS=(2,0,-1),CNT=5,WAY=2)
+	
+	mt.crate_row(ID=2,POS=(2,0,-2),CNT=10,WAY=0)
+	mt.crate_row(ID=2,POS=(2,1.7,-2),CNT=10,WAY=0)
+	invoke(free_level,delay=1)
 
 def level1():
 	TS=16

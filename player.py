@@ -18,7 +18,7 @@ class CrashB(Entity):
 		ui.CrateCounter()
 		ui.LiveCounter()
 		ui.CollectedGem()
-		invoke(lambda:objects.WarpRingEffect(pos=self.position),delay=1)
+		invoke(lambda:objects.WarpRingEffect(pos=self.position),delay=3)
 	def input(self,key):
 		if self.freezed or status.is_dying:
 			return
@@ -129,7 +129,6 @@ class CrashB(Entity):
 			else:
 				self.alpha=1
 	def update(self):
-		print(self.position)
 		if status.pause or status.level_solved:
 			return
 		self.aku_y=self.y+.5

@@ -120,7 +120,7 @@ class TreeScene(Entity):
 		bush(pos=(self.x+.6,self.y+.8,self.z-.249),c=color.orange,s=1)
 
 ## important objects
-class IndoorZone(Entity):
+class IndoorZone(Entity): ## disable rain
 	def __init__(self,pos,ty):
 		super().__init__(model='sphere',scale=1,position=pos,visible=False)
 		self.active=False
@@ -145,18 +145,18 @@ class WaterHit(Entity): ## collider for water
 	def __init__(self,p,sc):
 		super().__init__(model='cube',collider=b,position=p,scale=(sc[0],.2,sc[1]),visible=False)
 
-class WarpRingEffect(Entity):
+class WarpRingEffect(Entity): ## spawn animation
 	def __init__(self,pos):
 		super().__init__(model=omf+'warp_rings/0.ply',texture=omf+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.8,unlit=False)
 		Audio(sound.snd_spawn)
 		self.rings=0
 		self.times=0
 	def update(self):
-		self.rings+=time.dt*20
+		self.rings+=time.dt*30
 		if self.rings > 8.75:
 			self.rings=0
 			self.times+=1
-		if self.times > 4:
+		if self.times > 5:
 			cc.playerInstance[0].warped=True
 			self.disable()
 			return
@@ -213,7 +213,7 @@ class StartRoom(Entity): ## game spawn point
 		if self.door_move:
 			animation.door_open(self)
 
-class RewardRoom(Entity):
+class RewardRoom(Entity):## here spawns the gem
 	def __init__(self,pos,c):
 		eR=omf+'e_room/end_room'
 		super().__init__(model=eR+'.obj',texture=eR+'.tga',scale=.025,rotation_y=-90,position=pos,double_sided=True,color=c,unlit=False)
@@ -231,7 +231,7 @@ class RewardRoom(Entity):
 		self.door_move=False
 		self.door_time=.7
 		CrateScore(pos=(self.x+.15,self.y-.35,self.z+3.4))
-		if status.level_index == 1:
+		if status.level_index == 1 and not 4 in status.COLOR_GEM:
 			item.GemStone(pos=(self.x+.15,self.y-.35,self.z+3.4),c=4)
 	def update(self):
 		if not self.door_open and cc.is_nearby_pc(self,DX=3,DY=3):
@@ -241,7 +241,7 @@ class RewardRoom(Entity):
 		if self.door_move:
 			animation.door_open(self)
 
-class EndRoom(Entity):
+class EndRoom(Entity): ## finish level
 	def __init__(self,pos,c):
 		eR=omf+'e_room/e_room2'
 		super().__init__(model=eR+'.obj',texture=eR+'.tga',scale=.013,rotation_y=-90,position=pos,double_sided=True,color=c,unlit=False)
@@ -254,6 +254,7 @@ class EndRoom(Entity):
 		self.rwall2=Entity(model='cube',scale=(3,3,4),position=(self.x+1.9,self.y,self.z+1.6),collider=b,visible=False)
 		self.rfront=Entity(model='cube',scale=(5,3,1),position=(self.x,self.y,self.z+4),collider=b,visible=False)
 		IndoorZone(pos=(self.x+.1,self.y,self.z+1.8),ty=1)
+		LevelFinish(p=(self.x,self.y-.8,self.z+2.7))
 		self.door_open=False
 		self.door_move=False
 		self.door_time=.7
@@ -284,10 +285,10 @@ class GemPlatform(Entity): ## gem platform
 		else:
 			ne='gem_platform_e'
 			self.is_enabled=False
-		L=130
-		GMC={0:color.rgb(L,L,L+10),1:color.rgb(L,0,0),2:color.rgb(0,L,0),3:color.rgb(L,0,L),4:color.rgb(0,0,L),5:color.rgb(L,L,0)}
+		L=180
+		GMC={0:color.rgb(130,130,140),1:color.rgb(L,0,0),2:color.rgb(0,L,0),3:color.rgb(L,0,L),4:color.rgb(0,0,L+70),5:color.rgb(L,L,0)}
 		super().__init__(model=omf+ne+'/'+ne+'.ply',texture=omf+ne+'/'+ne+'.tga',rotation_x=-90,scale=0.001,position=pos,shader=unlit_shader,collider=b,unlit=False)
-		self.bg_darkness=Entity(model=Circle(12,mode='ngon',thickness=.1),position=(self.x,self.y-.01,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.9)
+		self.bg_darkness=Entity(model=Circle(12,mode='ngon',thickness=.1),position=(self.x,self.y-.011,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.9)
 		self.target=_core.playerInstance[0]
 		self.orginal_pos=self.position
 		self.catch_player=False
@@ -295,7 +296,6 @@ class GemPlatform(Entity): ## gem platform
 		self.color=GMC[t]
 		if not self.is_enabled:
 			self.collider=None
-			#self.color=color.white
 			self.bg_darkness.hide()
 	def update(self):
 		if self.is_enabled:

@@ -43,11 +43,11 @@ class ExtraLive(Entity):
 
 class GemStone(Entity):
 	def __init__(self,pos,c):
-		V=130
+		V=160
 		_col={0:color.rgb(V,V,V+10),1:color.rgb(V,0,0),2:color.rgb(0,V,0),3:color.rgb(V,0,V),4:color.rgb(0,0,V),5:color.rgb(V,V,0)}
 		_mod={0:'gem/gem.obj',1:'gem/gem.obj',2:'gem/gem1.obj',3:'gem/gem2.obj',4:'gem/gem.obj',5:'gem/gem.obj'}
 		_tex={0:'gem/gem.tga',1:'gem/gem.tga',2:'gem/gem1.tga',3:'gem/gem2.tga',4:'gem/gem.tga',5:'gem/gem.tga'}
-		super().__init__(model=i_path+_mod[c],texture=i_path+_tex[c],color=_col[c],scale=0.1/1.5,position=pos,double_sided=True,shader=unlit_shader)
+		super().__init__(model=i_path+_mod[c],texture=i_path+_tex[c],color=_col[c],scale=0.1/1.5,position=pos,double_sided=True,shader=unlit_shader,unlit=False)
 		self.collider=b
 		if c == 4:
 			self.scale_y/=2
@@ -92,7 +92,7 @@ class EnergyCrystal(Entity):
 class TimeRelic(Entity):
 	def __init__(self,pos,t):
 		tc={0:color.azure,1:color.gold,2:color.rgb(150,150,180)}
-		super().__init__(model=i_path+'relic/relic.ply',texture=i_path+'relic/relic.tga',scale=0.004,position=pos,rotation_x=-90,color=tc[t],shader=unlit_shader)
+		super().__init__(model=i_path+'relic/relic.ply',texture=i_path+'relic/relic.tga',scale=0.004,position=pos,rotation_x=-90,color=tc[t],unlit=False,shader=unlit_shader)
 	def update(self):
 		if not status.gproc():
 			self.rotation_y-=time.dt*70

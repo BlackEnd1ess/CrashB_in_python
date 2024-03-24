@@ -17,7 +17,7 @@ def set_val(d):
 	for _v in ['block_input','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured']:
 		setattr(d,_v,False)
 	d.lpos=None
-	d.move_speed=2
+	d.move_speed=1.8
 	playerInstance.append(d)
 def set_jump_type(d,t):
 	d.jumping=True
@@ -137,12 +137,13 @@ def collect_rewards():
 		status.CLEAR_GEM.append(status.level_index)
 		status.clear_gems+=1
 def wumpa_LOD():
-	for WUM in item.item_list[:]:
-		if isinstance(WUM,item.WumpaFruit):
-			if is_nearby_pc(n=WUM,DX=8,DY=8):
-				WUM.world_visible=True
-			else:
-				WUM.world_visible=False
+	if not status.LV_CLEAR_PROCESS:
+		for WUM in item.item_list[:]:
+			if isinstance(WUM,item.WumpaFruit):
+				if is_nearby_pc(n=WUM,DX=8,DY=8):
+					WUM.world_visible=True
+				else:
+					WUM.world_visible=False
 
 ## collisions
 def ceiling(c,e):
@@ -164,7 +165,7 @@ def check_ground(c):
 		hw=str(hte)
 		if not hte in item.item_list:
 			if is_crate(hte):
-				if hw in ['switch_empty','switch_nitro','tnt'] and hte.activ or hw == 'iron':
+				if hw == 'iron' or hw in ['switch_empty','switch_nitro','tnt'] and hte.activ:
 					c.landing()
 					c.y=hit_info.world_point.y
 				else:
@@ -177,7 +178,7 @@ def check_ground(c):
 				jump_enemy(c=c,e=hte)
 				return
 			if hw == 'level_finish':
-				jump_levelfin()
+				jump_levelfin(c=c,e=hte)
 				return
 			if hw == 'bonus_platform' and not status.bonus_solved or hw == 'gem_platform':
 				freeze_by_platform(c=c,e=hte)
@@ -193,7 +194,6 @@ def check_wall(c):
 	if wH:
 		wE=c.intersects().entity
 		if wE == map_zone:
-			status.c_indoor=True
 			return
 		if str(wE) in npc.npc_list and not c.is_attack:
 			if not c.jumping:
@@ -205,15 +205,15 @@ def check_wall(c):
 				wE.collect()
 			return
 		if c.is_attack:
-			J=time.dt*1
-		else:
 			J=time.dt*3
+		else:
+			J=time.dt*2
 		vecL={Vec3(1,0,0):lambda:setattr(c,'x',c.x+J),
 			Vec3(-1,0,0):lambda:setattr(c,'x',c.x-J),
 			Vec3(0,0,1):lambda:setattr(c,'z',c.z+J),
 			Vec3(0,0,-1):lambda:setattr(c,'z',c.z-J),
 			Vec3(0,-1,0):lambda:ceiling(c=c,e=wE)}
-		if wH and not wH == Vec3(0,1,0):
+		if wH in vecL and not wH == Vec3(0,1,0):
 			if not wE in item.item_list:
 				vecL[wH]()
 def platform_sync(c,e):
@@ -276,6 +276,8 @@ def give_extra_live():
 
 ## crate actions
 def crate_set_val(cR,Cpos,Cpse):
+	cR.destroy_exp=False
+	cR.is_stack=False
 	cR.spawn_pos=Cpos
 	cR.position=Cpos
 	cR.collider='box'
@@ -295,11 +297,24 @@ def crate_action(c,e):
 	else:
 		set_jump_type(d=c,t=0)
 		e.destroy()
+def check_cstack():
+	for cSD in scene.entities[:]:
+		if is_crate(cSD) and not cSD.vnum ==3:
+			for cST in scene.entities[:]:
+				if is_crate(cST) and not cST.vnum == 3:
+					if cST.x == cSD.x and cST.z == cSD.z:
+						dsta=round(abs(cST.y-(cSD.y-cSD.scale_y*2)),2)
+						if dsta == 0:
+							cST.is_stack=True
+							cSD.is_stack=True
 def check_crates_over(c):
-	for co in scene.entities[:]:
+	for co in scene.entities:
 		if is_crate(co) and not c.vnum == 3:
 			if c.x == co.x and c.z == co.z and co.y > c.y:
-				co.animate_y(co.y-co.scale_y*2,duration=.15)
+				if co.is_stack:
+					co.fall_exec=True
+					co.animate_y(co.y-co.scale_y*2,duration=.15)
+					co.fall_exec=False
 
 ## bonus level
 def enter_bonus(c):
@@ -447,7 +462,8 @@ def is_nearby_pc(n,DX,DY):
 def preload_objects():
 	item.WumpaFruit(pos=(255,-255,255))
 	for CCA in range(14):
-		crate.place_crate(ID=CC,p=(255,-255,255),m=1,l=1)
+		crate.place_crate(ID=CCA,p=(255,-255,255),m=1,l=1)
 	for DCA in scene.entities[:]:
 		if is_crate(DCA) and DCA.y == -255:
-			DCA.destroy()
+			DCA.parent=None
+			DCA.disable()

@@ -18,11 +18,12 @@ def cam():
 	camera.fov=65
 	camera.y=1.2
 	print('settings loaded')
-	#camera.shader=ssao_shader
+
+#camera.shader=ssao_shader
+FOG_DENSITY=(-1,32)
 
 SFX_VOLUME=1
 MUSIC_VOLUME=1
-
 #----------------------------
 #camera_contrast_shader
 #camera_vertical_blur_shader

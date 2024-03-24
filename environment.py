@@ -29,15 +29,20 @@ class SkyBox(Sky):
 				self.thunder_bolt()
 
 class ShadowMap(DirectionalLight):
-	def __init__(self,c):
+	def __init__(self,d):
 		RS=2048
-		super().__init__(shadows=True,shadow_map_resolution=(RS,RS),color=c,rotation_x=-260,position=(0,10,64))
-		invoke(lambda:setattr(window,'render_mode','default'),delay=.1)
-		status.loading=False
+		s_col={'day':color.rgb(130,130,140),
+				'evening':color.orange,
+				'night':color.rgb(100,100,150),
+				'dark':color.rgb(150,150,150),
+				'rain':color.gray,
+				'woods':color.rgb(80,140,80)}
+		super().__init__(shadows=True,shadow_map_resolution=(RS,RS),color=s_col[d],rotation_x=-260,position=(0,10,0))
+		invoke(lambda:setattr(window,'render_mode','default'),delay=.5)
 
 class LightAmbience(AmbientLight):
 	def __init__(self,d):
-		self.bg_col={'day':color.white,
+		self.bg_col={'day':color.rgb(130,130,140),
 				'evening':color.orange,
 				'night':color.rgb(100,100,150),
 				'dark':color.rgb(150,150,150),
@@ -51,19 +56,19 @@ class LightAmbience(AmbientLight):
 class Fog(Entity):
 	def __init__(self,d):
 		super().__init__()
-		_day={'day':color.rgb(0,45,30),
+		_day={'day':color.rgb(100,140,140),
 			'evening':color.orange,
 			'night':color.black,
 			'dark':color.black,
 			'rain':color.rgb(40,40,40),
 			'woods':color.rgb(50,70,60)}
 		scene.fog_color=_day[d]
-		scene.fog_density=(-5,16)
+		scene.fog_density=settings.FOG_DENSITY
 	def update(self):
 		if status.bonus_round:
 			scene.fog_density=(-5,50)
 			return
-		scene.fog_density=(-5,16)
+		scene.fog_density=settings.FOG_DENSITY
 
 class RainFall(Animation):
 	def __init__(self):

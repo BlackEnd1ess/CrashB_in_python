@@ -149,9 +149,8 @@ class EatingPlant(Entity):
 			self.atk_wait-=time.dt
 		if self.is_bite:
 			an.plant_bite(self)
-			if cc.is_nearby_pc(self,DX=1,DY=1):
-				if not self.target.is_attack:
-					cc.get_damage(self.target)
+			if cc.is_nearby_pc(self,DX=1,DY=1) and not self.target.is_attack:
+				cc.get_damage(self.target)
 	def update(self):
 		if status.pause:
 			return

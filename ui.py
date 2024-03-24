@@ -293,7 +293,6 @@ class PauseMenu(Entity):
 			else:
 				vis.hide()
 
-
 ## Gem/Crytal
 class CollectedGem(Animation):
 	def __init__(self):

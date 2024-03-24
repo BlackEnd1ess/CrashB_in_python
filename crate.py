@@ -9,7 +9,7 @@ sn=sound
 
 ##spawn/remove event
 def place_crate(p,ID,m=None,l=None,pse=None):
-	CRATES={0:lambda:Iron(pos=p,pse=pse),
+	CRATES={0:lambda:Iron(pos=p,pse=pse,ph=ph),
 			1:lambda:Normal(pos=p,pse=pse),
 			2:lambda:QuestionMark(pos=p,pse=pse),
 			3:lambda:Bounce(pos=p,pse=pse),
@@ -24,18 +24,25 @@ def place_crate(p,ID,m=None,l=None,pse=None):
 			12:lambda:Nitro(pos=p,pse=pse),
 			13:lambda:Air(pos=p,m=m,l=l,pse=pse)}
 	CRATES[ID]()
-	if not ID in [0,8,9,10] and not pse == 1:
+	if not ID in [0,8,9,10] and not pse == 1 and not p[1] == -255:
 		status.crates_in_level+=1
 		if p[1] < -10:
 			status.crates_in_bonus+=1
 		if ID == 13 and l in [0,8]:
 			status.crates_in_level-=1
 
-def destroy_event(c):
-	CRPO=c
-	status.d_delay=.3
+def destroy_event(c):##check crate is on ground?
+	if status.first_crate:
+		print('first crate')
+		status.first_crate=False
+		status.d_delay=1
+	else:
+		status.d_delay=.3
 	c.collider=None
+	c.parent=None
 	c.hide()
+	if c.vnum in [11,12]:
+		Explosion(cr=c)
 	if not c.poly == 1:
 		status.C_RESET.append(c)
 	if status.bonus_round:
@@ -45,11 +52,10 @@ def destroy_event(c):
 		status.crate_count+=1
 		status.show_crates=5
 	animation.CrateBreak(cr=c)
-	Audio(sn.snd_break)
-	cc.check_crates_over(CRPO)
 	scene.entities.remove(c)
-	c.parent=None
 	c.disable()
+	cc.check_crates_over(c)
+	Audio(sn.snd_break)
 
 def block_destroy(c):
 	if not c.p_snd:
@@ -140,12 +146,13 @@ class AkuAku(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=5
 	def destroy(self):
-		if status.aku_hit < 3:
-			status.aku_hit+=1
-		if not status.aku_exist:
-			npc.AkuAkuMask(pos=(self.x,self.y,self.z))
-		Audio(sn.snd_aku_m,pitch=1.2)
-		destroy_event(self)
+		if not self.y == -255:
+			if status.aku_hit < 3:
+				status.aku_hit+=1
+			if not status.aku_exist:
+				npc.AkuAkuMask(pos=(self.x,self.y,self.z))
+			Audio(sn.snd_aku_m,pitch=1.2)
+			destroy_event(self)
 
 class Checkpoint(Entity):
 	def __init__(self,pos,pse):
@@ -201,7 +208,7 @@ class SwitchEmpty(Entity):
 			ccount=0
 			status.C_RESET.append(self)
 			for _air in scene.entities[:]:
-				if isinstance(_air,Air) and _air.mark == self.mark:
+				if isinstance(_air,Air) and _air.mark == self.mark and not _air.y == -255:
 					invoke(_air.destroy,delay=ccount/3.5)
 					ccount+=.8
 			spawn_ico(self)
@@ -227,7 +234,7 @@ class SwitchNitro(Entity):
 			spawn_ico(self)
 			status.C_RESET.append(self)
 			for ni in scene.entities[:]:
-				if isinstance(ni,Nitro):
+				if isinstance(ni,Nitro) and not ni.y == -255 and ni.collider != None:
 					ni.destroy()
 
 class TNT(Entity):
@@ -235,19 +242,19 @@ class TNT(Entity):
 		_in='tnt'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		self.e_snd=Audio(sn.snd_c_tnt,autoplay=False)
 		self.activ=False
 		self.countdown=0
 		self.vnum=11
 	def destroy(self):
 		self.activ=True
-		self.color=color.hsv(0,0,2,1)
-		Audio(sn.snd_c_tnt)
+		self.e_snd.fade_in()
+		self.e_snd.play()
 		self.countdown=3.99
 		self.shader=unlit_shader
 	def empty_destroy(self):
-		self.c_audio.fade_out()
+		self.e_snd.fade_out()
 		self.countdown=0
-		Explosion(p=self.position,c=color.red)
 		destroy_event(self)
 	def update(self):
 		if self.countdown > 0 and self.activ:
@@ -260,31 +267,36 @@ class TNT(Entity):
 class Nitro(Entity):
 	def __init__(self,pos,pse):
 		_in='nitro'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',scale=cs,collider=b,position=pos,shadows=False,color=color.hsv(0,0,1,1),shader=unlit_shader)
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',shader=unlit_shader)
+		self.reload=False
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.start_y=self.y
 		self.acustic=False
 		self.snd_time=1
 		self.vnum=12
 	def destroy(self):
-		Explosion(p=self.position,c=color.green)
 		destroy_event(self)
 	def update(self):
-		dst=distance(cc.playerInstance[0].position,self.position)
-		self.snd_time-=time.dt
-		if self.snd_time <= 0:
-			rh=random.uniform(0.1,0.2)
-			self.snd_time=random.randint(2,3)
-			if dst <= 1:
-				Audio(sn.snd_nitro,volume=0.2)
-			self.animate_position((self.x,self.y+rh,self.z),duration=0.02)
-			invoke(lambda:self.animate_position((self.x,self.start_y,self.z),duration=0.2),delay=0.15)
+		if not status.gproc():
+			if not self.reload:
+				self.reload=True
+				self.shader=unlit_shader
+			dst=distance(cc.playerInstance[0].position,self.position)
+			self.snd_time-=time.dt
+			if self.snd_time <= 0:
+				rh=random.uniform(0.1,0.2)
+				self.snd_time=random.randint(2,3)
+				if dst <= 1:
+					Audio(sn.snd_nitro,volume=0.2)
+				self.animate_position((self.x,self.y+rh,self.z),duration=0.02)
+				invoke(lambda:self.animate_position((self.x,self.start_y,self.z),duration=0.2),delay=0.15)
 
 class Air(Entity):
 	def __init__(self,pos,m,l,pse):
 		_in='air'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',collider=None)
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		self.collider=None
 		self.vnum=13
 		self.mark=m
 		self.c_ID=l
@@ -297,29 +309,34 @@ class Air(Entity):
 
 ##crate effects
 class Explosion(Entity):
-	def __init__(self,p,c):
-		super().__init__(model='sphere',position=p,color=c,collider='sphere',alpha=0.4,scale=0.1)
+	def __init__(self,cr):
+		nC={11:color.red,12:color.green}
+		super().__init__(model='sphere',position=cr.position,color=nC[cr.vnum],alpha=.4,scale=.1)
 		Audio(sn.snd_explo,volume=1.5)
-		if c == color.green:
+		self.eR=2
+		if cr.vnum == 12:
 			invoke(lambda:Audio(sn.snd_glass,volume=1.5),delay=.1)
-	def update(self):
-		for dest in scene.entities:
-			if cc.is_crate(dest) and self.intersects(dest):
-				do=dest.vnum
-				if cc.is_crate(dest):
-					if do in [3,11]:
-						dest.empty_destroy()
-					elif do == 13:
-						return
+		self.exp_radius()
+	def exp_radius(self):
+		self.shader=unlit_shader
+		for exI in scene.entities[:]:
+			jD=distance(self,exI)
+			if cc.is_crate(exI) and jD <= self.eR and exI.collider != None:
+				if not exI.vnum == 6:
+					if exI.vnum in [3,11]:
+						exI.empty_destroy()
 					else:
-						dest.destroy()
-		self.scale_x+=0.4
-		self.scale_y+=0.4
-		self.scale_z+=0.4
-		if self.scale > 1.6:
-			self.scale=0
-			self.parent=None
-			self.disable()
+						exI.destroy()
+		self.parent=None
+		self.disable()
+	def update(self):
+		if not status.gproc():
+			self.scale_x+=.2
+			self.scale_y+=.2
+			self.scale_z+=.2
+			if self.scale >= self.eR:
+				self.scale=0
+				self.hide()
 
 class CheckpointAnimation(Entity):
 	def __init__(self,p):

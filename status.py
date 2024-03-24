@@ -18,7 +18,7 @@ bonus_checkpoint=[None,(0,2,-7),(0,0,0),(0,0,0),(0,0,0),(0,0,0)]
 checkpoint=None
 day_mode=''
 
-COLOR_GEM=[]
+COLOR_GEM=[1,2,3,4,5]
 CLEAR_GEM=[]
 CRYSTAL=[]
 
@@ -61,6 +61,7 @@ level_solved=False
 bonus_solved=False
 bonus_round=False
 LEVEL_CLEAN=False
+first_crate=True
 aku_exist=False
 is_dying=False
 c_indoor=True
