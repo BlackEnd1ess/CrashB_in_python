@@ -69,7 +69,6 @@ def test():
 	mt.crate_row(ID=1,POS=(0,0,-1),CNT=5,WAY=2)
 	mt.crate_row(ID=1,POS=(1,0,-1),CNT=5,WAY=2)
 	mt.crate_row(ID=1,POS=(2,0,-1),CNT=5,WAY=2)
-	
 	mt.crate_row(ID=2,POS=(2,0,-2),CNT=10,WAY=0)
 	mt.crate_row(ID=2,POS=(2,1.7,-2),CNT=10,WAY=0)
 	invoke(free_level,delay=1)
@@ -85,6 +84,7 @@ def level1():
 	o.StartRoom(pos=(-.3,1,-64.2))
 	o.BonusPlatform(pos=(1.5,1.4,-7))
 	bn.load_bonus_level(status.level_index)
+	bn.gem_route1()
 	#plants
 	o.TreeScene(pos=(-1.37,1.5,-46),c=color.rgb(110,130,100),s=.0175)
 	o.TreeScene(pos=(1.32,1.5,-46),c=color.rgb(110,130,100),s=.0175)
@@ -148,7 +148,7 @@ def level1():
 	#M_objects
 	o.RewardRoom(pos=(0,2.5,13),c=color.rgb(80,100,80))
 	o.EndRoom(pos=(0,2.5,18),c=color.rgb(80,100,80))
-	cc.level_ready=True
+	invoke(free_level,delay=2)
 
 def level2():##3D
 	status.level_index=2

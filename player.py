@@ -81,24 +81,15 @@ class CrashB(Entity):
 			self.is_flip=True
 		if self.y >= self.lpos:
 			self.jumping=False
-	def landing(self):
-		if not self.jumping:
-			self.landed=True
-			if self.first_land:
-				Audio(snd.snd_land)
-				self.first_land=False
-				self.is_landing=True
-				invoke(lambda:setattr(self,'is_landing',False),delay=.6)
-				invoke(lambda:setattr(self,'land_anim',0),delay=.6)
-			self.block_input=False
-			self.is_flip=False
-			self.flip_anim=0
 	def c_camera(self):
 		if not status.is_dying:
 			camera.x=lerp(camera.x,self.x,time.dt*s)
-			if not status.c_indoor:
+			if status.c_indoor:
+				camera.y=lerp(camera.y,self.y+.9,time.dt*s)
+				camera.z=lerp(camera.z,self.z-3,time.dt*s)
+			else:
 				camera.y=lerp(camera.y,self.y+1.2,time.dt*s)
-			camera.z=lerp(camera.z,self.z-3.2,time.dt*s)
+				camera.z=lerp(camera.z,self.z-3.2,time.dt*s)
 	def basic_animation(self):
 		if status.is_dying:
 			an.player_death(self)

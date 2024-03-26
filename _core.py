@@ -156,8 +156,7 @@ def ceiling(c,e):
 def check_ground(c):
 	if len(map_coordinate) > 0:
 		if c.intersects(map_zone):
-			c.landing()
-			c.y=terraincast(c.world_position,map_zone,map_coordinate)
+			landing(c=c,e=terraincast(c.world_position,map_zone,map_coordinate))
 			return
 	hit_info=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.15,.15),ignore=[c],debug=False)
 	if hit_info.normal:
@@ -166,8 +165,7 @@ def check_ground(c):
 		if not hte in item.item_list:
 			if is_crate(hte):
 				if hw == 'iron' or hw in ['switch_empty','switch_nitro','tnt'] and hte.activ:
-					c.landing()
-					c.y=hit_info.world_point.y
+					landing(c=c,e=hit_info.world_point.y)
 				else:
 					crate_action(c=c,e=hte)
 				return
@@ -185,10 +183,22 @@ def check_ground(c):
 			else:
 				if hw == 'moss_platform' and hte.movable:
 					platform_sync(c=c,e=hte)
-				c.landing()
-				c.y=hit_info.world_point.y
+				landing(c=c,e=hit_info.world_point.y)
 	else:
 		c.landed=False
+def landing(c,e):
+	c.landed=True
+	if not c.y == e and not c.jumping:
+		c.y=e
+		if c.first_land:
+			Audio(sound.snd_land)
+			c.first_land=False
+			c.is_landing=True
+			invoke(lambda:setattr(c,'is_landing',False),delay=.6)
+			invoke(lambda:setattr(c,'land_anim',0),delay=.6)
+		c.block_input=False
+		c.is_flip=False
+		c.flip_anim=0
 def check_wall(c):
 	wH=c.intersects().normal
 	if wH:
@@ -204,10 +214,7 @@ def check_wall(c):
 				status.c_delay=.1/6
 				wE.collect()
 			return
-		if c.is_attack:
-			J=time.dt*3
-		else:
-			J=time.dt*2
+		J=time.dt*4
 		vecL={Vec3(1,0,0):lambda:setattr(c,'x',c.x+J),
 			Vec3(-1,0,0):lambda:setattr(c,'x',c.x-J),
 			Vec3(0,0,1):lambda:setattr(c,'z',c.z+J),
@@ -232,12 +239,11 @@ def platform_floating(m,c):
 		m.position=m.orginal_pos
 		if status.level_index == 6:
 			c.freezed=False
-			print('platform works')
 			return
 		if str(m) == 'bonus_platform':
-			enter_bonus(c=m.target)
+			load_bonus(c=m.target)
 		else:
-			print('go to death route')
+			load_gem_route(c=m.target)
 def jump_enemy(c,e):
 	e0=str(e)
 	if e0 in ['saw_turtle','lizard'] or e0 == 'hedgehog' and e.defend_mode:
@@ -312,20 +318,19 @@ def check_crates_over(c):
 		if is_crate(co) and not c.vnum == 3:
 			if c.x == co.x and c.z == co.z and co.y > c.y:
 				if co.is_stack:
-					co.fall_exec=True
 					co.animate_y(co.y-co.scale_y*2,duration=.15)
-					co.fall_exec=False
 
 ## bonus level
-def enter_bonus(c):
+def load_bonus(c):
 	status.loading=True
 	status.checkpoint=status.bonus_checkpoint[status.level_index]
 	collect_reset()
 	if status.bonus_round:
 		invoke(lambda:back_to_level(c),delay=.5)
 	else:
-		invoke(lambda:load_bonus(c),delay=.5)
+		invoke(lambda:enter_bonus(c),delay=.5)
 def back_to_level(c):
+	status.is_death_route=False
 	status.bonus_round=False
 	dMN={0:'bonus',1:'woods',2:'evening'}
 	status.day_mode=dMN[status.level_index]
@@ -333,12 +338,12 @@ def back_to_level(c):
 	status.bonus_solved=True
 	status.loading=False
 	c.freezed=False
-def load_bonus(c):
+def enter_bonus(c):
 	status.bonus_round=True
 	status.day_mode='bonus'
 	sound.BonusMusic(T=status.level_index)
 	ui.BonusText()
-	c.position=status.bonus_zone_position[status.level_index]
+	c.position=(0,-35,-3)
 	status.loading=False
 	c.freezed=False
 def bonus_reward(p):
@@ -364,6 +369,23 @@ def bonus_give_live():
 	status.lives_bonus-=1
 	status.extra_lives+=1
 	status.show_lives=1
+
+## gem route
+def load_gem_route(c):
+	status.loading=True
+	if status.is_death_route:
+		invoke(lambda:back_to_level(c),delay=.5)
+	else:
+		invoke(lambda:load_droute(c),delay=.5)
+def load_droute(c):
+	if not status.is_death_route:
+		status.is_death_route=True
+		c.position=(200,1,-3)
+		status.loading=False
+		c.freezed=False
+		sound.SpecialMusic(T=status.level_index)
+	else:
+		c.back_to_level(c)
 
 ## npc
 def set_val_npc(m):

@@ -9,7 +9,7 @@ sn=sound
 
 ##spawn/remove event
 def place_crate(p,ID,m=None,l=None,pse=None):
-	CRATES={0:lambda:Iron(pos=p,pse=pse,ph=ph),
+	CRATES={0:lambda:Iron(pos=p,pse=pse),
 			1:lambda:Normal(pos=p,pse=pse),
 			2:lambda:QuestionMark(pos=p,pse=pse),
 			3:lambda:Bounce(pos=p,pse=pse),
@@ -26,18 +26,17 @@ def place_crate(p,ID,m=None,l=None,pse=None):
 	CRATES[ID]()
 	if not ID in [0,8,9,10] and not pse == 1 and not p[1] == -255:
 		status.crates_in_level+=1
-		if p[1] < -10:
+		if p[1] < -20:
 			status.crates_in_bonus+=1
 		if ID == 13 and l in [0,8]:
 			status.crates_in_level-=1
 
 def destroy_event(c):##check crate is on ground?
 	if status.first_crate:
-		print('first crate')
 		status.first_crate=False
-		status.d_delay=1
+		status.d_delay=.6
 	else:
-		status.d_delay=.3
+		status.d_delay=.1
 	c.collider=None
 	c.parent=None
 	c.hide()

@@ -64,7 +64,7 @@ class LevelMusic(Audio):
 		lM=MC+'lv'+str(T)+'/'+str(random.randint(0,1))+'.mp3'
 		super().__init__(lM,volume=settings.MUSIC_VOLUME,loop=True)
 	def update(self):
-		if status.bonus_round:
+		if status.bonus_round or status.is_death_route:
 			self.fade_out()
 			self.disable()
 		if status.pause:
@@ -77,7 +77,7 @@ class BonusMusic(Audio):
 		lB=MC+'lv'+str(T)+'/'+str(random.randint(0,1))+'b.mp3'
 		super().__init__(lB,volume=settings.MUSIC_VOLUME,loop=True)
 	def update(self):
-		if not status.bonus_round:
+		if not status.bonus_round or status.is_death_route:
 			self.fade_out()
 			self.disable()
 			LevelMusic(T=status.level_index)
@@ -86,3 +86,13 @@ class BonusMusic(Audio):
 			self.volume=0
 			return
 		self.volume=1
+
+class SpecialMusic(Audio):
+	def __init__(self,T):
+		super().__init__(MC+'lv'+str(T)+'/0c.mp3',volume=settings.MUSIC_VOLUME,loop=True)
+	def update(self):
+		if not status.is_death_route:
+			self.fade_out()
+			self.disable()
+			LevelMusic(T=status.level_index)
+			return
