@@ -1,4 +1,4 @@
-import item,status,_core,animation,player,sound,npc
+import item,status,_core,animation,player,sound,npc,settings
 from ursina.shaders import *
 from ursina import *
 
@@ -52,7 +52,7 @@ def destroy_event(c):
 			status.crate_to_sv+=1
 			status.crate_count+=1
 			status.show_crates=5
-		Audio(sn.snd_break)
+		Audio(sn.snd_break,volume=settings.SFX_VOLUME)
 	animation.CrateBreak(cr=c)
 	scene.entities.remove(c)
 	cc.check_crates_over(c)
@@ -151,7 +151,7 @@ class AkuAku(Entity):
 			status.aku_hit+=1
 		if not status.aku_exist and not status.preload_phase:
 			npc.AkuAkuMask(pos=(self.x,self.y,self.z))
-		Audio(sn.snd_aku_m,pitch=1.2)
+		Audio(sn.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
 		destroy_event(self)
 
 class Checkpoint(Entity):
@@ -304,7 +304,7 @@ class Air(Entity):
 	def destroy(self):
 		status.C_RESET.append(self)
 		place_crate(p=self.position,ID=self.c_ID,pse=1)
-		Audio(sn.snd_c_air)
+		Audio(sn.snd_c_air,volume=settings.SFX_VOLUME)
 		scene.entities.remove(self)
 		self.disable()
 
@@ -313,9 +313,9 @@ class Explosion(Entity):
 	def __init__(self,cr):
 		nC={11:color.red,12:color.green}
 		super().__init__(model='sphere',position=cr.position,color=nC[cr.vnum],alpha=.4,scale=.1)
-		Audio(sn.snd_explo,volume=1.5)
+		Audio(sn.snd_explo,volume=settings.SFX_VOLUME)
 		if cr.vnum == 12:
-			invoke(lambda:Audio(sn.snd_glass,volume=1.5),delay=.1)
+			invoke(lambda:Audio(sn.snd_glass,volume=settings.SFX_VOLUME),delay=.1)
 		self.eR=2
 		self.exp_radius()
 	def exp_radius(self):

@@ -1,4 +1,4 @@
-import ui,crate,item,status,animation,level,sound,npc
+import ui,crate,item,status,animation,level,sound,npc,settings
 from math import atan2,sqrt
 from ursina import *
 
@@ -221,7 +221,7 @@ def check_wall(c):
 			return
 		if wE in item.item_list:
 			if status.c_delay <= 0:
-				status.c_delay=.1/2
+				status.c_delay=.1/2.5
 				wE.collect()
 			return
 		J=time.dt*c.move_speed
@@ -495,6 +495,7 @@ def is_nearby_pc(n,DX,DY):
 ## reduce lagg by first spawn
 def preload_items():
 	status.preload_phase=True
+	settings.SFX_VOLUME=0
 	for PRC in range(13):
 		C.place_crate(ID=PRC,p=(0+PRC,-256,0),m=99,l=13)
 		item.WumpaFruit(pos=(0+PRC,-256,0))
@@ -507,4 +508,5 @@ def preload_items():
 	status.C_RESET.clear()
 	invoke(end_preload,delay=.3)
 def end_preload():
+	settings.SFX_VOLUME=1
 	status.preload_phase=False

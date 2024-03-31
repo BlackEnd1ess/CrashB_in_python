@@ -17,7 +17,7 @@ bonus_checkpoint=[None,(0,2,-7),(0,0,0),(0,0,0),(0,0,0),(0,0,0)]
 checkpoint=None
 day_mode=''
 
-COLOR_GEM=[1,2,3,4,5]
+COLOR_GEM=[]
 CLEAR_GEM=[]
 CRYSTAL=[]
 

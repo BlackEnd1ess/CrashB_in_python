@@ -92,12 +92,22 @@ class MapTerrain(Entity):
 
 class BigPlatform(Entity):
 	def __init__(self,p,s):
-		super().__init__(model=omf+'ground/ground01.obj',texture=terra_path+'texture/grass.png',scale=(s[0],1.5,s[2]),collider=b,position=p)
-		self.front_wall=Entity(model=omf+'ground/ground_wall.obj',texture=texp+'bricks.png',scale=(self.scale_x-.01,3,self.scale_z-.01),color=color.rgb(170,200,170),collider=b)
+		THM=status.level_index
+		super().__init__(model=omf+'ground/ground01.obj',scale=(s[0],1.5,s[2]),collider=b,position=p)
+		self.front_wall=Entity(model=omf+'ground/ground_wall.obj',scale=(self.scale_x-.01,3,self.scale_z-.01),collider=b)
 		self.front_wall.position=(self.x,self.y-self.scale_y+.3,self.z)
+		if THM == 1:
+			self.front_wall.texture=texp+'bricks.png'
+			self.texture=terra_path+'texture/grass.png'
+			self.front_wall.color=color.rgb(170,200,170)
+			self.color=color.rgb(0,140,0)
+		if THM == 2:
+			self.front_wall.texture=texp+'bricks.png'
+			self.texture=terra_path+'texture/snow.png'
+			self.front_wall.color=color.rgb(170,180,200)
+			self.color=color.rgb(128,128,140)
 		self.front_wall.texture_scale=(8,8)
-		self.texture_scale=(self.scale_x*4,self.scale_z*4)
-		self.color=color.rgb(0,140,0)
+		self.texture_scale=(16,16)
 
 class Corridor(Entity):
 	def __init__(self,pos):
@@ -105,6 +115,7 @@ class Corridor(Entity):
 		self.wall0=Entity(model='cube',visible=False,scale=3,position=(self.x+2.5,self.y,self.z),collider=b)
 		self.wall1=Entity(model='cube',visible=False,scale=3,position=(self.x-2.5,self.y,self.z),collider=b)
 		self.wall1=Entity(model='cube',visible=False,scale=3,position=(self.x,self.y+5.5,self.z),collider=b)
+		IndoorZone(pos=self.position,DI=1)
 
 class Tree2D(Entity):
 	def __init__(self,pos,rot):
@@ -124,18 +135,19 @@ class InvWall(Entity):
 
 ## important objects
 class IndoorZone(Entity): ## disable rain
-	def __init__(self,pos,ty):
+	def __init__(self,pos,DI):
 		super().__init__(model='sphere',scale=1,position=pos,visible=False)
 		self.active=False
+		self.DIST=DI
 	def check_indoor(self):
-		if cc.is_nearby_pc(self,DX=3,DY=3):
+		if cc.is_nearby_pc(self,DX=self.DIST,DY=self.DIST):
 			status.c_indoor=True
 		else:
 			status.c_indoor=False
 	def update(self):
 		if self.active:
 			self.check_indoor()
-		if cc.is_nearby_pc(self,DX=3,DY=3):
+		if cc.is_nearby_pc(self,DX=self.DIST,DY=self.DIST):
 			self.active=True
 			return
 		self.active=False
@@ -206,7 +218,7 @@ class StartRoom(Entity): ## game spawn point
 		player.CrashB(pos=(self.x,self.y+.6,self.z-.1))
 		status.checkpoint=(self.x,self.y+2,self.z)
 		camera.position=(self.x,self.y+2,self.z-3)
-		IndoorZone(pos=self.position,ty=0)
+		IndoorZone(pos=self.position,DI=3)
 	def update(self):
 		if not self.door_open:
 			if cc.is_nearby_pc(self,DX=.09,DY=3):
@@ -229,7 +241,7 @@ class RewardRoom(Entity):## here spawns the gem
 		self.ceil=Entity(model='cube',position=(self.x,self.y+.8,self.z+2),scale=(4,.3,7),collider=b,visible=False)
 		self.door=Entity(model=omf+'door1/0.ply',texture=omf+'door1/door.tga',position=(self.x+.2,self.y+.8,self.z-1.3),scale=.001,rotation=(90,0,0),collider=b,unlit=False)
 		self.door1=Entity(model=omf+'door/0.ply',texture=omf+'door/door.tga',position=(self.x+.2,self.y+.9,self.z-1.3),scale=.001,rotation_x=90,collider=b,unlit=False)
-		IndoorZone(pos=(self.x+.1,self.y,self.z+1.8),ty=1)
+		IndoorZone(pos=(self.x+.1,self.y,self.z+1.8),DI=3)
 		self.gived_gem=False
 		self.door_open=False
 		self.door_move=False
@@ -257,8 +269,8 @@ class EndRoom(Entity): ## finish level
 		self.rwall1=Entity(model='cube',scale=(3,3,4),position=(self.x-2.5,self.y,self.z+1.6),collider=b,visible=False)
 		self.rwall2=Entity(model='cube',scale=(3,3,4),position=(self.x+1.9,self.y,self.z+1.6),collider=b,visible=False)
 		self.rfront=Entity(model='cube',scale=(5,3,1),position=(self.x,self.y,self.z+4),collider=b,visible=False)
-		IndoorZone(pos=(self.x+.1,self.y,self.z+1.8),ty=1)
-		LevelFinish(p=(self.x,self.y-.8,self.z+2.7))
+		IndoorZone(pos=(self.x+.1,self.y,self.z+1.8),DI=3)
+		LevelFinish(p=(self.x-.1,self.y-.8,self.z+2.7),V=False)
 		self.door_open=False
 		self.door_move=False
 		self.door_time=.7
@@ -310,5 +322,5 @@ class GemPlatform(Entity): ## gem platform
 				return
 
 class LevelFinish(Entity): ## finish level
-	def __init__(self,p):
-		super().__init__(model=omf+'podium/gear.obj',collider=b,texture='gear_diffuse.png',scale=(.6,.8,.6),position=p)
+	def __init__(self,p,V):
+		super().__init__(model=omf+'podium/gear.obj',collider=b,texture='gear_diffuse.png',scale=(.6,.8,.6),position=p,visible=V)

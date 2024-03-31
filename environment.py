@@ -6,14 +6,24 @@ SKY_COL={'day':color.cyan,
 		'night':color.rgb(0,0,85),
 		'dark':color.black,
 		'rain':color.rgb(70,70,80),
+		'snow':color.rgb(230,150,255),
 		'woods':color.rgb(70,120,110)}
 
-FOG_COLOR={'day':color.rgb(0,0,0),
-			'evening':color.rgb(0,0,0),
-			'night':color.rgb(0,0,0),
-			'dark':color.rgb(0,0,0),
-			'rain':color.rgb(0,0,0),
-			'woods':color.rgb(0,70,70)}
+FOG_COL={'day':color.white,
+		'evening':color.rgb(0,0,0),
+		'night':color.rgb(0,0,0),
+		'dark':color.rgb(0,0,0),
+		'rain':color.rgb(0,0,0),
+		'snow':color.white,
+		'woods':color.rgb(0,70,70)}
+
+AMB_COL={'day':color.rgb(0,0,0),
+		'evening':color.rgb(0,0,0),
+		'night':color.rgb(0,0,0),
+		'dark':color.rgb(0,0,0),
+		'rain':color.rgb(0,0,0),
+		'snow':color.rgb(200,160,210),
+		'woods':color.rgb(140,170,170)}
 
 def env_switch(env,wth,tdr):
 	status.day_mode=env
@@ -62,12 +72,12 @@ class SkyBox(Sky):
 
 class LightAmbience(AmbientLight):
 	def __init__(self):
-		super().__init__(color=SKY_COL[status.day_mode])
+		super().__init__(color=AMB_COL[status.day_mode])
 
 class Fog(Entity):
 	def __init__(self):
 		super().__init__()
-		scene.fog_color=FOG_COLOR[status.day_mode]
+		scene.fog_color=FOG_COL[status.day_mode]
 		scene.fog_density=settings.FOG_DENSITY
 	def update(self):
 		if status.bonus_round:

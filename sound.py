@@ -29,11 +29,11 @@ snd_aku_m=SN+'aku.wav'
 snd_c_gem=SN+'gem.wav'
 
 def snd_switch():
-	Audio(SN+'switch.wav',volume=1)
-	Audio(SN+'block.wav',volume=1)
+	Audio(SN+'switch.wav',volume=settings.SFX_VOLUME)
+	Audio(SN+'block.wav',volume=settings.SFX_VOLUME)
 def snd_checkp():
-	Audio(SN+'check_d.wav')
-	Audio(SN+'checkp.wav')
+	Audio(SN+'check_d.wav',volume=settings.SFX_VOLUME)
+	Audio(SN+'checkp.wav',volume=settings.SFX_VOLUME)
 def snd_collect():
 	Audio(SN+'collect.wav',volume=.5)
 	invoke(lambda:Audio(snd_enter,volume=.3),delay=.5)
@@ -89,7 +89,7 @@ class BonusMusic(Audio):
 
 class SpecialMusic(Audio):
 	def __init__(self,T):
-		super().__init__(MC+'lv'+str(T)+'/0d.mp3',volume=settings.MUSIC_VOLUME,loop=True)
+		super().__init__(MC+'lv'+str(T)+'/0c.mp3',volume=settings.MUSIC_VOLUME,loop=True)
 	def update(self):
 		if not status.is_death_route:
 			self.fade_out()
