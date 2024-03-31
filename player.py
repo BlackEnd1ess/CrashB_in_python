@@ -43,7 +43,8 @@ class CrashB(Entity):
 				return
 			status.pause=False
 		if key == 'b':
-			EditorCamera()
+			print(self.position)
+			#EditorCamera()
 		if key == 'u':
 			self.move_speed=5
 	def move(self):
@@ -111,7 +112,11 @@ class CrashB(Entity):
 		cc.check_ground(self)
 		cc.check_wall(self)
 		cc.various_val(self)
-		cc.wumpa_LOD()
+		if cc.LOD_refresh <= 0:
+			cc.LOD_refresh=.5
+			cc.objectLOD()
+		if cc.LOD_refresh > 0:
+			_core.LOD_refresh-=time.dt
 	def hurt_blink(self):
 		if self.blink_time <= 0:
 			self.blink_time=.1

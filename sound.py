@@ -89,7 +89,7 @@ class BonusMusic(Audio):
 
 class SpecialMusic(Audio):
 	def __init__(self,T):
-		super().__init__(MC+'lv'+str(T)+'/0c.mp3',volume=settings.MUSIC_VOLUME,loop=True)
+		super().__init__(MC+'lv'+str(T)+'/0d.mp3',volume=settings.MUSIC_VOLUME,loop=True)
 	def update(self):
 		if not status.is_death_route:
 			self.fade_out()

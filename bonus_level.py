@@ -11,7 +11,7 @@ def load_bonus_level(idx):
 
 def bonus1():
 	o.BonusPlatform(pos=(11.5,-37,U))
-	o.Water(pos=(0,-29,0),s=(60,60),c=color.rgb(100,110,110),a=.9)
+	o.Water(pos=(0,-39,0),s=(60,60),c=color.rgb(100,110,110),a=.9)
 	for w in range(2):
 		o.BackgroundWall(p=(0+w*14,-37,2))
 	for bc0 in range(6):
@@ -40,4 +40,4 @@ def gem_route1():
 	c.place_crate(ID=8,p=(206,2,U))
 	c.place_crate(ID=8,p=(207,3,U))
 	MT.crate_row(ID=0,POS=(208,3,U),WAY=0,CNT=12)
-	o.GemPlatform(pos=(212,3,U),t=4)
+	o.GemPlatform(pos=(212,3.5,U),t=4)

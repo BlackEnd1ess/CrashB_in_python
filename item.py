@@ -10,8 +10,8 @@ i_path='res/item/'
 class WumpaFruit(Entity):
 	def __init__(self,pos):
 		w_model='wumpa/WumpaFruitGameplay.obj'
-		w_tex='wumpa/images/Crash_WumpaFruit_C.png'
-		super().__init__(model=i_path+w_model,texture=i_path+w_tex,position=(pos[0],pos[1]+0.3,pos[2]),scale=0.005,collider=b,shader=lit_with_shadows_shader)
+		self.w_tex='wumpa/images/Crash_WumpaFruit_C.png'
+		super().__init__(model=i_path+w_model,texture=i_path+self.w_tex,position=(pos[0],pos[1]+0.3,pos[2]),scale=0.005,collider=b,shader=lit_with_shadows_shader)
 		self.world_visible=False
 		item_list.append(self)
 		if _core.level_ready:

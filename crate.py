@@ -24,14 +24,15 @@ def place_crate(p,ID,m=None,l=None,pse=None):
 			12:lambda:Nitro(pos=p,pse=pse),
 			13:lambda:Air(pos=p,m=m,l=l,pse=pse)}
 	CRATES[ID]()
-	if not ID in [0,8,9,10] and not pse == 1 and not p[1] == -255:
+	if not ID in [0,8,9,10] and not pse == 1 and not p[1] == -256:
 		status.crates_in_level+=1
 		if p[1] < -20:
 			status.crates_in_bonus+=1
 		if ID == 13 and l in [0,8]:
 			status.crates_in_level-=1
 
-def destroy_event(c):##check crate is on ground?
+def destroy_event(c):
+	c.disable()
 	if status.first_crate:
 		status.first_crate=False
 		status.d_delay=.6
@@ -42,22 +43,23 @@ def destroy_event(c):##check crate is on ground?
 	c.hide()
 	if c.vnum in [11,12]:
 		Explosion(cr=c)
-	if not c.poly == 1:
-		status.C_RESET.append(c)
-	if status.bonus_round:
-		status.crate_bonus+=1
-	else:
-		status.crate_to_sv+=1
-		status.crate_count+=1
-		status.show_crates=5
+	if not status.preload_phase:
+		if not c.poly == 1:
+			status.C_RESET.append(c)
+		if status.bonus_round:
+			status.crate_bonus+=1
+		else:
+			status.crate_to_sv+=1
+			status.crate_count+=1
+			status.show_crates=5
+		Audio(sn.snd_break)
 	animation.CrateBreak(cr=c)
 	scene.entities.remove(c)
-	c.disable()
 	cc.check_crates_over(c)
-	Audio(sn.snd_break)
+	c.disable()
 
 def block_destroy(c):
-	if not c.p_snd:
+	if not c.p_snd and not status.preload_phase:
 		c.p_snd=True
 		Audio(sn.snd_steel)
 		invoke(lambda:setattr(c,'p_snd',False),delay=.5)
@@ -145,13 +147,12 @@ class AkuAku(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=5
 	def destroy(self):
-		if not self.y == -255:
-			if status.aku_hit < 3:
-				status.aku_hit+=1
-			if not status.aku_exist:
-				npc.AkuAkuMask(pos=(self.x,self.y,self.z))
-			Audio(sn.snd_aku_m,pitch=1.2)
-			destroy_event(self)
+		if status.aku_hit < 3:
+			status.aku_hit+=1
+		if not status.aku_exist and not status.preload_phase:
+			npc.AkuAkuMask(pos=(self.x,self.y,self.z))
+		Audio(sn.snd_aku_m,pitch=1.2)
+		destroy_event(self)
 
 class Checkpoint(Entity):
 	def __init__(self,pos,pse):
@@ -161,11 +162,12 @@ class Checkpoint(Entity):
 		self.vnum=6
 	def destroy(self):
 		status.checkpoint=(self.x,self.y+1,self.z)
+		CheckpointAnimation(p=self.position)
 		sn.snd_checkp()
 		destroy_event(self)
-		CheckpointAnimation(p=self.position)
-		status.NPC_RESET.clear()
 		_core.collect_reset()
+		if not status.preload_phase:
+			status.NPC_RESET.clear()
 
 class SpringWood(Entity):
 	def __init__(self,pos,pse):
@@ -207,7 +209,7 @@ class SwitchEmpty(Entity):
 			ccount=0
 			status.C_RESET.append(self)
 			for _air in scene.entities[:]:
-				if isinstance(_air,Air) and _air.mark == self.mark and not _air.y == -255:
+				if isinstance(_air,Air) and _air.mark == self.mark:
 					invoke(_air.destroy,delay=ccount/3.5)
 					ccount+=.8
 			spawn_ico(self)
@@ -233,7 +235,7 @@ class SwitchNitro(Entity):
 			spawn_ico(self)
 			status.C_RESET.append(self)
 			for ni in scene.entities[:]:
-				if isinstance(ni,Nitro) and not ni.y == -255 and ni.collider != None:
+				if isinstance(ni,Nitro) and ni.collider != None:
 					ni.destroy()
 
 class TNT(Entity):
@@ -312,9 +314,9 @@ class Explosion(Entity):
 		nC={11:color.red,12:color.green}
 		super().__init__(model='sphere',position=cr.position,color=nC[cr.vnum],alpha=.4,scale=.1)
 		Audio(sn.snd_explo,volume=1.5)
-		self.eR=2
 		if cr.vnum == 12:
 			invoke(lambda:Audio(sn.snd_glass,volume=1.5),delay=.1)
+		self.eR=2
 		self.exp_radius()
 	def exp_radius(self):
 		self.shader=unlit_shader

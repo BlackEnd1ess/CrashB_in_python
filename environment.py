@@ -1,17 +1,49 @@
 import status,settings,_core
 from ursina import *
 
-sts=settings
+SKY_COL={'day':color.cyan,
+		'evening':color.rgb(255,110,90),
+		'night':color.rgb(0,0,85),
+		'dark':color.black,
+		'rain':color.rgb(70,70,80),
+		'woods':color.rgb(70,120,110)}
+
+FOG_COLOR={'day':color.rgb(0,0,0),
+			'evening':color.rgb(0,0,0),
+			'night':color.rgb(0,0,0),
+			'dark':color.rgb(0,0,0),
+			'rain':color.rgb(0,0,0),
+			'woods':color.rgb(0,70,70)}
+
+def env_switch(env,wth,tdr):
+	status.day_mode=env
+	ShadowMap()
+	SkyBox(t=tdr)
+	LightAmbience()
+	Fog()
+	if wth > 0:
+		wthr={1:lambda:RainFall(),2:lambda:SnowFall()}
+		wthr[wth]()
+
+class ShadowMap(DirectionalLight):
+	def __init__(self):
+		RS=1024*2
+		g=100
+		sCL=SKY_COL[status.day_mode]
+		aC=color.rgb(sCL[0]+g,sCL[1]+g,sCL[2]+g)
+		super().__init__(shadows=True,shadow_map_resolution=(RS,RS),color=aC,rotation_x=-260,position=(0,10,0))
+		invoke(lambda:setattr(window,'render_mode','default'),delay=.5)
+
 class SkyBox(Sky):
-	def __init__(self,m,t):
-		self.setting=m
+	def __init__(self,t):
+		super().__init__(texture='res/env/sky.jpg',color=SKY_COL[status.day_mode],unlit=False)
+		self.setting=SKY_COL[status.day_mode]
 		self.thunder=t
-		super().__init__(texture='res/env/sky.jpg',color=m,unlit=False)
 		if self.thunder == 1:
 			self.thunder_time=3
 	def reset(self):
 		self.color=self.setting
-		self.thunder_time=random.randint(3,10)
+		self.thunder_time=random.randint(4,10)
 	def thunder_bolt(self):
 		tpp='/res/snd/ambience/'
 		self.color=color.white
@@ -28,41 +60,14 @@ class SkyBox(Sky):
 			if self.thunder_time <= 0:
 				self.thunder_bolt()
 
-class ShadowMap(DirectionalLight):
-	def __init__(self,d):
-		RS=2048
-		s_col={'day':color.rgb(130,130,140),
-				'evening':color.orange,
-				'night':color.rgb(100,100,150),
-				'dark':color.rgb(150,150,150),
-				'rain':color.gray,
-				'woods':color.rgb(80,140,80)}
-		super().__init__(shadows=True,shadow_map_resolution=(RS,RS),color=s_col[d],rotation_x=-260,position=(0,10,0))
-		invoke(lambda:setattr(window,'render_mode','default'),delay=.5)
-
 class LightAmbience(AmbientLight):
-	def __init__(self,d):
-		self.bg_col={'day':color.rgb(130,130,140),
-				'evening':color.orange,
-				'night':color.rgb(100,100,150),
-				'dark':color.rgb(150,150,150),
-				'rain':color.gray,
-				'woods':color.rgb(80,140,80),
-				'bonus':color.rgb(150,150,150)}
-		super().__init__(color=self.bg_col[d])
-	def update(self):
-		self.color=self.bg_col[status.day_mode]
+	def __init__(self):
+		super().__init__(color=SKY_COL[status.day_mode])
 
 class Fog(Entity):
-	def __init__(self,d):
+	def __init__(self):
 		super().__init__()
-		_day={'day':color.rgb(100,140,140),
-			'evening':color.orange,
-			'night':color.black,
-			'dark':color.black,
-			'rain':color.rgb(40,40,40),
-			'woods':color.rgb(50,70,60)}
-		scene.fog_color=_day[d]
+		scene.fog_color=FOG_COLOR[status.day_mode]
 		scene.fog_density=settings.FOG_DENSITY
 	def update(self):
 		if status.bonus_round:
@@ -72,7 +77,7 @@ class Fog(Entity):
 
 class RainFall(Animation):
 	def __init__(self):
-		super().__init__('res/env/rain.gif',parent=camera.ui,z=.1,fps=60,scale=(2,1),duration=.1,color=color.white,alpha=.4)
+		super().__init__('res/env/rain.gif',parent=camera.ui,z=.1,fps=40,scale=(2,1),duration=.1,color=color.white,alpha=.4)
 		self.soundR=Audio('res/snd/ambience/rain.wav',loop=True,volume=0)
 		if status.day_mode == 'night':
 			self.color=color.rgb(80,80,80)

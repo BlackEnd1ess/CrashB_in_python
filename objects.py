@@ -13,10 +13,9 @@ cc=_core
 ## map objects
 
 def spawn_tree_wall(pos,cnt,d):
-	tro={0:-30,1:30}
+	tro={0:-45,1:45}
 	for tsp in range(0,cnt):
-		tC=random.choice([color.green,color.orange,color.yellow])
-		Entity(model='quad',texture=omf+'tree/tree'+str(random.randint(1,3))+'.png',scale=3,position=(pos[0],pos[1],pos[2]+tsp*1.5),rotation_y=tro[d],color=tC)
+		Tree2D(pos=(pos[0]+random.uniform(-.2,.2),pos[1],pos[2]+tsp*2),rot=tro[d])
 
 def platform_move(d):
 	if d.direct == 0:
@@ -85,32 +84,32 @@ class BackgroundWall(Entity):
 
 class MapTerrain(Entity):
 	def __init__(self,MAP,size,t,co):
-		super().__init__(model=Terrain(terra_path+MAP,skip=16),collider=m,scale=size,texture=t,texture_scale=(size[0],size[2]),color=co)
+		super().__init__(model=Terrain(terra_path+MAP,skip=18),collider=m,scale=size,texture=t,texture_scale=(size[0],size[2]),color=co)
 		cc.map_zone=self
 		cc.map_coordinate=self.model.height_values
 		cc.map_size=self.scale
 		FallingZone(pos=(self.x,self.y-1.5,self.z),s=(size[0]*1.5,1,size[2]*1.5))
 
-class MapHills(Entity):##player block zone
-	def __init__(self,MAP,size,t,v):
-		super().__init__(model=Terrain(terra_path+MAP,skip=8),collider=m,scale=size,texture=t,texture_scale=(size[0],size[1],size[2]),y=-.5)
-		if v < 1:
-			self.visible=False
-		else:
-			self.visible=True
-
 class BigPlatform(Entity):
 	def __init__(self,p,s):
-		super().__init__(model=omf+'ground/ground01.obj',texture=terra_path+'texture/grass.png',scale=(s[0],.5,s[2]),collider=b,position=p)
-		self.front_wall=Entity(model=omf+'ground/ground_wall.obj',texture=texp+'bricks.png',scale=(self.scale_x-.01,self.scale_y*2,self.scale_z-.01),color=color.rgb(170,200,170),collider=b)
-		self.front_wall.position=(self.x,self.y-self.scale_y+.075,self.z)
+		super().__init__(model=omf+'ground/ground01.obj',texture=terra_path+'texture/grass.png',scale=(s[0],1.5,s[2]),collider=b,position=p)
+		self.front_wall=Entity(model=omf+'ground/ground_wall.obj',texture=texp+'bricks.png',scale=(self.scale_x-.01,3,self.scale_z-.01),color=color.rgb(170,200,170),collider=b)
+		self.front_wall.position=(self.x,self.y-self.scale_y+.3,self.z)
 		self.front_wall.texture_scale=(8,8)
-		self.texture_scale=(32,32)
-		self.color=color.rgb(0,130,0)
+		self.texture_scale=(self.scale_x*4,self.scale_z*4)
+		self.color=color.rgb(0,140,0)
 
 class Corridor(Entity):
 	def __init__(self,pos):
 		super().__init__(model=omf+'w_corr/corridor.obj',texture=omf+'w_corr/f_room.tga',scale=.1,position=pos,rotation_y=-90,double_sided=True)
+		self.wall0=Entity(model='cube',visible=False,scale=3,position=(self.x+2.5,self.y,self.z),collider=b)
+		self.wall1=Entity(model='cube',visible=False,scale=3,position=(self.x-2.5,self.y,self.z),collider=b)
+		self.wall1=Entity(model='cube',visible=False,scale=3,position=(self.x,self.y+5.5,self.z),collider=b)
+
+class Tree2D(Entity):
+	def __init__(self,pos,rot):
+		tCOL=random.choice([color.green,color.orange,color.yellow])
+		super().__init__(model='quad',texture=omf+'tree/tree'+str(random.randint(1,3))+'.png',scale=3,position=pos,rotation_y=rot,color=tCOL)
 
 class TreeScene(Entity):
 	def __init__(self,pos,c,s):
@@ -118,6 +117,10 @@ class TreeScene(Entity):
 		bush(pos=(self.x,self.y+1.3,self.z-.25),c=color.green,s=2)
 		bush(pos=(self.x-.6,self.y+.8,self.z-.249),c=color.yellow,s=1)
 		bush(pos=(self.x+.6,self.y+.8,self.z-.249),c=color.orange,s=1)
+
+class InvWall(Entity):
+	def __init__(self,pos,sca):
+		super().__init__(model='cube',position=pos,scale=sca,visible=False,collider=b)
 
 ## important objects
 class IndoorZone(Entity): ## disable rain
@@ -199,6 +202,7 @@ class StartRoom(Entity): ## game spawn point
 		self.door_move=False
 		self.door_time=.7
 		ui.PauseMenu()
+		cc.preload_items()
 		player.CrashB(pos=(self.x,self.y+.6,self.z-.1))
 		status.checkpoint=(self.x,self.y+2,self.z)
 		camera.position=(self.x,self.y+2,self.z-3)
@@ -217,7 +221,7 @@ class RewardRoom(Entity):## here spawns the gem
 	def __init__(self,pos,c):
 		eR=omf+'e_room/end_room'
 		super().__init__(model=eR+'.obj',texture=eR+'.tga',scale=.025,rotation_y=-90,position=pos,double_sided=True,color=c,unlit=False)
-		self.ground_m=Entity(model='cube',position=(self.x,self.y-.95,self.z+2),scale=(4,.3,7),collider=b,visible=False)
+		self.ground_m=Entity(model='cube',position=(self.x,self.y-.95,self.z+1.7),scale=(4,.3,8),collider=b,visible=False)
 		self.pod1=Entity(model='cube',position=(self.x+.13,self.y-.75,self.z+3.4),scale=(1.5,.2,1.5),collider=b,visible=False)
 		self.pod2=Entity(model='cube',position=(self.x+.15,self.y-.6,self.z+3.4),scale=(.7,.2,.7),collider=b,visible=False)
 		self.wall_l=Entity(model='cube',position=(self.x-1.7,self.y,self.z+2),scale=(2,3,7),collider=b,visible=False)

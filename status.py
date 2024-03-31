@@ -57,6 +57,7 @@ level_cle_gem=False
 
 LV_CLEAR_PROCESS=False
 is_death_route=False
+preload_phase=False
 level_solved=False
 bonus_solved=False
 bonus_round=False

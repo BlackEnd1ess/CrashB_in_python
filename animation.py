@@ -91,8 +91,8 @@ class CrateBreak(Entity):
 		if cr.vnum == 11:
 			bco=color.red
 		else:
-			bco=color.brown
-		super().__init__(model=cf+'break/0.ply',texture=cf+'break/break.tga',rotation=(-90,cr.rotation_y,0),scale=.4/1000,color=bco,position=cr.position,unlit=False)
+			bco=color.orange
+		super().__init__(model=cf+'break/0.ply',texture=cf+'break/break.tga',rotation=(-90,cr.rotation_y,0),scale=.4/1000,color=bco,position=cr.position,unlit=False,collider=None)
 		self.frame_break=0
 	def update(self):
 		if not status.pause or status.loading:

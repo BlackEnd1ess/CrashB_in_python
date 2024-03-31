@@ -3,11 +3,12 @@ from math import atan2,sqrt
 from ursina import *
 
 map_coordinate=None
+LOD_refresh=1
 map_zone=None
 map_size=None
 
 playerInstance=[]
-level_ready=False##shadow map --> player pos
+level_ready=False
 C=crate
 
 ## player
@@ -32,7 +33,6 @@ def p_attack(d):
 					atk.empty_destroy()
 				else:
 					atk.destroy()
-				#return
 			if cid in npc.npc_list and not atk.is_hitten:
 				atk.is_hitten=True
 				Audio(sound.snd_nbeat)
@@ -87,7 +87,9 @@ def various_val(c):
 ## world, misc
 def collect_reset():
 	status.C_RESET.clear()
+	status.W_RESET.clear()
 	status.crate_to_sv=0
+	check_cstack()
 def c_subtract(cY):
 	if cY < -10:
 		status.crates_in_bonus-=1
@@ -136,7 +138,7 @@ def collect_rewards():
 	if status.level_col_gem:
 		status.CLEAR_GEM.append(status.level_index)
 		status.clear_gems+=1
-def wumpa_LOD():
+def objectLOD():
 	if not status.LV_CLEAR_PROCESS:
 		for WUM in item.item_list[:]:
 			if isinstance(WUM,item.WumpaFruit):
@@ -144,6 +146,14 @@ def wumpa_LOD():
 					WUM.world_visible=True
 				else:
 					WUM.world_visible=False
+		for vO in scene.entities[:]:
+			if str(vO) == 'tree2_d':
+				if vO.z < playerInstance[0].z-2:
+					vO.hide()
+					vO.parent=None
+				else:
+					vO.show()
+					vO.parent=scene
 
 ## collisions
 def ceiling(c,e):
@@ -191,9 +201,9 @@ def landing(c,e):
 	if not c.y == e and not c.jumping:
 		c.y=e
 		if c.first_land:
-			Audio(sound.snd_land)
 			c.first_land=False
 			c.is_landing=True
+			Audio(sound.snd_land)
 			invoke(lambda:setattr(c,'is_landing',False),delay=.6)
 			invoke(lambda:setattr(c,'land_anim',0),delay=.6)
 		c.block_input=False
@@ -211,10 +221,10 @@ def check_wall(c):
 			return
 		if wE in item.item_list:
 			if status.c_delay <= 0:
-				status.c_delay=.1/6
+				status.c_delay=.1/2
 				wE.collect()
 			return
-		J=time.dt*4
+		J=time.dt*c.move_speed
 		vecL={Vec3(1,0,0):lambda:setattr(c,'x',c.x+J),
 			Vec3(-1,0,0):lambda:setattr(c,'x',c.x-J),
 			Vec3(0,0,1):lambda:setattr(c,'z',c.z+J),
@@ -330,12 +340,14 @@ def load_bonus(c):
 	else:
 		invoke(lambda:enter_bonus(c),delay=.5)
 def back_to_level(c):
-	status.is_death_route=False
-	status.bonus_round=False
+	if status.is_death_route:
+		status.is_death_route=False
+	if status.bonus_round:
+		status.bonus_round=False
+		status.bonus_solved=True
 	dMN={0:'bonus',1:'woods',2:'evening'}
 	status.day_mode=dMN[status.level_index]
 	c.position=status.checkpoint
-	status.bonus_solved=True
 	status.loading=False
 	c.freezed=False
 def enter_bonus(c):
@@ -480,12 +492,19 @@ def is_nearby_pc(n,DX,DY):
 		return True
 	return False
 
-## avoid laggs by first loading
-def preload_objects():
-	item.WumpaFruit(pos=(255,-255,255))
-	for CCA in range(14):
-		crate.place_crate(ID=CCA,p=(255,-255,255),m=1,l=1)
-	for DCA in scene.entities[:]:
-		if is_crate(DCA) and DCA.y == -255:
-			DCA.parent=None
-			DCA.disable()
+## reduce lagg by first spawn
+def preload_items():
+	status.preload_phase=True
+	for PRC in range(13):
+		C.place_crate(ID=PRC,p=(0+PRC,-256,0),m=99,l=13)
+		item.WumpaFruit(pos=(0+PRC,-256,0))
+	for DPR in scene.entities:
+		if is_crate(DPR) and DPR.collider != None and DPR.y <= -256:
+			if DPR.vnum == 3:
+				DPR.empty_destroy()
+			else:
+				DPR.destroy()
+	status.C_RESET.clear()
+	invoke(end_preload,delay=.3)
+def end_preload():
+	status.preload_phase=False
