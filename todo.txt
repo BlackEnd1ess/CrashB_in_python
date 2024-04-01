@@ -1,5 +1,7 @@
+add wumpa fruits in level 1
+bonus text blink
+game over event
+crate bounce/spring animation fixx
 levels
-
-- game over event
 
 warp room

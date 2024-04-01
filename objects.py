@@ -29,21 +29,40 @@ def platform_move(d):
 				d.turn=0
 
 def bush(pos,s,c):
-	Entity(model='quad',texture=omf+'bush/bush1.png',position=pos,scale=s,color=c)
+	Entity(model='quad',texture=omf+'bush/bush1.png',name='bush',position=pos,scale=s,color=c)
 
 class MossPlatform(Entity):
-	def __init__(self,p,MO,TU):
-		super().__init__(model=omf+'p_moss/moss.ply',texture=omf+'p_moss/moss.tga',rotation_x=-90,scale=0.00075,position=p,collider=b,unlit=False)
+	def __init__(self,p,MO,TU,UD):
+		super().__init__(model=omf+'p_moss/moss.ply',texture=omf+'p_moss/moss.tga',rotation_x=-90,scale=0.00075,position=p,collider=None,unlit=False)
 		self.spawn_pos=p
 		self.movable=MO
+		self.UP_DOWN=UD
 		self.direct=0
 		self.speed=.7
+		self.ud_time=3
 		self.turn=TU
-		if not self.movable:
-			self.collider=None
-			self.pgnd=Entity(model='cube',scale=(.6,1,.6),position=(self.x,self.y-.48,self.z),collider=b,visible=False)
+		self.pgnd=Entity(model='cube',scale=(.6,1,.6),position=(self.x,self.y-.48,self.z),collider=b,visible=False)
+		self.tgt=cc.playerInstance[0]
+	def up_down_phase(self):
+		if self.ud_time > 0:
+			self.ud_time-=time.dt
+			if self.ud_time <= 0:
+				self.ud_time=3
+				if self.y == self.spawn_pos[1]:
+					self.animate_y(self.y-1,duration=.3)
+					invoke(lambda:setattr(self.pgnd,'collider',None),delay=.2)
+				else:
+					self.animate_y(self.y+1,duration=.3)
+					invoke(lambda:setattr(self.pgnd,'collider',b),delay=.2)
 	def update(self):
+		if self.UP_DOWN:
+			self.up_down_phase()
 		if self.movable:
+			if self.pgnd.intersects(self.tgt) and not self.tgt.walking:
+				self.tgt.x=self.pgnd.x
+				self.tgt.z=self.pgnd.z
+			self.pgnd.x=self.x
+			self.pgnd.z=self.z
 			platform_move(self)
 
 class StoneTile(Entity):
@@ -132,6 +151,21 @@ class TreeScene(Entity):
 class InvWall(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model='cube',position=pos,scale=sca,visible=False,collider=b)
+
+class Plank(Entity):
+	def __init__(self,pos,typ):
+		super().__init__(model=omf+'plank/break_w1.obj',texture=omf+'plank/plank.png',scale=(.5,.4,.5),position=pos,collider=b,rotation_y=90)
+		if typ == 0:
+			self.is_touched=False
+			self.color=color.brown
+			self.brk_frame=0
+		else:
+			self.color=color.gray
+		self.typ=typ
+		self.texture_scale=(2,2)
+	def update(self):
+		if self.typ == 0 and self.is_touched:
+			self.brk_frame+=time.dt
 
 ## important objects
 class IndoorZone(Entity): ## disable rain
@@ -263,14 +297,15 @@ class EndRoom(Entity): ## finish level
 		super().__init__(model=eR+'.obj',texture=eR+'.tga',scale=.013,rotation_y=-90,position=pos,double_sided=True,color=c,unlit=False)
 		self.door=Entity(model=omf+'door1/0.ply',texture=omf+'door1/door.tga',position=(self.x-.3,self.y+.4,self.z+.6),scale=.001,rotation=(90,0,0),collider=b,unlit=False)
 		self.door1=Entity(model=omf+'door/0.ply',texture=omf+'door/door.tga',position=(self.x-.3,self.y+.5,self.z+.6),scale=.001,rotation_x=90,collider=b,unlit=False)
-		self.rgnd0=Entity(model='cube',scale=(5,.5,3),position=(self.x,self.y-1.37,self.z+1.6),collider=b,visible=False)
+		self.rgnd0=Entity(model='cube',scale=(5,.5,3),position=(self.x,self.y-1.37,self.z+1.8),collider=b,visible=False)
 		self.rgnd1=Entity(model='cube',scale=(2,.5,1.5),position=(self.x-.5,self.y-.9,self.z+2.8),collider=b,visible=False)
 		self.rcln=Entity(model='cube',scale=(5,.5,3),position=(self.x,self.y+.6,self.z+1.6),collider=b,visible=False)
-		self.rwall1=Entity(model='cube',scale=(3,3,4),position=(self.x-2.5,self.y,self.z+1.6),collider=b,visible=False)
-		self.rwall2=Entity(model='cube',scale=(3,3,4),position=(self.x+1.9,self.y,self.z+1.6),collider=b,visible=False)
+		self.rwall1=Entity(model='cube',scale=(3,3,5),position=(self.x-2.5,self.y,self.z+2.8),collider=b,visible=False)
+		self.rwall2=Entity(model='cube',scale=(3,3,5),position=(self.x+1.9,self.y,self.z+2.8),collider=b,visible=False)
 		self.rfront=Entity(model='cube',scale=(5,3,1),position=(self.x,self.y,self.z+4),collider=b,visible=False)
+		self.curt=Entity(model='plane',position=(self.x,self.y-1.5,self.z+4),color=color.black,scale=5)
 		IndoorZone(pos=(self.x+.1,self.y,self.z+1.8),DI=3)
-		LevelFinish(p=(self.x-.1,self.y-.8,self.z+2.7),V=False)
+		LevelFinish(p=(self.x-.3,self.y-.75,self.z+2.7),V=False)
 		self.door_open=False
 		self.door_move=False
 		self.door_time=.7
@@ -324,3 +359,9 @@ class GemPlatform(Entity): ## gem platform
 class LevelFinish(Entity): ## finish level
 	def __init__(self,p,V):
 		super().__init__(model=omf+'podium/gear.obj',collider=b,texture='gear_diffuse.png',scale=(.6,.8,.6),position=p,visible=V)
+		self.prt_snd=Audio(sound.snd_portl,volume=0,loop=True)
+	def update(self):
+		if cc.is_nearby_pc(n=self,DX=4,DY=3):
+			self.prt_snd.volume=1
+		else:
+			self.prt_snd.volume=0

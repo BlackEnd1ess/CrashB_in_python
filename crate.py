@@ -102,33 +102,35 @@ class QuestionMark(Entity):
 			item.WumpaFruit(pos=(self.x+random.uniform(-.1,.1),self.y,self.z+random.uniform(-.1,.1)))
 		destroy_event(self)
 
-class Bounce(Entity):
+class Bounce(Entity):###fixx error
 	def __init__(self,pos,pse):
 		_in='bounce'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		self.is_bounc=False
+		self.lf_time=5
+		self.b_cnt=0
 		self.vnum=3
-		self.ltime=0
-		self._empty=5
 	def empty_destroy(self):
 		destroy_event(self)
-	def destroy(self):
-		if self._empty <= 0:
-			self.empty_destroy()
-			return
-		self.ltime+=1
+	def bnc_event(self):
 		cc.wumpa_count(2)
 		animation.crate_bounce(self)
 		b_snd=Audio(sn.snd_bounc)
-		b_snd.pitch=1+self.ltime/10
-		self._empty=5
-		if self.ltime > 4:
-			self.hide()
-			destroy_event(self)
+		b_snd.pitch=1+self.lf_time/10
+		self.b_cnt+=1
+		if self.b_cnt > 4 or self.lf_time <= 0:
+			self.empty_destroy()
 			return
+		self.lf_time=5
+	def destroy(self):
+		if self.lf_time > 0 and self.b_cnt < 5:
+			self.bnc_event()
+			return
+		self.empty_destroy()
 	def update(self):
-		if self.ltime > 0 and self._empty > 0:
-			self._empty-=time.dt
+		if self.lf_time > 0 and self.b_cnt > 0:
+			self.lf_time-=time.dt
 
 class ExtraLife(Entity):
 	def __init__(self,pos,pse):
@@ -147,12 +149,12 @@ class AkuAku(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=5
 	def destroy(self):
-		if status.aku_hit < 3:
-			status.aku_hit+=1
-		if not status.aku_exist and not status.preload_phase:
-			npc.AkuAkuMask(pos=(self.x,self.y,self.z))
-		Audio(sn.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
-		destroy_event(self)
+		if not status.preload_phase:
+			if status.aku_hit < 3:
+				status.aku_hit+=1
+			if not status.aku_exist:
+				npc.AkuAkuMask(pos=(self.x,self.y,self.z))
+			destroy_event(self)
 
 class Checkpoint(Entity):
 	def __init__(self,pos,pse):
@@ -163,10 +165,11 @@ class Checkpoint(Entity):
 	def destroy(self):
 		status.checkpoint=(self.x,self.y+1,self.z)
 		CheckpointAnimation(p=self.position)
+		Audio(sn.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
 		sn.snd_checkp()
 		destroy_event(self)
 		_core.collect_reset()
-		if not status.preload_phase:
+		if not status.preload_phase and self.y > -200:
 			status.NPC_RESET.clear()
 
 class SpringWood(Entity):
@@ -175,6 +178,9 @@ class SpringWood(Entity):
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=7
+	def anim_act(self):
+		animation.spring_animation(self)
+		Audio(sound.snd_sprin)
 	def destroy(self):
 		item.WumpaFruit(pos=self.position)
 		destroy_event(self)
@@ -186,6 +192,9 @@ class SpringIron(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.p_snd=False
 		self.vnum=8
+	def anim_act(self):
+		animation.spring_animation(self)
+		Audio(sound.snd_sprin)
 	def destroy(self):
 		block_destroy(self)
 

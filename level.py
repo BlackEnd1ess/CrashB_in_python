@@ -21,10 +21,11 @@ def free_level():
 	sound.LevelMusic(T=status.level_index)
 	status.loading=False
 	cc.level_ready=True
+	status.fails=0
 
 ##levels
 def developer_level():
-	status.level_index=6
+	status.level_index=4
 	status.day_mode='day'
 	status.loading=True
 	o.StartRoom(pos=(0,0,-16.2))##start
@@ -49,16 +50,20 @@ def developer_level():
 	invoke(free_level,delay=1)
 
 def test():
-	status.level_index=1
+	status.level_index=4
+	status.day_mode='day'
 	status.loading=True
 	o.StartRoom(pos=(-.5,0,-8.2))##start
+	o.EndRoom(pos=(0,1.5,14),c=color.rgb(80,100,80))##end
 	cc.preload_items()
 	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='grass',co=color.rgb(130,150,130))
 	o.CrateScore(pos=(-1,.25,-1))
-	#mt.crate_row(ID=1,POS=(0,0,-1),CNT=5,WAY=2)
+	o.Plank(pos=(-1,.5,-2),typ=0)
+	o.Plank(pos=(-1,.5,-3),typ=1)
+	mt.crate_row(ID=3,POS=(0,0,-1),CNT=5,WAY=0)
 	#mt.crate_row(ID=1,POS=(1,0,-1),CNT=5,WAY=2)
 	#mt.crate_row(ID=1,POS=(2,0,-1),CNT=5,WAY=2)
-	o.BigPlatform(p=(0,1,4),s=(1,0,1))
+	#o.BigPlatform(p=(0,1,4),s=(1,0,1))
 	#mt.crate_row(ID=2,POS=(-1,0,-2),CNT=4,WAY=0)
 	invoke(free_level,delay=1)
 
@@ -140,10 +145,10 @@ def level1():##wood
 	o.BigPlatform(p=(1.8,1,-2),s=(2,0,2))
 	o.BigPlatform(p=(1.8,1.01,8),s=(2,0,2))
 	o.BigPlatform(p=(0,1,14),s=(6,0,6))
-	o.MossPlatform(p=(0,1,-44),MO=False,TU=0)
-	o.MossPlatform(p=(0,1,-42),MO=True,TU=0)
-	o.MossPlatform(p=(0,1,-40),MO=False,TU=0)
-	o.MossPlatform(p=(-2,1,-7),MO=False,TU=0)
+	o.MossPlatform(p=(0,1,-44),MO=False,TU=0,UD=False)
+	o.MossPlatform(p=(0,1,-42),MO=True,TU=0,UD=False)
+	o.MossPlatform(p=(0,1,-40),MO=False,TU=0,UD=False)
+	o.MossPlatform(p=(-2,1,-7),MO=False,TU=0,UD=False)
 	#NPC
 	N.spawn(mID=0,pos=(0,1.1,-52),mDirec=0,mTurn=0)
 	N.spawn(mID=0,pos=(0,1.1,-38),mDirec=0,mTurn=0)

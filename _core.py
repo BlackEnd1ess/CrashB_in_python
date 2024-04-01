@@ -1,4 +1,4 @@
-import ui,crate,item,status,animation,level,sound,npc,settings
+import ui,crate,item,status,level,sound,npc,settings
 from math import atan2,sqrt
 from ursina import *
 
@@ -18,7 +18,7 @@ def set_val(d):
 	for _v in ['block_input','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured']:
 		setattr(d,_v,False)
 	d.lpos=None
-	d.move_speed=1.8
+	d.move_speed=2
 	playerInstance.append(d)
 def set_jump_type(d,t):
 	d.jumping=True
@@ -50,6 +50,9 @@ def get_damage(c):
 def p_death_event(d):
 	ui.BlackScreen()
 	status.crate_count-=status.crate_to_sv
+	status.fails+=1
+	if status.is_death_route:
+		status.is_death_route=False
 	if status.bonus_round:
 		status.wumpa_bonus=0
 		status.crate_bonus=0
@@ -57,7 +60,12 @@ def p_death_event(d):
 		status.bonus_round=False
 	else:
 		status.extra_lives-=1
-	status.aku_hit=0
+	if status.fails < 3:
+		status.aku_hit=0
+	else:
+		status.aku_hit=1
+		if not status.aku_exist:
+			npc.AkuAkuMask(pos=(d.x,d.y,d.z))
 	reset_crates()
 	reset_wumpas()
 	reset_npc()
@@ -89,9 +97,10 @@ def collect_reset():
 	status.C_RESET.clear()
 	status.W_RESET.clear()
 	status.crate_to_sv=0
+	status.fails=0
 	check_cstack()
 def c_subtract(cY):
-	if cY < -10:
+	if cY < -20:
 		status.crates_in_bonus-=1
 	status.crates_in_level-=1
 def reset_crates():
@@ -113,7 +122,8 @@ def reset_crates():
 		else:
 			c_subtract(cY=cv.y)
 			C.place_crate(p=cv.spawn_pos,ID=cv.vnum)
-	collect_reset()
+	status.C_RESET.clear()
+	status.crate_to_sv=0
 def reset_wumpas():
 	for wu in status.W_RESET[:]:
 		wu.destroy()
@@ -147,13 +157,27 @@ def objectLOD():
 				else:
 					WUM.world_visible=False
 		for vO in scene.entities[:]:
-			if str(vO) == 'tree2_d':
-				if vO.z < playerInstance[0].z-2:
+			nL=str(vO)
+			jDA=status.LOD_distance(m=vO,c=playerInstance[0])
+			if nL in status.OBJ_LIST and not nL in ['water_hit','falling_zone']:
+				if jDA:
 					vO.hide()
 					vO.parent=None
 				else:
 					vO.show()
 					vO.parent=scene
+			if nL in npc.npc_list:
+				if jDA:
+					vO.world_visible=False
+				else:
+					vO.world_visible=True
+			if is_crate(vO) and not vO.vnum in [9,10]:
+				if jDA:
+					vO.texture=None
+					vO.hide()
+				else:
+					vO.texture=vO.org_tex
+					vO.show()
 
 ## collisions
 def ceiling(c,e):
@@ -179,21 +203,13 @@ def check_ground(c):
 				else:
 					crate_action(c=c,e=hte)
 				return
-			if hw in ['water_hit','falling_zone']:
-				death_zone(c=c,e=hte)
-				return
 			if hw in npc.npc_list:
 				jump_enemy(c=c,e=hte)
 				return
-			if hw == 'level_finish':
-				jump_levelfin(c=c,e=hte)
+			if hw in status.OBJ_LIST:
+				object_interact(c=c,e=hte)
 				return
-			if hw == 'bonus_platform' and not status.bonus_solved or hw == 'gem_platform':
-				freeze_by_platform(c=c,e=hte)
-			else:
-				if hw == 'moss_platform' and hte.movable:
-					platform_sync(c=c,e=hte)
-				landing(c=c,e=hit_info.world_point.y)
+			landing(c=c,e=hit_info.world_point.y)
 	else:
 		c.landed=False
 def landing(c,e):
@@ -221,10 +237,10 @@ def check_wall(c):
 			return
 		if wE in item.item_list:
 			if status.c_delay <= 0:
-				status.c_delay=.1/2.5
+				status.c_delay=.1/6
 				wE.collect()
 			return
-		J=time.dt*c.move_speed
+		J=time.dt*c.move_speed*1.1
 		vecL={Vec3(1,0,0):lambda:setattr(c,'x',c.x+J),
 			Vec3(-1,0,0):lambda:setattr(c,'x',c.x-J),
 			Vec3(0,0,1):lambda:setattr(c,'z',c.z+J),
@@ -233,10 +249,6 @@ def check_wall(c):
 		if wH in vecL and not wH == Vec3(0,1,0):
 			if not wE in item.item_list:
 				vecL[wH]()
-def platform_sync(c,e):
-	if e.movable:
-		c.x=e.x
-		c.z=e.z
 def platform_floating(m,c):
 	m.air_time+=time.dt
 	m.y+=time.dt
@@ -269,10 +281,18 @@ def death_zone(c,e):
 		status.is_dying=True
 		Audio(sound.snd_woah,pitch=.8)
 		c.collider=None
-def freeze_by_platform(c,e):
-	if not c.freezed:
-		c.freezed=True
-		e.catch_player=True
+def object_interact(c,e):
+	iO=str(e)
+	if iO in ['water_hit','falling_zone']:
+		death_zone(c=c,e=e)
+		return
+	if iO == 'bonus_platform' and not status.bonus_solved or iO == 'gem_platform':
+		if not c.freezed:
+			c.freezed=True
+			e.catch_player=True
+		return
+	if iO == 'level_finish':
+		jump_levelfin(c=c,e=e)
 
 ## interface,collectables
 def wumpa_count(n):
@@ -299,6 +319,7 @@ def crate_set_val(cR,Cpos,Cpse):
 	cR.collider='box'
 	cR.poly=Cpse
 	cR.scale=.16
+	cR.org_tex=cR.texture
 def is_crate(e):
 	cck=[C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
 		C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,
@@ -308,8 +329,7 @@ def is_crate(e):
 def crate_action(c,e):
 	if e.vnum in [7,8]:
 		set_jump_type(d=c,t=2)
-		animation.spring_animation(e)
-		Audio(sound.snd_sprin)
+		e.anim_act()
 	else:
 		set_jump_type(d=c,t=0)
 		e.destroy()
@@ -365,6 +385,7 @@ def bonus_reward(p):
 			p.count_time=0
 			if status.wumpa_bonus > 0:
 				bonus_give_wumpa()
+				ui.wumpa_count_anim()
 			if status.crate_bonus > 0:
 				bonus_give_crate()
 			if status.lives_bonus > 0:
@@ -406,22 +427,24 @@ def set_val_npc(m):
 	else:
 		m.can_move=True
 	m.spawn_point=m.position
+	m.world_visible=False
 	m.is_hitten=False
 	m.is_purge=False
 	m.unlit=False
 	m.anim_frame=0
 def npc_action(m):
-	if m.is_purge:
-		npc_purge(m)
-	if not m.is_hitten:
-		if str(m) == 'hedgehog' and m.defend_mode:
-			animation.hedge_defend(m)
+	if m.world_visible:
+		m.show()
+		if m.is_purge:
+			npc_purge(m)
+			return
+		if not m.is_hitten:
+			npc.walk_frames(m)
+			npc_walk(m)
 		else:
-			animation.npc_walking(m)
-		npc_walk(m)
-	else:
-		#m.collider=None
-		fly_away(m)
+			fly_away(m)
+		return
+	m.hide()
 def npc_purge(m):
 	u=60
 	m.can_move=False

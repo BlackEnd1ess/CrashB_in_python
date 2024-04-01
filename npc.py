@@ -22,6 +22,9 @@ def spawn(pos,mID,mDirec,mTurn):
 			11:lambda:Vulture(p=pos,d=mDirec,t=mTurn)}
 	npc_list[mID]()
 
+def walk_frames(m):
+	an.npc_walking(m)
+
 class Amadillo(Entity):
 	def __init__(self,p,d,t):
 		nN='amadillo'
@@ -91,14 +94,17 @@ class Hedgehog(Entity):
 		self.def_frame=0
 		self.vnum=4
 		self.turn=t
+	def anim_act(self):
+		an.hedge_defend(self)
 	def update(self):
 		if status.pause:
 			return
+		cc.npc_action(self)
 		if cc.is_nearby_pc(self,DX=2,DY=2):
 			self.defend_mode=True
+			self.anim_act()
 		else:
 			self.defend_mode=False
-		cc.npc_action(self)
 
 class Seal(Entity):
 	def __init__(self,p,d,t):
@@ -278,6 +284,7 @@ class AkuAkuMask(Entity):
 		super().__init__(model=self.tpa+'aku.ply',texture=self.tpa+'aku.tga',scale=0.00075,rotation_x=-90,position=pos,unlit=False)
 		self.aku_model={0:self.tpa+'aku.ply',1:self.tpa+'aku.ply',2:self.tpa+'aku2.ply',3:self.tpa+'aku2.ply'}
 		self.aku_texture={0:self.tpa+'aku.tga',1:self.tpa+'aku.tga',2:self.tpa+'aku2.tga',3:self.tpa+'aku2.tga'}
+		Audio(sound.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
 		self.aku_direct=0
 		self.target=_core.playerInstance[0]
 		status.aku_exist=True
@@ -295,13 +302,17 @@ class AkuAkuMask(Entity):
 			self.y-=ttf
 			if self.y < self.target.aku_y-.1:
 				self.aku_direct=1
+	def check_dist_player(self):
+		apd=distance(self,self.target)
+		if apd > 3:
+			self.position=self.target.position
 	def update(self):
-		if status.pause:
-			return
-		self.model=self.aku_model[status.aku_hit]
-		self.texture=self.aku_texture[status.aku_hit]
-		self.floating()
-		self.follow_player()
-		if status.aku_hit < 1:
-			status.aku_exist=False
-			self.disable()
+		if not status.pause:
+			self.check_dist_player()
+			self.model=self.aku_model[status.aku_hit]
+			self.texture=self.aku_texture[status.aku_hit]
+			self.floating()
+			self.follow_player()
+			if status.aku_hit < 1:
+				status.aku_exist=False
+				self.disable()

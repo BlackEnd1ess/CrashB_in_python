@@ -9,14 +9,14 @@ gr=color.light_gray
 
 ## player animation
 def idle(d):
-	d.idle_anim+=time.dt*14
+	d.idle_anim+=time.dt*15
 	if d.idle_anim > 10.75:
 		d.idle_anim=0
 	d.texture=af+'idle/crash.tga'
 	d.model=af+'idle/'+str(int(d.idle_anim))+'.ply'
 
 def run(d):
-	d.run_anim+=time.dt*t
+	d.run_anim+=time.dt*20
 	if d.run_anim > 10.75:
 		d.run_anim=0
 	d.texture=af+'run/crash.tga'
@@ -30,7 +30,7 @@ def jup(d):
 	d.model=af+'_jup/'+str(int(d.jump_anim))+'.ply'
 
 def spin(d):
-	d.spin_anim+=time.dt*24
+	d.spin_anim+=time.dt*25
 	if d.spin_anim > 11.75:
 		d.spin_anim=0
 		d.is_attack=False
@@ -70,12 +70,28 @@ def player_death(d):
 	d.model=af+'death/'+str(int(d.death_anim))+'.ply'
 
 ## crate animation
+bT=20
 def crate_bounce(c):
-	c.hide()
-	P=.45
-	anim=FrameAnimation3d(cf+'bnc/bnc_',texture=c.texture,fps=40,scale=c.scale,position=c.position,color=gr)
-	invoke(anim.disable,delay=P)
-	invoke(c.show,delay=P-.017)
+	if not c.is_bounc and c.b_cnt < 5:
+		c.is_bounc=True
+		c.color=color.light_gray
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc0.obj'),delay=0)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc1.obj'),delay=1/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc2.obj'),delay=2/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc3.obj'),delay=3/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc4.obj'),delay=4/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc5.obj'),delay=5/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc6.obj'),delay=6/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc7.obj'),delay=7/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc8.obj'),delay=8/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc9.obj'),delay=9/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc10.obj'),delay=10/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc11.obj'),delay=11/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc12.obj'),delay=12/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc13.obj'),delay=13/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc14.obj'),delay=14/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc0.obj'),delay=15/bT)
+		invoke(lambda:setattr(c,'is_bounc',False),delay=15/bT)
 
 def spring_animation(c):
 	c.hide()
@@ -103,6 +119,10 @@ class CrateBreak(Entity):
 				self.disable()
 				return
 			self.model=cf+'break/'+str(int(self.frame_break))+'.ply'
+
+class WarpVortex(FrameAnimation3d):
+	def __init__(self,pos):
+		super().__init__('res/objects/warp_vortex/vortex.obj',color=color.yellow,scale=.1,position=pos,fps=30,loop=True)
 
 ## npc animation
 def npc_walking(m):

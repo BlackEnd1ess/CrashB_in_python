@@ -1,5 +1,8 @@
 from ursina import *
 
+#this objects interacts with player
+OBJ_LIST=['water_hit','falling_zone','level_finish','bonus_platform','gem_platform','moss_platform','tree2_d','corridor','tree_scene','bush']
+
 level_name=['Warp Room',
 			'LEVEL 1 - TURTLE WOODS',
 			'LEVEL 2 - WAY TO NOWHERE',
@@ -30,12 +33,15 @@ level_index=0
 crates_in_level=0
 crates_in_bonus=0
 
-collected_crystals=0
+
 player_protect=0
 crate_to_sv=0
+
 crate_count=0
 extra_lives=4
 wumpa_fruits=0
+
+collected_crystals=0
 color_gems=0
 clear_gems=0
 
@@ -47,9 +53,11 @@ show_wumpas=0
 show_crates=0
 show_lives=0
 show_gems=0
+
 c_delay=0
 d_delay=0
 aku_hit=0
+fails=0
 
 level_crystal=False
 level_col_gem=False
@@ -58,14 +66,18 @@ level_cle_gem=False
 LV_CLEAR_PROCESS=False
 is_death_route=False
 preload_phase=False
+
 level_solved=False
 bonus_solved=False
 bonus_round=False
+
 LEVEL_CLEAN=False
 first_crate=True
+
 aku_exist=False
 is_dying=False
 c_indoor=True
+
 loading=False
 pause=False
 
@@ -83,5 +95,9 @@ def p_idle(d):
 	return False
 def gproc():
 	if loading or pause:
+		return True
+	return False
+def LOD_distance(m,c):
+	if m.z < c.z-3 or m.z > c.z+32:
 		return True
 	return False

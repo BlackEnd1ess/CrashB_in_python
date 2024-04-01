@@ -1,7 +1,7 @@
 import status,settings,_core
 from ursina import *
 
-SKY_COL={'day':color.cyan,
+SKY_COL={'day':color.rgb(200,230,255),
 		'evening':color.rgb(255,110,90),
 		'night':color.rgb(0,0,85),
 		'dark':color.black,
@@ -9,7 +9,7 @@ SKY_COL={'day':color.cyan,
 		'snow':color.rgb(230,150,255),
 		'woods':color.rgb(70,120,110)}
 
-FOG_COL={'day':color.white,
+FOG_COL={'day':color.rgb(120,140,140),
 		'evening':color.rgb(0,0,0),
 		'night':color.rgb(0,0,0),
 		'dark':color.rgb(0,0,0),
@@ -17,7 +17,7 @@ FOG_COL={'day':color.white,
 		'snow':color.white,
 		'woods':color.rgb(0,70,70)}
 
-AMB_COL={'day':color.rgb(0,0,0),
+AMB_COL={'day':color.rgb(180,180,180),
 		'evening':color.rgb(0,0,0),
 		'night':color.rgb(0,0,0),
 		'dark':color.rgb(0,0,0),

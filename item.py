@@ -27,9 +27,11 @@ class WumpaFruit(Entity):
 	def update(self):
 		if not status.gproc():
 			if self.world_visible:
+				self.texture=self.w_tex
 				self.show()
 				self.rotation_y-=time.dt*200
 				return
+			self.texture=None
 			self.hide()
 
 class ExtraLive(Entity):

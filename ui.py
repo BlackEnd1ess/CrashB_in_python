@@ -12,12 +12,17 @@ def text_blink(M,t):
 			t.color=M.font_color
 		M.blink_time=.3
 
+def wumpa_count_anim():
+	wmA=Entity(model='quad',texture=_icn+'wumpa_fruits/w0.png',scale=.075,parent=camera.ui,position=(-.2,-.4,-.1))
+	wmA.animate_position((-1.2,1.3,-.1),duration=.3)
+	invoke(wmA.disable,delay=.3)
+
 ## Main Counter ##
 class WumpaCounter(Entity):
 	def __init__(self):
 		self.pa='res/ui/wumpa_font/'
-		super().__init__(model='quad',texture=_icn+'wumpa_fruits/w0.png',parent=camera.ui,position=(-0.75,0.43,0),scale=(0.07,0.08,0),visible=False,texture_position=(0,0))
-		self.digit_0=Entity(model='quad',texture=self.pa+'0.png',parent=camera.ui,position=(self.x+0.075,self.y),scale=.06,visible=False)
+		super().__init__(model='quad',texture=_icn+'wumpa_fruits/w0.png',parent=camera.ui,position=(-.75,0.43,0),scale=(.07,.08,0),visible=False,texture_position=(0,0))
+		self.digit_0=Entity(model='quad',texture=self.pa+'0.png',parent=camera.ui,position=(self.x+.075,self.y),scale=.06,visible=False)
 		self.digit_1=Entity(model='quad',texture=self.pa+'0.png',parent=camera.ui,position=(self.digit_0.x+.06,self.digit_0.y),scale=.06,visible=False)
 		self.w_animation=0
 		WumpaBonus()
@@ -82,8 +87,8 @@ class LiveCounter(Entity):
 ## Bonus Counter ##
 class WumpaBonus(Entity):
 	def __init__(self):
-		super().__init__(model='quad',texture=_icn+'wumpa_fruits/w0.png',parent=camera.ui,position=(-0.2,-0.4,0),scale=(0.05,0.06,0),visible=False)
-		self.w_text=Text(text=None,font=_fnt,x=self.x+0.04,y=self.y+0.025,scale=2,color=color.rgb(175,235,30),parent=camera.ui,visible=False)
+		super().__init__(model='quad',texture=_icn+'wumpa_fruits/w0.png',parent=camera.ui,position=(-.2,-.4,0),scale=(.05,.06,0),visible=False)
+		self.w_text=Text(text=None,font=_fnt,x=self.x+.04,y=self.y+.025,scale=2,color=color.rgb(175,235,30),parent=camera.ui,visible=False)
 		self.w_animation=0
 	def update(self):
 		if status.bonus_round or status.bonus_solved and status.wumpa_bonus > 0:

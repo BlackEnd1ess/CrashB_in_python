@@ -33,6 +33,7 @@ def bonus2():
 
 ## gem route
 def gem_route1():
+	o.FallingZone(pos=(200,-4,0),s=(40,1,32))
 	MT.crate_row(ID=0,POS=(200,-2,U),WAY=0,CNT=7)
 	MT.crate_row(ID=0,POS=(203,-1,U),WAY=0,CNT=7)
 	c.place_crate(ID=8,p=(206,0,U))
