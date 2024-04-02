@@ -24,6 +24,9 @@ def bonus1():
 	MT.crate_wall(ID=1,POS=(1,-36.66,U),CNT=3)
 	MT.crate_wall(ID=2,POS=(6,-36.66,U),CNT=2)
 	c.place_crate(ID=4,p=(9,-36.66,U))
+	MT.wumpa_row(POS=(9,-36,U),CNT=4,WAY=2)
+	MT.wumpa_row(POS=(9.4,-36.6,U),CNT=4,WAY=0)
+	MT.wumpa_row(POS=(1.6,-36,U),CNT=4,WAY=0)
 	#for bc1 in range(20):
 	#	c.place_crate(ID=3,p=(0+bc1/3.1,-25.5,-3))
 	#	c.place_crate(ID=1,p=(0+bc1/3.1,-24,-3))

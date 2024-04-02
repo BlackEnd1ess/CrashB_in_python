@@ -70,8 +70,8 @@ def player_death(d):
 	d.model=af+'death/'+str(int(d.death_anim))+'.ply'
 
 ## crate animation
-bT=20
-def crate_bounce(c):
+bT=30
+def bounce_animation(c):
 	if not c.is_bounc and c.b_cnt < 5:
 		c.is_bounc=True
 		c.color=color.light_gray

@@ -136,6 +136,12 @@ class LiveBonus(Entity):
 			return
 
 
+## Game Over Screen
+class GameOverScreen(Entity):## call event?
+	def __init__(self):
+		super().__init__(model='quad',parent=camera.ui,scale=(16,10),color=color.black,z=-.1)
+		self.game_o_text=Text(text='GAME OVER!',font=_fnt,color=color.orange,scale=4,parent=camera.ui,position=(.5,.5,-.1))
+
 ## Loading Screen
 class LoadingScreen(Entity):
 	def __init__(self):
@@ -182,20 +188,32 @@ class BlackScreen(Entity):
 class BonusText(Entity):
 	def __init__(self):
 		super().__init__()
-		self.bonus_text=Text(text=None,font=_fnt,position=(-0.2,0.4),scale=5,color=color.azure,parent=camera.ui)
-		self.bonus_t='BONUS!'
-		self.seq_time=0
+		self.bn_text=Text(text='',font=_fnt,position=(-0.2,0.4),scale=5,color=color.azure,parent=camera.ui)
+		self.letters='BONUS!'
+		self.ch_seq=0
+		self.t_delay=.5
+	def display(self):
+		self.bn_text.text=self.letters[:self.ch_seq]
+		self.bn_text.visible=True
+	def text_ch(self):
+		self.bn_text.visible=False
+		if self.ch_seq == 6:
+			self.ch_seq=0
+		self.ch_seq+=1
 	def update(self):
-		if status.bonus_round:
-			self.seq_time+=time.dt*1.5
-			bt=self.bonus_t[:int(self.seq_time)]
-			self.bonus_text.text=str(bt)
-			if self.seq_time > 6.98:
-				self.seq_time=0
-		else:
-			self.bonus_text.disable()
+		if not status.bonus_round:
+			self.bn_text.hide()
+			self.parent=None
 			self.disable()
 			return
+		if self.t_delay > 0:
+			self.t_delay-=time.dt
+			if self.t_delay <= 0:
+				self.t_delay=.5
+				if not self.bn_text.visible:
+					self.display()
+				else:
+					self.text_ch()
 
 K=40
 O=140

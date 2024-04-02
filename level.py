@@ -153,6 +153,18 @@ def level1():##wood
 	N.spawn(mID=0,pos=(0,1.1,-52),mDirec=0,mTurn=0)
 	N.spawn(mID=0,pos=(0,1.1,-38),mDirec=0,mTurn=0)
 	N.spawn(mID=1,pos=(0,1.1,-15),mDirec=0,mTurn=0)
+	#wumpa fruits
+	mt.wumpa_plane(POS=(-.5,1.3,-57),CNT=4)
+	mt.wumpa_plane(POS=(-.7,1.3,-50),CNT=4)
+	mt.wumpa_row(POS=(0,1.3,-44),CNT=4,WAY=2)
+	mt.wumpa_row(POS=(0,1.3,-40),CNT=4,WAY=2)
+	mt.wumpa_plane(POS=(-.5,1.3,-36.5),CNT=4)
+	mt.wumpa_row(POS=(0,1.3,-31),CNT=8,WAY=1)
+	mt.wumpa_row(POS=(-2,1.3,-27),CNT=8,WAY=1)
+	mt.wumpa_row(POS=(1,1.3,-22),CNT=8,WAY=1)
+	mt.wumpa_plane(POS=(-.5,1.3,-9),CNT=3)
+	mt.wumpa_plane(POS=(-.5,1.3,-6),CNT=3)
+	mt.wumpa_plane(POS=(1.3,1.3,-1.5),CNT=3)
 	#crates
 	mt.crate_block(ID=2,POS=(-1.8,1.1,3.3),CNT=2)
 	mt.crate_block(ID=1,POS=(-1.5,1.1,-2.5),CNT=2)

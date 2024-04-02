@@ -115,9 +115,8 @@ class Bounce(Entity):###fixx error
 		destroy_event(self)
 	def bnc_event(self):
 		cc.wumpa_count(2)
-		animation.crate_bounce(self)
-		b_snd=Audio(sn.snd_bounc)
-		b_snd.pitch=1+self.lf_time/10
+		animation.bounce_animation(self)
+		Audio(sn.snd_bounc,pitch=1+self.b_cnt/10)
 		self.b_cnt+=1
 		if self.b_cnt > 4 or self.lf_time <= 0:
 			self.empty_destroy()

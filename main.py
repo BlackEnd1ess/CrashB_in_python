@@ -4,6 +4,6 @@ from ursina import *
 app=Ursina(title='Crash Bandicoot',icon='res/cb.ico')
 def start_game():
 	settings.load()
-	level.test()
+	level.level1()
 start_game()
 app.run()

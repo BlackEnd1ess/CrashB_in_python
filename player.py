@@ -43,7 +43,7 @@ class CrashB(Entity):
 				return
 			status.pause=False
 		if key == 'b':
-			EditorCamera()
+			print(self.position)
 		if key == 'u':
 			self.move_speed=5
 	def move(self):
