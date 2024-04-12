@@ -16,12 +16,12 @@ def free_level():
 		TDHR=1
 	else:
 		TDHR=0
+	status.fails=0
 	env.env_switch(env=status.day_mode,wth=WEATHER[status.level_index],tdr=TDHR)
 	cc.check_cstack()
 	sound.LevelMusic(T=status.level_index)
 	status.loading=False
 	cc.level_ready=True
-	status.fails=0
 
 ##levels
 def developer_level():
@@ -58,8 +58,6 @@ def test():
 	cc.preload_items()
 	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='grass',co=color.rgb(130,150,130))
 	o.CrateScore(pos=(-1,.25,-1))
-	o.Plank(pos=(-1,.5,-2),typ=0)
-	o.Plank(pos=(-1,.5,-3),typ=1)
 	mt.crate_row(ID=3,POS=(0,0,-1),CNT=5,WAY=0)
 	#mt.crate_row(ID=1,POS=(1,0,-1),CNT=5,WAY=2)
 	#mt.crate_row(ID=1,POS=(2,0,-1),CNT=5,WAY=2)
@@ -191,12 +189,49 @@ def level1():##wood
 	o.Corridor(pos=(0,1.09,-13))
 	o.RewardRoom(pos=(0,2.2,13),c=color.rgb(80,100,80))
 	o.EndRoom(pos=(.3,2.2,23),c=color.rgb(80,100,80))
-	invoke(free_level,delay=2)
+	invoke(free_level,delay=3)
 
 def level2():##snow
+	status.loading=True
 	status.level_index=2
 	status.day_mode='snow'
-	o.StartRoom(pos=(-.5,1,-50))
-	o.MapTerrain(MAP='map/'+str(status.level_index)+'.png',size=(12,2,96),t='res/terrain/texture/snow.png',co=color.gray)
-	o.BigPlatform(p=(0,1,-42),s=(2,0,2))
-	invoke(free_level,delay=1)
+	o.StartRoom(pos=(0,1,-64.2))
+	o.MapTerrain(MAP='map/'+str(status.level_index)+'.png',size=(32,2,128),t=None,co=color.white)
+	o.BigPlatform(p=(0,1,-60),s=(3,0,4))
+	o.BigPlatform(p=(0,1,-40),s=(3,0,2))
+	o.BigPlatform(p=(0,1,-20),s=(3,0,2))
+	o.BigPlatform(p=(0,1,0),s=(3,0,2))
+	o.BigPlatform(p=(3,1,2.5),s=(9,0,.5))
+	o.BigPlatform(p=(9,1,2.5),s=(3,0,.5))
+	#pillar
+	o.pillar_twin(p=(-.5,.9,-56),ro_y=(0,-45,0))
+	o.pillar_twin(p=(-.5,.9,-41.6),ro_y=(0,-45,0))
+	o.pillar_twin(p=(-.5,.9,-38),ro_y=(0,-45,0))
+	o.pillar_twin(p=(-.5,.9,-21.7),ro_y=(0,-45,0))
+	o.pillar_twin(p=(-.5,.9,-18),ro_y=(0,-45,0))
+	o.pillar_twin(p=(-.5,.9,-1.8),ro_y=(0,-45,0))
+	
+	o.Ropes(pos=(-.5,1,-56),le=55)
+	#planks
+	o.plank_bridge(pos=(0,1,-56),ro_y=0,typ=1,cnt=12,DST=.5)
+	o.plank_bridge(pos=(0,1,-48.5),ro_y=0,typ=0,cnt=10,DST=.5)
+	o.plank_bridge(pos=(0,1,-38),ro_y=0,typ=0,cnt=4,DST=.5)
+	o.plank_bridge(pos=(0,1,-36),ro_y=0,typ=1,cnt=2,DST=.5)
+	o.plank_bridge(pos=(0,1,-34),ro_y=0,typ=1,cnt=2,DST=.5)
+	o.plank_bridge(pos=(0,1,-32),ro_y=0,typ=1,cnt=2,DST=.5)
+	o.plank_bridge(pos=(0,1,-30),ro_y=0,typ=0,cnt=3,DST=.5)
+	o.plank_bridge(pos=(0,1,-28),ro_y=0,typ=0,cnt=2,DST=.5)
+	o.plank_bridge(pos=(0,1,-26),ro_y=0,typ=0,cnt=6,DST=.5)
+	o.plank_bridge(pos=(0,1,-18),ro_y=0,typ=1,cnt=2,DST=.5)
+	o.plank_bridge(pos=(0,1,-16),ro_y=0,typ=1,cnt=1,DST=.5)
+	o.plank_bridge(pos=(0,1,-14),ro_y=0,typ=1,cnt=1,DST=.5)
+	o.plank_bridge(pos=(0,1,-12),ro_y=0,typ=1,cnt=1,DST=.5)
+	#o.plank_bridge(pos=(3,.2,-55),ro_y=90,typ=1,cnt=10)
+	#crates
+	h1=1.1
+	mt.crate_block(ID=1,POS=(.5,h1,-58),CNT=2)
+	c.place_crate(ID=2,p=(0,h1,-54))
+	c.place_crate(ID=2,p=(-.2,h1,-48))
+	c.place_crate(ID=6,p=(-.2,h1,-40))
+	c.place_crate(ID=1,p=(-.7,h1,-41.2))
+	invoke(free_level,delay=3)

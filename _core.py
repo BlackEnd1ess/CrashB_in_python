@@ -209,6 +209,9 @@ def check_ground(c):
 			if hw in status.OBJ_LIST:
 				object_interact(c=c,e=hte)
 				return
+			if hw == 'plank':
+				if hte.typ == 1:
+					hte.pl_touch()
 			landing(c=c,e=hit_info.world_point.y)
 	else:
 		c.landed=False

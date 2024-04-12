@@ -23,7 +23,7 @@ class CrashB(Entity):
 		if self.freezed or status.is_dying:
 			return
 		if key == 'space' and not self.block_input:
-			if not self.warped or status.p_in_air(self):
+			if not self.warped:
 				return
 			Audio(snd.snd_jump)
 			self.block_input=True

@@ -1,7 +1,8 @@
 from ursina import *
 
 #this objects interacts with player
-OBJ_LIST=['water_hit','falling_zone','level_finish','bonus_platform','gem_platform','moss_platform','tree2_d','corridor','tree_scene','bush']
+OBJ_LIST=['water_hit','falling_zone','level_finish','bonus_platform',
+		'gem_platform','moss_platform','tree2_d','corridor','tree_scene','bush']
 
 level_name=['Warp Room',
 			'LEVEL 1 - TURTLE WOODS',
@@ -32,7 +33,6 @@ level_index=0
 
 crates_in_level=0
 crates_in_bonus=0
-
 
 player_protect=0
 crate_to_sv=0

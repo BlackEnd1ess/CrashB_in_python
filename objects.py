@@ -9,14 +9,8 @@ m='mesh'
 b='box'
 st=status
 cc=_core
-
-## map objects
-
-def spawn_tree_wall(pos,cnt,d):
-	tro={0:-45,1:45}
-	for tsp in range(0,cnt):
-		Tree2D(pos=(pos[0]+random.uniform(-.2,.2),pos[1],pos[2]+tsp*2),rot=tro[d])
-
+#####################
+## object functions #
 def platform_move(d):
 	if d.direct == 0:
 		if d.turn == 0:
@@ -28,8 +22,31 @@ def platform_move(d):
 			if d.x <= d.spawn_pos[0]-1:
 				d.turn=0
 
+
+####################
+##multible objects #
+def plank_bridge(pos,typ,cnt,ro_y,DST):
+	for wP in range(0,cnt):
+		Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)
+
+def spawn_tree_wall(pos,cnt,d):
+	tro={0:-45,1:45}
+	for tsp in range(0,cnt):
+		Tree2D(pos=(pos[0]+random.uniform(-.2,.2),pos[1],pos[2]+tsp*2),rot=tro[d])
+
 def bush(pos,s,c):
 	Entity(model='quad',texture=omf+'bush/bush1.png',name='bush',position=pos,scale=s,color=c)
+
+def pillar_twin(p,ro_y):
+	Pillar(pos=(p[0],p[1],p[2]),ro=ro_y)
+	Pillar(pos=(p[0]+1.05,p[1],p[2]),ro=ro_y)
+
+####################
+## level 1 objects #
+class Tree2D(Entity):
+	def __init__(self,pos,rot):
+		tCOL=random.choice([color.green,color.orange,color.yellow])
+		super().__init__(model='quad',texture=omf+'tree/tree'+str(random.randint(1,3))+'.png',scale=3,position=pos,rotation_y=rot,color=tCOL)
 
 class MossPlatform(Entity):
 	def __init__(self,p,MO,TU,UD):
@@ -65,33 +82,6 @@ class MossPlatform(Entity):
 			self.pgnd.z=self.z
 			platform_move(self)
 
-class StoneTile(Entity):
-	def __init__(self,pos):
-		super().__init__(model=omf+'tile0/tile.obj',texture=omf+'tile0/platform_top.png',position=pos,scale=.3)
-		self.hit_b=Entity(model='cube',scale=(.7,self.scale_y,.7),position=self.position,collider=b,visible=False)
-
-class Water(Animation):
-	def __init__(self,pos,s,c,a):
-		super().__init__(omf+'water/water.gif',position=pos,scale=(s[0],s[1]),rotation_x=90,texture_scale=(s[0],s[1]),color=c,alpha=a)
-		WaterHit(p=(self.x,self.y-.1,self.z),sc=s)
-
-class WaterFlow(Entity):
-	def __init__(self,pos):
-		super().__init__(model='plane',texture=omf+'water_flow/water_f0.png',scale=(3.5,.1,96),texture_scale=(1,16),position=pos,filtering='linear')
-		self.dark_area=Entity(model='plane',color=color.black,scale=self.scale,position=(self.x,self.y-.001,self.z),alpha=.7)
-		self.static_y=self.y
-		self.s_texture=0
-		#self.tileset_size
-	def update(self):
-		self.s_texture+=time.dt*9
-		if self.s_texture > 3.8:
-			self.s_texture=0
-		self.texture=omf+'water_flow/water_f'+str(int(self.s_texture))+'.png'
-
-class SingleBlock(Entity):
-	def __init__(self,pos):
-		super().__init__(model=omf+'sblock/sblock.obj',texture='sblock/sblock.png',scale=0.5,collider=b,position=pos)
-
 class BackgroundWall(Entity):
 	def __init__(self,p):
 		super().__init__(model=omf+'wall_0/turtle_wall.obj',texture=omf+'wall_0/wall_wood.tga',scale=.02,position=p,rotation_y=-90,double_sided=True,unlit=False)
@@ -101,46 +91,6 @@ class BackgroundWall(Entity):
 			aC=random.choice([color.green,color.orange,color.yellow])
 			Entity(model='quad',texture=omf+'bush/bush1.png',position=(self.x-8+bu*2,self.y+2.75,self.z-1+random.uniform(.1,.5)),scale=random.uniform(3,4),color=aC)
 
-class MapTerrain(Entity):
-	def __init__(self,MAP,size,t,co):
-		super().__init__(model=Terrain(terra_path+MAP,skip=18),collider=m,scale=size,texture=t,texture_scale=(size[0],size[2]),color=co)
-		cc.map_zone=self
-		cc.map_coordinate=self.model.height_values
-		cc.map_size=self.scale
-		FallingZone(pos=(self.x,self.y-1.5,self.z),s=(size[0]*1.5,1,size[2]*1.5))
-
-class BigPlatform(Entity):
-	def __init__(self,p,s):
-		THM=status.level_index
-		super().__init__(model=omf+'ground/ground01.obj',scale=(s[0],1.5,s[2]),collider=b,position=p)
-		self.front_wall=Entity(model=omf+'ground/ground_wall.obj',scale=(self.scale_x-.01,3,self.scale_z-.01),collider=b)
-		self.front_wall.position=(self.x,self.y-self.scale_y+.3,self.z)
-		if THM == 1:
-			self.front_wall.texture=texp+'bricks.png'
-			self.texture=terra_path+'texture/grass.png'
-			self.front_wall.color=color.rgb(170,200,170)
-			self.color=color.rgb(0,140,0)
-		if THM == 2:
-			self.front_wall.texture=texp+'bricks.png'
-			self.texture=terra_path+'texture/snow.png'
-			self.front_wall.color=color.rgb(170,180,200)
-			self.color=color.rgb(128,128,140)
-		self.front_wall.texture_scale=(8,8)
-		self.texture_scale=(16,16)
-
-class Corridor(Entity):
-	def __init__(self,pos):
-		super().__init__(model=omf+'w_corr/corridor.obj',texture=omf+'w_corr/f_room.tga',scale=.1,position=pos,rotation_y=-90,double_sided=True)
-		self.wall0=Entity(model='cube',visible=False,scale=3,position=(self.x+2.5,self.y,self.z),collider=b)
-		self.wall1=Entity(model='cube',visible=False,scale=3,position=(self.x-2.5,self.y,self.z),collider=b)
-		self.wall1=Entity(model='cube',visible=False,scale=3,position=(self.x,self.y+5.5,self.z),collider=b)
-		IndoorZone(pos=self.position,DI=1)
-
-class Tree2D(Entity):
-	def __init__(self,pos,rot):
-		tCOL=random.choice([color.green,color.orange,color.yellow])
-		super().__init__(model='quad',texture=omf+'tree/tree'+str(random.randint(1,3))+'.png',scale=3,position=pos,rotation_y=rot,color=tCOL)
-
 class TreeScene(Entity):
 	def __init__(self,pos,c,s):
 		super().__init__(model=omf+'tree/scene_w.obj',texture=omf+'tree/wood_scene.tga',scale=s,position=pos,color=c,double_sided=True)
@@ -148,26 +98,60 @@ class TreeScene(Entity):
 		bush(pos=(self.x-.6,self.y+.8,self.z-.249),c=color.yellow,s=1)
 		bush(pos=(self.x+.6,self.y+.8,self.z-.249),c=color.orange,s=1)
 
-class InvWall(Entity):
-	def __init__(self,pos,sca):
-		super().__init__(model='cube',position=pos,scale=sca,visible=False,collider=b)
 
+####################
+## level 2 objects #
 class Plank(Entity):
-	def __init__(self,pos,typ):
-		super().__init__(model=omf+'plank/break_w1.obj',texture=omf+'plank/plank.png',scale=(.5,.4,.5),position=pos,collider=b,rotation_y=90)
-		if typ == 0:
+	def __init__(self,pos,typ,ro_y):
+		super().__init__(model='cube',texture=omf+'plank/plank.png',scale=(1,.1,.4),position=pos,collider=b,rotation_y=ro_y,texture_scale=(2,2))
+		self.spawn_pos=self.position
+		if typ == 1:
 			self.is_touched=False
 			self.color=color.brown
-			self.brk_frame=0
 		else:
 			self.color=color.gray
 		self.typ=typ
-		self.texture_scale=(2,2)
-	def update(self):
-		if self.typ == 0 and self.is_touched:
-			self.brk_frame+=time.dt
+	def obj_reset(self):
+		self.is_touched=False
+		self.position=self.spawn_pos
+		self.collider=b
+	def fall_down(self):
+		self.collider=None
+		Audio(sound.snd_break,pitch=.8)
+		self.animate_y(self.y-3,duration=.2)
+		invoke(self.obj_reset,delay=5)
+	def pl_touch(self):
+		if not self.is_touched:
+			self.is_touched=True
+			invoke(self.fall_down,delay=1)
 
-## important objects
+class Ropes(Entity):
+	def __init__(self,pos,le):
+		super().__init__(model='cube',scale=(.03,.03,le),position=pos,color=color.brown,origin_z=-.5)
+		self.dup=Entity(model='cube',scale=self.scale,position=(self.x+1,self.y,self.z),color=color.brown,origin_z=self.origin_z)
+
+class Pillar(Entity):
+	def __init__(self,pos,ro):
+		super().__init__(model=omf+'pillar/scene_w.obj',texture=omf+'pillar/wood_scene.tga',scale=.025,rotation=ro,position=pos,double_sided=True,color=color.rgb(140,255,255))
+
+
+####################
+## level 3 objects #
+class WaterFlow(Entity):
+	def __init__(self,pos):
+		super().__init__(model='plane',texture=omf+'water_flow/water_f0.png',scale=(3.5,.1,96),texture_scale=(1,16),position=pos,filtering='linear')
+		self.dark_area=Entity(model='plane',color=color.black,scale=self.scale,position=(self.x,self.y-.001,self.z),alpha=.7)
+		self.static_y=self.y
+		self.s_texture=0
+	def update(self):
+		self.s_texture+=time.dt*9
+		if self.s_texture > 3.8:
+			self.s_texture=0
+		self.texture=omf+'water_flow/water_f'+str(int(self.s_texture))+'.png'
+
+
+##################
+## logic objects #
 class IndoorZone(Entity): ## disable rain
 	def __init__(self,pos,DI):
 		super().__init__(model='sphere',scale=1,position=pos,visible=False)
@@ -211,7 +195,7 @@ class WarpRingEffect(Entity): ## spawn animation
 			return
 		self.model=omf+'warp_rings/'+str(int(self.rings))+'.ply'
 
-class CrateScore(Entity):## game finish
+class CrateScore(Entity): ## game finish
 	def __init__(self,pos):
 		super().__init__(model='res/crate/crate_sup.obj',texture='res/crate/crate_sup.png',alpha=.5,scale=.18,position=pos)
 		self.cc_text=Text(parent=scene,position=(self.x-.2,self.y+.25,self.z),text=None,font='res/ui/font.ttf',color=color.rgb(255,255,128),scale=10)
@@ -365,3 +349,60 @@ class LevelFinish(Entity): ## finish level
 			self.prt_snd.volume=1
 		else:
 			self.prt_snd.volume=0
+
+
+###################
+## global objects #
+class InvWall(Entity):
+	def __init__(self,pos,sca):
+		super().__init__(model='cube',position=pos,scale=sca,visible=False,collider=b)
+
+class SingleBlock(Entity):
+	def __init__(self,pos):
+		super().__init__(model=omf+'sblock/sblock.obj',texture='sblock/sblock.png',scale=0.5,collider=b,position=pos)
+
+class Water(Animation):
+	def __init__(self,pos,s,c,a):
+		super().__init__(omf+'water/water.gif',position=pos,scale=(s[0],s[1]),rotation_x=90,texture_scale=(s[0],s[1]),color=c,alpha=a)
+		WaterHit(p=(self.x,self.y-.1,self.z),sc=s)
+
+class StoneTile(Entity):
+	def __init__(self,pos):
+		super().__init__(model=omf+'tile0/tile.obj',texture=omf+'tile0/platform_top.png',position=pos,scale=.3)
+		self.hit_b=Entity(model='cube',scale=(.7,self.scale_y,.7),position=self.position,collider=b,visible=False)
+
+class MapTerrain(Entity):
+	def __init__(self,MAP,size,t,co):
+		super().__init__(model=Terrain(terra_path+MAP,skip=18),collider=m,scale=size,texture=t,texture_scale=(size[0],size[2]),color=co)
+		cc.map_zone=self
+		cc.map_coordinate=self.model.height_values
+		cc.map_size=self.scale
+		FallingZone(pos=(self.x,self.y-1.5,self.z),s=(size[0]*1.5,1,size[2]*1.5))
+		if status.level_index == 2:
+			self.alpha=.6
+class BigPlatform(Entity):
+	def __init__(self,p,s):
+		THM=status.level_index
+		super().__init__(model=omf+'ground/ground01.obj',scale=(s[0],1.5,s[2]),collider=b,position=p)
+		self.front_wall=Entity(model=omf+'ground/ground_wall.obj',scale=(self.scale_x-.01,3,self.scale_z-.01),collider=b)
+		self.front_wall.position=(self.x,self.y-self.scale_y+.3,self.z)
+		if THM == 1:
+			self.front_wall.texture=texp+'bricks.png'
+			self.texture=terra_path+'texture/grass.png'
+			self.front_wall.color=color.rgb(170,200,170)
+			self.color=color.rgb(0,140,0)
+		if THM == 2:
+			self.front_wall.texture=texp+'ice_wall.png'
+			self.texture=terra_path+'texture/snow.png'
+			self.front_wall.color=color.rgb(170,180,200)
+			self.color=color.rgb(128,128,140)
+		self.front_wall.texture_scale=(8,8)
+		self.texture_scale=(16,16)
+
+class Corridor(Entity):
+	def __init__(self,pos):
+		super().__init__(model=omf+'w_corr/corridor.obj',texture=omf+'w_corr/f_room.tga',scale=.1,position=pos,rotation_y=-90,double_sided=True)
+		self.wall0=Entity(model='cube',visible=False,scale=3,position=(self.x+2.5,self.y,self.z),collider=b)
+		self.wall1=Entity(model='cube',visible=False,scale=3,position=(self.x-2.5,self.y,self.z),collider=b)
+		self.wall1=Entity(model='cube',visible=False,scale=3,position=(self.x,self.y+5.5,self.z),collider=b)
+		IndoorZone(pos=self.position,DI=1)
