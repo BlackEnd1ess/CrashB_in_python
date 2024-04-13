@@ -104,7 +104,7 @@ class CrateBreak(Entity):
 	def __init__(self,cr):
 		if cr.vnum == 12:
 			bco=color.green
-		if cr.vnum == 11:
+		elif cr.vnum == 11:
 			bco=color.red
 		else:
 			bco=color.orange

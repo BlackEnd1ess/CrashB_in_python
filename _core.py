@@ -188,7 +188,7 @@ def ceiling(c,e):
 	c.jumping=False
 	c.y=c.y
 def check_ground(c):
-	if len(map_coordinate) > 0:
+	if map_coordinate != None:
 		if c.intersects(map_zone):
 			landing(c=c,e=terraincast(c.world_position,map_zone,map_coordinate))
 			return
@@ -238,6 +238,8 @@ def check_wall(c):
 			if not c.jumping:
 				get_damage(c)
 			return
+		if str(wE) == 'nitro':
+			wE.destroy()
 		if wE in item.item_list:
 			if status.c_delay <= 0:
 				status.c_delay=.1/6

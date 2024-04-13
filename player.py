@@ -45,7 +45,7 @@ class CrashB(Entity):
 		if key == 'b':
 			print(self.position)
 		if key == 'u':
-			self.move_speed=5
+			EditorCamera()
 	def move(self):
 		if status.is_dying or not self.warped:
 			return

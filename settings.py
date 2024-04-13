@@ -20,7 +20,6 @@ def cam():
 	print('settings loaded')
 
 #camera.shader=ssao_shader
-FOG_DENSITY=(-1,15)
 
 SFX_VOLUME=1
 MUSIC_VOLUME=1

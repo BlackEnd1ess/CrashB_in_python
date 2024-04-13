@@ -75,7 +75,7 @@ class LevelMusic(Audio):
 
 class BonusMusic(Audio):
 	def __init__(self,T):
-		lB=MC+'lv'+str(T)+'/'+str(random.randint(0,1))+'b.mp3'
+		lB=MC+'lv'+str(T)+'/0b.mp3'#+str(random.randint(0,1))+'b.mp3'
 		super().__init__(lB,volume=settings.MUSIC_VOLUME,loop=True)
 	def update(self):
 		if not status.bonus_round or status.is_death_route:

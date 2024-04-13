@@ -115,6 +115,7 @@ class Plank(Entity):
 		self.is_touched=False
 		self.position=self.spawn_pos
 		self.collider=b
+		self.show()
 	def fall_down(self):
 		self.collider=None
 		Audio(sound.snd_break,pitch=.8)
@@ -124,6 +125,7 @@ class Plank(Entity):
 		if not self.is_touched:
 			self.is_touched=True
 			invoke(self.fall_down,delay=1)
+			invoke(self.hide,delay=1.5)
 
 class Ropes(Entity):
 	def __init__(self,pos,le):
@@ -133,7 +135,19 @@ class Ropes(Entity):
 class Pillar(Entity):
 	def __init__(self,pos,ro):
 		super().__init__(model=omf+'pillar/scene_w.obj',texture=omf+'pillar/wood_scene.tga',scale=.025,rotation=ro,position=pos,double_sided=True,color=color.rgb(140,255,255))
+		IceCrystal(pos=(self.x,self.y+1.4,self.z-.05))
 
+class SnowWall(Entity):
+	def __init__(self,pos):
+		super().__init__(model=omf+'snow_wall/snow_bonus.obj',texture=omf+'snow_wall/snow_bonus.tga',scale=.03,position=pos,rotation_y=90,double_sided=True,color=color.cyan)
+
+class Rock(Entity):
+	def __init__(self,pos):
+		super().__init__(model=omf+'rock/rock.obj',color=color.rgb(40,40,0),position=pos,scale=.5)
+
+class IceCrystal(Entity):
+	def __init__(self,pos):
+		super().__init__(model=omf+'ice_crystal/ice_crystal',texture=omf+'ice_crystal/snow_2.tga',scale=(.025,.02,.03),position=pos,double_sided=True,rotation_y=-90,color=color.rgb(200,150,200))
 
 ####################
 ## level 3 objects #
@@ -377,9 +391,10 @@ class MapTerrain(Entity):
 		cc.map_zone=self
 		cc.map_coordinate=self.model.height_values
 		cc.map_size=self.scale
-		FallingZone(pos=(self.x,self.y-1.5,self.z),s=(size[0]*1.5,1,size[2]*1.5))
 		if status.level_index == 2:
 			self.alpha=.6
+		FallingZone(pos=(self.x,self.y-1.5,self.z),s=(size[0]*1.5,1,size[2]*1.5))
+
 class BigPlatform(Entity):
 	def __init__(self,p,s):
 		THM=status.level_index

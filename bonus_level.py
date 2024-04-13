@@ -32,8 +32,32 @@ def bonus1():
 	#	c.place_crate(ID=1,p=(0+bc1/3.1,-24,-3))
 
 def bonus2():
-	return
-
+	o.FallingZone(pos=(0,-40,0),s=(64,1,64))
+	for sw in range(20):
+		o.SnowWall(pos=(0+sw*7,-37,-2.5))
+		o.SnowWall(pos=(0+sw*7,-33,-2.5))
+	o.BigPlatform(p=(0,-37,U),s=(3,0,.25))
+	o.BigPlatform(p=(4,-37,U),s=(3,0,.25))
+	o.BigPlatform(p=(8,-37,U),s=(3,0,.25))
+	o.BigPlatform(p=(14,-37,U),s=(3,0,.25))
+	MT.crate_row(ID=0,POS=(3.8,-35,U),WAY=0,CNT=8)
+	MT.crate_wall(ID=2,POS=(4,-34.68,U),CNT=2)
+	c.place_crate(ID=1,p=(8.3,-36.68,U))
+	c.place_crate(ID=1,p=(7.5,-36,U))
+	c.place_crate(ID=1,p=(7,-35.5,U))
+	c.place_crate(ID=9,p=(15,-36.68,U),m=1)
+	c.place_crate(ID=13,p=(4,-36.68,U),m=1,l=2)
+	MT.crate_row(ID=1,POS=(10,-37,U),WAY=0,CNT=7)
+	MT.crate_row(ID=3,POS=(10.32,-37.32,U),WAY=0,CNT=5)
+	MT.wumpa_row(POS=(-.5,-36.9,U),CNT=4,WAY=0)
+	
+	MT.wumpa_row(POS=(10,-36.4,U),CNT=7,WAY=0)
+	MT.wumpa_row(POS=(10,-36,U),CNT=7,WAY=0)
+	MT.wumpa_row(POS=(10,-35.6,U),CNT=7,WAY=0)
+	
+	MT.wumpa_row(POS=(2.8,-36.9,U),CNT=8,WAY=0)
+	MT.wumpa_row(POS=(7,-36.9,U),CNT=5,WAY=0)
+	o.BonusPlatform(pos=(16,-37,U))
 ## gem route
 def gem_route1():
 	o.FallingZone(pos=(200,-4,0),s=(40,1,32))

@@ -276,18 +276,20 @@ class TNT(Entity):
 class Nitro(Entity):
 	def __init__(self,pos,pse):
 		_in='nitro'
-		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png',shader=unlit_shader)
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		self.reload=False
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.start_y=self.y
 		self.acustic=False
 		self.snd_time=1
 		self.vnum=12
+		if status.level_index != 2:
+			self.shader=unlit_shader
 	def destroy(self):
 		destroy_event(self)
 	def update(self):
 		if not status.gproc():
-			if not self.reload:
+			if not self.reload and status.level_index != 2:
 				self.reload=True
 				self.shader=unlit_shader
 			dst=distance(cc.playerInstance[0].position,self.position)
@@ -295,10 +297,11 @@ class Nitro(Entity):
 			if self.snd_time <= 0:
 				rh=random.uniform(0.1,0.2)
 				self.snd_time=random.randint(2,3)
-				if dst <= 1:
+				if dst <= 2:
 					Audio(sn.snd_nitro,volume=0.2)
-				self.animate_position((self.x,self.y+rh,self.z),duration=0.02)
-				invoke(lambda:self.animate_position((self.x,self.start_y,self.z),duration=0.2),delay=0.15)
+				if not self.is_stack:
+					self.animate_position((self.x,self.y+rh,self.z),duration=0.02)
+					invoke(lambda:self.animate_position((self.x,self.start_y,self.z),duration=0.2),delay=0.15)
 
 class Air(Entity):
 	def __init__(self,pos,m,l,pse):
@@ -336,6 +339,8 @@ class Explosion(Entity):
 						exI.empty_destroy()
 					else:
 						exI.destroy()
+			if str(exI) == 'crash_b' and jD < self.eR:
+				cc.get_damage(cc.playerInstance[0])
 		self.parent=None
 		self.disable()
 	def update(self):

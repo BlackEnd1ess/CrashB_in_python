@@ -1,7 +1,7 @@
 from ursina import *
 
 #this objects interacts with player
-OBJ_LIST=['water_hit','falling_zone','level_finish','bonus_platform',
+OBJ_LIST=['water_hit','falling_zone','level_finish','bonus_platform','rock','pillar',
 		'gem_platform','moss_platform','tree2_d','corridor','tree_scene','bush']
 
 level_name=['Warp Room',
@@ -17,7 +17,7 @@ npc_anim={'amadillo':7,'turtle':12,'saw_turtle':12,'penguin':15,
 		'hedgehog':12,'seal':14,'eating_plant':13,'rat':10,
 		'lizard':11,'scrubber':3,'mouse':8,'vulture':13}
 
-bonus_checkpoint=[None,(0,2,-7),(0,0,0),(0,0,0),(0,0,0),(0,0,0)]
+bonus_checkpoint=[None,(0,2,-7),(0,2,-57),(0,0,0),(0,0,0),(0,0,0)]
 checkpoint=None
 day_mode=''
 

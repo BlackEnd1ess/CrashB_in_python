@@ -6,7 +6,7 @@ SKY_COL={'day':color.rgb(200,230,255),
 		'night':color.rgb(0,0,85),
 		'dark':color.black,
 		'rain':color.rgb(70,70,80),
-		'snow':color.rgb(230,150,255),
+		'snow':color.white,
 		'woods':color.rgb(70,120,110)}
 
 FOG_COL={'day':color.rgb(120,140,140),
@@ -77,13 +77,14 @@ class LightAmbience(AmbientLight):
 class Fog(Entity):
 	def __init__(self):
 		super().__init__()
+		self.F_DST={0:(-1,30),1:(-1,15),2:(-1,10)}
 		scene.fog_color=FOG_COL[status.day_mode]
-		scene.fog_density=settings.FOG_DENSITY
+		scene.fog_density=self.F_DST[status.level_index]
 	def update(self):
 		if status.bonus_round:
 			scene.fog_density=(-5,50)
 			return
-		scene.fog_density=settings.FOG_DENSITY
+		scene.fog_density=self.F_DST[status.level_index]
 
 class RainFall(Animation):
 	def __init__(self):
