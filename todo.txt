@@ -10,3 +10,4 @@
 - save game
 - time trial: no live subtract, no bonus or platforms, relic times
 - ui: relic time (blue,gold,platinum)
+- ui: credits
