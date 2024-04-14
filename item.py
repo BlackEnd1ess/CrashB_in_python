@@ -91,6 +91,18 @@ class EnergyCrystal(Entity):
 		if not status.gproc():
 			self.rotation_y-=time.dt*70
 
+class TrialClock(Entity):
+	def __init__(self,pos):
+		Clk='clock/clock'
+		super().__init__(model=i_path+Clk+'.obj',texture=i_path+Clk+'.png',position=pos,scale=.003,unlit=False,double_sided=True)
+		item_list.append(self)
+	def collect(self):
+		item_list.remove(self)
+		self.disable()
+		status.is_time_trial=True
+	def update(self):
+		self.rotation_y+=time.dt*120
+
 class TimeRelic(Entity):
 	def __init__(self,pos,t):
 		tc={0:color.azure,1:color.gold,2:color.rgb(150,150,180)}

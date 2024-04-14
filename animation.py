@@ -115,18 +115,35 @@ def bounce_animation(c):
 		invoke(lambda:setattr(c,'is_bounc',False),delay=15/bT)
 
 def spring_animation(c):
-	c.hide()
-	W=.45
-	anim=FrameAnimation3d(cf+'sw/sw_',texture=c.texture,fps=40,scale=c.scale,position=c.position,color=gr)
-	invoke(anim.disable,delay=W)
-	invoke(c.show,delay=W-.017)
+	if not c.is_bounc:
+		c.is_bounc=True
+		c.color=color.light_gray
+		invoke(lambda:setattr(c,'model',cf+'spr/spr0.obj'),delay=0)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr1.obj'),delay=1/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr2.obj'),delay=2/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr3.obj'),delay=3/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr4.obj'),delay=4/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr5.obj'),delay=5/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr6.obj'),delay=6/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr7.obj'),delay=7/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr8.obj'),delay=8/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr9.obj'),delay=9/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr10.obj'),delay=10/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr11.obj'),delay=11/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr12.obj'),delay=12/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr13.obj'),delay=13/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr14.obj'),delay=14/bT)
+		invoke(lambda:setattr(c,'model',cf+'spr/spr0.obj'),delay=15/bT)
+		invoke(lambda:setattr(c,'is_bounc',False),delay=15/bT)
 
 class CrateBreak(Entity):
 	def __init__(self,cr):
-		if cr.vnum == 12:
-			bco=color.green
-		elif cr.vnum == 11:
+		if cr.vnum == 11:
 			bco=color.red
+		elif cr.vnum == 12:
+			bco=color.green
+		elif cr.vnum == 15:
+			bco=color.gold
 		else:
 			bco=color.orange
 		super().__init__(model=cf+'break/0.ply',texture=cf+'break/break.tga',rotation=(-90,cr.rotation_y,0),scale=.4/1000,color=bco,position=cr.position,unlit=False,collider=None)

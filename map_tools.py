@@ -5,6 +5,7 @@ c=crate
 o=objects
 I=item
 
+#add air with list and mark!
 ## multible crate spawn
 def bounce_twin(POS,CNT):
 	for cbt in range(CNT):

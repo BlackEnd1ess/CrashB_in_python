@@ -14,14 +14,13 @@ snd_sprin=SN+'spring.wav'
 snd_bounc=SN+'bnc.wav'
 snd_c_tnt=SN+'tnt.wav'
 snd_c_air=SN+'air.wav'
-snd_w_log=SN+'wlog.wav'
 
 #misc sfx
-
 snd_nbeat=SN+'npc_beat.wav'
 snd_d_opn=SN+'door_open.wav'
 snd_spawn=SN+'spawn.wav'
 snd_portl=SN+'portal.wav'
+snd_w_log=SN+'wlog.wav'
 
 #game/ui sfx
 snd_rward=SN+'reward.wav'

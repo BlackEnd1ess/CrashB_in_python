@@ -58,15 +58,9 @@ def test():
 	cc.preload_items()
 	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='white_cube',co=color.rgb(130,150,130))
 	o.CrateScore(pos=(-1,.25,-1))
-	mt.crate_row(ID=3,POS=(0,0,-1),CNT=5,WAY=0)
-	#mt.crate_row(ID=1,POS=(1,0,-1),CNT=5,WAY=2)
-	#mt.crate_row(ID=1,POS=(2,0,-1),CNT=5,WAY=2)
-	o.IceGround(pos=(0,.3,4),sca=(5,1,5))
-	#o.mBlock(pos=(1,1,4),sca=1)
-	#o.mBlock(pos=(6,2,4),sca=(4,1,.25))
-	#o.BigPlatform(p=(0,1,4),s=(1,0,1))
-	#o.BigPlatform(p=(1,2,4),s=(.25,0,.25))
-	#mt.crate_row(ID=2,POS=(-1,0,-2),CNT=4,WAY=0)
+	for gj in range(15):
+		c.place_crate(p=(0+.34*gj,0,4),ID=gj,m=1,l=1,tm=random.randint(1,3))
+	#o.IceGround(pos=(0,.3,4),sca=(5,1,5))
 	invoke(free_level,delay=1)
 
 def level1():##wood

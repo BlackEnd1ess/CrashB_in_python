@@ -46,7 +46,6 @@ class CrashB(Entity):
 			print(self.position)
 		if key == 'u':
 			self.position=(0,3,2)
-			#EditorCamera()
 	def move(self):
 		if status.is_dying or not self.warped:
 			return
@@ -141,8 +140,7 @@ class CrashB(Entity):
 	def update(self):
 		if status.pause or status.level_solved or status.gproc():
 			return
-		if status.aku_hit > 0:
-			self.aku_y=self.y+.5
+		self.aku_y=self.y+.5
 		if self.jumping:
 			self.jump()
 		self.char_misc()

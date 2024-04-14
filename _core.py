@@ -59,7 +59,8 @@ def p_death_event(d):
 		status.lives_bonus=0
 		status.bonus_round=False
 	else:
-		status.extra_lives-=1
+		if not status.is_time_trial:
+			status.extra_lives-=1
 	if status.fails < 3:
 		status.aku_hit=0
 	else:
@@ -131,6 +132,7 @@ def slipper_value(c,m):
 		c.sl_l=0
 		c.sl_d=0
 		c.sl_u=1
+
 ## world, misc
 def collect_reset():
 	status.C_RESET.clear()
@@ -374,7 +376,7 @@ def crate_set_val(cR,Cpos,Cpse):
 def is_crate(e):
 	cck=[C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
 		C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,
-		C.SwitchEmpty,C.SwitchNitro,C.TNT,C.Nitro,C.Air]
+		C.SwitchEmpty,C.SwitchNitro,C.TNT,C.Nitro,C.Air,C.Protected,C.cTime]
 	if any(isinstance(e,crate_class) for crate_class in cck):
 		return True
 def crate_action(c,e):

@@ -2,13 +2,13 @@ import item,status,_core,animation,player,sound,npc,settings
 from ursina.shaders import *
 from ursina import *
 
-pp='res/crate/crate_'
+pp='res/crate/'
 ic=(.15,.2)
 cc=_core
 sn=sound
 
 ##spawn/remove event
-def place_crate(p,ID,m=None,l=None,pse=None):
+def place_crate(p,ID,m=None,l=None,pse=None,tm=None):
 	CRATES={0:lambda:Iron(pos=p,pse=pse),
 			1:lambda:Normal(pos=p,pse=pse),
 			2:lambda:QuestionMark(pos=p,pse=pse),
@@ -22,7 +22,9 @@ def place_crate(p,ID,m=None,l=None,pse=None):
 			10:lambda:SwitchNitro(pos=p,pse=pse),
 			11:lambda:TNT(pos=p,pse=pse),
 			12:lambda:Nitro(pos=p,pse=pse),
-			13:lambda:Air(pos=p,m=m,l=l,pse=pse)}
+			13:lambda:Air(pos=p,m=m,l=l,pse=pse),
+			14:lambda:Protected(pos=p,pse=pse),
+			15:lambda:cTime(pos=p,pse=pse,tm=tm)}
 	CRATES[ID]()
 	if not ID in [0,8,9,10] and not pse == 1 and not p[1] == -256:
 		status.crates_in_level+=1
@@ -49,9 +51,10 @@ def destroy_event(c):
 		if status.bonus_round:
 			status.crate_bonus+=1
 		else:
-			status.crate_to_sv+=1
-			status.crate_count+=1
-			status.show_crates=5
+			if not c.vnum == 15:
+				status.crate_to_sv+=1
+				status.crate_count+=1
+				status.show_crates=5
 		Audio(sn.snd_break,volume=settings.SFX_VOLUME)
 	animation.CrateBreak(cr=c)
 	scene.entities.remove(c)
@@ -73,7 +76,7 @@ def spawn_ico(c):
 ##Crate Logics
 class Iron(Entity):
 	def __init__(self,pos,pse):
-		_in='iron'
+		_in='iron/crate_iron'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.p_snd=False
@@ -83,8 +86,7 @@ class Iron(Entity):
 
 class Normal(Entity):
 	def __init__(self,pos,pse):
-		_in='normal'
-		super().__init__(model=pp+_in+'.obj',texture=pp+'wooden.png')
+		super().__init__(model=pp+'normal/crate_normal.obj',texture=pp+'normal/crate_wooden.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=1
 	def destroy(self):
@@ -93,7 +95,7 @@ class Normal(Entity):
 
 class QuestionMark(Entity):
 	def __init__(self,pos,pse):
-		_in='sup'
+		_in='suprise/crate_sup'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=2
@@ -102,9 +104,9 @@ class QuestionMark(Entity):
 			item.WumpaFruit(pos=(self.x+random.uniform(-.1,.1),self.y,self.z+random.uniform(-.1,.1)))
 		destroy_event(self)
 
-class Bounce(Entity):###fixx error
+class Bounce(Entity):
 	def __init__(self,pos,pse):
-		_in='bounce'
+		_in='bounce/crate_bounce'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.is_bounc=False
@@ -133,7 +135,7 @@ class Bounce(Entity):###fixx error
 
 class ExtraLife(Entity):
 	def __init__(self,pos,pse):
-		_in='live'
+		_in='live/crate_live'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=4
@@ -143,7 +145,7 @@ class ExtraLife(Entity):
 
 class AkuAku(Entity):
 	def __init__(self,pos,pse):
-		_in='aku'
+		_in='aku/crate_aku'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=5
@@ -157,7 +159,7 @@ class AkuAku(Entity):
 
 class Checkpoint(Entity):
 	def __init__(self,pos,pse):
-		_in='checkp'
+		_in='checkpoint/crate_checkp'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=6
@@ -173,9 +175,10 @@ class Checkpoint(Entity):
 
 class SpringWood(Entity):
 	def __init__(self,pos,pse):
-		_in='spring'
+		_in='spring_wood/crate_spring'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		self.is_bounc=False
 		self.vnum=7
 	def anim_act(self):
 		animation.spring_animation(self)
@@ -186,9 +189,10 @@ class SpringWood(Entity):
 
 class SpringIron(Entity):
 	def __init__(self,pos,pse):
-		_in='spring_iron'
+		_in='spring_iron/crate_spring_iron'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		self.is_bounc=False
 		self.p_snd=False
 		self.vnum=8
 	def anim_act(self):
@@ -199,7 +203,7 @@ class SpringIron(Entity):
 
 class SwitchEmpty(Entity):
 	def __init__(self,pos,m,pse):
-		self._in='switch'
+		self._in='empty_switch/crate_switch'
 		super().__init__(model=pp+self._in+'.obj',texture=pp+self._in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.p_snd=False
@@ -213,7 +217,7 @@ class SwitchEmpty(Entity):
 		block_destroy(self)
 		if not self.activ:
 			self.activ=True
-			self.texture=pp+'iron.png'
+			self.texture=pp+'iron/crate_iron.png'
 			ccount=0
 			status.C_RESET.append(self)
 			for _air in scene.entities[:]:
@@ -224,7 +228,7 @@ class SwitchEmpty(Entity):
 
 class SwitchNitro(Entity):
 	def __init__(self,pos,pse):
-		self._in='switch_n'
+		self._in='nitro_switch/crate_switch_n'
 		super().__init__(model=pp+self._in+'.obj',texture=pp+self._in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.p_snd=False
@@ -239,7 +243,7 @@ class SwitchNitro(Entity):
 		if not self.activ:
 			self.activ=True
 			self.color=color.green
-			self.texture=pp+'iron.png'
+			self.texture=pp+'iron/crate_iron.png'
 			spawn_ico(self)
 			status.C_RESET.append(self)
 			for ni in scene.entities[:]:
@@ -248,7 +252,7 @@ class SwitchNitro(Entity):
 
 class TNT(Entity):
 	def __init__(self,pos,pse):
-		_in='tnt'
+		_in='tnt/crate_tnt'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.e_snd=Audio(sn.snd_c_tnt,autoplay=False)
@@ -269,13 +273,13 @@ class TNT(Entity):
 		if self.countdown > 0 and self.activ:
 			self.countdown-=time.dt/1.15
 			ctnt=int(self.countdown)
-			self.texture='res/crate/crate_tnt_'+str(ctnt)+'.png'
+			self.texture='res/crate/tnt/crate_tnt_'+str(ctnt)+'.png'
 			if self.countdown <= 0:
 				self.empty_destroy()
 
 class Nitro(Entity):
 	def __init__(self,pos,pse):
-		_in='nitro'
+		_in='nitro/crate_nitro'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		self.reload=False
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
@@ -305,7 +309,7 @@ class Nitro(Entity):
 
 class Air(Entity):
 	def __init__(self,pos,m,l,pse):
-		_in='air'
+		_in='air/crate_air'
 		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.collider=None
@@ -318,6 +322,26 @@ class Air(Entity):
 		Audio(sn.snd_c_air,volume=settings.SFX_VOLUME)
 		scene.entities.remove(self)
 		self.disable()
+
+class Protected(Entity):
+	def __init__(self,pos,pse):
+		_in='protected/crate_shell'
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		self.vnum=14
+	def destroy(self):
+		for dw in range(random.randint(5,10)):
+			item.WumpaFruit(pos=(self.x+random.uniform(-.1,.1),self.y,self.z+random.uniform(-.1,.1)))
+		destroy_event(self)
+
+class cTime(Entity):
+	def __init__(self,pos,tm,pse):
+		_in='timer/crate_time'
+		super().__init__(model=pp+_in+'.obj',texture=pp+'timer/crate_t'+str(tm)+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		self.vnum=15
+	def destroy(self):
+		destroy_event(self)
 
 ##crate effects
 class Explosion(Entity):

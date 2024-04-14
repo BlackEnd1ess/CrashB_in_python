@@ -187,7 +187,8 @@ class WoodLog(Entity):
 
 class IceGround(Entity):
 	def __init__(self,pos,sca):
-		super().__init__(model='cube',position=pos,scale=sca,collider=b,color=color.rgb(150,150,255),alpha=.9)
+		super().__init__(model='cube',texture=texp+'ice_ground.png',position=pos,scale=sca,collider=b)
+		self.texture_scale=(sca[0],sca[2])
 
 ####################
 ## level 3 objects #
@@ -251,7 +252,8 @@ class WarpRingEffect(Entity): ## spawn animation
 
 class CrateScore(Entity): ## game finish
 	def __init__(self,pos):
-		super().__init__(model='res/crate/crate_sup.obj',texture='res/crate/crate_sup.png',alpha=.5,scale=.18,position=pos)
+		_in='res/crate/suprise/crate_sup'
+		super().__init__(model=_in+'.obj',texture=_in+'.png',alpha=.5,scale=.18,position=pos)
 		self.cc_text=Text(parent=scene,position=(self.x-.2,self.y+.25,self.z),text=None,font='res/ui/font.ttf',color=color.rgb(255,255,128),scale=10)
 	def update(self):
 		self.cc_text.text=str(st.crate_count)+'/'+str(st.crates_in_level)
@@ -263,7 +265,7 @@ class CrateScore(Entity): ## game finish
 			self.cc_text.disable()
 			self.disable()
 			return
-		if st.level_index == 1 and st.crate_count <= 0 or st.crates_in_level <= 0:
+		if st.level_index == 1 and st.crate_count <= 0 or st.crates_in_level <= 0 or status.is_time_trial:
 			self.hide()
 			self.cc_text.hide()
 			return

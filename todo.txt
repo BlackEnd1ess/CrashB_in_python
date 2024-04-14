@@ -1,4 +1,12 @@
-game over event
-levels
-
-warp room
+- game over event
+- aku invincible
+- enemies fly direction
+- multible explode sound effect fixx
+- incrase itm collection speed
+- map_tools crate air support with mark und L_ID
+- finish levels 2,3,4,5
+- warp room
+- game options
+- save game
+- time trial: no live subtract, no bonus or platforms, relic times
+- ui: relic time (blue,gold,platinum)
