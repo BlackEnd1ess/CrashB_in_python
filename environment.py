@@ -77,7 +77,7 @@ class LightAmbience(AmbientLight):
 class Fog(Entity):
 	def __init__(self):
 		super().__init__()
-		self.F_DST={0:(-1,30),1:(-1,15),2:(-1,10)}
+		self.F_DST={0:(-1,30),1:(-1,15),2:(-1,30),3:(-1,15),4:(-1,15)}
 		scene.fog_color=FOG_COL[status.day_mode]
 		scene.fog_density=self.F_DST[status.level_index]
 	def update(self):

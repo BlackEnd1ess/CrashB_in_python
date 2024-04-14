@@ -72,15 +72,16 @@ class MossPlatform(Entity):
 					self.animate_y(self.y+1,duration=.3)
 					invoke(lambda:setattr(self.pgnd,'collider',b),delay=.2)
 	def update(self):
-		if self.UP_DOWN:
-			self.up_down_phase()
-		if self.movable:
-			if self.pgnd.intersects(self.tgt) and not self.tgt.walking:
-				self.tgt.x=self.pgnd.x
-				self.tgt.z=self.pgnd.z
-			self.pgnd.x=self.x
-			self.pgnd.z=self.z
-			platform_move(self)
+		if not status.gproc():
+			if self.UP_DOWN:
+				self.up_down_phase()
+			if self.movable:
+				if self.pgnd.intersects(self.tgt) and not self.tgt.walking:
+					self.tgt.x=self.pgnd.x
+					self.tgt.z=self.pgnd.z
+				self.pgnd.x=self.x
+				self.pgnd.z=self.z
+				platform_move(self)
 
 class BackgroundWall(Entity):
 	def __init__(self,p):
@@ -98,6 +99,19 @@ class TreeScene(Entity):
 		bush(pos=(self.x-.6,self.y+.8,self.z-.249),c=color.yellow,s=1)
 		bush(pos=(self.x+.6,self.y+.8,self.z-.249),c=color.orange,s=1)
 
+class BigPlatform(Entity):
+	def __init__(self,p,s):
+		## has collission bug over y>2 keep this in level 1!
+		## it will fixxed soon.
+		super().__init__(model=omf+'ground/ground01.obj',scale=(s[0],1.5,s[2]),collider=b,position=p)
+		self.front_wall=Entity(model=omf+'ground/ground_wall.obj',scale=(self.scale_x-.01,3,self.scale_z-.01),collider=b)
+		self.front_wall.position=(self.x,self.y-self.scale_y+.3,self.z)
+		self.front_wall.texture=texp+'bricks.png'
+		self.texture=terra_path+'texture/grass.png'
+		self.front_wall.color=color.rgb(170,200,170)
+		self.color=color.rgb(0,140,0)
+		self.front_wall.texture_scale=(8,8)
+		self.texture_scale=(16,16)
 
 ####################
 ## level 2 objects #
@@ -148,6 +162,32 @@ class Rock(Entity):
 class IceCrystal(Entity):
 	def __init__(self,pos):
 		super().__init__(model=omf+'ice_crystal/ice_crystal',texture=omf+'ice_crystal/snow_2.tga',scale=(.025,.02,.03),position=pos,double_sided=True,rotation_y=-90,color=color.rgb(200,150,200))
+
+class WoodLog(Entity):
+	def __init__(self,pos):
+		inp='wood_log/wood_log'
+		super().__init__(model=omf+inp+'.obj',texture=omf+inp+'.tga',position=pos,scale=(.001,.0015,.001),collider=b,double_sided=True)
+		self.bK=Entity(model='cube',texture=texp+'bricks.png',position=(self.x,self.y+.6,self.z),scale=(.5,1.5,.5))
+		self.danger=False
+		self.or_pos=self.y
+		self.stat=0
+	def update(self):
+		if not status.gproc():
+			if self.stat == 0:
+				self.y+=time.dt
+				if self.y >= self.or_pos+1.3:
+					self.danger=True
+					self.stat=1
+			elif self.stat == 1:
+				self.y-=time.dt*5
+				if self.y <= self.or_pos:
+					Audio(sound.snd_w_log)
+					self.danger=False
+					self.stat=0
+
+class IceGround(Entity):
+	def __init__(self,pos,sca):
+		super().__init__(model='cube',position=pos,scale=sca,collider=b,color=color.rgb(150,150,255),alpha=.9)
 
 ####################
 ## level 3 objects #
@@ -395,24 +435,16 @@ class MapTerrain(Entity):
 			self.alpha=.6
 		FallingZone(pos=(self.x,self.y-1.5,self.z),s=(size[0]*1.5,1,size[2]*1.5))
 
-class BigPlatform(Entity):
-	def __init__(self,p,s):
-		THM=status.level_index
-		super().__init__(model=omf+'ground/ground01.obj',scale=(s[0],1.5,s[2]),collider=b,position=p)
-		self.front_wall=Entity(model=omf+'ground/ground_wall.obj',scale=(self.scale_x-.01,3,self.scale_z-.01),collider=b)
-		self.front_wall.position=(self.x,self.y-self.scale_y+.3,self.z)
-		if THM == 1:
-			self.front_wall.texture=texp+'bricks.png'
-			self.texture=terra_path+'texture/grass.png'
-			self.front_wall.color=color.rgb(170,200,170)
-			self.color=color.rgb(0,140,0)
-		if THM == 2:
-			self.front_wall.texture=texp+'ice_wall.png'
-			self.texture=terra_path+'texture/snow.png'
-			self.front_wall.color=color.rgb(170,180,200)
-			self.color=color.rgb(128,128,140)
-		self.front_wall.texture_scale=(8,8)
-		self.texture_scale=(16,16)
+class mBlock(Entity):
+	def __init__(self,pos,sca):
+		cHo=status.level_index
+		tPL={0:None,1:'moss.png',2:'snow.png',3:'moss.png',4:'snow.png'}
+		wPL={0:None,1:'bricks.png',2:'ice_wall.png',3:'moss.png',4:'ice_wall.png'}
+		super().__init__(model='cube',texture=texp+tPL[cHo],position=pos,scale=sca,collider=b,origin_y=.5)
+		self.mWall=Entity(model='cube',texture=wPL[cHo],scale=(sca[0],self.scale_y*2,sca[2]),position=(self.x,self.y-2*self.scale_y,self.z),collider=b)
+		SV=(sca[0]*2,sca[0]*2)
+		self.texture_scale=SV
+		self.mWall.texture_scale=SV
 
 class Corridor(Entity):
 	def __init__(self,pos):

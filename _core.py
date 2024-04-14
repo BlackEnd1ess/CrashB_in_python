@@ -13,9 +13,9 @@ C=crate
 
 ## player
 def set_val(d):
-	for _a in ['run_anim','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','attack_time','walk_snd','count_time','fall_time','blink_time','death_anim']:
+	for _a in ['run_anim','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','count_time','fall_time','blink_time','death_anim']:
 		setattr(d,_a,0)
-	for _v in ['block_input','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured']:
+	for _v in ['block_input','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','sl_r','sl_l','sl_u','sl_d']:
 		setattr(d,_v,False)
 	d.lpos=None
 	d.move_speed=2
@@ -91,7 +91,46 @@ def various_val(c):
 		if status.player_protect <= 0:
 			c.alpha=1
 			c.injured=False
-
+def p_slippery(c):
+	if not c.walking:
+		if c.move_speed > 0:
+			c.move_speed-=time.dt/1.1
+		if c.sl_r > 0:
+			c.sl_r-=time.dt
+			c.x+=time.dt*c.move_speed
+		if c.sl_l > 0:
+			c.sl_l-=time.dt
+			c.x-=time.dt*c.move_speed
+		if c.sl_d > 0:
+			c.sl_d-=time.dt
+			c.z-=time.dt*c.move_speed
+		if c.sl_u > 0:
+			c.sl_u-=time.dt
+			c.z+=time.dt*c.move_speed
+		return
+	if c.move_speed < 3:
+		c.move_speed+=time.dt
+def slipper_value(c,m):
+	if m == Vec3(1,0,0):
+		c.sl_r=1
+		c.sl_l=0
+		c.sl_d=0
+		c.sl_u=0
+	elif m == Vec3(-1,0,0):
+		c.sl_r=0
+		c.sl_l=1
+		c.sl_d=0
+		c.sl_u=0
+	elif m == Vec3(0,0,-1):
+		c.sl_r=0
+		c.sl_l=0
+		c.sl_d=1
+		c.sl_u=0
+	elif m == Vec3(0,0,1):
+		c.sl_r=0
+		c.sl_l=0
+		c.sl_d=0
+		c.sl_u=1
 ## world, misc
 def collect_reset():
 	status.C_RESET.clear()
@@ -185,14 +224,16 @@ def ceiling(c,e):
 		c.is_touch_crate=True
 		e.destroy()
 		invoke(lambda:setattr(c,'is_touch_crate',False),delay=.1)
+	if str(e) == 'wood_log':
+		if e.danger:
+			get_damage(c)
 	c.jumping=False
 	c.y=c.y
 def check_ground(c):
-	if map_coordinate != None:
-		if c.intersects(map_zone):
-			landing(c=c,e=terraincast(c.world_position,map_zone,map_coordinate))
-			return
-	hit_info=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.15,.15),ignore=[c],debug=False)
+	if map_zone and c.intersects(map_zone):
+		landing(c=c,e=terraincast(c.world_position,map_zone,map_coordinate))
+		return
+	hit_info=boxcast(c.world_position,Vec3(0,1,0),distance=.012,thickness=(.15,.15),ignore=[c],debug=False)
 	if hit_info.normal:
 		hte=hit_info.entity
 		hw=str(hte)
@@ -212,6 +253,11 @@ def check_ground(c):
 			if hw == 'plank':
 				if hte.typ == 1:
 					hte.pl_touch()
+			if hw == 'ice_ground':
+				c.is_slippery=True
+			else:
+				c.is_slippery=False
+				c.move_speed=2
 			landing(c=c,e=hit_info.world_point.y)
 	else:
 		c.landed=False

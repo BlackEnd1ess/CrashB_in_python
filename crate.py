@@ -324,11 +324,18 @@ class Explosion(Entity):
 	def __init__(self,cr):
 		nC={11:color.red,12:color.green}
 		super().__init__(model='sphere',position=cr.position,color=nC[cr.vnum],alpha=.4,scale=.1)
-		Audio(sn.snd_explo,volume=settings.SFX_VOLUME)
-		if cr.vnum == 12:
+		if not status.e_audio:
+			status.e_audio=True
+			Audio(sn.snd_explo,volume=settings.SFX_VOLUME)
+		if cr.vnum == 12 and not status.n_audio:
+			status.n_audio=True
 			invoke(lambda:Audio(sn.snd_glass,volume=settings.SFX_VOLUME),delay=.1)
 		self.eR=2
 		self.exp_radius()
+		invoke(self.reset_audio,delay=.5)
+	def reset_audio(self):
+		status.e_audio=False
+		status.n_audio=False
 	def exp_radius(self):
 		self.shader=unlit_shader
 		for exI in scene.entities[:]:

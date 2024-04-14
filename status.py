@@ -17,7 +17,7 @@ npc_anim={'amadillo':7,'turtle':12,'saw_turtle':12,'penguin':15,
 		'hedgehog':12,'seal':14,'eating_plant':13,'rat':10,
 		'lizard':11,'scrubber':3,'mouse':8,'vulture':13}
 
-bonus_checkpoint=[None,(0,2,-7),(0,2,-57),(0,0,0),(0,0,0),(0,0,0)]
+bonus_checkpoint=[None,(0,2,-7),(.3,2,2.3),(0,0,0),(0,0,0),(0,0,0)]
 checkpoint=None
 day_mode=''
 
@@ -73,6 +73,8 @@ bonus_round=False
 
 LEVEL_CLEAN=False
 first_crate=True
+e_audio=False
+n_audio=False
 
 aku_exist=False
 is_dying=False

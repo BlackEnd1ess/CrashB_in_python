@@ -14,6 +14,7 @@ snd_sprin=SN+'spring.wav'
 snd_bounc=SN+'bnc.wav'
 snd_c_tnt=SN+'tnt.wav'
 snd_c_air=SN+'air.wav'
+snd_w_log=SN+'wlog.wav'
 
 #misc sfx
 
@@ -48,6 +49,8 @@ snd_walk=SP+'walk.wav'
 snd_land=SP+'land0.wav'
 snd_woah=SP+'woah.wav'
 snd_damg=SP+'damage.wav'
+snd_icew=SP+'ice_slide.wav'
+snd_icep=SP+'ice_slide_stop.wav'
 
 ## npc sound
 SA='res/snd/npc/'

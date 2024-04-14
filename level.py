@@ -50,18 +50,22 @@ def developer_level():
 	invoke(free_level,delay=1)
 
 def test():
-	status.level_index=4
-	status.day_mode='day'
+	status.level_index=2
+	status.day_mode='snow'
 	status.loading=True
 	o.StartRoom(pos=(-.5,0,-8.2))##start
 	o.EndRoom(pos=(0,1.5,14),c=color.rgb(80,100,80))##end
 	cc.preload_items()
-	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='grass',co=color.rgb(130,150,130))
+	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='white_cube',co=color.rgb(130,150,130))
 	o.CrateScore(pos=(-1,.25,-1))
 	mt.crate_row(ID=3,POS=(0,0,-1),CNT=5,WAY=0)
 	#mt.crate_row(ID=1,POS=(1,0,-1),CNT=5,WAY=2)
 	#mt.crate_row(ID=1,POS=(2,0,-1),CNT=5,WAY=2)
+	o.IceGround(pos=(0,.3,4),sca=(5,1,5))
+	#o.mBlock(pos=(1,1,4),sca=1)
+	#o.mBlock(pos=(6,2,4),sca=(4,1,.25))
 	#o.BigPlatform(p=(0,1,4),s=(1,0,1))
+	#o.BigPlatform(p=(1,2,4),s=(.25,0,.25))
 	#mt.crate_row(ID=2,POS=(-1,0,-2),CNT=4,WAY=0)
 	invoke(free_level,delay=1)
 
@@ -103,6 +107,9 @@ def level1():##wood
 	o.TreeScene(pos=(1.2,1.8,19.3),c=color.rgb(110,130,100),s=.02)
 	o.bush(pos=(2.43,1.4,23),s=3,c=cG)
 	o.bush(pos=(-2.37,1.4,23),s=3,c=color.yellow)
+	o.bush(pos=(1.3,1,5.95),s=(1.2,.5,.1),c=color.green)
+	o.bush(pos=(2.3,1,5.95),s=(1.2,.5,.1),c=color.green)
+	o.bush(pos=(2.3,1,5.95),s=(1.2,.5,.1),c=color.green)
 	o.TreeScene(pos=(1.1,1.6,-34.6),c=color.rgb(110,130,100),s=.02)
 	o.TreeScene(pos=(-1,1.6,-34.6),c=color.rgb(110,130,100),s=.02)
 	o.TreeScene(pos=(-1.8,1.5,-21.5),c=color.rgb(110,130,100),s=.02)
@@ -199,29 +206,31 @@ def level2():##snow
 	o.FallingZone(pos=(0,-2,0),s=(128,1,128))
 	Entity(model='quad',scale=(512,512,1),color=color.white,z=64)
 	bn.load_bonus_level(status.level_index)
-	o.BonusPlatform(pos=(4,1.1,1.7))
+	o.BonusPlatform(pos=(4,1.6,1.5))
+	#dangers
+	o.WoodLog(pos=(0,1.6,4))
 	#rock
 	for ro in range(40):
 		o.Rock(pos=(0+random.uniform(-3,3),-2,-61+ro*2))
 		o.Rock(pos=(0+random.uniform(-4,4),-2,-59+ro*2))
-	o.BigPlatform(p=(0,1,-59),s=(3,0,3))
-	o.BigPlatform(p=(0,1,-40),s=(3,0,2))
-	o.BigPlatform(p=(0,1,-20),s=(3,0,2))
-	o.BigPlatform(p=(0,1,0),s=(3,0,2))
-	o.BigPlatform(p=(3,1,2.5),s=(9,0,.5))
-	o.BigPlatform(p=(9,1.7,2.5),s=(3,0,.5))
-	o.BigPlatform(p=(13,2.1,2.5),s=(3,0,.5))
-	o.BigPlatform(p=(17,2.1,2.5),s=(3,0,.5))
+	o.mBlock(pos=(0,1.1,-59),sca=(3,.5,6))
+	o.mBlock(pos=(0,1.1,-41),sca=(3,.5,4))
+	o.mBlock(pos=(0,1.1,-20),sca=(3,.5,4))
+	o.mBlock(pos=(0,1.1,0),sca=(3,.5,4))
+	o.mBlock(pos=(1.5,1.6,2.5),sca=(6,.5,1))
+	o.mBlock(pos=(6,2,2.5),sca=(1,.5,1))
+	o.mBlock(pos=(7,2.5,2.5),sca=(1,.5,1))
+	o.mBlock(pos=(9,2.5,2.5),sca=(3,.5,1))
 	#pillar
 	o.pillar_twin(p=(-.5,.9,-56),ro_y=(0,-45,0))
-	o.pillar_twin(p=(-.5,.9,-41.6),ro_y=(0,-45,0))
-	o.pillar_twin(p=(-.5,.9,-38),ro_y=(0,-45,0))
+	o.pillar_twin(p=(-.5,.9,-42.6),ro_y=(0,-45,0))
+	o.pillar_twin(p=(-.5,.9,-39),ro_y=(0,-45,0))
 	o.pillar_twin(p=(-.5,.9,-21.7),ro_y=(0,-45,0))
 	o.pillar_twin(p=(-.5,.9,-18),ro_y=(0,-45,0))
 	o.pillar_twin(p=(-.5,.9,-1.8),ro_y=(0,-45,0))
 	o.Ropes(pos=(-.5,1,-56),le=55)
 	#npc
-	npc.spawn(pos=(5,1.1,2.5),mID=3,mDirec=0,mTurn=0)
+	npc.spawn(pos=(3,1.6,2.5),mID=3,mDirec=0,mTurn=0)
 	npc.spawn(pos=(0,1.1,1),mID=3,mDirec=0,mTurn=0)
 	npc.spawn(pos=(8.8,1.8,2.5),mID=5,mDirec=0,mTurn=0)
 	#planks
@@ -245,22 +254,27 @@ def level2():##snow
 	o.plank_bridge(pos=(0,1,-3),ro_y=0,typ=0,cnt=1,DST=.5)
 	#walls
 	for snw in range(40):
-		o.SnowWall(pos=(-10+snw*7,1,4))
-		o.SnowWall(pos=(-10+snw*7,3,4))
+		o.SnowWall(pos=(-10+snw*7,1,3))
+		o.SnowWall(pos=(-10+snw*7,3,3))
 	#crates
 	h1=1.1
 	mt.crate_block(ID=1,POS=(.5,h1,-58),CNT=2)
-	mt.crate_wall(ID=12,POS=(-.5,h1,-18.3),CNT=3)
+	mt.crate_wall(ID=12,POS=(-.3,h1,-18.6),CNT=3)
 	c.place_crate(ID=2,p=(0,h1,-54))
 	c.place_crate(ID=3,p=(.2,h1,-52))
 	c.place_crate(ID=2,p=(-.2,h1,-48))
 	c.place_crate(ID=6,p=(-.2,h1,-40))
-	c.place_crate(ID=5,p=(-.7,h1,-41.2))
-	c.place_crate(ID=11,p=(.6,h1,-18.5))
+	c.place_crate(ID=5,p=(-.7,h1,-42.1))
+	c.place_crate(ID=11,p=(.8,h1,-18.6))
 	c.place_crate(ID=12,p=(.4,h1,-15))
 	c.place_crate(ID=12,p=(0,h1,-13))
 	c.place_crate(ID=12,p=(-.3,h1,-10))
 	c.place_crate(ID=12,p=(0,h1,-8))
 	c.place_crate(ID=12,p=(-.2,h1,-6))
 	c.place_crate(ID=12,p=(0,h1,-4))
+	
+	c.place_crate(ID=2,p=(19,2,2.5))
+	c.place_crate(ID=2,p=(19.32,2.32,2.5))
+	c.place_crate(ID=2,p=(19.64,2.64,2.5))
+	mt.crate_row(ID=11,POS=(19.96,2.96,2.5),WAY=0,CNT=4)
 	invoke(free_level,delay=3)

@@ -22,6 +22,20 @@ def run(d):
 	d.texture=af+'run/crash.tga'
 	d.model=af+'run/'+str(int(d.run_anim))+'.ply'
 
+def run_s(d):
+	d.run_s_anim+=time.dt*t
+	if d.run_s_anim > 6.75:
+		d.run_s_anim=0
+	d.texture=af+'slide_start/crash.tga'
+	d.model=af+'slide_start/'+str(int(d.run_s_anim))+'.ply'
+
+def slide_stop(d):
+	d.anim_slide_stop+=time.dt*t
+	if d.anim_slide_stop > 3.75:
+		d.anim_slide_stop=3
+	d.texture=af+'slide_stop/crash.tga'
+	d.model=af+'slide_stop/'+str(int(d.anim_slide_stop))+'.ply'
+
 def jup(d):
 	d.jump_anim+=time.dt*t
 	if d.jump_anim > 2.75:
@@ -43,6 +57,13 @@ def land(d):
 		d.land_anim=0
 	d.texture=af+'_lnd/crash.tga'
 	d.model=af+'_lnd/'+str(int(d.land_anim))+'.ply'
+
+def land_s(d):
+	d.land_s_anim+=time.dt*t
+	if d.land_s_anim > 7.75:
+		d.land_s_anim=0
+	d.texture=af+'slide_land/crash.tga'
+	d.model=af+'slide_land/'+str(int(d.land_anim))+'.ply'
 
 def fall(d):
 	d.fall_anim+=time.dt*t

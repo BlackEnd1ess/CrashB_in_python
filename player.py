@@ -45,7 +45,8 @@ class CrashB(Entity):
 		if key == 'b':
 			print(self.position)
 		if key == 'u':
-			EditorCamera()
+			self.position=(0,3,2)
+			#EditorCamera()
 	def move(self):
 		if status.is_dying or not self.warped:
 			return
@@ -54,15 +55,24 @@ class CrashB(Entity):
 			self.walking=True
 			self.rotation_y=atan2(-mdi.x,-mdi.z)*180/math.pi
 			if self.landed:
-				an.run(self)
+				if self.is_slippery:
+					an.run_s(self)
+				else:
+					an.run(self)
 			if self.walk_snd <= 0 and not status.p_in_air(self):
-				self.walk_snd=.36
-				Audio(snd.snd_walk,volume=.3)
-		else:
-			self.walk_snd=0
-			self.walking=False
-		self.x+=mdi.x*time.dt*self.move_speed
-		self.z+=mdi.z*time.dt*self.move_speed
+				if self.is_slippery:
+					self.walk_snd=.5
+					Audio(snd.snd_icew,pitch=1.5)
+				else:
+					self.walk_snd=.35
+					Audio(snd.snd_walk,volume=.3)
+			self.x+=mdi.x*time.dt*self.move_speed
+			self.z+=mdi.z*time.dt*self.move_speed
+			if self.is_slippery:
+				cc.slipper_value(c=self,m=mdi)
+			return
+		self.walk_snd=0
+		self.walking=False
 	def fall(self):
 		if status.LEVEL_CLEAN:
 			return
@@ -99,7 +109,10 @@ class CrashB(Entity):
 		if self.is_landing and not self.walking:
 			an.land(self)
 		if self.freezed or status.p_idle(self) and not self.is_landing or not self.warped:
-			an.idle(self)
+			if self.is_slippery:
+				an.slide_stop(self)
+			else:
+				an.idle(self)
 		if self.is_attack:
 			cc.p_attack(self)
 			an.spin(self)
@@ -111,6 +124,8 @@ class CrashB(Entity):
 		cc.check_ground(self)
 		cc.check_wall(self)
 		cc.various_val(self)
+		if self.is_slippery:
+			cc.p_slippery(self)
 		if cc.LOD_refresh <= 0:
 			cc.LOD_refresh=.5
 			cc.objectLOD()
@@ -124,9 +139,10 @@ class CrashB(Entity):
 			else:
 				self.alpha=1
 	def update(self):
-		if status.pause or status.level_solved:
+		if status.pause or status.level_solved or status.gproc():
 			return
-		self.aku_y=self.y+.5
+		if status.aku_hit > 0:
+			self.aku_y=self.y+.5
 		if self.jumping:
 			self.jump()
 		self.char_misc()
