@@ -1,4 +1,4 @@
-import _core,player,status,item,sound,ui,animation
+import _core,status,item,sound,animation,level,player
 from ursina.shaders import *
 from ursina import *
 
@@ -25,10 +25,8 @@ def platform_move(d):
 
 ####################
 ##multible objects #
-def plank_bridge(pos,typ,cnt,ro_y,DST):
-	for wP in range(0,cnt):
-		Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)
 
+#lv1
 def spawn_tree_wall(pos,cnt,d):
 	tro={0:-45,1:45}
 	for tsp in range(0,cnt):
@@ -36,6 +34,12 @@ def spawn_tree_wall(pos,cnt,d):
 
 def bush(pos,s,c):
 	Entity(model='quad',texture=omf+'bush/bush1.png',name='bush',position=pos,scale=s,color=c)
+
+
+#lv2
+def plank_bridge(pos,typ,cnt,ro_y,DST):
+	for wP in range(0,cnt):
+		Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)
 
 def pillar_twin(p,ro_y):
 	Pillar(pos=(p[0],p[1],p[2]),ro=ro_y)
@@ -163,11 +167,11 @@ class IceCrystal(Entity):
 	def __init__(self,pos):
 		super().__init__(model=omf+'ice_crystal/ice_crystal',texture=omf+'ice_crystal/snow_2.tga',scale=(.025,.02,.03),position=pos,double_sided=True,rotation_y=-90,color=color.rgb(200,150,200))
 
-class WoodLog(Entity):
+class WoodLog(Entity):##sound nearby
 	def __init__(self,pos):
 		inp='wood_log/wood_log'
 		super().__init__(model=omf+inp+'.obj',texture=omf+inp+'.tga',position=pos,scale=(.001,.0015,.001),collider=b,double_sided=True)
-		self.bK=Entity(model='cube',texture=texp+'bricks.png',position=(self.x,self.y+.6,self.z),scale=(.5,1.5,.5))
+		Entity(model='cube',texture=texp+'bricks.png',position=(self.x,self.y+.6,self.z),scale=(.5,1.5,.5),collider=b)
 		self.danger=False
 		self.or_pos=self.y
 		self.stat=0
@@ -187,7 +191,7 @@ class WoodLog(Entity):
 
 class IceGround(Entity):
 	def __init__(self,pos,sca):
-		super().__init__(model='cube',texture=texp+'ice_ground.png',position=pos,scale=sca,collider=b)
+		super().__init__(model='cube',texture=texp+'ice_ground.png',position=pos,scale=sca,collider=b,alpha=.8)
 		self.texture_scale=(sca[0],sca[2])
 
 ####################
@@ -233,23 +237,6 @@ class WaterHit(Entity): ## collider for water
 	def __init__(self,p,sc):
 		super().__init__(model='cube',collider=b,position=p,scale=(sc[0],.2,sc[1]),visible=False)
 
-class WarpRingEffect(Entity): ## spawn animation
-	def __init__(self,pos):
-		super().__init__(model=omf+'warp_rings/0.ply',texture=omf+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.8,unlit=False)
-		Audio(sound.snd_spawn)
-		self.rings=0
-		self.times=0
-	def update(self):
-		self.rings+=time.dt*30
-		if self.rings > 8.75:
-			self.rings=0
-			self.times+=1
-		if self.times > 5:
-			cc.playerInstance[0].warped=True
-			self.disable()
-			return
-		self.model=omf+'warp_rings/'+str(int(self.rings))+'.ply'
-
 class CrateScore(Entity): ## game finish
 	def __init__(self,pos):
 		_in='res/crate/suprise/crate_sup'
@@ -273,7 +260,7 @@ class CrateScore(Entity): ## game finish
 		self.cc_text.show()
 
 class StartRoom(Entity): ## game spawn point
-	def __init__(self,pos):
+	def __init__(self,pos,lvID):
 		super().__init__(model=omf+'s_room/room1.ply',texture=omf+'s_room/room.tga',position=pos,scale=(.07,.07,.08),rotation=(270,90),collider=None,unlit=False)
 		self.floor0=Entity(model='cube',collider=b,position=(self.x,self.y+.6,self.z-.2),scale=(1.7,.5,1.7),visible=False)
 		self.floor1=Entity(model='cube',collider=b,position=(self.x,self.y+.2,self.z+1.7),scale=(2,.5,2),visible=False)
@@ -287,12 +274,16 @@ class StartRoom(Entity): ## game spawn point
 		self.door_open=False
 		self.door_move=False
 		self.door_time=.7
-		ui.PauseMenu()
+		player.CrashB(pos=(self.x,self.y+.7,self.z-.1))
 		cc.preload_items()
-		player.CrashB(pos=(self.x,self.y+.6,self.z-.1))
 		status.checkpoint=(self.x,self.y+2,self.z)
 		camera.position=(self.x,self.y+2,self.z-3)
 		IndoorZone(pos=self.position,DI=3)
+		if lvID > 0:
+			m_info={1:lambda:level.level1(),
+					2:lambda:level.level2(),
+					3:lambda:level.developer_level()}
+			m_info[lvID]()
 	def update(self):
 		if not self.door_open:
 			if cc.is_nearby_pc(self,DX=.09,DY=3):
@@ -360,7 +351,7 @@ class EndRoom(Entity): ## finish level
 class BonusPlatform(Entity): ## switch -> bonus round
 	def __init__(self,pos):
 		super().__init__(model=omf+'bonus/bonus.obj',texture='grass',collider=b,color=color.azure,scale=(.15,.2,.15),position=pos)
-		self.target=_core.playerInstance[0]
+		self.target=cc.playerInstance[0]
 		self.orginal_pos=self.position
 		self.catch_player=False
 		self.air_time=0
@@ -380,7 +371,7 @@ class GemPlatform(Entity): ## gem platform
 		GMC={0:color.rgb(130,130,140),1:color.rgb(L,0,0),2:color.rgb(0,L,0),3:color.rgb(L,0,L),4:color.rgb(0,0,L+70),5:color.rgb(L,L,0)}
 		super().__init__(model=omf+ne+'/'+ne+'.ply',texture=omf+ne+'/'+ne+'.tga',rotation_x=-90,scale=0.001,position=pos,shader=unlit_shader,collider=b,unlit=False)
 		self.bg_darkness=Entity(model=Circle(12,mode='ngon',thickness=.1),position=(self.x,self.y-.011,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.9)
-		self.target=_core.playerInstance[0]
+		self.target=cc.playerInstance[0]
 		self.orginal_pos=self.position
 		self.catch_player=False
 		self.air_time=0
@@ -433,8 +424,6 @@ class MapTerrain(Entity):
 		cc.map_zone=self
 		cc.map_coordinate=self.model.height_values
 		cc.map_size=self.scale
-		if status.level_index == 2:
-			self.alpha=.6
 		FallingZone(pos=(self.x,self.y-1.5,self.z),s=(size[0]*1.5,1,size[2]*1.5))
 
 class mBlock(Entity):

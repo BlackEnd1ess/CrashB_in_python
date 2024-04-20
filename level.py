@@ -9,26 +9,33 @@ o=objects
 c=crate
 N=npc
 
-##level loaded
+## level is loaded
 def free_level():
+	sound.LevelMusic(T=status.level_index)
+	cc.check_cstack()
+	status.fails=0
+	status.loading=False
+	cc.level_ready=True
+	Audio(sound.snd_spawn)
+	print('level '+str(status.level_index)+' loaded successfully')
+
+## level settings
+def main_instance(idx):
+	status.loading=True
+	status.level_index=idx
+	day_m={0:'default',1:'woods',2:'snow',3:'day'}
+	s_rm={0:(0,0,0),1:(-.3,1,-64.2),2:(0,1,-64.2),3:(0,0,-16.2)}
+	status.day_mode=day_m[idx]
+	o.StartRoom(pos=s_rm[idx],lvID=idx)
 	WEATHER={0:0,1:1,2:2,3:0,4:0,5:0}
-	if status.level_index == 5:
+	if idx == 5:
 		TDHR=1
 	else:
 		TDHR=0
-	status.fails=0
-	env.env_switch(env=status.day_mode,wth=WEATHER[status.level_index],tdr=TDHR)
-	cc.check_cstack()
-	sound.LevelMusic(T=status.level_index)
-	status.loading=False
-	cc.level_ready=True
+	env.env_switch(env=day_m[idx],wth=WEATHER[idx],tdr=TDHR)
 
 ##levels
 def developer_level():
-	status.level_index=4
-	status.day_mode='day'
-	status.loading=True
-	o.StartRoom(pos=(0,0,-16.2))##start
 	o.RewardRoom(pos=(0,1,15),c=color.rgb(80,100,80))##reward
 	o.EndRoom(pos=(0,1.5,27),c=color.rgb(80,100,80))##end
 	o.MapTerrain(MAP='map/0.png',size=(8,1,64),t='white_cube',co=color.rgb(150,150,150))
@@ -50,28 +57,21 @@ def developer_level():
 	invoke(free_level,delay=1)
 
 def test():
-	status.level_index=2
-	status.day_mode='snow'
-	status.loading=True
-	o.StartRoom(pos=(-.5,0,-8.2))##start
 	o.EndRoom(pos=(0,1.5,14),c=color.rgb(80,100,80))##end
 	cc.preload_items()
 	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='white_cube',co=color.rgb(130,150,130))
 	o.CrateScore(pos=(-1,.25,-1))
 	for gj in range(15):
-		c.place_crate(p=(0+.34*gj,0,4),ID=gj,m=1,l=1,tm=random.randint(1,3))
+		#c.place_crate(p=(0+.34*gj,0,-7),ID=0,m=1,l=1,tm=random.randint(1,3))
+		c.place_crate(p=(0+.34*gj,0,-7.32),ID=gj,m=1,l=1,tm=random.randint(1,3))
 	#o.IceGround(pos=(0,.3,4),sca=(5,1,5))
 	invoke(free_level,delay=1)
 
 def level1():##wood
 	TS=16
-	status.level_index=1
-	status.day_mode='woods'
-	status.loading=True
 	cG=color.green
 	o.MapTerrain(MAP='map/'+str(status.level_index)+'.png',size=(TS/1.6,1.5,TS*8),t='grass',co=color.rgb(0,70,0))
 	o.Water(pos=(0,.6,0),s=(10,128),c=color.rgb(40,40,60),a=.8)
-	o.StartRoom(pos=(-.3,1,-64.2))
 	o.InvWall(pos=(-5,.5,-64),sca=(5.,10,200))
 	o.InvWall(pos=(4.7,.5,-64),sca=(5.,10,200))
 	o.BonusPlatform(pos=(1.5,1.4,-7))
@@ -193,16 +193,12 @@ def level1():##wood
 	invoke(free_level,delay=3)
 
 def level2():##snow
-	status.loading=True
-	status.level_index=2
-	status.day_mode='snow'
-	o.StartRoom(pos=(0,1,-64.2))
 	o.FallingZone(pos=(0,-2,0),s=(128,1,128))
 	Entity(model='quad',scale=(512,512,1),color=color.white,z=64)
 	bn.load_bonus_level(status.level_index)
 	o.BonusPlatform(pos=(4,1.6,1.5))
 	#dangers
-	o.WoodLog(pos=(0,1.6,4))
+	o.WoodLog(pos=(10.3,4,2.3))
 	#rock
 	for ro in range(40):
 		o.Rock(pos=(0+random.uniform(-3,3),-2,-61+ro*2))
@@ -215,6 +211,12 @@ def level2():##snow
 	o.mBlock(pos=(6,2,2.5),sca=(1,.5,1))
 	o.mBlock(pos=(7,2.5,2.5),sca=(1,.5,1))
 	o.mBlock(pos=(9,2.5,2.5),sca=(3,.5,1))
+	o.IceGround(pos=(14,2.5,2.5),sca=(5,1,1))
+	o.mBlock(pos=(18,3.5,2.5),sca=(3,.5,1))
+	o.mBlock(pos=(21,4,2.5),sca=(1,.5,1))
+	o.mBlock(pos=(22,5,2.5),sca=(1,.5,1))
+	o.mBlock(pos=(23,5.75,2.7),sca=(1,.5,1))
+	o.mBlock(pos=(23,5.75,5.2),sca=(5,.5,4))
 	#pillar
 	o.pillar_twin(p=(-.5,.9,-56),ro_y=(0,-45,0))
 	o.pillar_twin(p=(-.5,.9,-42.6),ro_y=(0,-45,0))
@@ -226,7 +228,7 @@ def level2():##snow
 	#npc
 	npc.spawn(pos=(3,1.6,2.5),mID=3,mDirec=0,mTurn=0)
 	npc.spawn(pos=(0,1.1,1),mID=3,mDirec=0,mTurn=0)
-	npc.spawn(pos=(8.8,1.8,2.5),mID=5,mDirec=0,mTurn=0)
+	npc.spawn(pos=(8.8,2.5,2.5),mID=5,mDirec=0,mTurn=0)
 	#planks
 	o.plank_bridge(pos=(0,1,-56),ro_y=0,typ=1,cnt=12,DST=.5)
 	o.plank_bridge(pos=(0,1,-48.5),ro_y=0,typ=0,cnt=10,DST=.5)
@@ -270,5 +272,5 @@ def level2():##snow
 	c.place_crate(ID=2,p=(19,2,2.5))
 	c.place_crate(ID=2,p=(19.32,2.32,2.5))
 	c.place_crate(ID=2,p=(19.64,2.64,2.5))
-	mt.crate_row(ID=11,POS=(19.96,2.96,2.5),WAY=0,CNT=4)
+	#mt.crate_row(ID=11,POS=(19.96,2.96,2.5),WAY=0,CNT=4)
 	invoke(free_level,delay=3)

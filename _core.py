@@ -24,18 +24,6 @@ def set_jump_type(d,t):
 	d.jumping=True
 	tp={0:1,1:1.2,2:1.5}
 	d.lpos=d.y+tp[t]
-def p_attack(d):
-	for atk in scene.entities[:]:
-		cid=str(atk)
-		if is_nearby_pc(n=atk,DX=.5,DY=.5):
-			if is_crate(atk) and not atk.vnum == 13 and status.d_delay <= 0:
-				if atk.vnum in [3,11]:
-					atk.empty_destroy()
-				else:
-					atk.destroy()
-			if cid in npc.npc_list and not atk.is_hitten:
-				atk.is_hitten=True
-				Audio(sound.snd_nbeat)
 def get_damage(c):
 	if not c.injured and not status.is_dying:
 		if status.aku_hit > 0:
@@ -132,6 +120,17 @@ def slipper_value(c,m):
 		c.sl_l=0
 		c.sl_d=0
 		c.sl_u=1
+def p_attack():
+	for c_ATK in scene.entities[:]:
+		if is_nearby_pc(c_ATK,DX=.5,DY=.3):
+			if is_crate(c_ATK):
+				if c_ATK.vnum in [3,11]:
+					c_ATK.empty_destroy()
+				else:
+					c_ATK.destroy()
+			if str(c_ATK) in npc.npc_list and not c_ATK.is_hitten:
+				c_ATK.is_hitten=True
+				Audio(sound.snd_nbeat)
 
 ## world, misc
 def collect_reset():
@@ -191,7 +190,7 @@ def collect_rewards():
 		status.clear_gems+=1
 def objectLOD():
 	if not status.LV_CLEAR_PROCESS:
-		for WUM in item.item_list[:]:
+		for WUM in scene.entities[:]:
 			if isinstance(WUM,item.WumpaFruit):
 				if is_nearby_pc(n=WUM,DX=8,DY=8):
 					WUM.world_visible=True
@@ -239,9 +238,9 @@ def check_ground(c):
 	if hit_info.normal:
 		hte=hit_info.entity
 		hw=str(hte)
-		if not hte in item.item_list:
+		if not hw in item.item_list:
 			if is_crate(hte):
-				if hw == 'iron' or hw in ['switch_empty','switch_nitro','tnt'] and hte.activ:
+				if hte.vnum in [9,10,11] and hte.activ or hte.vnum == 0:
 					landing(c=c,e=hit_info.world_point.y)
 				else:
 					crate_action(c=c,e=hte)
@@ -288,19 +287,19 @@ def check_wall(c):
 			return
 		if str(wE) == 'nitro':
 			wE.destroy()
-		if wE in item.item_list:
+		if str(wE) in item.item_list:
 			if status.c_delay <= 0:
 				status.c_delay=.1/6
 				wE.collect()
 			return
-		J=time.dt*c.move_speed*1.1
+		J=time.dt*3
 		vecL={Vec3(1,0,0):lambda:setattr(c,'x',c.x+J),
 			Vec3(-1,0,0):lambda:setattr(c,'x',c.x-J),
 			Vec3(0,0,1):lambda:setattr(c,'z',c.z+J),
 			Vec3(0,0,-1):lambda:setattr(c,'z',c.z-J),
 			Vec3(0,-1,0):lambda:ceiling(c=c,e=wE)}
 		if wH in vecL and not wH == Vec3(0,1,0):
-			if not wE in item.item_list:
+			if not str(wE) in item.item_list:
 				vecL[wH]()
 def platform_floating(m,c):
 	m.air_time+=time.dt
@@ -356,6 +355,7 @@ def wumpa_count(n):
 		status.show_wumpas=5
 	sound.snd_collect()
 def give_extra_live():
+	ui.live_get_anim()
 	Audio(sound.snd_lifes,volume=.5)
 	if status.bonus_round:
 		status.lives_bonus+=1

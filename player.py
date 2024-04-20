@@ -1,4 +1,4 @@
-import _core,crate,objects,ui,status,animation,debugger,sound,npc
+import _core,ui,status,animation,sound
 from ursina.shaders import *
 from math import atan2
 from ursina import *
@@ -7,18 +7,20 @@ snd=sound
 an=animation
 cc=_core
 s=5#cam_speed
+B='box'
 class CrashB(Entity):
 	def __init__(self,pos):
-		super().__init__(model='res/crash.ply',texture='res/crash.tga',scale=0.001,rotation_x=-90,collider='box',position=pos,unlit=False)
+		super().__init__(model='res/crash.ply',texture='res/crash.tga',scale=0.001,rotation_x=-90,collider=B,position=pos,unlit=False)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(200,200,700))
 		self.DEFAUL_COLLIDER=self.collider
 		self.aku_y=None
 		cc.set_val(self)
+		ui.PauseMenu()
 		ui.WumpaCounter()
 		ui.CrateCounter()
 		ui.LiveCounter()
 		ui.CollectedGem()
-		invoke(lambda:objects.WarpRingEffect(pos=self.position),delay=3)
+		an.WarpRingEffect(pos=self.position)
 	def input(self,key):
 		if self.freezed or status.is_dying:
 			return
@@ -29,23 +31,29 @@ class CrashB(Entity):
 			self.block_input=True
 			cc.set_jump_type(d=self,t=1)
 			self.first_land=True
+			return
 		if key == 'alt' and not self.is_attack:
 			self.is_attack=True
 			Audio(snd.snd_attk)
+			return
 		if key == 'tab':
 			status.show_wumpas=5
 			status.show_crates=5
 			status.show_lives=5
 			status.show_gems=5
+			return
 		if key in ['p','escape']:
 			if not status.pause:
 				status.pause=True
 				return
 			status.pause=False
+		##dev input
 		if key == 'b':
 			print(self.position)
+		if key == 'e':
+			EditorCamera()
 		if key == 'u':
-			self.position=(0,3,2)
+			self.position=(21.9,6,2.55)
 	def move(self):
 		if status.is_dying or not self.warped:
 			return
@@ -103,6 +111,8 @@ class CrashB(Entity):
 		if status.is_dying:
 			an.player_death(self)
 			return
+		if self.is_attack:
+			an.spin(self)
 		if self.is_flip and status.p_in_air(self):
 			an.flip(self)
 		if self.is_landing and not self.walking:
@@ -112,9 +122,6 @@ class CrashB(Entity):
 				an.slide_stop(self)
 			else:
 				an.idle(self)
-		if self.is_attack:
-			cc.p_attack(self)
-			an.spin(self)
 	def char_misc(self):
 		self.c_camera()
 		if not status.is_dying:
@@ -123,10 +130,12 @@ class CrashB(Entity):
 		cc.check_ground(self)
 		cc.check_wall(self)
 		cc.various_val(self)
+		if self.is_attack:
+			cc.p_attack()
 		if self.is_slippery:
 			cc.p_slippery(self)
 		if cc.LOD_refresh <= 0:
-			cc.LOD_refresh=.5
+			cc.LOD_refresh=.3
 			cc.objectLOD()
 		if cc.LOD_refresh > 0:
 			_core.LOD_refresh-=time.dt

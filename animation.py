@@ -1,5 +1,5 @@
+import status,_core,sound
 from ursina import *
-import status,_core
 
 t=18
 af='res/character/'
@@ -158,9 +158,28 @@ class CrateBreak(Entity):
 				return
 			self.model=cf+'break/'+str(int(self.frame_break))+'.ply'
 
+## Effects
 class WarpVortex(FrameAnimation3d):
 	def __init__(self,pos):
 		super().__init__('res/objects/warp_vortex/vortex.obj',color=color.yellow,scale=.1,position=pos,fps=30,loop=True)
+
+class WarpRingEffect(Entity): ## spawn animation
+	def __init__(self,pos):
+		self.omf='res/objects/'
+		super().__init__(model=self.omf+'warp_rings/0.ply',texture=self.omf+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.8,unlit=False)
+		self.rings=0
+		self.times=0
+	def update(self):
+		if _core.level_ready:
+			self.rings+=time.dt*30
+			if self.rings > 8.75:
+				self.rings=0
+				self.times+=1
+			if self.times > 5:
+				_core.playerInstance[0].warped=True
+				self.disable()
+				return
+			self.model=self.omf+'warp_rings/'+str(int(self.rings))+'.ply'
 
 ## npc animation
 def npc_walking(m):

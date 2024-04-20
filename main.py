@@ -2,8 +2,9 @@ import settings,level
 from ursina import *
 
 app=Ursina(title='Crash Bandicoot',icon='res/cb.ico')
+application.time_scale=.95
 def start_game():
 	settings.load()
-	level.level1()
+	level.main_instance(2)
 start_game()
 app.run()

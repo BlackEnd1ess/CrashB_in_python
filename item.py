@@ -1,19 +1,23 @@
 from ursina.shaders import *
-import _core,status,sound
+import _core,status,sound,ui
 from ursina import *
 
-item_list=[]
 cc=_core
+item_list=['wumpa_fruit',
+		'extra_live',
+		'gem_stone',
+		'energy_crystal',
+		'trial_clock']
 
-b='box'
 i_path='res/item/'
+b='box'
+
 class WumpaFruit(Entity):
 	def __init__(self,pos):
 		w_model='wumpa/WumpaFruitGameplay.obj'
 		self.w_tex='wumpa/images/Crash_WumpaFruit_C.png'
 		super().__init__(model=i_path+w_model,texture=i_path+self.w_tex,position=(pos[0],pos[1]+0.3,pos[2]),scale=0.005,collider=b,shader=lit_with_shadows_shader)
 		self.world_visible=False
-		item_list.append(self)
 		if _core.level_ready:
 			status.W_RESET.append(self)
 	def destroy(self):
@@ -21,7 +25,6 @@ class WumpaFruit(Entity):
 		self.disable()
 		scene.entities.remove(self)
 	def collect(self):
-		item_list.remove(self)
 		self.disable()
 		_core.wumpa_count(1)
 	def update(self):
@@ -37,10 +40,8 @@ class WumpaFruit(Entity):
 class ExtraLive(Entity):
 	def __init__(self,pos):
 		super().__init__(model='quad',texture=i_path+'/extra_live/live.png',position=pos,scale=0.25,collider=b)
-		item_list.append(self)
 	def collect(self):
 		self.disable()
-		item_list.remove(self)
 		_core.give_extra_live()
 
 class GemStone(Entity):
@@ -56,7 +57,6 @@ class GemStone(Entity):
 		if c == 5:
 			self.scale_y*=1.25
 		self.gemID=c
-		item_list.append(self)
 	def collect(self):
 		if self.gemID == 0:
 			status.level_cle_gem=True
@@ -64,7 +64,6 @@ class GemStone(Entity):
 			status.level_col_gem=True
 		Audio(sound.snd_c_gem,volume=1)
 		status.show_gems=5
-		item_list.remove(self)
 		self.disable()
 	def update(self):
 		if not status.gproc():
@@ -80,12 +79,10 @@ class EnergyCrystal(Entity):
 		CRY='crystal/crystal'
 		super().__init__(model=i_path+CRY+'.obj',texture=i_path+CRY+'.tga',scale=0.003,position=pos,double_sided=True,color=color.rgb(255,0,255),shader=unlit_shader,unlit=False)
 		self.collider=b
-		item_list.append(self)
 	def collect(self):
 		status.level_crystal=True
 		Audio(sound.snd_c_gem,volume=1)
 		status.show_gems=5
-		item_list.remove(self)
 		self.disable()
 	def update(self):
 		if not status.gproc():
@@ -95,9 +92,7 @@ class TrialClock(Entity):
 	def __init__(self,pos):
 		Clk='clock/clock'
 		super().__init__(model=i_path+Clk+'.obj',texture=i_path+Clk+'.png',position=pos,scale=.003,unlit=False,double_sided=True)
-		item_list.append(self)
 	def collect(self):
-		item_list.remove(self)
 		self.disable()
 		status.is_time_trial=True
 	def update(self):

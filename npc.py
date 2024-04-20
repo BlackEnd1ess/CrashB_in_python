@@ -28,7 +28,7 @@ def walk_frames(m):
 class Amadillo(Entity):
 	def __init__(self,p,d,t):
 		nN='amadillo'
-		super().__init__(model=nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
 		cc.set_val_npc(self)
 		self.m_direction=d
@@ -42,7 +42,7 @@ class Amadillo(Entity):
 class Turtle(Entity):
 	def __init__(self,p,d,t):
 		nN='turtle'
-		super().__init__(model=nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
 		cc.set_val_npc(self)
 		self.m_direction=d
@@ -56,7 +56,7 @@ class Turtle(Entity):
 class SawTurtle(Entity):
 	def __init__(self,p,d,t):
 		nN='saw_turtle'
-		super().__init__(model=nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
 		cc.set_val_npc(self)
 		self.m_direction=d
@@ -70,7 +70,7 @@ class SawTurtle(Entity):
 class Penguin(Entity):
 	def __init__(self,p,d,t):
 		nN='penguin'
-		super().__init__(model=nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,300,800))
 		cc.set_val_npc(self)
 		self.m_direction=d
@@ -84,7 +84,7 @@ class Penguin(Entity):
 class Hedgehog(Entity):
 	def __init__(self,p,d,t):
 		nN='hedgehog'
-		super().__init__(model=nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC/1.5,position=p)
+		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC/1.5,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,300,300))
 		self.is_defend_mode=False
 		cc.set_val_npc(self)
@@ -109,7 +109,7 @@ class Hedgehog(Entity):
 class Seal(Entity):
 	def __init__(self,p,d,t):
 		nN='seal'
-		super().__init__(model=nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,800,300))
 		cc.set_val_npc(self)
 		self.m_direction=d
@@ -131,7 +131,7 @@ class Seal(Entity):
 class EatingPlant(Entity):
 	def __init__(self,p,d,t):
 		nN='eating_plant'
-		super().__init__(model=nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(400,400,1200))
 		self.target=_core.playerInstance[0]
 		self.is_attacking=False
@@ -174,7 +174,7 @@ class EatingPlant(Entity):
 class Rat(Entity):
 	def __init__(self,p,d,t):
 		nN='rat'
-		super().__init__(model=nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,300,400))
 		self.target=_core.playerInstance[0]
 		cc.set_val_npc(self)
@@ -199,7 +199,7 @@ class Rat(Entity):
 class Lizard(Entity):
 	def __init__(self,p,d,t):
 		nN='lizard'
-		super().__init__(model=nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(500,500,1100))
 		cc.set_val_npc(self)
 		self.m_direction=d
@@ -213,7 +213,7 @@ class Lizard(Entity):
 class Scrubber(Entity):
 	def __init__(self,p,d,t):
 		nN='scrubber'
-		super().__init__(model=nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
 		self.n_snd=Audio(sound.snd_scrubber,volume=0,loop=True)
 		cc.set_val_npc(self)
@@ -235,7 +235,7 @@ class Scrubber(Entity):
 class Mouse(Entity):
 	def __init__(self,p,d,t):
 		nN='mouse'
-		super().__init__(model=nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
 		self.n_snd=Audio(sound.snd_mouse,volume=0,loop=True)
 		cc.set_val_npc(self)
@@ -258,7 +258,7 @@ class Mouse(Entity):
 class Vulture(Entity):
 	def __init__(self,p,d,t):
 		nN='vulture'
-		super().__init__(model=nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(300,600,300))
 		self.target=_core.playerInstance[0]
 		cc.set_val_npc(self)

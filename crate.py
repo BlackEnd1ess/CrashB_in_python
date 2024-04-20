@@ -35,11 +35,6 @@ def place_crate(p,ID,m=None,l=None,pse=None,tm=None):
 
 def destroy_event(c):
 	c.disable()
-	if status.first_crate:
-		status.first_crate=False
-		status.d_delay=.6
-	else:
-		status.d_delay=.1
 	c.collider=None
 	c.parent=None
 	c.hide()
@@ -81,6 +76,7 @@ class Iron(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.p_snd=False
 		self.vnum=0
+		print(pp+_in+'.obj')
 	def destroy(self):
 		block_destroy(self)
 
@@ -100,7 +96,7 @@ class QuestionMark(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=2
 	def destroy(self):
-		for _w in range(random.randint(5,10)):
+		for _w in range(5):
 			item.WumpaFruit(pos=(self.x+random.uniform(-.1,.1),self.y,self.z+random.uniform(-.1,.1)))
 		destroy_event(self)
 

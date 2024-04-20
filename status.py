@@ -42,7 +42,7 @@ aku_hit=0
 fails=0
 
 ## wumpa count
-wumpa_fruits=0
+wumpa_fruits=99
 wumpa_bonus=0
 
 ## crate count
@@ -83,7 +83,6 @@ is_death_route=False
 preload_phase=False
 is_time_trial=False
 
-first_crate=True
 e_audio=False
 n_audio=False
 

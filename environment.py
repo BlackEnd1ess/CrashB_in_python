@@ -88,7 +88,7 @@ class Fog(Entity):
 
 class RainFall(Animation):
 	def __init__(self):
-		super().__init__('res/env/rain.gif',parent=camera.ui,z=.1,fps=40,scale=(2,1),duration=.1,color=color.white,alpha=.4)
+		super().__init__('res/env/rain.gif',parent=camera.ui,z=.1,fps=60,scale=(2,1),duration=.1,color=color.white,alpha=.4)
 		self.soundR=Audio('res/snd/ambience/rain.wav',loop=True,volume=0)
 		if status.day_mode == 'night':
 			self.color=color.rgb(80,80,80)
