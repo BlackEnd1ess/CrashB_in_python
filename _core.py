@@ -265,9 +265,8 @@ def landing(c,e):
 		if c.first_land:
 			c.first_land=False
 			c.is_landing=True
+			c.land_anim=0
 			Audio(sound.snd_land)
-			invoke(lambda:setattr(c,'is_landing',False),delay=.6)
-			invoke(lambda:setattr(c,'land_anim',0),delay=.6)
 		c.block_input=False
 		c.is_flip=False
 		c.flip_anim=0

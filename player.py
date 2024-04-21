@@ -30,7 +30,6 @@ class CrashB(Entity):
 			Audio(snd.snd_jump)
 			self.block_input=True
 			cc.set_jump_type(d=self,t=1)
-			self.first_land=True
 			return
 		if key == 'alt' and not self.is_attack:
 			self.is_attack=True
@@ -53,7 +52,7 @@ class CrashB(Entity):
 		if key == 'e':
 			EditorCamera()
 		if key == 'u':
-			self.position=(32,7,27)
+			self.position=(41,7,31)
 	def move(self):
 		if status.is_dying or not self.warped:
 			return
@@ -62,6 +61,7 @@ class CrashB(Entity):
 			self.walking=True
 			self.rotation_y=atan2(-mdi.x,-mdi.z)*180/math.pi
 			if self.landed:
+				self.is_landing=False
 				if self.is_slippery:
 					an.run_s(self)
 				else:
@@ -94,6 +94,7 @@ class CrashB(Entity):
 	def jump(self):
 		self.y+=time.dt*2.4
 		an.jup(self)
+		self.first_land=True
 		if status.p_walk(self):
 			self.is_flip=True
 		if self.y >= self.lpos:
@@ -115,8 +116,9 @@ class CrashB(Entity):
 			an.spin(self)
 		if self.is_flip and status.p_in_air(self):
 			an.flip(self)
-		if self.is_landing and not self.walking:
+		if self.is_landing and not self.walking and not status.p_in_air(self):
 			an.land(self)
+			return
 		if self.freezed or status.p_idle(self) and not self.is_landing or not self.warped:
 			if self.is_slippery:
 				an.slide_stop(self)

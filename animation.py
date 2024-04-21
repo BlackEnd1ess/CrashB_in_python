@@ -54,9 +54,11 @@ def spin(d):
 def land(d):
 	d.land_anim+=time.dt*t
 	if d.land_anim > 12.75:
+		d.is_landing=False
 		d.land_anim=0
-	d.texture=af+'_lnd/crash.tga'
-	d.model=af+'_lnd/'+str(int(d.land_anim))+'.ply'
+		return
+	d.texture=af+'lnd/crash.tga'
+	d.model=af+'lnd/'+str(int(d.land_anim))+'.ply'
 
 def land_s(d):
 	d.land_s_anim+=time.dt*t

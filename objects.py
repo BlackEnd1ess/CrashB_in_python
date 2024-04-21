@@ -201,25 +201,25 @@ class IceGround(Entity):
 class SnowPlatform(Entity):
 	def __init__(self,pos):
 		snPL='snow_platform/snow_platform'
-		super().__init__(model=omf+snPL+'.obj',texture=omf+snPL+'.tga',position=pos,scale=.01,collider=b,double_sided=True)
+		super().__init__(model=omf+snPL+'.obj',texture=omf+snPL+'.tga',position=pos,scale=.0075,collider=b,double_sided=True)
 
 class Role(Entity):
-	def __init__(self,pos):
+	def __init__(self,pos,di):
 		rol='role/role'
 		super().__init__(model=omf+rol+'.obj',texture=omf+rol+'.tga',position=pos,scale=.01,collider=b,double_sided=True)
 		self.main_pos=self.position
 		self.is_rolling=False
 		self.roll_wait=1
-		self.direc=0
+		self.direc=di
 	def roll_right(self):
 		self.x+=time.dt*2
-		self.rotation_z+=time.dt*60
+		self.rotation_z+=time.dt*80
 		if self.x >= self.main_pos[0]+1.8:
 			self.roll_wait=1
 			self.direc=1
 	def roll_left(self):
 		self.x-=time.dt*2
-		self.rotation_z-=time.dt*60
+		self.rotation_z-=time.dt*80
 		if self.x <= self.main_pos[0]-1.8:
 			self.roll_wait=1
 			self.direc=0
