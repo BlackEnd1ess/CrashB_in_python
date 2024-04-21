@@ -105,3 +105,7 @@ class TimeRelic(Entity):
 	def update(self):
 		if not status.gproc():
 			self.rotation_y-=time.dt*70
+
+class InfoItem(Entity):
+	def __init__(self,pos):
+		super().__init__(model=omf+'',texture=texp+'',position=pos,scale=.5,collider=b)

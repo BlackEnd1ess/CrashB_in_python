@@ -138,12 +138,9 @@ def spring_animation(c):
 
 class CrateBreak(Entity):
 	def __init__(self,cr):
-		if cr.vnum == 11:
-			bco=color.red
-		elif cr.vnum == 12:
-			bco=color.green
-		elif cr.vnum == 15:
-			bco=color.gold
+		if cr.vnum in [11,12,15,16]:
+			vco={11:color.red,12:color.green,15:color.gold,16:color.violet}
+			bco=vco[cr.vnum]
 		else:
 			bco=color.orange
 		super().__init__(model=cf+'break/0.ply',texture=cf+'break/break.tga',rotation=(-90,cr.rotation_y,0),scale=.4/1000,color=bco,position=cr.position,unlit=False,collider=None)

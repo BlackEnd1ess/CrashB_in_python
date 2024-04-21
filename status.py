@@ -42,7 +42,7 @@ aku_hit=0
 fails=0
 
 ## wumpa count
-wumpa_fruits=99
+wumpa_fruits=0
 wumpa_bonus=0
 
 ## crate count

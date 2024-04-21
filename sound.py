@@ -21,6 +21,7 @@ snd_d_opn=SN+'door_open.wav'
 snd_spawn=SN+'spawn.wav'
 snd_portl=SN+'portal.wav'
 snd_w_log=SN+'wlog.wav'
+snd_roles=SN+'role.wav'
 
 #game/ui sfx
 snd_rward=SN+'reward.wav'

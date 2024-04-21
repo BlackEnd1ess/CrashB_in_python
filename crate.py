@@ -24,9 +24,10 @@ def place_crate(p,ID,m=None,l=None,pse=None,tm=None):
 			12:lambda:Nitro(pos=p,pse=pse),
 			13:lambda:Air(pos=p,m=m,l=l,pse=pse),
 			14:lambda:Protected(pos=p,pse=pse),
-			15:lambda:cTime(pos=p,pse=pse,tm=tm)}
+			15:lambda:cTime(pos=p,pse=pse,tm=tm),
+			16:lambda:LvInfo(pos=p,pse=pse)}
 	CRATES[ID]()
-	if not ID in [0,8,9,10] and not pse == 1 and not p[1] == -256:
+	if not ID in [0,8,9,10,15,16] and not pse == 1 and not p[1] == -256:
 		status.crates_in_level+=1
 		if p[1] < -20:
 			status.crates_in_bonus+=1
@@ -46,7 +47,7 @@ def destroy_event(c):
 		if status.bonus_round:
 			status.crate_bonus+=1
 		else:
-			if not c.vnum == 15:
+			if not c.vnum in [15,16]:
 				status.crate_to_sv+=1
 				status.crate_count+=1
 				status.show_crates=5
@@ -337,6 +338,23 @@ class cTime(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.vnum=15
 	def destroy(self):
+		destroy_event(self)
+
+class LvInfo(Entity):
+	def __init__(self,pos,pse):
+		_in='info/crate_info'
+		super().__init__(model=pp+_in+'.obj',texture=pp+_in+'.png')
+		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		self.vnum=16
+	def destroy(self):
+		l_inf={0:'this is a developer test level, place the gem where you want',
+				1:'blue gem - reach the end of this level without breaking boxes',
+				2:'red gem - solve this level without loosing extra lifes.',
+				3:'green gem - find the hidden gem',
+				4:'yellow gem - solve the hard sewer path',
+				5:'purple gem - collect 300 or more wumpa fruits in this level'}
+		mText=Text(text=l_inf[status.level_index],parent=camera.ui,font='res/ui/font.ttf',color=color.orange,scale=2.5,position=(-.3,-.3,.1))
+		invoke(mText.disable,delay=5)
 		destroy_event(self)
 
 ##crate effects

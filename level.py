@@ -61,7 +61,9 @@ def test():
 	cc.preload_items()
 	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='white_cube',co=color.rgb(130,150,130))
 	o.CrateScore(pos=(-1,.25,-1))
-	for gj in range(15):
+	#o.SnowPlatform(pos=(0,.5,-6))
+	o.Role(pos=(0,.7,-6))
+	for gj in range(17):
 		#c.place_crate(p=(0+.34*gj,0,-7),ID=0,m=1,l=1,tm=random.randint(1,3))
 		c.place_crate(p=(0+.34*gj,0,-7.32),ID=gj,m=1,l=1,tm=random.randint(1,3))
 	#o.IceGround(pos=(0,.3,4),sca=(5,1,5))
@@ -217,6 +219,9 @@ def level2():##snow
 	o.mBlock(pos=(22,5,2.5),sca=(1,.5,1))
 	o.mBlock(pos=(23,5.75,2.7),sca=(1,.5,1))
 	o.mBlock(pos=(23,5.75,5.2),sca=(5,.5,4))
+	o.mBlock(pos=(23,5.75,23),sca=(2,.5,7))
+	o.mBlock(pos=(23.5,5.75,27),sca=(3,.5,1))
+	o.mBlock(pos=(31.8,5.748,27.05),sca=(3,.5,1))
 	#pillar
 	o.pillar_twin(p=(-.5,.9,-56),ro_y=(0,-45,0))
 	o.pillar_twin(p=(-.5,.9,-42.6),ro_y=(0,-45,0))
@@ -224,7 +229,11 @@ def level2():##snow
 	o.pillar_twin(p=(-.5,.9,-21.7),ro_y=(0,-45,0))
 	o.pillar_twin(p=(-.5,.9,-18),ro_y=(0,-45,0))
 	o.pillar_twin(p=(-.5,.9,-1.8),ro_y=(0,-45,0))
+	o.pillar_twin(p=(22.5,5.75,7),ro_y=(0,-45,0))
+	o.pillar_twin(p=(22.5,5.75,19.7),ro_y=(0,-45,0))
+	o.pillar_twin(p=(22.5,5.75,26.3),ro_y=(0,-45,0))
 	o.Ropes(pos=(-.5,1,-56),le=55)
+	o.Ropes(pos=(22.5,5.65,7),le=16)
 	#npc
 	npc.spawn(pos=(3,1.6,2.5),mID=3,mDirec=0,mTurn=0)
 	npc.spawn(pos=(0,1.1,1),mID=3,mDirec=0,mTurn=0)
@@ -248,6 +257,15 @@ def level2():##snow
 	o.plank_bridge(pos=(0,1,-6),ro_y=0,typ=1,cnt=2,DST=.5)
 	o.plank_bridge(pos=(0,1,-4),ro_y=0,typ=1,cnt=2,DST=.5)
 	o.plank_bridge(pos=(0,1,-3),ro_y=0,typ=0,cnt=1,DST=.5)
+	o.plank_bridge(pos=(23,5.71,7.3),ro_y=0,typ=0,cnt=6,DST=.4)
+	o.plank_bridge(pos=(23,5.71,11),ro_y=0,typ=1,cnt=3,DST=.5)
+	o.plank_bridge(pos=(23,5.71,13),ro_y=0,typ=1,cnt=2,DST=.5)
+	o.plank_bridge(pos=(23,5.71,15),ro_y=0,typ=1,cnt=1,DST=.5)
+	o.plank_bridge(pos=(23,5.71,16),ro_y=0,typ=1,cnt=1,DST=.5)
+	o.plank_bridge(pos=(23,5.71,17),ro_y=0,typ=1,cnt=1,DST=.5)
+	o.plank_bridge(pos=(23,5.71,18),ro_y=0,typ=1,cnt=1,DST=.5)
+	o.plank_bridge(pos=(23,5.71,19),ro_y=0,typ=0,cnt=1,DST=.5)
+	o.plank_bridge(pos=(25.2,5.71,27),ro_y=90,typ=1,cnt=12,DST=.45)
 	#walls
 	for snw in range(40):
 		o.SnowWall(pos=(-10+snw*7,1,3))
@@ -268,9 +286,9 @@ def level2():##snow
 	c.place_crate(ID=12,p=(0,h1,-8))
 	c.place_crate(ID=12,p=(-.2,h1,-6))
 	c.place_crate(ID=12,p=(0,h1,-4))
-	
 	c.place_crate(ID=2,p=(19,2,2.5))
 	c.place_crate(ID=2,p=(19.32,2.32,2.5))
 	c.place_crate(ID=2,p=(19.64,2.64,2.5))
+	c.place_crate(ID=6,p=(23,5.75,23))
 	#mt.crate_row(ID=11,POS=(19.96,2.96,2.5),WAY=0,CNT=4)
 	invoke(free_level,delay=3)

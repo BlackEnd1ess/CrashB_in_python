@@ -39,7 +39,10 @@ def bush(pos,s,c):
 #lv2
 def plank_bridge(pos,typ,cnt,ro_y,DST):
 	for wP in range(0,cnt):
-		Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)
+		if ro_y in [90,-90]:
+			Plank(pos=(pos[0]+wP*DST,pos[1],pos[2]),ro_y=ro_y,typ=typ)
+		else:
+			Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)
 
 def pillar_twin(p,ro_y):
 	Pillar(pos=(p[0],p[1],p[2]),ro=ro_y)
@@ -185,7 +188,8 @@ class WoodLog(Entity):##sound nearby
 			elif self.stat == 1:
 				self.y-=time.dt*5
 				if self.y <= self.or_pos:
-					Audio(sound.snd_w_log)
+					if cc.is_nearby_pc(n=self,DX=2,DY=2):
+						Audio(sound.snd_w_log)
 					self.danger=False
 					self.stat=0
 
@@ -193,6 +197,46 @@ class IceGround(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model='cube',texture=texp+'ice_ground.png',position=pos,scale=sca,collider=b,alpha=.8)
 		self.texture_scale=(sca[0],sca[2])
+
+class SnowPlatform(Entity):
+	def __init__(self,pos):
+		snPL='snow_platform/snow_platform'
+		super().__init__(model=omf+snPL+'.obj',texture=omf+snPL+'.tga',position=pos,scale=.01,collider=b,double_sided=True)
+
+class Role(Entity):
+	def __init__(self,pos):
+		rol='role/role'
+		super().__init__(model=omf+rol+'.obj',texture=omf+rol+'.tga',position=pos,scale=.01,collider=b,double_sided=True)
+		self.main_pos=self.position
+		self.is_rolling=False
+		self.roll_wait=1
+		self.direc=0
+	def roll_right(self):
+		self.x+=time.dt*2
+		self.rotation_z+=time.dt*60
+		if self.x >= self.main_pos[0]+1.8:
+			self.roll_wait=1
+			self.direc=1
+	def roll_left(self):
+		self.x-=time.dt*2
+		self.rotation_z-=time.dt*60
+		if self.x <= self.main_pos[0]-1.8:
+			self.roll_wait=1
+			self.direc=0
+	def update(self):
+		if not status.gproc():
+			if self.roll_wait > 0:
+				self.is_rolling=False
+				self.roll_wait-=time.dt
+				if self.roll_wait <= 0:
+					if cc.is_nearby_pc(self,DX=5,DY=5):
+						Audio(sound.snd_roles)
+				return
+			if self.roll_wait <= 0:
+				self.is_rolling=True
+				rdi={0:self.roll_right,1:self.roll_left}
+				rdi[self.direc]()
+
 
 ####################
 ## level 3 objects #
@@ -282,7 +326,7 @@ class StartRoom(Entity): ## game spawn point
 		if lvID > 0:
 			m_info={1:lambda:level.level1(),
 					2:lambda:level.level2(),
-					3:lambda:level.developer_level()}
+					3:lambda:level.test()}
 			m_info[lvID]()
 	def update(self):
 		if not self.door_open:
@@ -433,7 +477,10 @@ class mBlock(Entity):
 		wPL={0:None,1:'bricks.png',2:'ice_wall.png',3:'moss.png',4:'ice_wall.png'}
 		super().__init__(model='cube',texture=texp+tPL[cHo],position=pos,scale=sca,collider=b,origin_y=.5)
 		self.mWall=Entity(model='cube',texture=wPL[cHo],scale=(sca[0],self.scale_y*2,sca[2]),position=(self.x,self.y-2*self.scale_y,self.z),collider=b)
-		SV=(sca[0]*2,sca[0]*2)
+		if sca[0] > 1 and sca[1] > 1:
+			SV=(sca[0]*2,1)
+		else:
+			SV=(sca[0]*2,sca[1]*2)
 		self.texture_scale=SV
 		self.mWall.texture_scale=SV
 

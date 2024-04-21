@@ -97,29 +97,25 @@ def p_slippery(c):
 			c.sl_u-=time.dt
 			c.z+=time.dt*c.move_speed
 		return
-	if c.move_speed < 3:
+	if c.move_speed < 2.5:
 		c.move_speed+=time.dt
 def slipper_value(c,m):
 	if m == Vec3(1,0,0):
 		c.sl_r=1
-		c.sl_l=0
-		c.sl_d=0
-		c.sl_u=0
+		for _dr in ['sl_l','sl_d','sl_u']:
+			setattr(c,_dr,0)
 	elif m == Vec3(-1,0,0):
-		c.sl_r=0
 		c.sl_l=1
-		c.sl_d=0
-		c.sl_u=0
+		for _dr in ['sl_r','sl_d','sl_u']:
+			setattr(c,_dr,0)
 	elif m == Vec3(0,0,-1):
-		c.sl_r=0
-		c.sl_l=0
 		c.sl_d=1
-		c.sl_u=0
+		for _dr in ['sl_l','sl_r','sl_u']:
+			setattr(c,_dr,0)
 	elif m == Vec3(0,0,1):
-		c.sl_r=0
-		c.sl_l=0
-		c.sl_d=0
 		c.sl_u=1
+		for _dr in ['sl_l','sl_r','sl_d']:
+			setattr(c,_dr,0)
 def p_attack():
 	for c_ATK in scene.entities[:]:
 		if is_nearby_pc(c_ATK,DX=.5,DY=.3):
@@ -287,6 +283,9 @@ def check_wall(c):
 			return
 		if str(wE) == 'nitro':
 			wE.destroy()
+		if str(wE) == 'role':
+			if wE.is_rolling:
+				get_damage(c)
 		if str(wE) in item.item_list:
 			if status.c_delay <= 0:
 				status.c_delay=.1/6
@@ -375,8 +374,8 @@ def crate_set_val(cR,Cpos,Cpse):
 	cR.org_tex=cR.texture
 def is_crate(e):
 	cck=[C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
-		C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,
-		C.SwitchEmpty,C.SwitchNitro,C.TNT,C.Nitro,C.Air,C.Protected,C.cTime]
+		C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,C.SwitchEmpty,
+		C.SwitchNitro,C.TNT,C.Nitro,C.Air,C.Protected,C.cTime,C.LvInfo]
 	if any(isinstance(e,crate_class) for crate_class in cck):
 		return True
 def crate_action(c,e):
