@@ -66,13 +66,19 @@ class GemStone(Entity):
 		status.show_gems=5
 		self.disable()
 	def update(self):
+		sli=status.level_index
+		geC=self.intersects()
 		if not status.gproc():
 			self.rotation_y-=time.dt*60
-		if self.gemID == 4:
-			if status.level_index == 1 and status.crate_count > 0:
-				self.collider=None
-				self.disable()
-				return
+		if self.gemID == 4 and sli == 1 and status.crate_count > 0 or self.gemID == 1 and sli == 2 and status.fails > 0:
+			self.collider=None
+			self.disable()
+			return
+		if geC and self.gemID == 0:
+			geE=geC.entity
+			if str(geE) == 'gem_stone':
+				if not self.y == self.y+.5:
+					self.y+=time.dt
 
 class EnergyCrystal(Entity):
 	def __init__(self,pos):
@@ -105,7 +111,3 @@ class TimeRelic(Entity):
 	def update(self):
 		if not status.gproc():
 			self.rotation_y-=time.dt*70
-
-class InfoItem(Entity):
-	def __init__(self,pos):
-		super().__init__(model=omf+'',texture=texp+'',position=pos,scale=.5,collider=b)

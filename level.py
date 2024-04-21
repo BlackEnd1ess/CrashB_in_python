@@ -58,9 +58,10 @@ def developer_level():
 
 def test():
 	o.EndRoom(pos=(0,1.5,14),c=color.rgb(80,100,80))##end
+	o.RewardRoom(pos=(0,1,3),c=color.rgb(80,80,120))
 	cc.preload_items()
 	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='white_cube',co=color.rgb(130,150,130))
-	o.CrateScore(pos=(-1,.25,-1))
+	#o.CrateScore(pos=(-1,.25,-1))
 	#o.SnowPlatform(pos=(0,.5,-6))
 	for gj in range(17):
 		#c.place_crate(p=(0+.34*gj,0,-7),ID=0,m=1,l=1,tm=random.randint(1,3))
@@ -200,8 +201,9 @@ def level2():##snow
 	o.BonusPlatform(pos=(4,1.6,1.5))
 	#dangers
 	o.WoodLog(pos=(10.3,4,2.3))
-	o.Role(pos=(42.2,6.6,32),di=1)
-	o.Role(pos=(42.2,6.6,33),di=0)
+	o.WoodLog(pos=(9.2,4,2.3))
+	o.Role(pos=(42.2,6.6,31),di=1)
+	o.Role(pos=(42.2,6.6,32),di=0)
 	#rock
 	for ro in range(40):
 		o.Rock(pos=(0+random.uniform(-3,3),-2,-61+ro*2))
@@ -223,8 +225,9 @@ def level2():##snow
 	o.mBlock(pos=(23,5.75,23),sca=(2,.5,7))
 	o.mBlock(pos=(23.5,5.75,27),sca=(3,.5,1))
 	o.mBlock(pos=(31.8,5.748,27.05),sca=(3,.5,1))
-	o.mBlock(pos=(42,5.8,32),sca=(4,.5,8))##
-	#o.mBlock(pos=(42,6.4,48),sca=(4,.5,8))
+	o.mBlock(pos=(42,5.8,32),sca=(4,.5,8))
+	o.mBlock(pos=(42,6.4,38),sca=(4,.5,4))
+	o.mBlock(pos=(42,6.6,47),sca=(4,.5,4))
 	#pillar
 	o.pillar_twin(p=(-.5,.9,-56),ro_y=(0,-45,0))
 	o.pillar_twin(p=(-.5,.9,-42.6),ro_y=(0,-45,0))
@@ -260,7 +263,7 @@ def level2():##snow
 	o.plank_bridge(pos=(0,1,-6),ro_y=0,typ=1,cnt=2,DST=.5)
 	o.plank_bridge(pos=(0,1,-4),ro_y=0,typ=1,cnt=2,DST=.5)
 	o.plank_bridge(pos=(0,1,-3),ro_y=0,typ=0,cnt=1,DST=.5)
-	o.plank_bridge(pos=(23,5.71,7.3),ro_y=0,typ=0,cnt=6,DST=.4)
+	o.plank_bridge(pos=(23,5.71,7.3),ro_y=0,typ=0,cnt=6,DST=.5)
 	o.plank_bridge(pos=(23,5.71,11),ro_y=0,typ=1,cnt=3,DST=.5)
 	o.plank_bridge(pos=(23,5.71,13),ro_y=0,typ=1,cnt=2,DST=.5)
 	o.plank_bridge(pos=(23,5.71,15),ro_y=0,typ=1,cnt=1,DST=.5)
@@ -280,6 +283,7 @@ def level2():##snow
 	#crates
 	h1=1.1
 	mt.crate_block(ID=1,POS=(.5,h1,-58),CNT=2)
+	mt.crate_plane(ID=2,POS=(-.7,h1,-57),CNT=2)
 	mt.crate_wall(ID=12,POS=(-.3,h1,-18.6),CNT=3)
 	c.place_crate(ID=2,p=(0,h1,-54))
 	c.place_crate(ID=3,p=(.2,h1,-52))
@@ -293,9 +297,18 @@ def level2():##snow
 	c.place_crate(ID=12,p=(0,h1,-8))
 	c.place_crate(ID=12,p=(-.2,h1,-6))
 	c.place_crate(ID=12,p=(0,h1,-4))
-	c.place_crate(ID=2,p=(19,2,2.5))
-	c.place_crate(ID=2,p=(19.32,2.32,2.5))
-	c.place_crate(ID=2,p=(19.64,2.64,2.5))
+	mt.crate_row(ID=2,POS=(18,3.5,2.5),CNT=4,WAY=0)
 	c.place_crate(ID=6,p=(23,5.75,23))
+	mt.crate_plane(ID=1,POS=(21.6,5.75,5.4),CNT=3)
+	c.place_crate(ID=3,p=(23,5.75,13))
+	c.place_crate(ID=10,p=(37,5.8,30.4))
+	c.place_crate(ID=5,p=(6.8,2.5,2.5))
+	c.place_crate(ID=5,p=(24.3,5.75,5))
+	#collecable
+	if not status.level_index in status.CRYSTAL:
+		item.EnergyCrystal(pos=(35.5,6.4,28.5))
+	#end
+	o.RewardRoom(pos=(42,7.5,40),c=color.rgb(80,80,120))
+	o.EndRoom(pos=(42.5,8,48),c=color.rgb(80,80,120))
 	#mt.crate_row(ID=11,POS=(19.96,2.96,2.5),WAY=0,CNT=4)
 	invoke(free_level,delay=3)

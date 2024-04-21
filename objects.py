@@ -286,6 +286,12 @@ class CrateScore(Entity): ## game finish
 		_in='res/crate/suprise/crate_sup'
 		super().__init__(model=_in+'.obj',texture=_in+'.png',alpha=.5,scale=.18,position=pos)
 		self.cc_text=Text(parent=scene,position=(self.x-.2,self.y+.25,self.z),text=None,font='res/ui/font.ttf',color=color.rgb(255,255,128),scale=10)
+	def gem_can_spawn(self):
+		if st.level_index == 1 and st.crate_count <= 0:
+			return True
+		if st.level_index == 2 and status.fails <= 0:
+			return True
+		return False
 	def update(self):
 		self.cc_text.text=str(st.crate_count)+'/'+str(st.crates_in_level)
 		if not st.gproc():
@@ -296,7 +302,7 @@ class CrateScore(Entity): ## game finish
 			self.cc_text.disable()
 			self.disable()
 			return
-		if st.level_index == 1 and st.crate_count <= 0 or st.crates_in_level <= 0 or status.is_time_trial:
+		if st.crates_in_level <= 0 or status.is_time_trial or self.gem_can_spawn():
 			self.hide()
 			self.cc_text.hide()
 			return
@@ -344,7 +350,7 @@ class RewardRoom(Entity):## here spawns the gem
 		super().__init__(model=eR+'.obj',texture=eR+'.tga',scale=.025,rotation_y=-90,position=pos,double_sided=True,color=c,unlit=False)
 		self.ground_m=Entity(model='cube',position=(self.x,self.y-.95,self.z+1.7),scale=(4,.3,8),collider=b,visible=False)
 		self.pod1=Entity(model='cube',position=(self.x+.13,self.y-.75,self.z+3.4),scale=(1.5,.2,1.5),collider=b,visible=False)
-		self.pod2=Entity(model='cube',position=(self.x+.15,self.y-.6,self.z+3.4),scale=(.7,.2,.7),collider=b,visible=False)
+		self.pod2=Entity(model='cube',position=(self.x+.15,self.y-.7,self.z+3.4),scale=(.7,.4,.7),collider=b,visible=False)
 		self.wall_l=Entity(model='cube',position=(self.x-1.7,self.y,self.z+2),scale=(2,3,7),collider=b,visible=False)
 		self.wall_r=Entity(model='cube',position=(self.x+2,self.y,self.z+2),scale=(2,3,7),collider=b,visible=False)
 		self.ceil=Entity(model='cube',position=(self.x,self.y+.8,self.z+2),scale=(4,.3,7),collider=b,visible=False)
@@ -358,6 +364,8 @@ class RewardRoom(Entity):## here spawns the gem
 		CrateScore(pos=(self.x+.15,self.y-.35,self.z+3.4))
 		if status.level_index == 1 and not 4 in status.COLOR_GEM:
 			item.GemStone(pos=(self.x+.15,self.y-.35,self.z+3.4),c=4)
+		elif status.level_index == 2 and not 1 in status.COLOR_GEM:
+			item.GemStone(pos=(self.x+.15,self.y-.35,self.z+3.4),c=1)
 	def update(self):
 		if not self.door_open and cc.is_nearby_pc(self,DX=3,DY=3):
 			self.door_open=True

@@ -38,7 +38,6 @@ def get_damage(c):
 def p_death_event(d):
 	ui.BlackScreen()
 	status.crate_count-=status.crate_to_sv
-	status.fails+=1
 	if status.is_death_route:
 		status.is_death_route=False
 	if status.bonus_round:
@@ -49,6 +48,7 @@ def p_death_event(d):
 	else:
 		if not status.is_time_trial:
 			status.extra_lives-=1
+			status.fails+=1
 	if status.fails < 3:
 		status.aku_hit=0
 	else:
