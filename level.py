@@ -23,8 +23,8 @@ def free_level():
 def main_instance(idx):
 	status.loading=True
 	status.level_index=idx
-	day_m={0:'default',1:'woods',2:'snow',3:'day'}
-	s_rm={0:(0,0,0),1:(-.3,1,-64.2),2:(0,1,-64.2),3:(0,0,-16.2)}
+	day_m={0:'default',1:'woods',2:'snow',3:'evening',4:'day'}
+	s_rm={0:(0,0,0),1:(-.3,1,-64.2),2:(0,1,-64.2),3:(0,0,-32.2),4:(0,0,-16.2)}
 	status.day_mode=day_m[idx]
 	o.StartRoom(pos=s_rm[idx],lvID=idx)
 	WEATHER={0:0,1:1,2:2,3:0,4:0,5:0}
@@ -57,12 +57,12 @@ def developer_level():
 	invoke(free_level,delay=1)
 
 def test():
-	o.EndRoom(pos=(0,1.5,14),c=color.rgb(80,100,80))##end
 	o.RewardRoom(pos=(0,1,3),c=color.rgb(80,80,120))
+	o.EndRoom(pos=(0,1.5,14),c=color.rgb(80,100,80))##end
 	cc.preload_items()
 	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='white_cube',co=color.rgb(130,150,130))
-	#o.CrateScore(pos=(-1,.25,-1))
-	#o.SnowPlatform(pos=(0,.5,-6))
+	#o.SingleBlock(pos=(0,.5,-10))
+	o.WoodStage(pos=(0,.3,-4))
 	for gj in range(17):
 		#c.place_crate(p=(0+.34*gj,0,-7),ID=0,m=1,l=1,tm=random.randint(1,3))
 		c.place_crate(p=(0+.34*gj,0,-7.32),ID=gj,m=1,l=1,tm=random.randint(1,3))
@@ -312,3 +312,16 @@ def level2():##snow
 	o.EndRoom(pos=(42.5,8,48),c=color.rgb(80,80,120))
 	#mt.crate_row(ID=11,POS=(19.96,2.96,2.5),WAY=0,CNT=4)
 	invoke(free_level,delay=3)
+
+def level3():##water
+	o.WaterFlow(pos=(0,-.3,-16),sca=(4,32))
+	invoke(free_level,delay=1)
+	o.block_plane(p=(-.8,0,-29),cnt=3)
+	o.side_hills(p=(-2.4,-.3,-30),cnt=30)
+	o.side_hills(p=(2.4,-.3,-30),cnt=30)
+	o.TempleWall(pos=(-3.3,-2,-25),side=1)
+	o.TempleWall(pos=(3.3,-2,-25),side=2)
+	o.WoodStage(pos=(0,.2,-20))
+	o.MossPlatform(p=(0,.2,-25),MO=False,TU=0,UD=True)
+	o.MossPlatform(p=(0,.2,-24),MO=False,TU=0,UD=False)
+	o.MossPlatform(p=(0,.2,-23),MO=False,TU=0,UD=True)

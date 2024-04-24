@@ -10,7 +10,7 @@ SKY_COL={'day':color.rgb(200,230,255),
 		'woods':color.rgb(70,120,110)}
 
 FOG_COL={'day':color.rgb(120,140,140),
-		'evening':color.rgb(0,0,0),
+		'evening':color.rgb(250,100,0),
 		'night':color.rgb(0,0,0),
 		'dark':color.rgb(0,0,0),
 		'rain':color.rgb(0,0,0),
@@ -18,12 +18,20 @@ FOG_COL={'day':color.rgb(120,140,140),
 		'woods':color.rgb(0,70,70)}
 
 AMB_COL={'day':color.rgb(180,180,180),
-		'evening':color.rgb(0,0,0),
+		'evening':color.rgb(250,100,0),
 		'night':color.rgb(0,0,0),
 		'dark':color.rgb(0,0,0),
 		'rain':color.rgb(0,0,0),
 		'snow':color.rgb(200,160,210),
 		'woods':color.rgb(140,170,170)}
+
+LGT_COL={'day':color.rgb(0,0,0),
+		'evening':color.rgb(255,100,0),
+		'night':color.rgb(0,0,0),
+		'dark':color.rgb(0,0,0),
+		'rain':color.rgb(0,0,0),
+		'snow':color.rgb(0,230,255),
+		'woods':color.rgb(0,200,140)}
 
 def env_switch(env,wth,tdr):
 	status.day_mode=env
@@ -38,10 +46,7 @@ def env_switch(env,wth,tdr):
 class ShadowMap(DirectionalLight):
 	def __init__(self):
 		RS=1024*2
-		g=100
-		sCL=SKY_COL[status.day_mode]
-		aC=color.rgb(sCL[0]+g,sCL[1]+g,sCL[2]+g)
-		super().__init__(shadows=True,shadow_map_resolution=(RS,RS),color=aC,rotation_x=-260,position=(0,10,0))
+		super().__init__(shadows=True,shadow_map_resolution=(RS,RS),color=LGT_COL[status.day_mode],rotation_x=-260,position=(0,10,0))
 		invoke(lambda:setattr(window,'render_mode','default'),delay=.5)
 
 class SkyBox(Sky):
@@ -77,7 +82,7 @@ class LightAmbience(AmbientLight):
 class Fog(Entity):
 	def __init__(self):
 		super().__init__()
-		self.F_DST={0:(-1,30),1:(-1,15),2:(-1,15),3:(-1,15),4:(-1,15)}
+		self.F_DST={0:(-1,30),1:(-1,15),2:(-1,15),3:(-1,30),4:(-1,15)}
 		scene.fog_color=FOG_COL[status.day_mode]
 		scene.fog_density=self.F_DST[status.level_index]
 	def update(self):
@@ -88,7 +93,7 @@ class Fog(Entity):
 
 class RainFall(Animation):
 	def __init__(self):
-		super().__init__('res/env/rain.gif',parent=camera.ui,z=.1,fps=60,scale=(2,1),duration=.1,color=color.white,alpha=.4)
+		super().__init__('res/env/rain.gif',parent=camera.ui,z=.1,fps=30,scale=(2,1),duration=.1,color=color.white,alpha=.5)
 		self.soundR=Audio('res/snd/ambience/rain.wav',loop=True,volume=0)
 		if status.day_mode == 'night':
 			self.color=color.rgb(80,80,80)

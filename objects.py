@@ -38,15 +38,30 @@ def bush(pos,s,c):
 
 #lv2
 def plank_bridge(pos,typ,cnt,ro_y,DST):
-	for wP in range(0,cnt):
-		if ro_y in [90,-90]:
-			Plank(pos=(pos[0]+wP*DST,pos[1],pos[2]),ro_y=ro_y,typ=typ)
-		else:
-			Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)
+	for wP in range(cnt):
+		plNK={90:lambda:Plank(pos=(pos[0]+wP*DST,pos[1],pos[2]),ro_y=ro_y,typ=typ),
+			0:lambda:Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)}
+		plNK[ro_y]()
 
 def pillar_twin(p,ro_y):
 	Pillar(pos=(p[0],p[1],p[2]),ro=ro_y)
 	Pillar(pos=(p[0]+1.05,p[1],p[2]),ro=ro_y)
+
+#lv3
+def block_row(p,cnt,way):
+	for sBl in range(0,cnt):
+		bWlo={0:SingleBlock(pos=(p[0]+.8*sBl,p[1],p[2])),
+			1:SingleBlock(pos=(p[0],p[1],p[2]+.8*sBl))}
+		bWlo[way]()
+
+def block_plane(p,cnt):
+	for sbX in range(cnt):
+		for sbZ in range(cnt):
+			SingleBlock(pos=(p[0]+.8*sbX,p[1],p[2]+.8*sbZ))
+
+def side_hills(p,cnt):
+	for sHil in range(cnt):
+		Entity(model='sphere',texture='grass',position=(p[0],p[1],p[2]+sHil),scale=(1,2+random.uniform(.3,.5),1),color=color.rgb(0,120,0),texture_scale=(8,8))
 
 ####################
 ## level 1 objects #
@@ -61,27 +76,29 @@ class MossPlatform(Entity):
 		self.spawn_pos=p
 		self.movable=MO
 		self.UP_DOWN=UD
+		self.dive=False
 		self.direct=0
 		self.speed=.7
 		self.ud_time=3
 		self.turn=TU
 		self.pgnd=Entity(model='cube',scale=(.6,1,.6),position=(self.x,self.y-.48,self.z),collider=b,visible=False)
 		self.tgt=cc.playerInstance[0]
-	def up_down_phase(self):
-		if self.ud_time > 0:
-			self.ud_time-=time.dt
-			if self.ud_time <= 0:
-				self.ud_time=3
-				if self.y == self.spawn_pos[1]:
-					self.animate_y(self.y-1,duration=.3)
-					invoke(lambda:setattr(self.pgnd,'collider',None),delay=.2)
-				else:
-					self.animate_y(self.y+1,duration=.3)
-					invoke(lambda:setattr(self.pgnd,'collider',b),delay=.2)
+	def move_up_down(self):
+		if self.dive:
+			self.dive=False
+			self.animate_y(self.y+1,duration=.3)
+			invoke(lambda:setattr(self.pgnd,'collider',b),delay=.2)
+		else:
+			self.dive=True
+			self.animate_y(self.y-1,duration=.3)
+			invoke(lambda:setattr(self.pgnd,'collider',None),delay=.2)
 	def update(self):
 		if not status.gproc():
-			if self.UP_DOWN:
-				self.up_down_phase()
+			if self.UP_DOWN and self.ud_time > 0:
+				self.ud_time-=time.dt
+				if self.ud_time <= 0:
+					self.ud_time=3
+					self.move_up_down()
 			if self.movable:
 				if self.pgnd.intersects(self.tgt) and not self.tgt.walking:
 					self.tgt.x=self.pgnd.x
@@ -241,17 +258,28 @@ class Role(Entity):
 ####################
 ## level 3 objects #
 class WaterFlow(Entity):
-	def __init__(self,pos):
-		super().__init__(model='plane',texture=omf+'water_flow/water_f0.png',scale=(3.5,.1,96),texture_scale=(1,16),position=pos,filtering='linear')
-		self.dark_area=Entity(model='plane',color=color.black,scale=self.scale,position=(self.x,self.y-.001,self.z),alpha=.7)
-		self.static_y=self.y
-		self.s_texture=0
+	def __init__(self,pos,sca):
+		super().__init__()
+		self.wtr=Animation('water_flow/water_flow.gif',scale=sca,texture_scale=(1,sca[1]/4),position=pos,rotation_x=90,fps=40,color=color.rgb(240,255,240),alpha=.85)
+		Entity(model='cube',texture=texp+'cobble_stone.png',position=(pos[0],pos[1]-.7,pos[2]),scale=(4,.1,sca[1]),texture_scale=(10,sca[1]))
+		WaterHit(p=pos,sc=sca)
 	def update(self):
-		self.s_texture+=time.dt*9
-		if self.s_texture > 3.8:
-			self.s_texture=0
-		self.texture=omf+'water_flow/water_f'+str(int(self.s_texture))+'.png'
+		if not status.gproc():
+			self.wtr.fps=60
+			return
+		self.wtr.fps=0
 
+class TempleWall(Entity):
+	def __init__(self,pos,side):
+		tmpleW=omf+'temple_wall/w_'+str(side)
+		super().__init__(model=tmpleW+'.obj',texture='temple_wall/water_z.tga',position=pos,scale=.05,rotation_y=-90,double_sided=True,collider=b)
+
+class WoodStage(Entity):
+	def __init__(self,pos):
+		wdStg=omf+'wood_stage/w_stage'
+		super().__init__(model=wdStg+'.obj',texture=omf+'wood_stage/stage_z.tga',position=pos,scale=.03,double_sided=True,rotation_y=-90)
+		Entity(model='cube',position=(self.x,self.y-.46,self.z-1.5),scale=(4.2,1,1.2),collider=b,visible=False)
+		Entity(model='cube',position=(self.x,self.y-.46,self.z+.2),scale=(1.2,1,2.3),collider=b,visible=False)
 
 ##################
 ## logic objects #
@@ -317,7 +345,7 @@ class StartRoom(Entity): ## game spawn point
 		self.wall0=Entity(model='cube',collider=b,position=(self.x-1,self.y+1.5,self.z),scale=(.4,3,6),visible=False,rotation_z=10)
 		self.wall1=Entity(model='cube',collider=b,position=(self.x+1,self.y+1.5,self.z),scale=(.4,3,6),visible=False,rotation_z=-10)
 		self.back0=Entity(model='cube',collider=b,position=(self.x,self.y+1.5,self.z-1),scale=(5,3,.6),visible=False,rotation_x=10)
-		self.ceil=Entity(model='plane',collider=b,position=(self.x,self.y+2.5,self.z-.2),scale=3,visible=False)
+		self.ceil=Entity(model='cube',collider=b,position=(self.x,self.y+2.5,self.z-.2),scale=(4,.7,4),visible=False)
 		self.curt=Entity(model='plane',position=(self.x,self.y+0.01,self.z),color=color.black,scale=3)
 		self.door=Entity(model=omf+'door1/0.ply',texture=omf+'door1/door.tga',position=(self.x,self.y+2,self.z+2.2),scale=.001,rotation=(90,0,0),collider=b,unlit=False)
 		self.door1=Entity(model=omf+'door/0.ply',texture=omf+'door/door.tga',position=(self.x,self.y+2.1,self.z+2.2),scale=.001,rotation_x=90,collider=b,unlit=False)
@@ -332,7 +360,8 @@ class StartRoom(Entity): ## game spawn point
 		if lvID > 0:
 			m_info={1:lambda:level.level1(),
 					2:lambda:level.level2(),
-					3:lambda:level.test()}
+					3:lambda:level.level3(),
+					4:lambda:level.test()}
 			m_info[lvID]()
 	def update(self):
 		if not self.door_open:
@@ -458,7 +487,7 @@ class InvWall(Entity):
 
 class SingleBlock(Entity):
 	def __init__(self,pos):
-		super().__init__(model=omf+'sblock/sblock.obj',texture='sblock/sblock.png',scale=0.5,collider=b,position=pos)
+		super().__init__(model=omf+'sblock/sblock.obj',texture='sblock/sblock.png',scale=(.8,.5,.8),collider=b,position=pos)
 
 class Water(Animation):
 	def __init__(self,pos,s,c,a):
