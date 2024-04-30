@@ -6,7 +6,7 @@ o=objects
 c=crate
 U=-3
 def load_bonus_level(idx):
-	lv_lst={1:bonus1,2:bonus2}
+	lv_lst={1:bonus1,2:bonus2,3:bonus3,4:bonus4}
 	lv_lst[idx]()
 
 def bonus1():
@@ -56,6 +56,27 @@ def bonus2():
 	MT.wumpa_row(POS=(2.8,-36.9,U),CNT=8,WAY=0)
 	MT.wumpa_row(POS=(7,-36.9,U),CNT=5,WAY=0)
 	o.BonusPlatform(pos=(16,-37,U-.3))
+
+def bonus3():
+	Entity(model='plane',texture='res/ui/background/bonus_1.jpg',scale=(90,1,20),position=(0,-40,14),rotation_x=-90,texture_scale=(3,1),unlit=False)
+	o.FallingZone(pos=(0,-40,0),s=(64,1,64))
+	o.MushroomTree(pos=(2,-39,U+1),typ=1)
+	o.MushroomTree(pos=(4,-39,U+1),typ=1)
+	o.MushroomTree(pos=(6,-38.5,U+1),typ=1)
+	MT.crate_row(ID=0,POS=(-1,-37,U),WAY=0,CNT=7)
+	MT.bounce_twin(POS=(7.2,-36.32,U),CNT=5)
+	o.MushroomTree(pos=(9.5,-38.5,U+1),typ=1)
+	o.MushroomTree(pos=(10.5,-38,U+1),typ=1)
+	o.MushroomTree(pos=(11.5,-38,U+1),typ=1)
+	c.place_crate(ID=11,p=(12.5,-36.5,U))
+	MT.crate_row(ID=12,POS=(12.82,-36.5,U),WAY=0,CNT=7)
+	MT.crate_row(ID=1,POS=(12.82,-36.18,U),WAY=0,CNT=7)
+	o.MushroomTree(pos=(16,-38,U+1),typ=1)
+	o.MushroomTree(pos=(18,-38,U+1),typ=1)
+	o.BonusPlatform(pos=(19.3,-35.7,U))
+
+def bonus4():
+	return
 ## gem route
 def gem_route1():
 	o.FallingZone(pos=(200,-4,0),s=(40,1,32))

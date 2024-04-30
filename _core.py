@@ -3,7 +3,6 @@ from math import atan2,sqrt
 from ursina import *
 
 map_coordinate=None
-LOD_refresh=1
 map_zone=None
 map_size=None
 
@@ -145,9 +144,6 @@ def reset_crates():
 			if ca.poly == 1:
 				scene.entities.remove(ca)
 				ca.disable()
-			if ca.vnum == 3:
-				ca.ltime=0
-				ca._empty=5
 	for cv in status.C_RESET[:]:
 		if cv.vnum in [9,10]:
 			cv.c_reset()
@@ -184,36 +180,6 @@ def collect_rewards():
 	if status.level_col_gem:
 		status.CLEAR_GEM.append(status.level_index)
 		status.clear_gems+=1
-def objectLOD():
-	if not status.LV_CLEAR_PROCESS:
-		for WUM in scene.entities[:]:
-			if isinstance(WUM,item.WumpaFruit):
-				if is_nearby_pc(n=WUM,DX=8,DY=8):
-					WUM.world_visible=True
-				else:
-					WUM.world_visible=False
-		for vO in scene.entities[:]:
-			nL=str(vO)
-			jDA=status.LOD_distance(m=vO,c=playerInstance[0])
-			if nL in status.OBJ_LIST and not nL in ['water_hit','falling_zone']:
-				if jDA:
-					vO.hide()
-					vO.parent=None
-				else:
-					vO.show()
-					vO.parent=scene
-			if nL in npc.npc_list:
-				if jDA:
-					vO.world_visible=False
-				else:
-					vO.world_visible=True
-			if is_crate(vO) and not vO.vnum in [9,10]:
-				if jDA:
-					vO.texture=None
-					vO.hide()
-				else:
-					vO.texture=vO.org_tex
-					vO.show()
 
 ## collisions
 def ceiling(c,e):
@@ -227,10 +193,11 @@ def ceiling(c,e):
 	c.jumping=False
 	c.y=c.y
 def check_ground(c):
-	if map_zone and c.intersects(map_zone):
-		landing(c=c,e=terraincast(c.world_position,map_zone,map_coordinate))
-		return
-	hit_info=boxcast(c.world_position,Vec3(0,1,0),distance=.012,thickness=(.15,.15),ignore=[c],debug=False)
+	if not status.level_index == 1:
+		if map_zone and c.intersects(map_zone):
+			landing(c=c,e=terraincast(c.world_position,map_zone,map_coordinate))
+			return
+	hit_info=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.1,.1),ignore=[c],debug=False)
 	if hit_info.normal:
 		hte=hit_info.entity
 		hw=str(hte)
@@ -351,6 +318,13 @@ def wumpa_count(n):
 	else:
 		status.wumpa_fruits+=n
 		status.show_wumpas=5
+	if status.wumpa_bonus <= 0:
+		sc_ps=playerInstance[0].screen_position
+		if n > 1:
+			ui.wumpa_collect_anim((sc_ps[0],sc_ps[1]))
+		ui.wumpa_collect_anim((sc_ps[0],sc_ps[1]+.05))
+	else:
+		ui.wumpa_bonus_anim()
 	sound.snd_collect()
 def give_extra_live():
 	ui.live_get_anim()
@@ -363,6 +337,11 @@ def give_extra_live():
 
 ## crate actions
 def crate_set_val(cR,Cpos,Cpse):
+	if cR.vnum == 15:
+		cR.texture='res/crate/'+str(cR.vnum)+'/crate_t'+str(cR.time_stop)+'.png'
+	else:
+		cR.texture='res/crate/'+str(cR.vnum)+'/c_tex.png'
+	cR.org_tex=cR.texture
 	cR.destroy_exp=False
 	cR.is_stack=False
 	cR.spawn_pos=Cpos
@@ -370,7 +349,6 @@ def crate_set_val(cR,Cpos,Cpse):
 	cR.collider='box'
 	cR.poly=Cpse
 	cR.scale=.16
-	cR.org_tex=cR.texture
 def is_crate(e):
 	cck=[C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
 		C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,C.SwitchEmpty,
@@ -416,7 +394,7 @@ def back_to_level(c):
 	if status.bonus_round:
 		status.bonus_round=False
 		status.bonus_solved=True
-	dMN={0:'bonus',1:'woods',2:'evening'}
+	dMN={0:'bonus',1:'woods',2:'snow',3:'evening'}
 	status.day_mode=dMN[status.level_index]
 	c.position=status.checkpoint
 	status.loading=False
@@ -432,27 +410,20 @@ def enter_bonus(c):
 def bonus_reward(p):
 	if status.wumpa_bonus > 0:
 		p.count_time+=time.dt
-		if p.count_time >= 0.075:
+		if p.count_time >= .075:
 			p.count_time=0
 			if status.wumpa_bonus > 0:
-				bonus_give_wumpa()
-				ui.wumpa_count_anim()
+				status.wumpa_bonus-=1
+				wumpa_count(1)
 			if status.crate_bonus > 0:
-				bonus_give_crate()
+				status.crate_bonus-=1
+				status.crate_count+=1
+				status.show_crates=1
 			if status.lives_bonus > 0:
-				bonus_give_live()
-def bonus_give_wumpa():
-	status.wumpa_bonus-=1
-	wumpa_count(1)
-def bonus_give_crate():
-	status.crate_bonus-=1
-	status.crate_count+=1
-	status.show_crates=1
-def bonus_give_live():
-	Audio(sound.snd_lifes)
-	status.lives_bonus-=1
-	status.extra_lives+=1
-	status.show_lives=1
+				status.lives_bonus-=1
+				status.extra_lives+=1
+				status.show_lives=1
+				Audio(sound.snd_lifes)
 
 ## gem route
 def load_gem_route(c):
@@ -478,14 +449,12 @@ def set_val_npc(m):
 	else:
 		m.can_move=True
 	m.spawn_point=m.position
-	m.world_visible=False
 	m.is_hitten=False
 	m.is_purge=False
 	m.unlit=False
 	m.anim_frame=0
 def npc_action(m):
-	if m.world_visible:
-		m.show()
+	if m.visible:
 		if m.is_purge:
 			npc_purge(m)
 			return
@@ -495,7 +464,6 @@ def npc_action(m):
 		else:
 			fly_away(m)
 		return
-	m.hide()
 def npc_purge(m):
 	u=60
 	m.can_move=False
@@ -552,7 +520,8 @@ def fly_away(n):
 			if PNL.vnum in [3,12]:
 				PNL.empty_destroy()
 			else:
-				PNL.destroy()
+				if not PNL.vnum == 6:# avoid checkp accidentally
+					PNL.destroy()
 	if n.z >= n.spawn_point[2]+10:
 		npc_purge(n)
 def kill_by_jump(m,c):
@@ -582,5 +551,5 @@ def preload_items():
 	status.C_RESET.clear()
 	invoke(end_preload,delay=.3)
 def end_preload():
-	settings.SFX_VOLUME=1
 	status.preload_phase=False
+	settings.SFX_VOLUME=2

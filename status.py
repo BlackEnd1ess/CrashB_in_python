@@ -1,8 +1,10 @@
 from ursina import *
 
 ## this objects interacts with player
-OBJ_LIST=['water_hit','falling_zone','level_finish','bonus_platform','rock','pillar',
-		'gem_platform','moss_platform','tree2_d','corridor','tree_scene','bush']
+OBJ_LIST=['water_hit','falling_zone','level_finish','bonus_platform','gem_platform','moss_platform']
+
+## objects in this list will hidden by LOD in _core.py
+LOD_LST=['tree2_d','tree_scene','bush','pillar','rock','moss_platform']
 
 ## display the name in pause menu
 level_name=['Warp Room',
@@ -19,11 +21,11 @@ npc_anim={'amadillo':7,'turtle':12,'saw_turtle':12,'penguin':15,
 		'lizard':11,'scrubber':3,'mouse':8,'vulture':13}
 
 ## one load level settings
-bonus_checkpoint=[None,(0,2,-7),(.3,2,2.3),(0,0,0),(0,0,0),(0,0,0)]
+bonus_checkpoint=[None,(0,2,-6),(.3,2,2.3),(0,3,20.5),(0,0,0),(0,0,0)]
 checkpoint=None
 day_mode=''
 
-## safegame lists
+## game progress items
 COLOR_GEM=[]
 CLEAR_GEM=[]
 CRYSTAL=[]
@@ -107,9 +109,5 @@ def p_idle(d):
 	return False
 def gproc():
 	if loading or pause:
-		return True
-	return False
-def LOD_distance(m,c):
-	if m.z < c.z-3 or m.z > c.z+32:
 		return True
 	return False

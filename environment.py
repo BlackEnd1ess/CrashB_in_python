@@ -1,4 +1,4 @@
-import status,settings,_core
+import status,settings,_core,sound
 from ursina import *
 
 SKY_COL={'day':color.rgb(200,230,255),
@@ -15,7 +15,7 @@ FOG_COL={'day':color.rgb(120,140,140),
 		'dark':color.rgb(0,0,0),
 		'rain':color.rgb(0,0,0),
 		'snow':color.white,
-		'woods':color.rgb(0,70,70)}
+		'woods':color.rgb(30,80,60)}
 
 AMB_COL={'day':color.rgb(180,180,180),
 		'evening':color.rgb(250,100,0),
@@ -60,10 +60,9 @@ class SkyBox(Sky):
 		self.color=self.setting
 		self.thunder_time=random.randint(4,10)
 	def thunder_bolt(self):
-		tpp='/res/snd/ambience/'
 		self.color=color.white
-		Audio(tpp+'thunder_start.wav',pitch=random.uniform(.1,.5))
-		invoke(lambda:Audio(tpp+'thunder'+str(random.randint(0,1))+'.wav',pitch=random.uniform(.1,.5)),delay=.5)
+		Audio(sound.thu1,pitch=random.uniform(.1,.5))
+		invoke(lambda:Audio(random.choice(sound.snd_thu2),pitch=random.uniform(.1,.5)),delay=.5)
 		invoke(self.reset,delay=random.uniform(.1,.4))
 	def update(self):
 		if status.bonus_round:
@@ -87,14 +86,14 @@ class Fog(Entity):
 		scene.fog_density=self.F_DST[status.level_index]
 	def update(self):
 		if status.bonus_round:
-			scene.fog_density=(-5,50)
+			scene.fog_density=(-5,20)
 			return
 		scene.fog_density=self.F_DST[status.level_index]
 
 class RainFall(Animation):
 	def __init__(self):
 		super().__init__('res/env/rain.gif',parent=camera.ui,z=.1,fps=30,scale=(2,1),duration=.1,color=color.white,alpha=.5)
-		self.soundR=Audio('res/snd/ambience/rain.wav',loop=True,volume=0)
+		self.soundR=Audio(sound.snd_rain,loop=True,volume=0)
 		if status.day_mode == 'night':
 			self.color=color.rgb(80,80,80)
 	def update(self):

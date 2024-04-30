@@ -3,9 +3,8 @@ from ursina import *
 
 t=18
 af='res/character/'
-cf='res/crate/actions/'
+cf='res/crate/anim/'
 nf='res/npc/'
-gr=color.light_gray
 
 ## player animation
 def idle(d):
@@ -40,16 +39,16 @@ def jup(d):
 	d.jump_anim+=time.dt*t
 	if d.jump_anim > 2.75:
 		d.jump_anim=2
-	d.texture=af+'_jup/crash.tga'
-	d.model=af+'_jup/'+str(int(d.jump_anim))+'.ply'
+	d.texture=af+'jmup/crash.tga'
+	d.model=af+'jmup/'+str(int(d.jump_anim))+'.ply'
 
 def spin(d):
 	d.spin_anim+=time.dt*25
 	if d.spin_anim > 11.75:
 		d.spin_anim=0
 		d.is_attack=False
-	d.texture=af+'_spn/crash.tga'
-	d.model=af+'_spn/'+str(int(d.spin_anim))+'.ply'
+	d.texture=af+'spn/crash.tga'
+	d.model=af+'spn/'+str(int(d.spin_anim))+'.ply'
 
 def land(d):
 	d.land_anim+=time.dt*t
@@ -71,16 +70,16 @@ def fall(d):
 	d.fall_anim+=time.dt*t
 	if d.fall_anim > 7.75:
 		d.fall_anim=7
-	d.texture=af+'_fall/crash.tga'
-	d.model=af+'_fall/'+str(int(d.fall_anim))+'.ply'
+	d.texture=af+'fall/crash.tga'
+	d.model=af+'fall/'+str(int(d.fall_anim))+'.ply'
 
 def flip(d):
 	d.flip_anim+=time.dt*t
 	if d.flip_anim > 16.75:
 		d.flip_anim=0
 		d.is_flip=False
-	d.texture=af+'_flp/crash.tga'
-	d.model=af+'_flp/'+str(int(d.flip_anim))+'.ply'
+	d.texture=af+'flp/crash.tga'
+	d.model=af+'flp/'+str(int(d.flip_anim))+'.ply'
 
 def player_death(d):
 	d.death_anim+=time.dt*15
@@ -94,10 +93,9 @@ def player_death(d):
 
 ## crate animation
 bT=30
-def bounce_animation(c):
-	if not c.is_bounc and c.b_cnt < 5:
+def bnc_animation(c):
+	if not c.is_bounc:
 		c.is_bounc=True
-		c.color=color.light_gray
 		invoke(lambda:setattr(c,'model',cf+'bnc/bnc0.obj'),delay=0)
 		invoke(lambda:setattr(c,'model',cf+'bnc/bnc1.obj'),delay=1/bT)
 		invoke(lambda:setattr(c,'model',cf+'bnc/bnc2.obj'),delay=2/bT)
@@ -111,32 +109,8 @@ def bounce_animation(c):
 		invoke(lambda:setattr(c,'model',cf+'bnc/bnc10.obj'),delay=10/bT)
 		invoke(lambda:setattr(c,'model',cf+'bnc/bnc11.obj'),delay=11/bT)
 		invoke(lambda:setattr(c,'model',cf+'bnc/bnc12.obj'),delay=12/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc13.obj'),delay=13/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc14.obj'),delay=14/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc0.obj'),delay=15/bT)
-		invoke(lambda:setattr(c,'is_bounc',False),delay=15/bT)
-
-def spring_animation(c):
-	if not c.is_bounc:
-		c.is_bounc=True
-		c.color=color.light_gray
-		invoke(lambda:setattr(c,'model',cf+'spr/spr0.obj'),delay=0)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr1.obj'),delay=1/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr2.obj'),delay=2/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr3.obj'),delay=3/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr4.obj'),delay=4/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr5.obj'),delay=5/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr6.obj'),delay=6/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr7.obj'),delay=7/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr8.obj'),delay=8/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr9.obj'),delay=9/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr10.obj'),delay=10/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr11.obj'),delay=11/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr12.obj'),delay=12/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr13.obj'),delay=13/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr14.obj'),delay=14/bT)
-		invoke(lambda:setattr(c,'model',cf+'spr/spr0.obj'),delay=15/bT)
-		invoke(lambda:setattr(c,'is_bounc',False),delay=15/bT)
+		invoke(lambda:setattr(c,'model',cf+'bnc/bnc0.obj'),delay=13/bT)
+		invoke(lambda:setattr(c,'is_bounc',False),delay=13/bT)
 
 class CrateBreak(Entity):
 	def __init__(self,cr):
@@ -145,7 +119,8 @@ class CrateBreak(Entity):
 			bco=vco[cr.vnum]
 		else:
 			bco=color.orange
-		super().__init__(model=cf+'break/0.ply',texture=cf+'break/break.tga',rotation=(-90,cr.rotation_y,0),scale=.4/1000,color=bco,position=cr.position,unlit=False,collider=None)
+		anP=cr.position
+		super().__init__(model=cf+'brk/0.ply',texture=cf+'brk/break.tga',rotation=(-90,cr.rotation_y,0),scale=.4/1000,color=bco,position=(anP[0],anP[1]-.16,anP[2]),unlit=False,collider=None)
 		self.frame_break=0
 	def update(self):
 		if not status.pause or status.loading:
@@ -155,7 +130,7 @@ class CrateBreak(Entity):
 				self.parent=None
 				self.disable()
 				return
-			self.model=cf+'break/'+str(int(self.frame_break))+'.ply'
+			self.model=cf+'brk/'+str(int(self.frame_break))+'.ply'
 
 ## Effects
 class WarpVortex(FrameAnimation3d):
@@ -164,7 +139,7 @@ class WarpVortex(FrameAnimation3d):
 
 class WarpRingEffect(Entity): ## spawn animation
 	def __init__(self,pos):
-		self.omf='res/objects/'
+		self.omf='res/objects/ev/'
 		super().__init__(model=self.omf+'warp_rings/0.ply',texture=self.omf+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.8,unlit=False)
 		self.rings=0
 		self.times=0
@@ -209,18 +184,18 @@ def hedge_defend(m):
 
 
 ## object animations
-def door_open(do):
-	if do.door_time < 3.9:
-		ddt=int(do.door_time)
-		do.door_time+=time.dt*8
-		do.door.model='res/objects/door1/'+str(ddt)+'.ply'
-		do.door1.model='res/objects/door/'+str(ddt)+'.ply'
-		if do.door_time >= 3.9:
-			do.door.hide()
-			do.door1.hide()
-			do.door.collider=None
-			do.door1.collider=None
-			do.door_move=False
+def door_open(d):
+	if d.dtm < 3.9:
+		ddt=int(d.dtm)
+		d.dtm+=time.dt*8
+		d.model=d.dPA+'u'+str(ddt)+'.ply'
+		d.door_part.model=d.dPA+'d'+str(ddt)+'.ply'
+		if d.dtm >= 3.9:
+			d.door_part.collider=None
+			d.door_part.hide()
+			d.collider=None
+			d.hide()
+			invoke(lambda:setattr(d,'is_op',True),delay=.2)
 
 def warp_vortex(d):
 	print(d)

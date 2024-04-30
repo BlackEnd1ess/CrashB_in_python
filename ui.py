@@ -12,15 +12,20 @@ def text_blink(M,t):
 			t.color=M.font_color
 		M.blink_time=.3
 
-def live_get_anim():
+def live_get_anim(): 
 	lvA=Entity(parent=camera.ui,model='quad',texture=_icn+'lives.png',scale=(.08,.085),position=(.5,.43,0),color=color.gold)
 	lvA.animate_x(.7,duration=.3)
 	invoke(lvA.disable,delay=3.1)
 
-def wumpa_count_anim():
+def wumpa_bonus_anim():
 	wmA=Entity(model='quad',texture=_icn+'wumpa_fruits/w0.png',scale=.075,parent=camera.ui,position=(-.2,-.4,-.1))
 	wmA.animate_position((-1.2,1.3,-.1),duration=.3)
 	invoke(wmA.disable,delay=.3)
+
+def wumpa_collect_anim(pos):
+	wcA=Entity(model='quad',texture=_icn+'wumpa_fruits/w0.png',scale=.075,parent=camera.ui,position=pos)
+	wcA.animate_position((-2,1.3,-.1),duration=.3)
+	invoke(wcA.disable,delay=.3)
 
 ## Main Counter ##
 class WumpaCounter(Entity):

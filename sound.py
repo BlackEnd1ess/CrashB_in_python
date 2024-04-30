@@ -22,6 +22,7 @@ snd_spawn=SN+'spawn.wav'
 snd_portl=SN+'portal.wav'
 snd_w_log=SN+'wlog.wav'
 snd_roles=SN+'role.wav'
+snd_wtr_1=SN+'waterf.wav'
 
 #game/ui sfx
 snd_rward=SN+'reward.wav'
@@ -39,6 +40,34 @@ def snd_checkp():
 def snd_collect():
 	Audio(SN+'collect.wav',volume=.5)
 	invoke(lambda:Audio(snd_enter,volume=.3),delay=.5)
+
+## ambience sound
+VS='res/snd/ambience/'
+
+snd_thu2=[VS+'thunder0.wav',VS+'thunder1.wav']
+snd_thu1=VS+'thunder_start.wav'
+snd_rain=VS+'rain.wav'
+
+class WaterRiver(Audio):
+	def __init__(self):
+		super().__init__(VS+'waterf.wav',volume=0,loop=True)
+	def update(self):
+		if not status.gproc() and not status.bonus_round and not status.is_death_route:
+			self.volume=.6
+			return
+		self.volume=0
+
+class AmbienceSound(Entity):
+	def __init__(self):
+		super().__init__()
+		self.rpt=1
+	def update(self):
+		if not status.gproc():
+			if self.rpt > 0:
+				self.rpt-=time.dt
+				if self.rpt <= 0:
+					self.rpt=1
+					Audio(VS+'jungle.wav',pitch=random.uniform(1,1.1),volume=.6)
 
 ## player sound
 SP='res/snd/player/'

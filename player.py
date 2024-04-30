@@ -51,8 +51,11 @@ class CrashB(Entity):
 			print(self.position)
 		if key == 'e':
 			EditorCamera()
+		if key == 'j':
+			scene.fog_color=color.random_color()
+			print(scene.fog_color)
 		if key == 'u':
-			self.position=(0,7,-30.5)
+			self.position=(-2,3,4)
 	def move(self):
 		if status.is_dying or not self.warped:
 			return
@@ -136,11 +139,6 @@ class CrashB(Entity):
 			cc.p_attack()
 		if self.is_slippery:
 			cc.p_slippery(self)
-		if cc.LOD_refresh <= 0:
-			cc.LOD_refresh=.3
-			cc.objectLOD()
-		if cc.LOD_refresh > 0:
-			_core.LOD_refresh-=time.dt
 	def hurt_blink(self):
 		if self.blink_time <= 0:
 			self.blink_time=.1
