@@ -321,7 +321,7 @@ class WaterHit(Entity): ## collider for water
 class CrateScore(Entity): ## game finish
 	def __init__(self,pos):
 		super().__init__(model='res/crate/crate_t2.obj',texture='res/crate/2/c_tex.png',alpha=.5,scale=.18,position=pos,origin_y=.5)
-		self.cc_text=Text(parent=scene,position=(self.x-.2,self.y,self.z),text=None,font='res/ui/font.ttf',color=color.rgb(255,255,128),scale=10)
+		self.cc_text=Text(parent=scene,position=(self.x-.32,self.y,self.z),text=None,font='res/ui/font.ttf',color=color.rgb(255,255,128),scale=10)
 	def gem_can_spawn(self):
 		if st.level_index == 1 and st.crate_count <= 0:
 			return True

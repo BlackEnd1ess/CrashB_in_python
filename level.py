@@ -65,7 +65,7 @@ def test():
 	o.BonusPlatform(pos=(0,.5,-6))
 	cc.preload_items()
 	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='white_cube',co=color.rgb(130,150,130))
-	mt.crate_row(ID=3,POS=(-1,.16,-11),CNT=10,WAY=0)
+	mt.crate_row(ID=6,POS=(-1,.16,-11),CNT=4,WAY=0)
 	invoke(free_level,delay=1)
 
 def level1():##wood
@@ -191,7 +191,7 @@ def level1():##wood
 	mt.crate_row(ID=2,POS=(-1.3,2.56,-27),CNT=3,WAY=0)
 	mt.crate_row(ID=1,POS=(1.38,.8,1.1),CNT=10,WAY=1)
 	mt.crate_row(ID=0,POS=(0,.85,20.16),CNT=10,WAY=1)
-	c.place_crate(ID=4,p=(1.33,CRP,-3.9))
+	c.place_crate(ID=4,p=(.9,CRP,-3.9))
 	c.place_crate(ID=3,m=1,l=0,p=(-2,CRP,-6))
 	mt.crate_block(ID=1,POS=(-1.09,CRP,17),CNT=2)
 	mt.bounce_twin(POS=(1.1,CRP,18),CNT=2)

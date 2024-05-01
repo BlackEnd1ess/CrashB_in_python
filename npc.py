@@ -25,6 +25,7 @@ def spawn(pos,mID,mDirec,mTurn):
 def walk_frames(m):
 	an.npc_walking(m)
 
+## Enemies
 class Amadillo(Entity):
 	def __init__(self,p,d,t):
 		nN='amadillo'
@@ -278,13 +279,13 @@ class Vulture(Entity):
 			self.wait_on_player()
 		cc.npc_action(self)
 
+## passive NPC
 class AkuAkuMask(Entity):
 	def __init__(self,pos):
 		self.tpa='res/npc/akuaku/'
 		super().__init__(model=self.tpa+'aku.ply',texture=self.tpa+'aku.tga',scale=0.00075,rotation_x=-90,position=pos,unlit=False)
 		self.aku_model={0:self.tpa+'aku.ply',1:self.tpa+'aku.ply',2:self.tpa+'aku2.ply',3:self.tpa+'aku2.ply'}
 		self.aku_texture={0:self.tpa+'aku.tga',1:self.tpa+'aku.tga',2:self.tpa+'aku2.tga',3:self.tpa+'aku2.tga'}
-		Audio(sound.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
 		self.aku_direct=0
 		self.target=_core.playerInstance[0]
 		status.aku_exist=True

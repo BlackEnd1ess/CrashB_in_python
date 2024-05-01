@@ -57,6 +57,7 @@ def p_death_event(d):
 	reset_crates()
 	reset_wumpas()
 	reset_npc()
+	check_cstack()
 	d.position=status.checkpoint
 	d.collider=d.DEFAUL_COLLIDER
 	d.is_reset_phase=False
@@ -133,7 +134,8 @@ def collect_reset():
 	status.W_RESET.clear()
 	status.crate_to_sv=0
 	status.fails=0
-	check_cstack()
+	if level_ready:
+		status.NPC_RESET.clear()
 def c_subtract(cY):
 	if cY < -20:
 		status.crates_in_bonus-=1

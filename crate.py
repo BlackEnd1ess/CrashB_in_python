@@ -1,9 +1,10 @@
-import item,status,_core,animation,player,sound,npc,settings
+import item,status,_core,animation,sound,npc,settings
 from ursina.shaders import *
 from ursina import *
 
 pp='res/crate/'
 ic=(.15,.2)
+chckPA=[]
 cc=_core
 sn=sound
 
@@ -151,6 +152,7 @@ class AkuAku(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
 		if not status.preload_phase:
+			Audio(sn.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
 			if status.aku_hit < 3:
 				status.aku_hit+=1
 			if not status.aku_exist:
@@ -164,13 +166,9 @@ class Checkpoint(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
 		status.checkpoint=(self.x,self.y+1,self.z)
-		CheckpointAnimation(p=self.position)
-		Audio(sn.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
-		sn.snd_checkp()
 		destroy_event(self)
-		_core.collect_reset()
-		if not status.preload_phase and self.y > -200:
-			status.NPC_RESET.clear()
+		cc.collect_reset()
+		CheckpointAnimation(p=(self.x,self.y+.5,self.z))
 
 class SpringWood(Entity):
 	def __init__(self,pos,pse):
@@ -395,20 +393,29 @@ class Explosion(Entity):
 
 class CheckpointAnimation(Entity):
 	def __init__(self,p):
-		super().__init__(position=(p[0],p[1]+1,p[2]))
+		super().__init__(position=(p[0]-.1,p[1]+.4,p[2]))
 		self.c_text='CHECKPOINT'
+		self.run=True
 		self.wtime=0
 		self.index=0
-		self.run=True
+		self.cr_snd(t=0)
+	def cr_snd(self,t):
+		if self.y > -250:
+			c_au={0:lambda:sn.snd_checkp(),1:lambda:Audio(sn.snd_jump,pitch=.9)}
+			c_au[t]()
+	def shw_text(self):
+		self.wtime+=time.dt
+		if self.wtime >= .05:
+			self.wtime=0
+			_d=1.5
+			letter=self.c_text[self.index]
+			ct=Text(letter,font='res/ui/font.ttf',position=(self.x+self.index/10,self.y,self.z),scale=7,parent=scene,color=color.rgb(255,255,0))
+			invoke(ct.disable,delay=_d)
+			invoke(lambda:self.cr_snd(t=1),delay=_d+.1)
+			self.index+=1
+			if self.index >= 10:
+				self.run=False
+				self.disable()
 	def update(self):
 		if self.run:
-			self.wtime+=time.dt
-			if self.wtime >= 0.05:
-				self.wtime=0
-				letter=self.c_text[self.index]
-				ct=Text(letter,font='res/ui/font.ttf',position=(self.x+self.index/10,self.y,self.z),scale=7,parent=scene,color=color.rgb(255,255,0))
-				invoke(ct.disable,delay=1.5)
-				self.index+=1
-				if self.index >= 10:
-					self.run=False
-					self.disable()
+			self.shw_text()

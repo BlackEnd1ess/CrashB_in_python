@@ -1,4 +1,4 @@
-import _core,ui,status,animation,sound
+import _core,ui,status,animation,sound,crate
 from ursina.shaders import *
 from math import atan2
 from ursina import *
@@ -51,9 +51,9 @@ class CrashB(Entity):
 			print(self.position)
 		if key == 'e':
 			EditorCamera()
-		if key == 'j':
-			scene.fog_color=color.random_color()
-			print(scene.fog_color)
+		#if key == 'j':
+		#	#scene.fog_color=color.random_color()
+		#	#print(scene.fog_color)
 		if key == 'u':
 			self.position=(0,3,20)
 	def move(self):
