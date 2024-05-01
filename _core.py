@@ -318,13 +318,11 @@ def wumpa_count(n):
 	else:
 		status.wumpa_fruits+=n
 		status.show_wumpas=5
-	if status.wumpa_bonus <= 0:
 		sc_ps=playerInstance[0].screen_position
-		if n > 1:
-			ui.wumpa_collect_anim((sc_ps[0],sc_ps[1]))
-		ui.wumpa_collect_anim((sc_ps[0],sc_ps[1]+.05))
-	else:
-		ui.wumpa_bonus_anim()
+		if status.wumpa_bonus <= 0:
+			if n > 1:
+				ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]))
+			ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]+.1))
 	sound.snd_collect()
 def give_extra_live():
 	ui.live_get_anim()
@@ -408,22 +406,22 @@ def enter_bonus(c):
 	status.loading=False
 	c.freezed=False
 def bonus_reward(p):
-	if status.wumpa_bonus > 0:
-		p.count_time+=time.dt
-		if p.count_time >= .075:
-			p.count_time=0
-			if status.wumpa_bonus > 0:
-				status.wumpa_bonus-=1
-				wumpa_count(1)
-			if status.crate_bonus > 0:
-				status.crate_bonus-=1
-				status.crate_count+=1
-				status.show_crates=1
-			if status.lives_bonus > 0:
-				status.lives_bonus-=1
-				status.extra_lives+=1
-				status.show_lives=1
-				Audio(sound.snd_lifes)
+	p.count_time+=time.dt
+	if p.count_time >= .075:
+		p.count_time=0
+		if status.wumpa_bonus > 0:
+			status.wumpa_bonus-=1
+			wumpa_count(1)
+			ui.wumpa_bonus_anim()
+		if status.crate_bonus > 0:
+			status.crate_bonus-=1
+			status.crate_count+=1
+			status.show_crates=1
+		if status.lives_bonus > 0:
+			status.lives_bonus-=1
+			status.extra_lives+=1
+			status.show_lives=1
+			Audio(sound.snd_lifes)
 
 ## gem route
 def load_gem_route(c):

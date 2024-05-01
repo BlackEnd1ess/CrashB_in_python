@@ -117,11 +117,12 @@ class BackgroundWall(Entity):
 			Entity(model='quad',texture=omf+'l1/bush/bush1.png',position=(self.x-8+bu*2,self.y+2.75,self.z-1+random.uniform(.1,.5)),scale=random.uniform(3,4),color=aC)
 
 class TreeScene(Entity):
-	def __init__(self,pos,c,s):
-		super().__init__(model=omf+'l1/tree/tree.ply',texture=omf+'l1/tree/wood_scene.tga',rotation_x=-90,scale=s,position=pos,color=c,double_sided=True,unlit=False)
-		bush(pos=(self.x,self.y+1.3,self.z-.25),c=color.green,s=2)
-		bush(pos=(self.x-.6,self.y+.8,self.z-.249),c=color.yellow,s=1)
-		bush(pos=(self.x+.6,self.y+.8,self.z-.249),c=color.orange,s=1)
+	def __init__(self,pos,s):
+		sBU=omf+'l1/bush/bush1.png'
+		super().__init__(model=omf+'l1/tree/tree.ply',texture=omf+'l1/tree/wd_scn.tga',rotation_x=-90,scale=s,position=pos,double_sided=True,unlit=False)
+		Entity(model='quad',texture=sBU,position=(self.x,self.y+1.3,self.z-.25),scale=2,color=color.rgb(0,130,0))
+		Entity(model='quad',texture=sBU,position=(self.x-.6,self.y+1.2,self.z-.249),scale=2,color=color.rgb(0,120,0),rotation_y=30)
+		Entity(model='quad',texture=sBU,position=(self.x+.6,self.y+1.2,self.z-.249),scale=2,color=color.rgb(0,110,0),rotation_y=-30)
 
 ####################
 ## level 2 objects #
@@ -333,7 +334,7 @@ class CrateScore(Entity): ## game finish
 			self.rotation_y-=120*time.dt
 		if st.crates_in_level > 0 and st.crate_count >= st.crates_in_level:
 			Audio(sound.snd_rward)
-			item.GemStone(pos=(self.x,self.y,self.z),c=0)
+			item.GemStone(pos=(self.x,self.y-.3,self.z),c=0)
 			self.cc_text.disable()
 			self.disable()
 			return
@@ -378,7 +379,7 @@ class EndRoom(Entity): ## finish level
 		self.ceil=Entity(model='cube',scale=(5,3,16),position=(self.x-1,self.y+1.4,self.z+3),collider=b,visible=False)
 		self.back=Entity(model='cube',scale=(6,4,2),position=(self.x,self.y,self.z+9),collider=b,visible=False)
 		self.pod1=Entity(model='cube',scale=(2,1,2),position=(self.x-1,self.y-1.8,self.z+.45),collider=b,visible=False)
-		self.pod2=Entity(model='cube',scale=(.8,1,.8),position=(self.x-1.1,self.y-1.65,self.z+.3),collider=b,visible=False)
+		self.pod2=Entity(model='cube',scale=(.8,1,.8),position=(self.x-1.1,self.y-1.6,self.z+.3),collider=b,visible=False)
 		self.pod3=Entity(model='cube',scale=(1.6,1,1),position=(self.x-1.1,self.y-1.5,self.z+6.5),collider=b,visible=False)
 		LevelFinish(p=(self.x-1.1,self.y-1.4,self.z+7),V=False)
 		RoomDoor(pos=(self.x-1.1,self.y+.25,self.z-4.78),typ=1)
@@ -386,10 +387,8 @@ class EndRoom(Entity): ## finish level
 		IndoorZone(pos=(self.x-1,self.y,self.z+3),DI=8)
 		if status.level_index == 1 and not 4 in status.COLOR_GEM:
 			item.GemStone(pos=(self.x-1.1,self.y-1,self.z),c=4)
-		#elif status.level_index == 2 and not 1 in status.COLOR_GEM:
-		#	item.GemStone(pos=(self.x+.15,self.y-.35,self.z+3.4),c=1)
-		#elif status.level_index == 3 and not 5 in status.COLOR_GEM:
-		#	item.GemStone(pos=(self.x+.15,self.y-.35,self.z+3.4),c=5)
+		elif status.level_index == 2 and not 1 in status.COLOR_GEM:
+			item.GemStone(pos=(self.x-1.1,self.y-1,self.z),c=1)
 
 class RoomDoor(Entity):
 	def __init__(self,pos,typ):

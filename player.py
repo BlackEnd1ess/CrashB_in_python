@@ -55,7 +55,7 @@ class CrashB(Entity):
 			scene.fog_color=color.random_color()
 			print(scene.fog_color)
 		if key == 'u':
-			self.position=(-2,3,4)
+			self.position=(0,3,20)
 	def move(self):
 		if status.is_dying or not self.warped:
 			return

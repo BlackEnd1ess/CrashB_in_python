@@ -26,7 +26,7 @@ class WumpaFruit(Entity):
 		scene.entities.remove(self)
 	def collect(self):
 		self.disable()
-		_core.wumpa_count(1)
+		cc.wumpa_count(1)
 	def update(self):
 		if not status.gproc():
 			if self.visible:

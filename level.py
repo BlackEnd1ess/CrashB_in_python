@@ -78,15 +78,14 @@ def level1():##wood
 	o.BonusPlatform(pos=(1.4,1,-6))
 	bn.gem_route1()
 	#plants
-	wdcol=color.rgb(110,130,100)
-	o.TreeScene(pos=(-1.37,1.5,-46),c=wdcol,s=.0175)
-	o.TreeScene(pos=(1.32,1.5,-46),c=wdcol,s=.0175)
-	o.TreeScene(pos=(0,1.7,-26.4),c=wdcol,s=.0175)
-	o.TreeScene(pos=(0,1.5,-2.7),c=wdcol,s=.02)
-	o.TreeScene(pos=(3,1.7,10.6),c=wdcol,s=.02)
-	o.TreeScene(pos=(-2,1.7,9.5),c=wdcol,s=.02)
+	o.TreeScene(pos=(-1.37,1.5,-46),s=.0175)
+	o.TreeScene(pos=(1.32,1.5,-46),s=.0175)
+	o.TreeScene(pos=(0,1.7,-26.4),s=.0175)
+	o.TreeScene(pos=(0,1.5,-2.7),s=.02)
+	o.TreeScene(pos=(3,1.7,10.6),s=.02)
+	o.TreeScene(pos=(-2,1.7,9.5),s=.02)
 	for trE in range(10):
-		o.TreeScene(pos=(0+random.uniform(-.1,.1),.7,-2+trE),c=wdcol,s=.02)
+		o.TreeScene(pos=(0+random.uniform(-.1,.1),.7,-2+trE),s=.02)
 	o.spawn_tree_wall(pos=(-4.6,2.73,-64),cnt=48,d=0)
 	o.spawn_tree_wall(pos=(-5.7,2,-63),cnt=48,d=0)
 	o.spawn_tree_wall(pos=(3.6,2.73,-64),cnt=48,d=1)
@@ -98,17 +97,17 @@ def level1():##wood
 	o.bush(pos=(1,1.4,-12),s=2,c=color.orange)
 	o.bush(pos=(2.43,1.4,10.7),s=3,c=cG)
 	o.bush(pos=(-2.37,1.4,10.7),s=3,c=color.yellow)
-	o.TreeScene(pos=(-1.5,1.6,19.3),c=wdcol,s=.02)
-	o.TreeScene(pos=(1.2,1.8,19.3),c=wdcol,s=.02)
+	o.TreeScene(pos=(-1.5,1.6,19.3),s=.02)
+	o.TreeScene(pos=(1.2,1.8,19.3),s=.02)
 	o.bush(pos=(2.43,1.4,23),s=3,c=cG)
 	o.bush(pos=(-2.37,1.4,23),s=3,c=color.yellow)
-	o.TreeScene(pos=(1,1.6,-34.6),c=wdcol,s=.02)
-	o.TreeScene(pos=(-1.4,1.6,-34.6),c=wdcol,s=.02)
-	o.TreeScene(pos=(-1.8,1.5,-21.5),c=wdcol,s=.02)
-	o.TreeScene(pos=(-1.5,1.5,-60.5),c=wdcol,s=.02)
-	o.TreeScene(pos=(1,1.5,-60.5),c=wdcol,s=.02)
-	o.TreeScene(pos=(-1.2,1.5,-54.5),c=wdcol,s=.02)
-	o.TreeScene(pos=(1.1,1.5,-53),c=wdcol,s=.02)
+	o.TreeScene(pos=(1,1.6,-34.6),s=.02)
+	o.TreeScene(pos=(-1.4,1.6,-34.6),s=.02)
+	o.TreeScene(pos=(-1.8,1.5,-21.5),s=.02)
+	o.TreeScene(pos=(-1.5,1.5,-60.5),s=.02)
+	o.TreeScene(pos=(1,1.5,-60.5),s=.02)
+	o.TreeScene(pos=(-1.2,1.5,-54.5),s=.02)
+	o.TreeScene(pos=(1.1,1.5,-53),s=.02)
 	#platform grass
 	bu_h=1.1
 	o.bush(pos=(-1,bu_h,-45.3),s=(1.2,.5,.1),c=cG)
@@ -127,10 +126,11 @@ def level1():##wood
 	o.bush(pos=(-1,1,-4.12),s=(1.5,1.5,.1),c=cG)
 	o.bush(pos=(-2,1,-4.13),s=(1.5,1.5,.1),c=cG)
 	o.bush(pos=(1.3,1,-4.13),s=(1.7,1.5,.1),c=cG)
-	#o.bush(pos=(1.1,1,-4.11),s=(1.5,1.5,.1),c=cG)
-	#o.bush(pos=(2.5,1,-4.14),s=(1.5,1.5,.1),c=cG)
 	o.bush(pos=(1.1,1,-57),s=(2,1.5,.1),c=cG)
 	o.bush(pos=(-.7,1,-55),s=(2,1.5,.1),c=color.orange)
+	o.bush(pos=(-.8,3,23),s=(2,1.5,.1),c=color.rgb(0,80,0))
+	o.bush(pos=(.4,3,23.02),s=(2,1.5,.1),c=color.rgb(0,80,0))
+	o.bush(pos=(-.2,3.3,23.01),s=(2,1.5,.1),c=color.rgb(0,80,0))
 	#platform
 	d0=1.5
 	o.GemPlatform(pos=(1.5,1.4,-15),t=4)
@@ -163,7 +163,7 @@ def level1():##wood
 	#wumpa fruits
 	wu_h=1
 	mt.wumpa_plane(POS=(-.5,wu_h,-57),CNT=4)
-	mt.wumpa_plane(POS=(-.7,wu_h,-50),CNT=4)
+	mt.wumpa_plane(POS=(-.4,wu_h,-50),CNT=4)
 	mt.wumpa_row(POS=(0,wu_h,-44),CNT=4,WAY=2)
 	mt.wumpa_row(POS=(0,wu_h,-40),CNT=4,WAY=2)
 	mt.wumpa_plane(POS=(-.5,wu_h,-36.5),CNT=4)
@@ -204,7 +204,7 @@ def level1():##wood
 		item.EnergyCrystal(pos=(0,1.5,-13))
 	#M_objects
 	o.Corridor(pos=(0,1,-13))
-	o.EndRoom(pos=(1,2.6,28.3),c=color.rgb(80,100,80))
+	o.EndRoom(pos=(1,2.4,28.2),c=color.rgb(80,100,80))
 	invoke(free_level,delay=3)
 
 def level2():##snow

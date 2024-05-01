@@ -4,6 +4,7 @@ import status,_core
 _icn='res/ui/icon/'
 _fnt='res/ui/font.ttf'
 
+## Interface 2D Animations
 def text_blink(M,t):
 	if M.blink_time <= 0:
 		if t.color == M.font_color:
@@ -22,10 +23,20 @@ def wumpa_bonus_anim():
 	wmA.animate_position((-1.2,1.3,-.1),duration=.3)
 	invoke(wmA.disable,delay=.3)
 
-def wumpa_collect_anim(pos):
-	wcA=Entity(model='quad',texture=_icn+'wumpa_fruits/w0.png',scale=.075,parent=camera.ui,position=pos)
-	wcA.animate_position((-2,1.3,-.1),duration=.3)
-	invoke(wcA.disable,delay=.3)
+class WumpaCollectAnim(Entity):
+	def __init__(self, pos):
+		super().__init__(model='quad',texture=_icn+'wumpa_fruits/w0.png',scale=.075,parent=camera.ui,position=pos)
+	def update(self):
+		if not status.gproc():
+			dta_x=-.75-self.x
+			dta_y=.43-self.y
+			anp=time.dt*8
+			if abs(dta_x) < .05 and abs(dta_y) < .05:
+				self.disable()
+			else:
+				self.x+=dta_x*anp
+				self.y+=dta_y*anp
+
 
 ## Main Counter ##
 class WumpaCounter(Entity):
