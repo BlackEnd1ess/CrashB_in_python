@@ -153,8 +153,10 @@ class AkuAku(Entity):
 	def destroy(self):
 		if not status.preload_phase:
 			Audio(sn.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
-			if status.aku_hit < 3:
+			if status.aku_hit < 4:
 				status.aku_hit+=1
+				if status.aku_hit >= 3:
+					sn.AkuMusic()
 			if not status.aku_exist:
 				npc.AkuAkuMask(pos=(self.x,self.y,self.z))
 			destroy_event(self)
@@ -361,7 +363,7 @@ class Explosion(Entity):
 			Audio(sn.snd_explo,volume=settings.SFX_VOLUME)
 		if cr.vnum == 12 and not status.n_audio:
 			status.n_audio=True
-			invoke(lambda:Audio(sn.snd_glass,volume=settings.SFX_VOLUME),delay=.1)
+			invoke(lambda:Audio(sn.snd_glass,volume=settings.SFX_VOLUME,pitch=1.4),delay=.1)
 		self.eR=2
 		self.exp_radius()
 		invoke(self.reset_audio,delay=.5)

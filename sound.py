@@ -129,3 +129,12 @@ class SpecialMusic(Audio):
 			self.disable()
 			LevelMusic(T=status.level_index)
 			return
+
+class AkuMusic(Audio):
+	def __init__(self):
+		super().__init__(MC+'ev/invinc.mp3',volume=settings.MUSIC_VOLUME)
+	def update(self):
+		if not self.playing:
+			status.aku_hit=2
+			Audio(snd_damg,pitch=.8)
+			self.disable()

@@ -7,6 +7,6 @@ application.time_scale=.97
 
 def start_game():
 	settings.load()
-	level.main_instance(1)
+	level.main_instance(3)
 start_game()
 app.run()

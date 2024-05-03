@@ -283,37 +283,32 @@ class Vulture(Entity):
 class AkuAkuMask(Entity):
 	def __init__(self,pos):
 		self.tpa='res/npc/akuaku/'
-		super().__init__(model=self.tpa+'aku.ply',texture=self.tpa+'aku.tga',scale=0.00075,rotation_x=-90,position=pos,unlit=False)
-		self.aku_model={0:self.tpa+'aku.ply',1:self.tpa+'aku.ply',2:self.tpa+'aku2.ply',3:self.tpa+'aku2.ply'}
-		self.aku_texture={0:self.tpa+'aku.tga',1:self.tpa+'aku.tga',2:self.tpa+'aku2.tga',3:self.tpa+'aku2.tga'}
-		self.aku_direct=0
-		self.target=_core.playerInstance[0]
+		super().__init__(model=None,texture=None,scale=.00075,rotation_x=-90,position=pos,unlit=False)
+		self.target=cc.playerInstance[0]
 		status.aku_exist=True
+		self.change_skin()
+	def change_skin(self):
+		if status.aku_hit > 1:
+			self.model=self.tpa+'aku2.ply'
+			self.texture=self.tpa+'aku2.tga'
+			return
+		self.model=self.tpa+'aku.ply'
+		self.texture=self.tpa+'aku.tga'
 	def follow_player(self):
-		self.rotation_y=self.target.rotation_y
-		self.x=self.target.x-.25
-		self.z=self.target.z-.4
-	def floating(self):
-		ttf=time.dt/5
-		if self.aku_direct == 1:
-			self.y+=ttf
-			if self.y > self.target.aku_y+.4:
-				self.aku_direct=0
-		if self.aku_direct == 0:
-			self.y-=ttf
-			if self.y < self.target.aku_y-.1:
-				self.aku_direct=1
+		TG=self.target
+		self.rotation_y=TG.rotation_y
+		if status.aku_hit < 3:
+			self.position=(TG.x-.25,TG.y+.6,TG.z-.4)
+			return
+		self.position=(TG.x,TG.y+.5,TG.z)
 	def check_dist_player(self):
-		apd=distance(self,self.target)
-		if apd > 3:
+		if not cc.is_nearby_pc(self,DX=3,DY=3):
 			self.position=self.target.position
 	def update(self):
-		if not status.pause:
+		if not status.gproc():
 			self.check_dist_player()
-			self.model=self.aku_model[status.aku_hit]
-			self.texture=self.aku_texture[status.aku_hit]
-			self.floating()
 			self.follow_player()
+			self.change_skin()
 			if status.aku_hit < 1:
 				status.aku_exist=False
 				self.disable()

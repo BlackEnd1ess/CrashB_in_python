@@ -24,7 +24,7 @@ def set_jump_type(d,t):
 	tp={0:1,1:1.2,2:1.5}
 	d.lpos=d.y+tp[t]
 def get_damage(c):
-	if not c.injured and not status.is_dying:
+	if not c.injured and not status.is_dying and status.aku_hit < 3:
 		if status.aku_hit > 0:
 			status.aku_hit-=1
 			c.injured=True
@@ -48,6 +48,8 @@ def p_death_event(d):
 		if not status.is_time_trial:
 			status.extra_lives-=1
 			status.fails+=1
+			if status.level_index == 2:
+				status.gem_death=True
 	if status.fails < 3:
 		status.aku_hit=0
 	else:
@@ -189,9 +191,6 @@ def ceiling(c,e):
 		c.is_touch_crate=True
 		e.destroy()
 		invoke(lambda:setattr(c,'is_touch_crate',False),delay=.1)
-	if str(e) == 'wood_log':
-		if e.danger:
-			get_damage(c)
 	c.jumping=False
 	c.y=c.y
 def check_ground(c):
@@ -251,8 +250,8 @@ def check_wall(c):
 			return
 		if str(wE) == 'nitro':
 			wE.destroy()
-		if str(wE) == 'role':
-			if wE.is_rolling:
+		if str(wE) in ['role','wood_log']:
+			if wE.danger:
 				get_damage(c)
 		if str(wE) in item.item_list:
 			if status.c_delay <= 0:

@@ -13,7 +13,6 @@ class CrashB(Entity):
 		super().__init__(model='res/crash.ply',texture='res/crash.tga',scale=0.001,rotation_x=-90,collider=B,position=pos,unlit=False)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(200,200,700))
 		self.DEFAUL_COLLIDER=self.collider
-		self.aku_y=None
 		cc.set_val(self)
 		ui.PauseMenu()
 		ui.WumpaCounter()
@@ -55,7 +54,7 @@ class CrashB(Entity):
 		#	#scene.fog_color=color.random_color()
 		#	#print(scene.fog_color)
 		if key == 'u':
-			self.position=(0,3,20)
+			self.position=(0,5,0)
 	def move(self):
 		if status.is_dying or not self.warped:
 			return
@@ -117,6 +116,7 @@ class CrashB(Entity):
 			return
 		if self.is_attack:
 			an.spin(self)
+			return
 		if self.is_flip and status.p_in_air(self):
 			an.flip(self)
 		if self.is_landing and not self.walking and not status.p_in_air(self):
@@ -149,7 +149,6 @@ class CrashB(Entity):
 	def update(self):
 		if status.pause or status.level_solved or status.gproc():
 			return
-		self.aku_y=self.y+.5
 		if self.jumping:
 			self.jump()
 		self.char_misc()

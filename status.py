@@ -26,7 +26,7 @@ checkpoint=None
 day_mode=''
 
 ## game progress items
-COLOR_GEM=[4]
+COLOR_GEM=[]
 CLEAR_GEM=[]
 CRYSTAL=[]
 
@@ -94,6 +94,7 @@ c_indoor=True
 loading=False
 pause=False
 
+gem_death=False
 ## global funcs
 def p_walk(d):
 	if held_keys['d'] or held_keys['a'] or held_keys['s'] or held_keys['w'] or d.walking:

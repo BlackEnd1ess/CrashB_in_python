@@ -1,11 +1,14 @@
-- game over event
+- check wall collissions and falling zones
 - aku invincible
 - enemies fly direction
+
+- game over event
 - map_tools crate air support with mark und L_ID
 - finish levels 3,4,5
+
 - warp room
 - game options
 - save game
 - time trial: no live subtract, no bonus or platforms, relic times
 - ui: relic time (blue,gold,platinum)
-- check wall collissions and falling zones
+- crash camera rotation by jump
