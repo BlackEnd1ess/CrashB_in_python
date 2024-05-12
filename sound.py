@@ -89,6 +89,7 @@ snd_scrubber=SA+'scrubber.wav'
 snd_mouse=SA+'mouse.wav'
 snd_seal=SA+'seal.wav'
 snd_rat=SA+'rat_idle.wav'
+snd_hpo=SA+'hippo.wav'
 
 ## BGM
 MC='res/snd/music/'
@@ -100,7 +101,7 @@ class LevelMusic(Audio):
 		if status.bonus_round or status.is_death_route:
 			self.fade_out()
 			self.disable()
-		if status.pause:
+		if status.pause or status.aku_hit >= 3:
 			self.volume=0
 			return
 		self.volume=1

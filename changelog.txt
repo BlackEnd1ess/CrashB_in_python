@@ -1,0 +1,24 @@
+#10.05.2024 08:40##
+- camera rotation x,y and camera distance z (move z -/+)
+- wumpa animation collect
+- walking on crates
+- enemie fly direction by hitting vector
+- if enmie hit other enemie --> wumpa +1
+- enemies cant trigger checkpoints
+- room door can close
+- aku aku inviciblity
+- faster flip while jump
+- LOD hide bushes and other objects behind actor
+- boxcast for wall collision, fixxed wall breaches.
+- the 34x34 stretched/broken textures for all crates are replaced by 32x32 and clean textures
+- all crates are only 2 different module with different UV's and textures
+- attack animation will not longer interrupt by falling or walking
+- informations crate for color gem info.
+
+#11.05.2024 18:05##
+- fixxed global block collider
+- aku mask follow smooth
+
+#12.05.2024 10:10
+- shadow point below crash
+- rain particle effect

@@ -1,26 +1,26 @@
 import settings,_core,math,animation,status,sound
+from math import radians,cos,sin
 from ursina import *
 
-npc_list=['amadillo','turtle','saw_turtle','penguin','seal','eating_plant','rat','mouse','scrubber','vulture','hedgehog','lizard']
 npc_folder='res/npc/'
 m_SC=0.8/1000
 an=animation
 cc=_core
 
 def spawn(pos,mID,mDirec,mTurn):
-	npc_list={0:lambda:Amadillo(p=pos,d=mDirec,t=mTurn),
-			1:lambda:Turtle(p=pos,d=mDirec,t=mTurn),
-			2:lambda:SawTurtle(p=pos,d=mDirec,t=mTurn),
-			3:lambda:Penguin(p=pos,d=mDirec,t=mTurn),
-			4:lambda:Hedgehog(p=pos,d=mDirec,t=mTurn),
-			5:lambda:Seal(p=pos,d=mDirec,t=mTurn),
-			6:lambda:EatingPlant(p=pos,d=mDirec,t=mTurn),
-			7:lambda:Rat(p=pos,d=mDirec,t=mTurn),
-			8:lambda:Lizard(p=pos,d=mDirec,t=mTurn),
-			9:lambda:Scrubber(p=pos,d=mDirec,t=mTurn),
-			10:lambda:Mouse(p=pos,d=mDirec,t=mTurn),
-			11:lambda:Vulture(p=pos,d=mDirec,t=mTurn)}
-	npc_list[mID]()
+	npc_={0:lambda:Amadillo(p=pos,d=mDirec,t=mTurn),
+		1:lambda:Turtle(p=pos,d=mDirec,t=mTurn),
+		2:lambda:SawTurtle(p=pos,d=mDirec,t=mTurn),
+		3:lambda:Penguin(p=pos,d=mDirec,t=mTurn),
+		4:lambda:Hedgehog(p=pos,d=mDirec,t=mTurn),
+		5:lambda:Seal(p=pos,d=mDirec,t=mTurn),
+		6:lambda:EatingPlant(p=pos,d=mDirec,t=mTurn),
+		7:lambda:Rat(p=pos,d=mDirec,t=mTurn),
+		8:lambda:Lizard(p=pos,d=mDirec,t=mTurn),
+		9:lambda:Scrubber(p=pos,d=mDirec,t=mTurn),
+		10:lambda:Mouse(p=pos,d=mDirec,t=mTurn),
+		11:lambda:Vulture(p=pos,d=mDirec,t=mTurn)}
+	npc_[mID]()
 
 def walk_frames(m):
 	an.npc_walking(m)
@@ -30,7 +30,7 @@ class Amadillo(Entity):
 	def __init__(self,p,d,t):
 		nN='amadillo'
 		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
-		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
+		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(500,700,300))
 		cc.set_val_npc(self)
 		self.m_direction=d
 		self.move_speed=1
@@ -296,11 +296,14 @@ class AkuAkuMask(Entity):
 		self.texture=self.tpa+'aku.tga'
 	def follow_player(self):
 		TG=self.target
-		self.rotation_y=TG.rotation_y
+		aSP=time.dt*4
+		self.rotation_y=lerp(self.rotation_y,TG.rotation_y,aSP)
 		if status.aku_hit < 3:
-			self.position=(TG.x-.25,TG.y+.6,TG.z-.4)
-			return
-		self.position=(TG.x,TG.y+.5,TG.z)
+			self.position=lerp(self.position,(TG.x-.25,TG.y+.6,TG.z-.4),aSP)
+		else:
+			fwd=Vec3(-sin(radians(TG.rotation_y)),0,-cos(radians(TG.rotation_y)))
+			mask_pos=TG.position+fwd*.25
+			self.position=(mask_pos.x,TG.y+.6,mask_pos.z)
 	def check_dist_player(self):
 		if not cc.is_nearby_pc(self,DX=3,DY=3):
 			self.position=self.target.position
@@ -312,3 +315,24 @@ class AkuAkuMask(Entity):
 			if status.aku_hit < 1:
 				status.aku_exist=False
 				self.disable()
+
+class Hippo(Entity):
+	def __init__(self,pos):
+		hPO=npc_folder+'hippo/'
+		super().__init__(model=hPO+'0.ply',texture=hPO+'hpo.tga',position=pos,rotation_x=-90,scale=.0005,double_sided=True,unlit=False)
+		self.col=Entity(model='cube',position=(self.x,self.y-.15,self.z-.2),scale=(.6,.5,1),alpha=.5,collider='box',visible=False)
+		self.is_idle=True
+		self.active=False
+		self.a_frame=0
+	def stat_switch(self):
+		self.is_idle=False
+	def update(self):
+		if not status.gproc():
+			if not self.is_idle:
+				if not self.active:
+					self.active=True
+					Audio(sound.snd_hpo,pitch=.2,volume=1)
+					invoke(lambda:Audio(sound.snd_hpo,pitch=.15,volume=1),delay=.3)
+				animation.hippo_dive()
+				return
+			animation.hippo_wait(self)

@@ -1,4 +1,4 @@
-import crate,objects,_core,status,environment,bonus_level,sound,item,npc,map_tools
+import crate,objects,_core,status,environment,bonus_level,sound,item,npc,map_tools,_loc
 from ursina import *
 
 mt=map_tools
@@ -27,7 +27,7 @@ def free_level():
 def main_instance(idx):
 	status.loading=True
 	status.level_index=idx
-	day_m={0:'default',1:'woods',2:'snow',3:'evening',4:'day'}
+	day_m=_loc.day_m
 	s_rm={0:(0,0,0),1:(-.3,1,-64.2),2:(0,1,-64.2),3:(0,0,-32.2),4:(0,0,-16.2)}
 	status.day_mode=day_m[idx]
 	o.StartRoom(pos=s_rm[idx],lvID=idx)
@@ -41,9 +41,9 @@ def main_instance(idx):
 
 ##levels
 def developer_level():
-	o.RewardRoom(pos=(0,1,15),c=color.rgb(80,100,80))##reward
-	o.EndRoom(pos=(0,1.5,27),c=color.rgb(80,100,80))##end
-	o.MapTerrain(MAP='map/0.png',size=(8,1,64),t='white_cube',co=color.rgb(150,150,150))
+	o.RewardRoom(pos=(0,1,15),c=color.rgb32(80,100,80))##reward
+	o.EndRoom(pos=(0,1.5,27),c=color.rgb32(80,100,80))##end
+	o.MapTerrain(MAP='map/0.png',size=(8,1,64),t='white_cube',co=color.rgb32(150,150,150))
 	o.BonusPlatform(pos=(-2,0,-1))
 	for CC in range(14):
 		c.place_crate(ID=CC,p=(-3+CC/2,0,2),m=1,l=1)
@@ -61,20 +61,21 @@ def developer_level():
 	invoke(free_level,delay=1)
 
 def test():
-	#o.EndRoom(pos=(0,2,-5),c=color.rgb(80,100,80))##end
-	Entity(model='plane',texture='res/ui/background/bonus_1.jpg',scale=(90,1,20),position=(0,5,16),rotation_x=-90,texture_scale=(3,1),unlit=False)
-	#o.TempleWall(pos=(0,0,-4),side=2)
-	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='white_cube',co=color.rgb(130,150,130))
-	#mt.crate_row(ID=5,POS=(-1,.16,-11),CNT=6,WAY=0)
+	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='white_cube',co=color.rgb32(130,150,130))
+	o.mBlock(pos=(0,.5,-5),sca=(7,4))
 	invoke(free_level,delay=1)
+	o.BonusPlatform(pos=(1,.7,-6))
+	N.spawn(mID=0,pos=(0,0,-6),mDirec=0,mTurn=0)
+	mt.crate_row(ID=0,POS=(0,.16,-8),CNT=10,WAY=0)
+	mt.crate_row(ID=0,POS=(0,.48,-8),CNT=3,WAY=0)
 
 def level1():##wood
 	TS=16
 	cG=color.green
-	o.MapTerrain(MAP='map/'+str(status.level_index)+'.png',size=(TS/1.6,1.5,TS*8),t='grass',co=color.rgb(0,70,0))
-	o.Water(pos=(0,.6,0),s=(10,128),c=color.rgb(40,40,60),a=.8)
+	o.Water(pos=(0,.6,0),s=(10,128),c=color.rgb32(40,40,60),a=.8)
 	o.InvWall(pos=(-5,.5,-64),sca=(5.,10,200))
 	o.InvWall(pos=(4.7,.5,-64),sca=(5.,10,200))
+	o.MapTerrain(MAP='map/'+str(status.level_index)+'.png',size=(TS/1.6,1.5,TS*8),t='grass',co=color.rgb32(0,70,0))
 	o.BonusPlatform(pos=(1.4,1,-6))
 	bn.gem_route1()
 	#plants
@@ -109,7 +110,7 @@ def level1():##wood
 	o.TreeScene(pos=(-1.2,1.5,-54.5),s=.02)
 	o.TreeScene(pos=(1.1,1.5,-53),s=.02)
 	#platform grass
-	bu_h=1.1
+	bu_h=.85
 	o.bush(pos=(-1,bu_h,-45.3),s=(1.2,.5,.1),c=cG)
 	o.bush(pos=(.7,bu_h,-45.3),s=(1.2,.5,.1),c=cG)
 	o.bush(pos=(-1.5,bu_h,-38.61),s=(1.4,.5,.1),c=cG)
@@ -128,28 +129,28 @@ def level1():##wood
 	o.bush(pos=(1.3,1,-4.13),s=(1.7,1.5,.1),c=cG)
 	o.bush(pos=(1.1,1,-57),s=(2,1.5,.1),c=cG)
 	o.bush(pos=(-.7,1,-55),s=(2,1.5,.1),c=color.orange)
-	o.bush(pos=(-.8,3,23),s=(2,1.5,.1),c=color.rgb(0,80,0))
-	o.bush(pos=(.4,3,23.02),s=(2,1.5,.1),c=color.rgb(0,80,0))
-	o.bush(pos=(-.2,3.3,23.01),s=(2,1.5,.1),c=color.rgb(0,80,0))
+	o.bush(pos=(-.8,3,23),s=(2,1.5,.1),c=color.rgb32(0,80,0))
+	o.bush(pos=(.4,3,23.02),s=(2,1.5,.1),c=color.rgb32(0,80,0))
+	o.bush(pos=(-.2,3.3,23.01),s=(2,1.5,.1),c=color.rgb32(0,80,0))
 	#platform
-	d0=1.5
+	d0=.85
 	o.GemPlatform(pos=(1.5,1.4,-15),t=4)
-	o.mBlock(pos=(0,d0,-57),sca=(4,1,24))
-	o.mBlock(pos=(0,d0,-36),sca=(4,1,5))
-	o.mBlock(pos=(0,d0,-30),sca=(1,1,7))
-	o.mBlock(pos=(-2,d0,-25),sca=(1,1,7))
-	o.mBlock(pos=(.7,d0,-20),sca=(1,1,6))
-	o.mBlock(pos=(0,d0,-14),sca=(4,1,4))
-	o.mBlock(pos=(0,d0,-9.5),sca=(1,1,5))
-	o.mBlock(pos=(0,d0,-5),sca=(1,1,4))
-	o.mBlock(pos=(1.5,d0,-1.5),sca=(2,1,5))
-	o.mBlock(pos=(1.5,d0,5.7),sca=(2,1,3))
-	o.mBlock(pos=(1.5,d0,9.5),sca=(2,1,2))
-	o.mBlock(pos=(-1.5,d0,-1.5),sca=(2,1,5))
-	o.mBlock(pos=(-1.5,d0,4),sca=(2,1,3))
-	o.mBlock(pos=(-1.5,d0,8.5),sca=(2,1,3))
-	o.mBlock(pos=(0,d0,10),sca=(1,1,4))
-	o.mBlock(pos=(0,d0,18),sca=(4,1,4))
+	o.mBlock(pos=(0,d0,-57),sca=(4,24))
+	o.mBlock(pos=(0,d0,-36),sca=(4,5))
+	o.mBlock(pos=(0,d0,-30),sca=(1,7))
+	o.mBlock(pos=(-2,d0,-25),sca=(1,7))
+	o.mBlock(pos=(.7,d0,-20),sca=(1,6))
+	o.mBlock(pos=(0,d0,-14),sca=(4,4))
+	o.mBlock(pos=(0,d0,-9.5),sca=(1,5))
+	o.mBlock(pos=(0,d0,-5),sca=(1,4))
+	o.mBlock(pos=(1.5,d0,-1.5),sca=(2,5))
+	o.mBlock(pos=(1.5,d0,5.7),sca=(2,3))
+	o.mBlock(pos=(1.5,d0,9.5),sca=(2,2))
+	o.mBlock(pos=(-1.5,d0,-1.5),sca=(2,5))
+	o.mBlock(pos=(-1.5,d0,4),sca=(2,3))
+	o.mBlock(pos=(-1.5,d0,8.5),sca=(2,3))
+	o.mBlock(pos=(0,d0,10),sca=(1,4))
+	o.mBlock(pos=(0,d0,18),sca=(4,4))
 	o.MossPlatform(p=(0,1,-44),MO=False,TU=0,UD=False)
 	o.MossPlatform(p=(0,1,-42),MO=True,TU=0,UD=False)
 	o.MossPlatform(p=(0,1,-40),MO=False,TU=0,UD=False)
@@ -189,7 +190,7 @@ def level1():##wood
 		c.place_crate(ID=13,m=1,l=0,p=(-1.3+.32*aE,.9,-22.82))
 	mt.crate_row(ID=3,POS=(-1.3,.9,-27),CNT=3,WAY=0)
 	mt.crate_row(ID=2,POS=(-1.3,2.56,-27),CNT=3,WAY=0)
-	mt.crate_row(ID=1,POS=(1.38,.8,1.1),CNT=10,WAY=1)
+	mt.crate_row(ID=1,POS=(1.8,.8,1.1),CNT=10,WAY=1)
 	mt.crate_row(ID=0,POS=(0,.85,20.16),CNT=10,WAY=1)
 	c.place_crate(ID=4,p=(.9,CRP,-3.9))
 	c.place_crate(ID=3,m=1,l=0,p=(-2,CRP,-6))
@@ -203,8 +204,8 @@ def level1():##wood
 	if not status.level_index in status.CRYSTAL:
 		item.EnergyCrystal(pos=(0,1.5,-13))
 	#M_objects
-	o.Corridor(pos=(0,1,-13))
-	o.EndRoom(pos=(1,2.4,28.2),c=color.rgb(80,100,80))
+	o.Corridor(pos=(0,.975,-13))
+	o.EndRoom(pos=(1,2.4,28.2),c=color.rgb32(80,100,80))
 	invoke(free_level,delay=3)
 
 def level2():##snow
@@ -223,25 +224,25 @@ def level2():##snow
 	for ro in range(40):
 		o.Rock(pos=(0+random.uniform(-3,3),-2,-61+ro*2))
 		o.Rock(pos=(0+random.uniform(-4,4),-2,-59+ro*2))
-	o.mBlock(pos=(0,1.1,-59),sca=(3,.5,6))
-	o.mBlock(pos=(0,1.1,-41),sca=(3,.5,4))
-	o.mBlock(pos=(0,1.1,-20),sca=(3,.5,4))
-	o.mBlock(pos=(0,1.1,0),sca=(3,.5,4))
-	o.mBlock(pos=(1.5,1.6,2.5),sca=(6,.5,1))
-	o.mBlock(pos=(6,2,2.5),sca=(1,.5,1))
-	o.mBlock(pos=(7,2.5,2.5),sca=(1,.5,1))
-	o.mBlock(pos=(9,2.5,2.5),sca=(3,.5,1))
-	o.IceGround(pos=(14,2.5,2.5),sca=(5,1,1))
-	o.mBlock(pos=(18,3.5,2.5),sca=(3,.5,1))
-	o.mBlock(pos=(21,4,2.5),sca=(1,.5,1))
-	o.mBlock(pos=(22,5,2.5),sca=(1,.5,1))
-	o.mBlock(pos=(23,5.75,2.7),sca=(1,.5,1))
-	o.mBlock(pos=(23,5.75,5.2),sca=(5,.5,4))
-	o.mBlock(pos=(23,5.75,23),sca=(2,.5,7))
-	o.mBlock(pos=(23.5,5.75,27),sca=(3,.5,1))
-	o.mBlock(pos=(31.8,5.748,27.05),sca=(3,.5,1))
-	o.mBlock(pos=(42,5.8,32),sca=(4,.5,8))
-	o.mBlock(pos=(42,6.4,38),sca=(4,.5,4))
+	o.mBlock(pos=(0,1.1,-59),sca=(3,6))
+	o.mBlock(pos=(0,1.1,-41),sca=(3,4))
+	o.mBlock(pos=(0,1.1,-20),sca=(3,4))
+	o.mBlock(pos=(0,1.1,0),sca=(3,4))
+	o.mBlock(pos=(1.5,1.6,2.5),sca=(6,1))
+	o.mBlock(pos=(6,2,2.5),sca=(1,1))
+	o.mBlock(pos=(7,2.5,2.5),sca=(1,1))
+	o.mBlock(pos=(9,2.5,2.5),sca=(3,1))
+	o.IceGround(pos=(14,2.5,2.5),sca=(5,1))
+	o.mBlock(pos=(18,3.5,2.5),sca=(3,1))
+	o.mBlock(pos=(21,4,2.5),sca=(1,1))
+	o.mBlock(pos=(22,5,2.5),sca=(1,1))
+	o.mBlock(pos=(23,5.75,2.7),sca=(1,1))
+	o.mBlock(pos=(23,5.75,5.2),sca=(5,4))
+	o.mBlock(pos=(23,5.75,23),sca=(2,7))
+	o.mBlock(pos=(23.5,5.75,27),sca=(3,1))
+	o.mBlock(pos=(31.8,5.748,27.05),sca=(3,1))
+	o.mBlock(pos=(42,5.8,32),sca=(4,8))
+	o.mBlock(pos=(42,6.4,38),sca=(4,4))
 	#pillar
 	o.pillar_twin(p=(-.5,.8,-56),ro_y=(-90,45,0))
 	o.pillar_twin(p=(-.5,.8,-42.6),ro_y=(-90,45,0))
@@ -345,33 +346,33 @@ def level2():##snow
 	if not status.level_index in status.CRYSTAL:
 		item.EnergyCrystal(pos=(35.5,6.4,28.5))
 	#end
-	o.EndRoom(pos=(43,8,44),c=color.rgb(80,80,120))
+	o.EndRoom(pos=(43,8,44),c=color.rgb32(80,80,120))
 	#mt.crate_row(ID=11,POS=(19.96,2.96,2.5),WAY=0,CNT=4)
 	invoke(free_level,delay=3)
 
 def level3():##water
 	#default
-	o.EndRoom(pos=(1,3.7,88),c=color.rgb(80,100,80))
+	o.EndRoom(pos=(1,3.7,88),c=color.rgb32(80,100,80))
 	o.BonusPlatform(pos=(.85,1.3,.85*8))
 	#waterflow
 	o.WaterFlow(pos=(0,-.3,-16),sca=(5,32))
 	o.WaterFlow(pos=(0,.7,15),sca=(5,32))
 	o.WaterFlow(pos=(0,.7,31),sca=(5,32))
-	o.WaterFlow(pos=(0,.7,49),sca=(5,18))
-	o.WaterFlow(pos=(0,.7,31),sca=(5,32))
+	#o.WaterFlow(pos=(0,.7,49),sca=(5,18))
+	o.WaterFlow(pos=(0,.7,39),sca=(5,36))
 	o.WaterFlow(pos=(0,1.7,73),sca=(5,32))
 	#waterfall
 	o.WaterFall(pos=(0,-.8,-1))
 	o.WaterFall(pos=(0,.2,57))
 	#scene
-	o.SceneWall(pos=(-3.1,.65,-13),s=0)
-	o.SceneWall(pos=(3,.5,-13),s=1)
-	o.SceneWall(pos=(-3.1,1.7,16),s=0)
-	o.SceneWall(pos=(3,1.7,16),s=1)
-	o.SceneWall(pos=(-3.1,1.7,45),s=0)
-	o.SceneWall(pos=(3,1.7,45),s=1)
-	o.SceneWall(pos=(-3.1,2.4,74),s=0)
-	o.SceneWall(pos=(3,2.4,74),s=1)
+	o.SceneWall(pos=(-3.1,.65,-13),s=1)
+	o.SceneWall(pos=(3,.5,-13),s=2)
+	o.SceneWall(pos=(-3.1,1.7,16),s=1)
+	o.SceneWall(pos=(3,1.7,16),s=2)
+	o.SceneWall(pos=(-3.1,1.7,45),s=1)
+	o.SceneWall(pos=(3,1.7,45),s=2)
+	o.SceneWall(pos=(-3.1,2.4,74),s=1)
+	o.SceneWall(pos=(3,2.4,74),s=2)
 	#temple
 	o.TempleWall(pos=(-2.55,-.3,-1.7),side=2)
 	o.TempleWall(pos=(2.7,-.3,-1.7),side=1)
@@ -397,19 +398,23 @@ def level3():##water
 	o.MossPlatform(p=(0,.4,-1.3),MO=False,TU=0,UD=False)
 	o.MossPlatform(p=(0,1,0),MO=False,TU=0,UD=False)
 	o.MossPlatform(p=(0,1.5,56.5),MO=False,TU=0,UD=False)
-	
 	o.MossPlatform(p=(0,.2,-7),MO=False,TU=0,UD=False)
+	o.MossPlatform(p=(0,1.2,11.5),MO=True,TU=0,UD=False)
 	#blocks
 	tH=-.2
+	#e0
 	o.multi_tile(p=(-.85,tH,-29),cnt=[3,4])
 	o.multi_tile(p=(-1,tH,-17),cnt=[3,1])
 	o.multi_tile(p=(-1,tH,-15),cnt=[3,3])
 	o.multi_tile(p=(0,tH,-5),cnt=[1,4])
-	
+	#e1
 	o.multi_tile(p=(.85,tH+1.1,0),cnt=[1,6])
 	o.multi_tile(p=(-.85,tH+1.1,.85*5),cnt=[2,1])
 	o.multi_tile(p=(-.85,tH+1.1,.85*5),cnt=[1,8])
 	o.multi_tile(p=(0,tH+1.1,.85*8),cnt=[2,1])
-	
+	o.multi_tile(p=(0,tH+1.1,13),cnt=[1,3])
+	o.StoneTile(pos=(0,tH+1.1,17))
+	o.StoneTile(pos=(0,tH+1.1,19))
+	#e2
 	#o.multi_tile(p=(-.8,tH+2,58),cnt=[3,30])
-	invoke(free_level,delay=1)
+	invoke(free_level,delay=3)

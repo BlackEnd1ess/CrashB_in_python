@@ -1,43 +1,43 @@
 import status,settings,_core,sound
 from ursina import *
 
-SKY_COL={'day':color.rgb(200,230,255),
-		'evening':color.rgb(255,110,90),
-		'night':color.rgb(0,0,85),
+SKY_COL={'day':color.rgb32(200,230,255),
+		'evening':color.rgb32(255,110,90),
+		'night':color.rgb32(0,0,85),
 		'dark':color.black,
-		'rain':color.rgb(70,70,80),
+		'rain':color.rgb32(70,70,80),
 		'snow':color.white,
-		'woods':color.rgb(70,120,110)}
+		'woods':color.rgb32(70,120,110)}
 
-FOG_COL={'day':color.rgb(120,140,140),
-		'evening':color.rgb(250,100,0),
-		'night':color.rgb(0,0,0),
-		'dark':color.rgb(0,0,0),
-		'rain':color.rgb(0,0,0),
+FOG_COL={'day':color.rgb32(120,140,140),
+		'evening':color.rgb32(250,100,50),
+		'night':color.rgb32(0,0,0),
+		'dark':color.rgb32(0,0,0),
+		'rain':color.rgb32(0,0,0),
 		'snow':color.white,
-		'woods':color.rgb(30,80,60)}
+		'woods':color.rgb32(30,80,60)}
 
-AMB_COL={'day':color.rgb(180,180,180),
-		'evening':color.rgb(250,100,0),
-		'night':color.rgb(0,0,0),
-		'dark':color.rgb(0,0,0),
-		'rain':color.rgb(0,0,0),
-		'snow':color.rgb(200,160,210),
-		'woods':color.rgb(140,170,170)}
+AMB_COL={'day':color.rgb32(180,180,180),
+		'evening':color.rgb32(250,150,100),
+		'night':color.rgb32(0,0,0),
+		'dark':color.rgb32(0,0,0),
+		'rain':color.rgb32(0,0,0),
+		'snow':color.rgb32(200,160,210),
+		'woods':color.rgb32(140,170,170)}
 
-LGT_COL={'day':color.rgb(0,0,0),
-		'evening':color.rgb(255,100,0),
-		'night':color.rgb(0,0,0),
-		'dark':color.rgb(0,0,0),
-		'rain':color.rgb(0,0,0),
-		'snow':color.rgb(0,230,255),
-		'woods':color.rgb(0,200,140)}
+LGT_COL={'day':color.rgb32(0,0,0),
+		'evening':color.rgb32(255,100,0),
+		'night':color.rgb32(0,0,0),
+		'dark':color.rgb32(0,0,0),
+		'rain':color.rgb32(0,0,0),
+		'snow':color.rgb32(0,230,255),
+		'woods':color.rgb32(0,200,140)}
 
 def env_switch(env,wth,tdr):
 	status.day_mode=env
-	ShadowMap()
+	#ShadowMap()
 	SkyBox(t=tdr)
-	LightAmbience()
+	#LightAmbience()
 	Fog()
 	if wth > 0:
 		wthr={1:lambda:RainFall(),2:lambda:SnowFall()}
@@ -90,28 +90,31 @@ class Fog(Entity):
 			return
 		scene.fog_density=self.F_DST[status.level_index]
 
-class RainFall(Animation):
+class RainFall(FrameAnimation3d):
 	def __init__(self):
-		super().__init__('res/env/rain.gif',parent=camera.ui,z=.1,fps=30,scale=(2,1),duration=.1,color=color.white,alpha=.5)
+		super().__init__('res/objects/ev/rain/rain',scale=(.004,.002,.004),color=color.rgb32(180,180,200),fps=60,loop=True,alpha=.6,rotation=(0,10,10))
 		self.soundR=Audio(sound.snd_rain,loop=True,volume=0)
-		if status.day_mode == 'night':
-			self.color=color.rgb(80,80,80)
+		self.target=_core.playerInstance[0]
+	def rain_start(self):
+		self.fps=60
+		self.soundR.pitch=random.uniform(.9,1)
+		self.soundR.volume=.5
+		self.alpha=lerp(self.alpha,.7,time.dt*2)
+	def rain_stop(self):
+		self.alpha=lerp(self.alpha,0,time.dt)
+		self.soundR.volume=0
+		self.fps=0
 	def update(self):
-		if status.bonus_round and status.level_index == 1:
-			self.soundR.volume=0
-			self.visible=False
-			return
-		if status.c_indoor:
-			self.soundR.volume=.05
-			self.visible=False
-			return
-		if status.loading or status.pause:
-			self.visible=False
-			self.soundR.volume=0
-		else:
-			self.show()
-			self.soundR.pitch=random.uniform(.9,1)
-			self.soundR.volume=.5
+		if not status.gproc():
+			if status.c_indoor:
+				self.rain_stop()
+				return
+			if distance(self,self.target) > 5:
+				tpp=self.target.position
+				self.position=(tpp.x,tpp.y,tpp.z+.5)
+			else:
+				self.position=lerp(self.position,(self.target.x,camera.y-1,self.target.z+.5),time.dt*4)
+			self.rain_start()
 
 class SnowFall(Entity):
 	def __init__(self):

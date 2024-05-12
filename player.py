@@ -1,4 +1,4 @@
-import _core,ui,status,animation,sound,crate
+import _core,ui,status,animation,sound,_loc
 from ursina.shaders import *
 from math import atan2
 from ursina import *
@@ -6,13 +6,34 @@ from ursina import *
 snd=sound
 an=animation
 cc=_core
-s=5#cam_speed
-B='box'
+lC=_loc
+
+class pShadow(Entity):
+	def __init__(self):
+		super().__init__(model=Circle(16,thickness=1,radius=.08),rotation_x=90,color=color.black,alpha=.7,origin_z=.01,collider='box')
+		self.target=cc.playerInstance[0]
+		_loc.shdw=self
+	def flw_p(self):
+		self.x=self.target.x
+		self.z=self.target.z
+	def check_obj(self):
+		vSH=raycast(self.target.world_position,-Vec3(0,1,0),distance=2,ignore=[self,self.target],debug=False)
+		if not cc.is_enemie(vSH.entity):
+			if vSH.normal and not str(vSH.entity) in lC.item_lst:
+				self.y=vSH.world_point.y
+	def update(self):
+		if not status.gproc():
+			self.flw_p()
+			if not self.target.landed:
+				self.check_obj()
+				return
+			self.y=self.target.y
+
 class CrashB(Entity):
 	def __init__(self,pos):
-		super().__init__(model='res/crash.ply',texture='res/crash.tga',scale=0.001,rotation_x=-90,collider=B,position=pos,unlit=False)
+		cHr='res/character/'
+		super().__init__(model=cHr+'crash.ply',texture=cHr+'crash.tga',scale=.001,rotation_x=-90,collider='box',position=pos,unlit=False)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(200,200,700))
-		self.DEFAUL_COLLIDER=self.collider
 		cc.set_val(self)
 		ui.PauseMenu()
 		ui.WumpaCounter()
@@ -20,6 +41,7 @@ class CrashB(Entity):
 		ui.LiveCounter()
 		ui.CollectedGem()
 		an.WarpRingEffect(pos=self.position)
+		pShadow()
 	def input(self,key):
 		if self.freezed or status.is_dying:
 			return
@@ -28,7 +50,8 @@ class CrashB(Entity):
 				return
 			Audio(snd.snd_jump)
 			self.block_input=True
-			cc.set_jump_type(d=self,t=1)
+			if not status.p_in_air(self):
+				cc.set_jump_type(d=self,t=1)
 			return
 		if key == 'alt' and not self.is_attack:
 			self.is_attack=True
@@ -40,6 +63,10 @@ class CrashB(Entity):
 			status.show_lives=5
 			status.show_gems=5
 			return
+		if key == 'w':
+			self.CMS=3
+		if key == 's':
+			self.CMS=4
 		if key in ['p','escape']:
 			if not status.pause:
 				status.pause=True
@@ -50,66 +77,74 @@ class CrashB(Entity):
 			print(self.position)
 		if key == 'e':
 			EditorCamera()
-		#if key == 'j':
-		#	#scene.fog_color=color.random_color()
-		#	#print(scene.fog_color)
+		if key == 'j':
+			scene.fog_color=color.random_color()
+			print(scene.fog_color)
 		if key == 'u':
 			self.position=(0,5,0)
 	def move(self):
-		if status.is_dying or not self.warped:
-			return
-		mdi=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
-		if mdi.length() > 0:
+		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
+		self.direc=mvD
+		hT=boxcast(self.world_position+(0,.3,0),mvD,distance=.2,thickness=(.1,.5),ignore=[self,lC.shdw],debug=False)
+		hE=hT.entity
+		if mvD.length() > 0:
 			self.walking=True
-			self.rotation_y=atan2(-mdi.x,-mdi.z)*180/math.pi
-			if self.landed:
-				self.is_landing=False
+			self.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
+			self.walk_event()
+			if hT.normal and hT.normal != Vec3(0,1,0):
+				if str(hE) == 'nitro' and hE.collider != None:
+					hE.destroy()
+				if cc.is_enemie(hE) and not self.is_attack:
+					cc.get_damage(self)
+				else:
+					if not str(hE) in lC.item_lst:
+						return
+			self.x+=mvD.x*time.dt*self.move_speed
+			self.z+=mvD.z*time.dt*self.move_speed
+			return
+		self.walk_snd=0
+		self.walking=False
+	def walk_event(self):
+		if self.landed:
+			self.is_landing=False##stop the remaining landing frames after run
+			if not self.is_attack:
 				if self.is_slippery:
 					an.run_s(self)
 				else:
 					an.run(self)
-			if self.walk_snd <= 0 and not status.p_in_air(self):
-				if self.is_slippery:
-					self.walk_snd=.5
-					Audio(snd.snd_icew,pitch=1.5)
-				else:
-					self.walk_snd=.35
-					Audio(snd.snd_walk,volume=.3)
-			self.x+=mdi.x*time.dt*self.move_speed
-			self.z+=mdi.z*time.dt*self.move_speed
+		if self.walk_snd <= 0 and not status.p_in_air(self):
 			if self.is_slippery:
-				cc.slipper_value(c=self,m=mdi)
-			return
-		self.walk_snd=0
-		self.walking=False
+				self.walk_snd=.5
+				Audio(snd.snd_icew,pitch=1.5)
+			else:
+				self.walk_snd=.35
+				Audio(snd.snd_walk,volume=.3)
 	def fall(self):
 		if status.LEVEL_CLEAN:
 			return
 		if self.landed or self.jumping or not self.warped:
 			self.fall_time=0
 			return
-		self.y-=time.dt*2.1
+		self.y-=time.dt*2.3
 		self.fall_time+=time.dt
 		if self.fall_time > 1:
 			if not self.is_attack and not self.freezed:
+				self.is_flip=False
 				an.fall(self)
 	def jump(self):
 		self.y+=time.dt*2.4
-		an.jup(self)
+		cc.ceiling(self)
 		self.first_land=True
-		if status.p_walk(self):
+		if self.walking:
 			self.is_flip=True
 		if self.y >= self.lpos:
 			self.jumping=False
+		if not self.is_flip:
+			an.jup(self)
 	def c_camera(self):
 		if not status.is_dying:
-			camera.x=lerp(camera.x,self.x,time.dt*s)
-			if status.c_indoor:
-				camera.y=lerp(camera.y,self.y+.9,time.dt*s)
-				camera.z=lerp(camera.z,self.z-3,time.dt*s)
-			else:
-				camera.y=lerp(camera.y,self.y+1.2,time.dt*s)
-				camera.z=lerp(camera.z,self.z-3.2,time.dt*s)
+			cc.cam_rotate(self)
+			cc.cam_follow(self)
 	def basic_animation(self):
 		if status.is_dying:
 			an.player_death(self)
@@ -128,17 +163,15 @@ class CrashB(Entity):
 			else:
 				an.idle(self)
 	def char_misc(self):
-		self.c_camera()
-		if not status.is_dying:
+		if not status.is_dying and self.warped and not self.freezed:
 			self.move()
-		self.basic_animation()
-		cc.check_ground(self)
-		cc.check_wall(self)
-		cc.various_val(self)
 		if self.is_attack:
-			cc.p_attack()
-		if self.is_slippery:
-			cc.p_slippery(self)
+			cc.c_attack(self)
+		cc.obj_walk(self)
+		self.basic_animation()
+		self.c_camera()
+		cc.c_item(self)
+		cc.various_val(self)
 	def hurt_blink(self):
 		if self.blink_time <= 0:
 			self.blink_time=.1
@@ -149,8 +182,8 @@ class CrashB(Entity):
 	def update(self):
 		if status.pause or status.level_solved or status.gproc():
 			return
+		self.char_misc()
 		if self.jumping:
 			self.jump()
-		self.char_misc()
 		if cc.level_ready and not status.is_dying:
 			self.fall()

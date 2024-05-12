@@ -1,33 +1,12 @@
 from ursina import *
 
-## this objects interacts with player
-OBJ_LIST=['water_hit','falling_zone','level_finish','bonus_platform','gem_platform','moss_platform']
-
-## objects in this list will hidden by LOD in _core.py
-LOD_LST=['tree2_d','tree_scene','bush','pillar','rock','moss_platform']
-
-## display the name in pause menu
-level_name=['Warp Room',
-			'LEVEL 1 - TURTLE WOODS',
-			'LEVEL 2 - WAY TO NOWHERE',
-			'LEVEL 3 - UPSTREAM',
-			'LEVEL 4 - DRAIN DAMAGE',
-			'LEVEL 5 - RUINED',
-			'DEVELOPER TEST LEVEL']
-
-## npc animation_frame count
-npc_anim={'amadillo':7,'turtle':12,'saw_turtle':12,'penguin':15,
-		'hedgehog':12,'seal':14,'eating_plant':13,'rat':10,
-		'lizard':11,'scrubber':3,'mouse':8,'vulture':13}
-
 ## one load level settings
-bonus_checkpoint=[None,(0,2,-6),(.3,2,2.3),(0,3,20.5),(0,0,0),(0,0,0)]
 checkpoint=None
 day_mode=''
 
 ## game progress items
-COLOR_GEM=[]
-CLEAR_GEM=[]
+COLOR_GEM=[1,2,3,4,5]
+CLEAR_GEM=[1,2,3]
 CRYSTAL=[]
 
 ## reset instances
@@ -37,6 +16,7 @@ W_RESET=[]
 
 ## player rule
 player_protect=0
+last_landp_y=0
 level_index=0
 c_delay=0
 d_delay=0
@@ -88,13 +68,15 @@ is_time_trial=False
 e_audio=False
 n_audio=False
 
+death_event=False
 aku_exist=False
+on_terra=False
+gem_death=False
 is_dying=False
 c_indoor=True
 loading=False
 pause=False
 
-gem_death=False
 ## global funcs
 def p_walk(d):
 	if held_keys['d'] or held_keys['a'] or held_keys['s'] or held_keys['w'] or d.walking:
@@ -109,6 +91,6 @@ def p_idle(d):
 		return True
 	return False
 def gproc():
-	if loading or pause:
+	if loading or pause or LV_CLEAR_PROCESS:
 		return True
 	return False

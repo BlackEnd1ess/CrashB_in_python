@@ -1,13 +1,20 @@
 import status,_core,sound
 from ursina import *
 
-t=18
+npc_anim={'amadillo':7,'turtle':12,'saw_turtle':12,'penguin':15,
+		'hedgehog':12,'seal':14,'eating_plant':13,'rat':10,
+		'lizard':11,'scrubber':3,'mouse':8,'vulture':13}
+
 af='res/character/'
 cf='res/crate/anim/'
 nf='res/npc/'
+t=18
 
 ## player animation
 def idle(d):
+	if status.LV_CLEAR_PROCESS:
+		d=None
+		return
 	d.idle_anim+=time.dt*15
 	if d.idle_anim > 10.75:
 		d.idle_anim=0
@@ -15,8 +22,8 @@ def idle(d):
 	d.model=af+'idle/'+str(int(d.idle_anim))+'.ply'
 
 def run(d):
-	d.run_anim+=time.dt*20
-	if d.run_anim > 10.75:
+	d.run_anim+=time.dt*t
+	if d.run_anim >= 10.85:
 		d.run_anim=0
 	d.texture=af+'run/crash.tga'
 	d.model=af+'run/'+str(int(d.run_anim))+'.ply'
@@ -87,7 +94,7 @@ def player_death(d):
 	if d.death_anim > 20.75:
 		status.is_dying=False
 		d.death_anim=0
-		_core.p_death_event(d)
+		_core.death_event(d)
 	d.texture=af+'death/crash_death.tga'
 	d.model=af+'death/'+str(int(d.death_anim))+'.ply'
 
@@ -160,7 +167,7 @@ def npc_walking(m):
 	if status.pause:
 		return
 	m.anim_frame+=time.dt*t
-	if m.anim_frame > status.npc_anim[str(m)]+.75:
+	if m.anim_frame > npc_anim[str(m)]+.75:
 		m.anim_frame=0
 	m.model=nf+str(m)+'/'+str(int(m.anim_frame))+'.ply'
 
@@ -182,20 +189,44 @@ def hedge_defend(m):
 	m.texture=nf+str(m)+'/attack/attack.tga'
 	m.model=nf+str(m)+'/attack/'+str(int(m.def_frame))+'.ply'
 
-
+def hippo_wait(m):
+	m.a_frame+=time.dt*t
+	if m.a_frame > 23.75:
+		m.a_frame=0
+	m.model=nf+'hippo/'+str(int(m.a_frame))+'.ply'
+def hippo_dive(m):
+	return
 ## object animations
 def door_open(d):
-	if d.dtm < 3.9:
-		ddt=int(d.dtm)
-		d.dtm+=time.dt*8
-		d.model=d.dPA+'u'+str(ddt)+'.ply'
-		d.door_part.model=d.dPA+'d'+str(ddt)+'.ply'
-		if d.dtm >= 3.9:
-			d.door_part.collider=None
-			d.door_part.hide()
-			d.collider=None
-			d.hide()
-			invoke(lambda:setattr(d,'is_op',True),delay=.2)
+	Audio(sound.snd_d_opn)
+	invoke(lambda:setattr(d,'model',d.dPA+'u0.ply'),delay=0/t)
+	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d0.ply'),delay=0/t)
+	invoke(lambda:setattr(d,'model',d.dPA+'u1.ply'),delay=1/t)
+	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d1.ply'),delay=1/t)
+	invoke(lambda:setattr(d,'model',d.dPA+'u2.ply'),delay=2/t)
+	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d2.ply'),delay=2/t)
+	invoke(lambda:setattr(d,'model',d.dPA+'u3.ply'),delay=3/t)
+	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d3.ply'),delay=3/t)
+	d.door_part.collider=None
+	d.collider=None
+
+def door_close(d):
+	Audio(sound.snd_d_opn,pitch=.9)
+	invoke(lambda:setattr(d,'model',d.dPA+'u3.ply'),delay=0/t)
+	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d3.ply'),delay=0/t)
+	invoke(lambda:setattr(d,'model',d.dPA+'u2.ply'),delay=1/t)
+	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d2.ply'),delay=1/t)
+	invoke(lambda:setattr(d,'model',d.dPA+'u1.ply'),delay=2/t)
+	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d1.ply'),delay=2/t)
+	invoke(lambda:setattr(d,'model',d.dPA+'u0.ply'),delay=3/t)
+	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d0.ply'),delay=3/t)
+	d.door_part.collider='box'
+	d.collider='box'
+
+
+
+
+
 
 def warp_vortex(d):
 	print(d)

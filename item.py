@@ -2,16 +2,10 @@ from ursina.shaders import *
 import _core,status,sound,ui
 from ursina import *
 
-cc=_core
-item_list=['wumpa_fruit',
-		'extra_live',
-		'gem_stone',
-		'energy_crystal',
-		'trial_clock']
-
 i_path='res/item/'
 b='box'
 
+cc=_core
 class WumpaFruit(Entity):
 	def __init__(self,pos):
 		w_model='wumpa/WumpaFruitGameplay.obj'
@@ -51,7 +45,7 @@ class GemStone(Entity):
 			ge_m=i_path+'gemstone/gem.ply'
 			ge_t=i_path+'gemstone/gem.tga'
 		R=120
-		ge_c={0:color.rgb(R,R,R+10),1:color.rgb(R,0,0),2:color.rgb(0,R,0),3:color.rgb(R,0,R),4:color.rgb(0,0,R),5:color.rgb(R,R,0)}
+		ge_c={0:color.rgb32(R,R,R+10),1:color.rgb32(R,0,0),2:color.rgb32(0,R,0),3:color.rgb32(R,0,R),4:color.rgb32(0,0,R),5:color.rgb32(R,R,0)}
 		super().__init__(model=ge_m,texture=ge_t,color=ge_c[c],scale=.0011,position=pos,rotation_x=-90,unlit=False)
 		self.collider=b
 		if c == 4:
@@ -108,7 +102,7 @@ class TrialClock(Entity):
 
 class TimeRelic(Entity):
 	def __init__(self,pos,t):
-		tc={0:color.azure,1:color.gold,2:color.rgb(150,150,180)}
+		tc={0:color.azure,1:color.gold,2:color.rgb32(150,150,180)}
 		super().__init__(model=i_path+'relic/relic.ply',texture=i_path+'relic/relic.tga',scale=0.004,position=pos,rotation_x=-90,color=tc[t],unlit=False,shader=unlit_shader)
 	def update(self):
 		if not status.gproc():

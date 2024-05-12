@@ -15,11 +15,8 @@ def load():
 
 def cam():
 	camera.rotation_x=15
-	camera.fov=65
-	camera.y=1.2
+	camera.fov=60
 	print('settings loaded')
-
-#camera.shader=ssao_shader
 
 SFX_VOLUME=1
 MUSIC_VOLUME=1

@@ -4,7 +4,6 @@ from ursina import *
 
 pp='res/crate/'
 ic=(.15,.2)
-chckPA=[]
 cc=_core
 sn=sound
 
@@ -354,16 +353,16 @@ class LvInfo(Entity):
 		destroy_event(self)
 
 ##crate effects
-class Explosion(Entity):
+class Explosion(Entity):# missing fireball texture
 	def __init__(self,cr):
 		nC={11:color.red,12:color.green}
-		super().__init__(model='sphere',position=cr.position,color=nC[cr.vnum],alpha=.4,scale=.1)
+		super().__init__(model='sphere',position=cr.position,color=nC[cr.vnum],alpha=.7,scale=.1)
 		if not status.e_audio:
 			status.e_audio=True
-			Audio(sn.snd_explo,volume=settings.SFX_VOLUME)
+			Audio(sn.snd_explo,volume=settings.SFX_VOLUME*1.5)
 		if cr.vnum == 12 and not status.n_audio:
 			status.n_audio=True
-			invoke(lambda:Audio(sn.snd_glass,volume=settings.SFX_VOLUME,pitch=1.4),delay=.1)
+			invoke(lambda:Audio(sn.snd_glass,volume=settings.SFX_VOLUME/1.5,pitch=1.4),delay=.1)
 		self.eR=2
 		self.exp_radius()
 		invoke(self.reset_audio,delay=.5)
@@ -371,7 +370,6 @@ class Explosion(Entity):
 		status.e_audio=False
 		status.n_audio=False
 	def exp_radius(self):
-		self.shader=unlit_shader
 		for exI in scene.entities[:]:
 			jD=distance(self,exI)
 			if cc.is_crate(exI) and jD <= self.eR and exI.collider != None:
@@ -411,7 +409,7 @@ class CheckpointAnimation(Entity):
 			self.wtime=0
 			_d=1.5
 			letter=self.c_text[self.index]
-			ct=Text(letter,font='res/ui/font.ttf',position=(self.x+self.index/10,self.y,self.z),scale=7,parent=scene,color=color.rgb(255,255,0))
+			ct=Text(letter,font='res/ui/font.ttf',position=(self.x+self.index/10,self.y,self.z),scale=7,parent=scene,color=color.rgb32(255,255,0))
 			invoke(ct.disable,delay=_d)
 			invoke(lambda:self.cr_snd(t=1),delay=_d+.1)
 			self.index+=1

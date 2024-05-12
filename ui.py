@@ -1,8 +1,10 @@
+import status,_core,_loc
 from ursina import *
-import status,_core
 
 _icn='res/ui/icon/'
 _fnt='res/ui/font.ttf'
+st=status
+LC=_loc
 
 ## Interface 2D Animations
 def text_blink(M,t):
@@ -24,10 +26,10 @@ def wumpa_bonus_anim():
 	invoke(wmA.disable,delay=.3)
 
 class WumpaCollectAnim(Entity):
-	def __init__(self, pos):
+	def __init__(self,pos):
 		super().__init__(model='quad',texture=_icn+'wumpa_fruits/w0.png',scale=.075,parent=camera.ui,position=pos)
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			dta_x=-.75-self.x
 			dta_y=.43-self.y
 			anp=time.dt*8
@@ -48,19 +50,19 @@ class WumpaCounter(Entity):
 		self.w_animation=0
 		WumpaBonus()
 	def digits(self):
-		n=str(status.wumpa_fruits)
+		n=str(st.wumpa_fruits)
 		self.digit_0.texture=self.pa+n[0]
 		self.digit_0.show()
-		if status.wumpa_fruits >= 10:
+		if st.wumpa_fruits >= 10:
 			self.digit_1.visible=True
 			self.digit_1.texture=self.pa+n[1]
 			return
 		self.digit_1.visible=False
 	def update(self):
-		if status.wumpa_fruits > 99:
+		if st.wumpa_fruits > 99:
 			status.wumpa_fruits=0
 			_core.give_extra_live()
-		if status.show_wumpas > 0:
+		if st.show_wumpas > 0:
 			self.w_animation+=time.dt*20
 			if self.w_animation > 12:
 				self.w_animation=0
@@ -68,7 +70,7 @@ class WumpaCounter(Entity):
 			self.show()
 			self.digits()
 			status.show_wumpas-=time.dt
-			if status.show_wumpas <= 0:
+			if st.show_wumpas <= 0:
 				self.w_animation=0
 				self.hide()
 				self.digit_0.hide()
@@ -76,31 +78,31 @@ class WumpaCounter(Entity):
 
 class CrateCounter(Animation):
 	def __init__(self):
-		super().__init__(_icn+'crate.gif',parent=camera.ui,scale=.1,color=color.rgb(92,57,27),position=(-.1,.43,0),fps=4,visible=False)
-		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.035,scale=3,color=color.rgb(75,35,10),visible=False)
+		super().__init__(_icn+'crate.gif',parent=camera.ui,scale=.1,color=color.rgb32(92,57,27),position=(-.1,.43,0),fps=4,visible=False)
+		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.035,scale=3,color=color.rgb32(75,35,10),visible=False)
 		CrateBonus()
 	def update(self):
-		if status.show_crates > 0 and status.crates_in_level > 0:
+		if st.show_crates > 0 and st.crates_in_level > 0:
 			self.show()
 			self.c_text.show()
-			self.c_text.text=str(status.crate_count)+'/'+str(status.crates_in_level)
+			self.c_text.text=str(st.crate_count)+'/'+str(st.crates_in_level)
 			status.show_crates-=time.dt
-			if status.show_crates <= 0:
+			if st.show_crates <= 0:
 				self.hide()
 				self.c_text.hide()
 
 class LiveCounter(Entity):
 	def __init__(self):
 		super().__init__(parent=camera.ui,model='quad',texture=_icn+'lives.png',scale=(.08,.085),position=(.7,.43,0),visible=False)
-		self.l_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.035,scale=3,color=color.rgb(255,31,31),visible=False)
+		self.l_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.035,scale=3,color=color.rgb32(255,31,31),visible=False)
 		LiveBonus()
 	def update(self):
-		if status.show_lives > 0:
+		if st.show_lives > 0:
 			self.show()
 			self.l_text.show()
-			self.l_text.text=str(status.extra_lives)
+			self.l_text.text=str(st.extra_lives)
 			status.show_lives-=time.dt
-			if status.show_lives <= 0:
+			if st.show_lives <= 0:
 				self.hide()
 				self.l_text.hide()
 
@@ -109,13 +111,13 @@ class LiveCounter(Entity):
 class WumpaBonus(Entity):
 	def __init__(self):
 		super().__init__(model='quad',texture=_icn+'wumpa_fruits/w0.png',parent=camera.ui,position=(-.2,-.4,0),scale=(.05,.06,0),visible=False)
-		self.w_text=Text(text=None,font=_fnt,x=self.x+.04,y=self.y+.025,scale=2,color=color.rgb(175,235,30),parent=camera.ui,visible=False)
+		self.w_text=Text(text=None,font=_fnt,x=self.x+.04,y=self.y+.025,scale=2,color=color.rgb32(175,235,30),parent=camera.ui,visible=False)
 		self.w_animation=0
 	def update(self):
-		if status.bonus_round or status.bonus_solved and status.wumpa_bonus > 0:
+		if st.bonus_round or st.bonus_solved and st.wumpa_bonus > 0:
 			self.show()
 			self.w_text.show()
-			self.w_text.text=str(status.wumpa_bonus)
+			self.w_text.text=str(st.wumpa_bonus)
 			self.w_animation+=time.dt*20
 			if self.w_animation > 12:
 				self.w_animation=0
@@ -127,16 +129,16 @@ class WumpaBonus(Entity):
 
 class CrateBonus(Animation):
 	def __init__(self):
-		super().__init__(_icn+'crate.gif',parent=camera.ui,scale=.075,color=color.rgb(92,57,27),position=(0,-.4,0),fps=4,visible=False)
-		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.025,scale=2,color=color.rgb(75,35,10),visible=False)
-		if status.crates_in_level < 1:
+		super().__init__(_icn+'crate.gif',parent=camera.ui,scale=.075,color=color.rgb32(92,57,27),position=(0,-.4,0),fps=4,visible=False)
+		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.025,scale=2,color=color.rgb32(75,35,10),visible=False)
+		if st.crates_in_level < 1:
 			self.hide()
 			self.c_text.hide()
 	def update(self):
-		if status.bonus_round or status.bonus_solved and status.crate_bonus > 0:
+		if st.bonus_round or st.bonus_solved and st.crate_bonus > 0:
 			self.show()
 			self.c_text.show()
-			self.c_text.text=str(status.crate_bonus)+'/'+str(status.crates_in_bonus)
+			self.c_text.text=str(st.crate_bonus)+'/'+str(st.crates_in_bonus)
 		else:
 			self.hide()
 			self.c_text.hide()
@@ -145,12 +147,12 @@ class CrateBonus(Animation):
 class LiveBonus(Entity):
 	def __init__(self):
 		super().__init__(parent=camera.ui,model='quad',texture=_icn+'lives.png',scale=.06,position=(.225,-.4,0),visible=False)
-		self.l_text=Text(text=None,font=_fnt,x=self.x+.04,y=self.y+.023,scale=2,color=color.rgb(255,31,31),visible=False)
+		self.l_text=Text(text=None,font=_fnt,x=self.x+.04,y=self.y+.023,scale=2,color=color.rgb32(255,31,31),visible=False)
 	def update(self):
-		if status.bonus_round or status.bonus_solved and status.lives_bonus > 0:
+		if st.bonus_round or st.bonus_solved and st.lives_bonus > 0:
 			self.show()
 			self.l_text.show()
-			self.l_text.text=str(status.lives_bonus)
+			self.l_text.text=str(st.lives_bonus)
 		else:
 			self.hide()
 			self.l_text.hide()
@@ -169,7 +171,7 @@ class LoadingScreen(Entity):
 		super().__init__(model='quad',color=color.black,scale=(16,10),visible=False,parent=camera.ui,z=1)
 		self.ltext=Text('Loading...',font=_fnt,scale=3.5,position=(-.15,.1),color=color.orange,visible=False,parent=camera.ui)
 	def update(self):
-		if status.loading:
+		if st.loading:
 			self.ltext.visible=True
 			self.visible=True
 			return
@@ -185,7 +187,7 @@ class WhiteScreen(Entity):
 			self.timer+=time.dt/2
 			self.alpha=self.timer
 			if self.timer >= 1:
-				if not status.loading:
+				if not st.loading:
 					status.loading=True
 					LoadingScreen()
 				if self.timer >= 2:
@@ -222,7 +224,7 @@ class BonusText(Entity):
 			self.ch_seq=0
 		self.ch_seq+=1
 	def update(self):
-		if not status.bonus_round:
+		if not st.bonus_round:
 			self.bn_text.hide()
 			self.parent=None
 			self.disable()
@@ -242,32 +244,32 @@ O=140
 class PauseMenu(Entity):
 	def __init__(self):
 		e='res/ui/pause/pause_ui'
-		super().__init__(model=e+'.ply',texture=e+'.tga',rotation=(-90,180,0),scale=(.1/705,0,.1/550),parent=camera.ui,z=1,color=color.rgb(130,140,130),visible=False)
+		super().__init__(model=e+'.ply',texture=e+'.tga',rotation=(-90,180,0),scale=(.1/705,0,.1/550),parent=camera.ui,z=1,color=color.rgb32(130,140,130),visible=False)
 		##text
 		self.selection=['RESUME','OPTIONS','QUIT']
-		self.font_color=color.rgb(230,100,0)
+		self.font_color=color.rgb32(230,100,0)
 		self.need_loop=True
 		self.blink_time=0
 		self.choose=0
 		self.p_name=Text('Crash B.',font='res/ui/font.ttf',scale=3,position=(self.x+.4,self.y+.475,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
-		self.lvl_name=Text(status.level_name[status.level_index],font='res/ui/font.ttf',scale=3,position=(self.x-.7,self.y-.025,self.z-1),color=color.azure,parent=camera.ui,visible=False)
+		self.lvl_name=Text(LC.lv_name[st.level_index],font='res/ui/font.ttf',scale=3,position=(self.x-.7,self.y-.025,self.z-1),color=color.azure,parent=camera.ui,visible=False)
 		self.select_0=Text(self.selection[0],font='res/ui/font.ttf',scale=3,tag=0,position=(self.x-.5,self.y-.2,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
 		self.select_1=Text(self.selection[1],font='res/ui/font.ttf',scale=3,tag=1,position=(self.x-.5,self.y-.275,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
 		self.select_2=Text(self.selection[2],font='res/ui/font.ttf',scale=3,tag=2,position=(self.x-.5,self.y-.35,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
-		self.crystal_counter=Text('0/5',font='res/ui/font.ttf',scale=6,position=(self.x+.325,self.y+.325,self.z-1),color=color.rgb(160,0,160),parent=camera.ui,visible=False)
-		self.gem_counter=Text('0/15 GEMS',font='res/ui/font.ttf',scale=5,position=(self.x+.3,self.y-.1,self.z-1),color=color.rgb(170,170,190),parent=camera.ui,visible=False)
+		self.crystal_counter=Text('0/5',font='res/ui/font.ttf',scale=6,position=(self.x+.325,self.y+.325,self.z-1),color=color.rgb32(160,0,160),parent=camera.ui,visible=False)
+		self.gem_counter=Text('0/15 GEMS',font='res/ui/font.ttf',scale=5,position=(self.x+.3,self.y-.1,self.z-1),color=color.rgb32(170,170,190),parent=camera.ui,visible=False)
 		self.add_text=Text('+ 0',font='res/ui/font.ttf',scale=4,position=(self.x+.325,self.y+.025,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
 		self.game_progress=Text('Progress 0%',font='res/ui/font.ttf',scale=3,position=(self.x+.325,self.y-.35,self.z-1),color=color.gold,parent=camera.ui,visible=False)
 		##animation
 		self.cry_anim=Animation('res/ui/icon/crystal.gif',position=(self.x+.6,self.y+.26,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.magenta,visible=False)
-		self.col_gem1=Animation('res/ui/icon/gem.gif',position=(self.x+.32,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb(K,K,K),visible=False)
-		self.col_gem2=Animation('res/ui/icon/gem1.gif',position=(self.x+.44,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb(K,K,K),visible=False)
-		self.col_gem3=Animation('res/ui/icon/gem2.gif',position=(self.x+.56,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb(K,K,K),visible=False)
-		self.col_gem4=Animation('res/ui/icon/gem3.gif',position=(self.x+.68,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb(K,K,K),visible=False)
-		self.col_gem5=Animation('res/ui/icon/gem.gif',position=(self.x+.8,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb(K,K,K),visible=False)
-		self.cleargem=Animation('res/ui/icon/gem.gif',position=(self.x+.6,self.y-.03,self.z-1),scale=.2,fps=12,parent=camera.ui,color=color.rgb(130,130,190),visible=False)
+		self.col_gem1=Animation('res/ui/icon/gem.gif',position=(self.x+.32,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
+		self.col_gem2=Animation('res/ui/icon/gem1.gif',position=(self.x+.44,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
+		self.col_gem3=Animation('res/ui/icon/gem2.gif',position=(self.x+.56,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
+		self.col_gem4=Animation('res/ui/icon/gem3.gif',position=(self.x+.68,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
+		self.col_gem5=Animation('res/ui/icon/gem.gif',position=(self.x+.8,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
+		self.cleargem=Animation('res/ui/icon/gem.gif',position=(self.x+.6,self.y-.03,self.z-1),scale=.2,fps=12,parent=camera.ui,color=color.rgb32(130,130,190),visible=False)
 	def input(self,key):
-		if status.pause:
+		if st.pause:
 			if key in ['down arrow','s']:
 				if self.choose < 2:
 					self.choose+=1
@@ -280,28 +282,28 @@ class PauseMenu(Entity):
 				if self.choose == 1:
 					print('menu options')
 				if self.choose == 2:
-					if not status.LEVEL_CLEAN:
+					if not st.LEVEL_CLEAN:
 						status.LEVEL_CLEAN=True
 						_core.clear_level(passed=False)
 	def check_collected(self):
-		gems_total=status.color_gems+status.clear_gems
+		gems_total=st.color_gems+st.clear_gems
 		self.gem_counter.text=str(gems_total)+'/15 GEMS'
-		self.crystal_counter.text=str(status.collected_crystals)+'/5'
-		self.game_progress.text='Progress '+str(status.color_gems*6+status.clear_gems*7+status.collected_crystals*7)+'%'
-		self.add_text.text='+ '+str(status.clear_gems)
+		self.crystal_counter.text=str(st.collected_crystals)+'/5'
+		self.game_progress.text='Progress '+str(st.color_gems*6+st.clear_gems*7+st.collected_crystals*7)+'%'
+		self.add_text.text='+ '+str(st.clear_gems)
 		if self.need_loop:
-			for gC in status.COLOR_GEM:
+			for gC in st.COLOR_GEM:
 				if gC == 1:
-					self.col_gem1.color=color.rgb(O,0,0)
+					self.col_gem1.color=color.rgb32(O,0,0)
 				if gC == 2:
-					self.col_gem2.color=color.rgb(0,O,0)
+					self.col_gem2.color=color.rgb32(0,O,0)
 				if gC == 3:
-					self.col_gem3.color=color.rgb(O,0,O)
+					self.col_gem3.color=color.rgb32(O,0,O)
 				if gC == 4:
-					self.col_gem4.color=color.rgb(0,0,O)
+					self.col_gem4.color=color.rgb32(0,0,O)
 				if gC == 5:
-					self.col_gem5.color=color.rgb(O,O,0)
-			if len(status.COLOR_GEM) >= 5:
+					self.col_gem5.color=color.rgb32(O,O,0)
+			if len(st.COLOR_GEM) >= 5:
 				self.need_loop=False
 	def select_menu(self):
 		for mn in [self.select_0,self.select_1,self.select_2]:
@@ -311,7 +313,7 @@ class PauseMenu(Entity):
 				mn.color=self.font_color
 	def update(self):
 		self.check_collected()
-		if status.pause:
+		if st.pause:
 			self.select_menu()
 			if self.blink_time > 0:
 				self.blink_time-=time.dt
@@ -332,7 +334,7 @@ class PauseMenu(Entity):
 					self.col_gem5,
 					self.cleargem,
 					self]:
-			if status.pause:
+			if st.pause:
 				vis.show()
 			else:
 				vis.hide()
@@ -342,19 +344,19 @@ class CollectedGem(Animation):
 	def __init__(self):
 		super().__init__(_icn+'crystal.gif',parent=camera.ui,scale=.15,color=color.magenta,visible=False,position=(0,-.4,-1))
 		cGLI={1:'gem3.gif',2:'gem.gif',3:'gem2.gif',4:'gem.gif',5:'gem.gif',6:'gem.gif'}
-		cGLO={1:color.rgb(0,0,O),2:color.rgb(O,0,0),3:color.rgb(O,0,O),4:color.rgb(O,0,0),5:color.rgb(O,O,0),6:color.rgb(O,0,0)}
-		self.colored_gem=Animation(_icn+cGLI[status.level_index],parent=camera.ui,position=(self.x-.1,self.y,self.z),scale=self.scale,color=cGLO[status.level_index],visible=False)
-		self.clear_gem=Animation(_icn+'gem.gif',parent=camera.ui,position=(self.x+.1,self.y,self.z),scale=self.scale,color=color.rgb(100,100,170),visible=False)
-		if status.level_index == 5:
+		cGLO={1:color.rgb32(0,0,O),2:color.rgb32(O,0,0),3:color.rgb32(O,0,O),4:color.rgb32(O,0,0),5:color.rgb32(O,O,0),6:color.rgb32(O,0,0)}
+		self.colored_gem=Animation(_icn+cGLI[st.level_index],parent=camera.ui,position=(self.x-.1,self.y,self.z),scale=self.scale,color=cGLO[st.level_index],visible=False)
+		self.clear_gem=Animation(_icn+'gem.gif',parent=camera.ui,position=(self.x+.1,self.y,self.z),scale=self.scale,color=color.rgb32(100,100,170),visible=False)
+		if st.level_index == 5:
 			self.colored_gem.scale_y=.2
 	def update(self):
-		if status.show_gems > 0:
+		if st.show_gems > 0:
 			status.show_gems-=time.dt
-			if status.level_crystal:
+			if st.level_crystal:
 				self.show()
-			if status.level_col_gem:
+			if st.level_col_gem:
 				self.colored_gem.show()
-			if status.level_cle_gem:
+			if st.level_cle_gem:
 				self.clear_gem.show()
 			return
 		self.colored_gem.hide()
