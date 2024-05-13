@@ -19,6 +19,8 @@
 - fixxed global block collider
 - aku mask follow smooth
 
-#12.05.2024 10:10
+#12.05.2024 14:10
 - shadow point below crash
 - rain particle effect
+- fixxed gem platform catch position Y
+- better quality rain sfx

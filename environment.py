@@ -31,7 +31,7 @@ LGT_COL={'day':color.rgb32(0,0,0),
 		'dark':color.rgb32(0,0,0),
 		'rain':color.rgb32(0,0,0),
 		'snow':color.rgb32(0,230,255),
-		'woods':color.rgb32(0,200,140)}
+		'woods':color.rgb32(50,150,100)}
 
 def env_switch(env,wth,tdr):
 	status.day_mode=env
@@ -45,7 +45,7 @@ def env_switch(env,wth,tdr):
 
 class ShadowMap(DirectionalLight):
 	def __init__(self):
-		RS=1024*2
+		RS=2048
 		super().__init__(shadows=True,shadow_map_resolution=(RS,RS),color=LGT_COL[status.day_mode],rotation_x=-260,position=(0,10,0))
 		invoke(lambda:setattr(window,'render_mode','default'),delay=.5)
 
@@ -90,6 +90,18 @@ class Fog(Entity):
 			return
 		scene.fog_density=self.F_DST[status.level_index]
 
+#class RainFall(Animation):
+#	def __init__(self):
+#		anP='res/env/rain.gif'
+#		_f=30
+#		super().__init__(anP,parent=camera.ui,position=(-.49,0),scale=(1,1.5),fps=_f)
+#		self.r_pt=Animation(anP,parent=camera.ui,position=(.49,0),scale=self.scale,fps=_f)
+#	def update(self):
+#		if not status.gproc():
+#			self.position=(-.49,0)
+#			self.r_pt.position=(.49,0)
+#	def update(self):
+#		print(self)
 class RainFall(FrameAnimation3d):
 	def __init__(self):
 		super().__init__('res/objects/ev/rain/rain',scale=(.004,.002,.004),color=color.rgb32(180,180,200),fps=60,loop=True,alpha=.6,rotation=(0,10,10))
@@ -101,7 +113,7 @@ class RainFall(FrameAnimation3d):
 		self.soundR.volume=.5
 		self.alpha=lerp(self.alpha,.7,time.dt*2)
 	def rain_stop(self):
-		self.alpha=lerp(self.alpha,0,time.dt)
+		self.alpha=lerp(self.alpha,0,time.dt*2)
 		self.soundR.volume=0
 		self.fps=0
 	def update(self):
@@ -113,7 +125,7 @@ class RainFall(FrameAnimation3d):
 				tpp=self.target.position
 				self.position=(tpp.x,tpp.y,tpp.z+.5)
 			else:
-				self.position=lerp(self.position,(self.target.x,camera.y-1,self.target.z+.5),time.dt*4)
+				self.position=lerp(self.position,(self.target.x,camera.y-1.2,self.target.z+-.1),time.dt*4)
 			self.rain_start()
 
 class SnowFall(Entity):

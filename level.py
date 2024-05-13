@@ -61,13 +61,19 @@ def developer_level():
 	invoke(free_level,delay=1)
 
 def test():
-	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='white_cube',co=color.rgb32(130,150,130))
-	o.mBlock(pos=(0,.5,-5),sca=(7,4))
+	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='grass',co=color.rgb32(130,130,50))
+	o.mBlock(pos=(0,.5,0),sca=(2,2))
 	invoke(free_level,delay=1)
-	o.BonusPlatform(pos=(1,.7,-6))
-	N.spawn(mID=0,pos=(0,0,-6),mDirec=0,mTurn=0)
-	mt.crate_row(ID=0,POS=(0,.16,-8),CNT=10,WAY=0)
-	mt.crate_row(ID=0,POS=(0,.48,-8),CNT=3,WAY=0)
+	#for jk in range(6):
+	#	o.GemPlatform(pos=(1+jk,.5,-7),t=jk)
+	#	item.GemStone(pos=(1+jk,.5,-8),c=jk)
+	mt.crate_row(ID=0,POS=(1,.16,-4),CNT=14,WAY=0)
+	mt.crate_row(ID=0,POS=(1,1.6,-4),CNT=14,WAY=0)
+	#mt.crate_row(ID=0,POS=(1,1.5,-4),CNT=14,WAY=0)
+	#Entity(model='cube',collider='box',position=(0,2,-8),scale=(4,.7,4),alpha=.5,visible=True)
+	#N.spawn(mID=0,pos=(0,0,-6),mDirec=0,mTurn=0)
+	#mt.crate_row(ID=0,POS=(0,.16,-8),CNT=10,WAY=0)
+	#mt.crate_row(ID=2,POS=(0,.48,-8),CNT=5,WAY=2)
 
 def level1():##wood
 	TS=16
@@ -134,7 +140,7 @@ def level1():##wood
 	o.bush(pos=(-.2,3.3,23.01),s=(2,1.5,.1),c=color.rgb32(0,80,0))
 	#platform
 	d0=.85
-	o.GemPlatform(pos=(1.5,1.4,-15),t=4)
+	o.GemPlatform(pos=(-.2,.9,-18),t=4)
 	o.mBlock(pos=(0,d0,-57),sca=(4,24))
 	o.mBlock(pos=(0,d0,-36),sca=(4,5))
 	o.mBlock(pos=(0,d0,-30),sca=(1,7))
@@ -224,10 +230,10 @@ def level2():##snow
 	for ro in range(40):
 		o.Rock(pos=(0+random.uniform(-3,3),-2,-61+ro*2))
 		o.Rock(pos=(0+random.uniform(-4,4),-2,-59+ro*2))
-	o.mBlock(pos=(0,1.1,-59),sca=(3,6))
-	o.mBlock(pos=(0,1.1,-41),sca=(3,4))
-	o.mBlock(pos=(0,1.1,-20),sca=(3,4))
-	o.mBlock(pos=(0,1.1,0),sca=(3,4))
+	o.mBlock(pos=(0,.7,-59),sca=(3,6))
+	o.mBlock(pos=(0,.7,-41),sca=(3,4))
+	o.mBlock(pos=(0,.7,-20),sca=(3,4))
+	o.mBlock(pos=(0,.7,0),sca=(3,4))
 	o.mBlock(pos=(1.5,1.6,2.5),sca=(6,1))
 	o.mBlock(pos=(6,2,2.5),sca=(1,1))
 	o.mBlock(pos=(7,2.5,2.5),sca=(1,1))
@@ -261,9 +267,11 @@ def level2():##snow
 	npc.spawn(pos=(14.5,3,2.5),mID=5,mDirec=0,mTurn=0)
 	#planks
 	_pl=.7
-	o.plank_bridge(pos=(0,_pl,-56),ro_y=0,typ=1,cnt=12,DST=.5)
-	o.plank_bridge(pos=(0,_pl,-48.5),ro_y=0,typ=0,cnt=10,DST=.5)
-	o.plank_bridge(pos=(0,_pl,-38),ro_y=0,typ=0,cnt=4,DST=.5)
+	#bridge1
+	o.plank_bridge(pos=(0,_pl,-55),ro_y=0,typ=0,cnt=4,DST=1)
+	o.plank_bridge(pos=(0,_pl,-50),ro_y=0,typ=1,cnt=4,DST=1.5)
+	#bridge2
+	o.plank_bridge(pos=(0,_pl,-38),ro_y=0,typ=0,cnt=2,DST=1)
 	o.plank_bridge(pos=(0,_pl,-36),ro_y=0,typ=1,cnt=2,DST=.5)
 	o.plank_bridge(pos=(0,_pl,-34),ro_y=0,typ=1,cnt=2,DST=.5)
 	o.plank_bridge(pos=(0,_pl,-32),ro_y=0,typ=1,cnt=2,DST=.5)

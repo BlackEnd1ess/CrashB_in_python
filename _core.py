@@ -129,6 +129,8 @@ def cam_follow(c):
 			camera.y=lerp(camera.y,c.y+1,time.dt)
 		camera.rotation_x=12
 		return
+	if (status.bonus_round or status.is_death_route) and not c.freezed:
+		camera.y=lerp(camera.y,c.y+1,time.dt)
 	camera.x=lerp(camera.x,c.x,ftr)
 def free_view_field(o):
 	if o.z < playerInstance[0].z-2:
@@ -192,9 +194,9 @@ def collect_rewards():
 		status.clear_gems+=1
 
 ## collisions
-def ceiling(c):
+def obj_ceiling(c):## hit by jump and not move
 	cK=c.intersects()
-	if cK.normal == Vec3(0,-1,0) and not str(cK.entity) in LC.item_lst:
+	if cK.normal == Vec3(0,-1,0) and not (str(cK.entity) in LC.item_lst or cK.entity == LC.htBOX):
 		if is_crate(cK.entity) and not c.is_touch_crate:
 			c.is_touch_crate=True
 			cK.entity.destroy()
@@ -202,22 +204,36 @@ def ceiling(c):
 		c.jumping=False
 		c.y=c.y
 def obj_walk(c):
+	PT=playerInstance[0]
 	if LC.map_zone and c.intersects(LC.map_zone):
 		landing(c=c,e=terraincast(c.world_position,LC.map_zone,LC.map_height))
 		return
-	d=raycast(c.world_position,Vec3(0,1,0),distance=.5,ignore=[c,LC.shdw],debug=False)
-	if d and not str(d.entity) in LC.item_lst:
-		dE=d.entity
+	d=boxcast(c.world_position,Vec3(0,1,0),distance=.1,thickness=(.1,.1),ignore=[c,PT,LC.shdw],debug=False)
+	dE=d.entity
+	if d and not str(dE) in LC.item_lst:
 		if (is_crate(dE) and not dE.vnum == 0) and not (is_crate(dE) and dE.vnum in [9,10,11] and dE.activ) and c.fall_time > .1:
-			crate_action(c=c,e=d.entity)
-			return
-		if is_enemie(d.entity):
-			jump_enemy(c=c,e=d.entity)
+			crate_action(c=PT,e=d.entity)
+		if is_enemie(dE):
+			jump_enemy(c=PT,e=dE)
 		else:
-			landing(c=c,e=d.world_point.y)
-			obj_act(c=c,e=d.entity)
+			landing(c=PT,e=d.world_point.y)
+			obj_act(c=PT,e=d.entity)
 		return
-	c.landed=False
+	playerInstance[0].landed=False
+def obj_walls(c,H):
+	hE=H.entity
+	if H.normal and H.normal != Vec3(0,1,0):
+		if isinstance(hE,crate.Nitro) and hE.collider != None:
+			hE.destroy()
+		if is_enemie(hE) and not c.is_attack:
+			get_damage(c)
+		else:
+			if not str(hE) in LC.item_lst:
+				#if c.direc == c.direc:
+				#	c.position-=c.direc*time.dt*3
+				return
+	c.x+=c.direc.x*time.dt*c.move_speed
+	c.z+=c.direc.z*time.dt*c.move_speed
 def obj_act(c,e):
 	u=str(e)
 	if u in LC.dangers:
@@ -234,7 +250,8 @@ def obj_act(c,e):
 	if u == 'ice_ground':
 		e.do_slide(c=c)
 	if u == 'plank' and e.typ == 1:
-		hte.pl_touch()
+		e.pl_touch()
+		return
 def landing(c,e):
 	c.landed=True
 	if c.y != e and not c.jumping:
@@ -409,7 +426,7 @@ def load_droute(c):
 	if not status.is_death_route:
 		status.is_death_route=True
 		c.position=(200,1,-3)
-		camera.y=.7
+		camera.position=(200,.5,-3)
 		status.loading=False
 		c.freezed=False
 		snd.SpecialMusic(T=status.level_index)
@@ -533,11 +550,12 @@ def is_enemie(n):
 def preload_items():
 	status.preload_phase=True
 	settings.SFX_VOLUME=0
+	FrameAnimation3d('res/crate/anim/bnc/bnc.obj',y=-255,loop=False,scale=.5,fps=20)
 	for PRC in range(13):
-		C.place_crate(ID=PRC,p=(0+PRC,-256,0),m=99,l=13)
-		item.WumpaFruit(pos=(0+PRC,-256,0))
+		C.place_crate(ID=PRC,p=(0+PRC,-255,0),m=99,l=13)
+		item.WumpaFruit(pos=(0+PRC,-255,0))
 	for DPR in scene.entities:
-		if is_crate(DPR) and DPR.collider != None and DPR.y <= -256:
+		if is_crate(DPR) and DPR.collider != None and DPR.y <= -255:
 			if DPR.vnum == 3:
 				DPR.empty_destroy()
 			else:

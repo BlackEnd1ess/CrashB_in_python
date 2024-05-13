@@ -92,4 +92,4 @@ def gem_route1():
 	MT.crate_row(ID=2,POS=(209,3.32,U),WAY=0,CNT=4)
 	MT.crate_row(ID=1,POS=(209,4.8,U),WAY=0,CNT=4)
 	MT.crate_wall(ID=1,POS=(203.8,-.68,U),CNT=[2,2])
-	o.GemPlatform(pos=(212,3.5,U),t=4)
+	o.GemPlatform(pos=(212.2,3.1,U),t=4)

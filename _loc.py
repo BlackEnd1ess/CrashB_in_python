@@ -23,10 +23,13 @@ dangers=['water_hit','falling_zone']
 bonus_checkpoint=[None,(0,2,-6),(.3,2,2.3),(0,4,.85*8),(0,5,0),(0,5,0)]
 
 #day mode
-day_m={0:'default',1:'woods',2:'snow',3:'evening',4:'day',5:'night'}
+day_m={0:'default',1:'woods',2:'snow',3:'evening',4:'night',5:'night'}
 
 # shadow
 shdw=None
+
+#hitbox dummy
+htBOX=None
 
 # map terrain
 map_height=None

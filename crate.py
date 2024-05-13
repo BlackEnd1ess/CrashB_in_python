@@ -30,7 +30,7 @@ def place_crate(p,ID,m=None,l=None,pse=None,tm=None):
 			15:lambda:cTime(pos=p,pse=pse,tm=tm),
 			16:lambda:LvInfo(pos=p,pse=pse)}
 	CRATES[ID]()
-	if not ID in [0,8,9,10,15,16] and not pse == 1 and not p[1] == -256:
+	if not ID in [0,8,9,10,15,16] and not pse == 1 and not p[1] <= -255:
 		status.crates_in_level+=1
 		if p[1] < -20:
 			status.crates_in_bonus+=1
@@ -166,7 +166,7 @@ class Checkpoint(Entity):
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
-		status.checkpoint=(self.x,self.y+1,self.z)
+		status.checkpoint=(self.x,self.y+1.5,self.z)
 		destroy_event(self)
 		cc.collect_reset()
 		CheckpointAnimation(p=(self.x,self.y+.5,self.z))

@@ -223,10 +223,5 @@ def door_close(d):
 	d.door_part.collider='box'
 	d.collider='box'
 
-
-
-
-
-
 def warp_vortex(d):
 	print(d)

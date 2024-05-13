@@ -6,9 +6,9 @@ from ursina import *
 snd=sound
 an=animation
 cc=_core
-lC=_loc
+LC=_loc
 
-class pShadow(Entity):
+class pShadow(Entity):## shadow point
 	def __init__(self):
 		super().__init__(model=Circle(16,thickness=1,radius=.08),rotation_x=90,color=color.black,alpha=.7,origin_z=.01,collider='box')
 		self.target=cc.playerInstance[0]
@@ -19,7 +19,7 @@ class pShadow(Entity):
 	def check_obj(self):
 		vSH=raycast(self.target.world_position,-Vec3(0,1,0),distance=2,ignore=[self,self.target],debug=False)
 		if not cc.is_enemie(vSH.entity):
-			if vSH.normal and not str(vSH.entity) in lC.item_lst:
+			if vSH.normal and not str(vSH.entity) in LC.item_lst:
 				self.y=vSH.world_point.y
 	def update(self):
 		if not status.gproc():
@@ -29,11 +29,23 @@ class pShadow(Entity):
 				return
 			self.y=self.target.y
 
+class pHitBox(Entity):## needed to avoid collider conflicts
+	def __init__(self):
+		self.target=cc.playerInstance[0]
+		super().__init__(model='cube',scale=.1,position=self.target.position,visible=False)
+		_loc.htBOX=self
+	def update(self):
+		if not status.gproc():
+			TG=self.target
+			self.position=TG.position
+			cc.obj_walk(self)
+
 class CrashB(Entity):
 	def __init__(self,pos):
 		cHr='res/character/'
 		super().__init__(model=cHr+'crash.ply',texture=cHr+'crash.tga',scale=.001,rotation_x=-90,collider='box',position=pos,unlit=False)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(200,200,700))
+		self.gnd_c=Entity(model='cube',scale=.1,position=self.position,visible=False)
 		cc.set_val(self)
 		ui.PauseMenu()
 		ui.WumpaCounter()
@@ -41,6 +53,7 @@ class CrashB(Entity):
 		ui.LiveCounter()
 		ui.CollectedGem()
 		an.WarpRingEffect(pos=self.position)
+		pHitBox()
 		pShadow()
 	def input(self,key):
 		if self.freezed or status.is_dying:
@@ -85,22 +98,16 @@ class CrashB(Entity):
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD
-		hT=boxcast(self.world_position+(0,.3,0),mvD,distance=.2,thickness=(.1,.5),ignore=[self,lC.shdw],debug=False)
-		hE=hT.entity
 		if mvD.length() > 0:
 			self.walking=True
-			self.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
+			hT=boxcast(self.world_position+(0,.3,0),mvD,distance=.3,thickness=(.4,.4),ignore=[self,LC.htBOX,LC.shdw],debug=True)
 			self.walk_event()
-			if hT.normal and hT.normal != Vec3(0,1,0):
-				if str(hE) == 'nitro' and hE.collider != None:
-					hE.destroy()
-				if cc.is_enemie(hE) and not self.is_attack:
-					cc.get_damage(self)
-				else:
-					if not str(hE) in lC.item_lst:
-						return
-			self.x+=mvD.x*time.dt*self.move_speed
-			self.z+=mvD.z*time.dt*self.move_speed
+			self.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
+			if hT.normal != Vec3(0,1,0):
+				cc.obj_walls(c=self,H=hT)
+			if hT.normal == Vec3(0,-1,0):
+				self.jumping=False
+				self.y=self.y
 			return
 		self.walk_snd=0
 		self.walking=False
@@ -132,8 +139,8 @@ class CrashB(Entity):
 				self.is_flip=False
 				an.fall(self)
 	def jump(self):
+		cc.obj_ceiling(self)
 		self.y+=time.dt*2.4
-		cc.ceiling(self)
 		self.first_land=True
 		if self.walking:
 			self.is_flip=True
@@ -167,7 +174,6 @@ class CrashB(Entity):
 			self.move()
 		if self.is_attack:
 			cc.c_attack(self)
-		cc.obj_walk(self)
 		self.basic_animation()
 		self.c_camera()
 		cc.c_item(self)

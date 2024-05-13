@@ -16,7 +16,6 @@ W_RESET=[]
 
 ## player rule
 player_protect=0
-last_landp_y=0
 level_index=0
 c_delay=0
 d_delay=0
@@ -69,6 +68,7 @@ e_audio=False
 n_audio=False
 
 death_event=False
+cam_unlock=False
 aku_exist=False
 on_terra=False
 gem_death=False

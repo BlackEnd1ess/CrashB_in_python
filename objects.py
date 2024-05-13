@@ -1,5 +1,4 @@
 import _core,status,item,sound,animation,level,player,_loc
-from ursina.shaders import *
 from ursina import *
 
 texp='res/terrain/texture/'
@@ -131,6 +130,7 @@ class TreeScene(Entity):
 		Entity(model='quad',name='t2b1',texture=sBU,position=(self.x,self.y+1.3,self.z-.25),scale=2,color=color.rgb32(0,130,0))
 		Entity(model='quad',name='t2b2',texture=sBU,position=(self.x-.6,self.y+1.2,self.z-.249),scale=2,color=color.rgb32(0,120,0),rotation_y=30)
 		Entity(model='quad',name='t2b3',texture=sBU,position=(self.x+.6,self.y+1.2,self.z-.249),scale=2,color=color.rgb32(0,110,0),rotation_y=-30)
+		Entity(model='cube',scale=(1,20,1),position=(self.x+.25,self.y,self.z),visible=False,collider=b)
 		unlit_obj(self)
 
 ####################
@@ -214,7 +214,7 @@ class WoodLog(Entity):
 class IceGround(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model='cube',texture=texp+'ice_ground.png',position=pos,scale=sca,collider=b,alpha=.8)
-		self.texture_scale=(sca[0],sca[2])
+		self.texture_scale=(sca[0],sca[1])
 
 class SnowPlatform(Entity):
 	def __init__(self,pos):
@@ -381,13 +381,13 @@ class CrateScore(Entity): ## game finish
 
 class StartRoom(Entity): ## game spawn point
 	def __init__(self,pos,lvID):
-		super().__init__(model=omf+'ev/s_room/room1.ply',texture=omf+'ev/s_room/room.tga',position=pos,scale=(.07,.07,.08),rotation=(270,90),collider=None)
+		super().__init__(model=omf+'ev/s_room/room1.ply',texture=omf+'ev/s_room/room.tga',position=pos,scale=(.07,.07,.08),rotation=(270,90))
 		self.floor0=Entity(model='cube',collider=b,position=(self.x,self.y+.6,self.z-.2),scale=(1.7,.5,1.7),visible=False)
 		self.floor1=Entity(model='cube',collider=b,position=(self.x,self.y+.2,self.z+1.7),scale=(2,.5,2),visible=False)
-		self.wall0=Entity(model='cube',collider=b,position=(self.x-1,self.y+1.5,self.z),scale=(.4,3,6),visible=False,rotation_z=10)
-		self.wall1=Entity(model='cube',collider=b,position=(self.x+1,self.y+1.5,self.z),scale=(.4,3,6),visible=False,rotation_z=-10)
-		self.bck0=Entity(model='cube',collider=b,position=(self.x,self.y+1.5,self.z-1),scale=(5,3,.6),visible=False,rotation_x=10)
-		self.ceil=Entity(model='cube',collider=b,position=(self.x,self.y+2.5,self.z-.2),scale=(4,.7,4),visible=False)
+		self.wall0=Entity(model='cube',collider=b,position=(self.x-1,self.y+1.5,self.z),scale=(.4,13,6),visible=False)
+		self.wall1=Entity(model='cube',collider=b,position=(self.x+1,self.y+1.5,self.z),scale=(.4,13,6),visible=False)
+		self.bck0=Entity(model='cube',collider=b,position=(self.x,self.y+1.5,self.z-1),scale=(5,13,.6),visible=False)
+		self.ceil=Entity(model='cube',name='clr1',collider=b,position=(self.x,self.y+2.6,self.z-.2),scale=(6,1,6),visible=False,alpha=.4)
 		self.curt=Entity(model='plane',position=(self.x,self.y+0.01,self.z),color=color.black,scale=3)
 		RoomDoor(pos=(self.x,self.y+1.9,self.z+2.3),typ=0)
 		player.CrashB(pos=(self.x,self.y+.85,self.z-.1))
@@ -411,9 +411,9 @@ class EndRoom(Entity): ## finish level
 		self.grnd=Entity(model='cube',scale=(4,1,16),position=(self.x-1,self.y-2,self.z+3),collider=b,visible=False)
 		self.wa_l=Entity(model='cube',scale=(1,3,16),position=(self.x-2.2,self.y,self.z+3),collider=b,visible=False)
 		self.wa_r=Entity(model='cube',scale=(1,3,16),position=(self.x,self.y,self.z+3),collider=b,visible=False)
-		self.ceil=Entity(model='cube',scale=(5,3,16),position=(self.x-1,self.y+1.4,self.z+3),collider=b,visible=False)
+		self.ceil=Entity(model='cube',name='clr2',scale=(5,3,16),position=(self.x-1,self.y+1.4,self.z+3),collider=b,visible=False)
 		self.bck=Entity(model='cube',scale=(6,4,2),position=(self.x,self.y,self.z+9),collider=b,visible=False)
-		self.pod1=Entity(model='cube',scale=(2,1,2),position=(self.x-1,self.y-1.8,self.z+.45),collider=b,visible=False)
+		self.pod1=Entity(model='cube',scale=(6,1,2.5),position=(self.x-1,self.y-1.85,self.z+.45),collider=b,visible=False)
 		self.pod2=Entity(model='cube',scale=(.85,1,.85),position=(self.x-1.1,self.y-1.6,self.z+.3),collider=b,visible=False)
 		self.pod3=Entity(model='cube',scale=(1.6,1,1),position=(self.x-1.1,self.y-1.5,self.z+6.5),collider=b,visible=False)
 		LevelFinish(p=(self.x-1.1,self.y-1.4,self.z+7),V=False)
@@ -471,15 +471,15 @@ class BonusPlatform(Entity): ## switch -> bonus round
 class GemPlatform(Entity): ## gem platform
 	def __init__(self,pos,t):
 		if t in status.COLOR_GEM:
-			ne='gem_platform'
+			ne='gem_ptf'
 			self.is_enabled=True
 		else:
-			ne='gem_platform_e'
+			ne='gem_ptf_e'
 			self.is_enabled=False
 		L=180
-		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L,0,L),4:color.rgb32(0,0,L+70),5:color.rgb32(L,L,0)}
-		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=0.001,position=pos,shader=unlit_shader,collider=b)
-		self.bg_darkness=Entity(model=Circle(12,mode='ngon',thickness=.1),position=(self.x,self.y-.011,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.9)
+		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
+		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=0.001,position=pos,collider=b)
+		self.bg_darkness=Entity(model=Circle(12,mode='ngon',thickness=.1),position=(self.x,self.y-.011,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
 		self.target=cc.playerInstance[0]
 		self.orginal_pos=self.position
 		self.catch_player=False
@@ -540,12 +540,6 @@ class ObjectLOD(Entity):
 				self.obj_check()
 				invoke(lambda:setattr(self,'wait',False),delay=.5)
 
-class CamTrigger(Entity):
-	def __init__(self,pos,sca):
-		super().__init__(model='wireframe_cube',color=color.white,position=pos,scale=sca)
-#	def update(self):
-#		print(self)
-
 ###################
 ## global objects #
 class InvWall(Entity):
@@ -560,7 +554,7 @@ class SingleBlock(Entity):
 
 class Water(Animation):
 	def __init__(self,pos,s,c,a):
-		super().__init__(omf+'ev/water/water.gif',position=pos,scale=(s[0],s[1]),rotation_x=90,texture_scale=(s[0],s[1]),color=c,alpha=a)
+		super().__init__(omf+'ev/water/water.gif',position=pos,scale=(s[0],s[1]),rotation_x=90,fps=20,texture_scale=(s[0],s[1]),color=c,alpha=a)
 		WaterHit(p=(pos[0],pos[1]-.1,pos[2]),sc=s)
 
 class StoneTile(Entity):
