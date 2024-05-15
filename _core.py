@@ -11,7 +11,8 @@ N=npc
 
 ## player
 def set_val(d):
-	for _a in ['run_anim','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','count_time','fall_time','blink_time','death_anim']:
+	for _a in ['run_anim','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','count_time','fall_time',
+			'blink_time','death_anim','slide_fwd']:
 		setattr(d,_a,0)
 	for _v in ['block_input','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
 		setattr(d,_v,False)
@@ -109,6 +110,21 @@ def c_attack(c):
 					AC.fly_direc=3
 				AC.is_hitten=True
 				Audio(snd.snd_nbeat)
+def c_slide(c):
+	if not c.walking:
+		if c.slide_fwd > 0 and status.p_last_direc != None:
+			if c.move_speed > 0:
+				c.move_speed-=time.dt
+			c.position+=status.p_last_direc*time.dt*c.slide_fwd
+			c.slide_fwd-=time.dt
+			if c.slide_fwd <= 0:
+				c.slide_fwd=0
+				status.p_last_direc=None
+		return
+	if c.move_speed < 4:
+		c.move_speed+=time.dt
+		if c.move_speed > 0:
+			c.slide_fwd=c.move_speed
 
 ## camera actor
 def cam_rotate(c):
@@ -124,6 +140,7 @@ def cam_follow(c):
 		return
 	ftr=time.dt*3
 	camera.z=lerp(camera.z,c.z-c.CMS,ftr)
+	camera.x=lerp(camera.x,c.x,ftr)
 	if status.c_indoor:
 		if not status.p_in_air(c):
 			camera.y=lerp(camera.y,c.y+1,time.dt)
@@ -131,7 +148,6 @@ def cam_follow(c):
 		return
 	if (status.bonus_round or status.is_death_route) and not c.freezed:
 		camera.y=lerp(camera.y,c.y+1,time.dt)
-	camera.x=lerp(camera.x,c.x,ftr)
 def free_view_field(o):
 	if o.z < playerInstance[0].z-2:
 		o.hide()
@@ -192,51 +208,54 @@ def collect_rewards():
 	if status.level_col_gem:
 		status.CLEAR_GEM.append(status.level_index)
 		status.clear_gems+=1
+def reset_audio():
+	status.e_audio=False
+	status.n_audio=False
+	status.b_audio=False
 
 ## collisions
-def obj_ceiling(c):## hit by jump and not move
-	cK=c.intersects()
-	if cK.normal == Vec3(0,-1,0) and not (str(cK.entity) in LC.item_lst or cK.entity == LC.htBOX):
-		if is_crate(cK.entity) and not c.is_touch_crate:
+def obj_ceiling(c,e):
+	if not str(e) in LC.item_lst:
+		if is_crate(e) and not c.is_touch_crate:
 			c.is_touch_crate=True
-			cK.entity.destroy()
+			e.destroy()
 			invoke(lambda:setattr(c,'is_touch_crate',False),delay=.1)
+		if str(e) in LC.dangers:
+			get_damage(c)
 		c.jumping=False
 		c.y=c.y
-def obj_walk(c):
-	PT=playerInstance[0]
+def obj_grnd(c):
 	if LC.map_zone and c.intersects(LC.map_zone):
 		landing(c=c,e=terraincast(c.world_position,LC.map_zone,LC.map_height))
 		return
-	d=boxcast(c.world_position,Vec3(0,1,0),distance=.1,thickness=(.1,.1),ignore=[c,PT,LC.shdw],debug=False)
-	dE=d.entity
-	if d and not str(dE) in LC.item_lst:
-		if (is_crate(dE) and not dE.vnum == 0) and not (is_crate(dE) and dE.vnum in [9,10,11] and dE.activ) and c.fall_time > .1:
-			crate_action(c=PT,e=d.entity)
-		if is_enemie(dE):
-			jump_enemy(c=PT,e=dE)
+	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.05,thickness=(.15,.15),ignore=[c,LC.shdw],debug=False)
+	vp=vj.entity
+	if vj and not (str(vp) in LC.item_lst or str(vp) in LC.dangers):
+		if (is_crate(vp) and not vp.vnum == 0) and not (is_crate(vp) and vp.vnum in [9,10,11] and vp.activ) and c.fall_time > .1:
+			crate_action(c=c,e=vp)
+		if is_enemie(vp):
+			jump_enemy(c=c,e=vp)
 		else:
-			landing(c=PT,e=d.world_point.y)
-			obj_act(c=PT,e=d.entity)
+			landing(c=c,e=vj.world_point.y)
+			obj_act(c=c,e=vp)
 		return
-	playerInstance[0].landed=False
+	c.landed=False
 def obj_walls(c,H):
 	hE=H.entity
 	if H.normal and H.normal != Vec3(0,1,0):
 		if isinstance(hE,crate.Nitro) and hE.collider != None:
 			hE.destroy()
-		if is_enemie(hE) and not c.is_attack:
+		if (is_enemie(hE) and not c.is_attack) or (str(hE) in LC.dangers and hE.danger):
 			get_damage(c)
+			return
 		else:
-			if not str(hE) in LC.item_lst:
-				#if c.direc == c.direc:
-				#	c.position-=c.direc*time.dt*3
+			if not str(hE) in LC.item_lst and not hE == LC.shdw:
 				return
-	c.x+=c.direc.x*time.dt*c.move_speed
-	c.z+=c.direc.z*time.dt*c.move_speed
+	if not status.gproc():#avoid sys error by missing ursina entity
+		c.position+=c.direc*time.dt*c.move_speed
 def obj_act(c,e):
 	u=str(e)
-	if u in LC.dangers:
+	if u in LC.d_zone:
 		death_zone(c=c,e=e)
 		return
 	if (u == 'bonus_platform' and not status.bonus_solved) or u == 'gem_platform':
@@ -248,13 +267,16 @@ def obj_act(c,e):
 		jmp_lv_fin(c=c,e=e)
 		return
 	if u == 'ice_ground':
-		e.do_slide(c=c)
+		c.is_slippery=True
+		return
 	if u == 'plank' and e.typ == 1:
 		e.pl_touch()
 		return
+	c.is_slippery=False
+	c.move_speed=2.2
 def landing(c,e):
-	c.landed=True
-	if c.y != e and not c.jumping:
+	if c.y < e and not c.jumping:
+		c.landed=True
 		c.y=e
 		if c.first_land:
 			c.first_land=False
@@ -265,8 +287,8 @@ def landing(c,e):
 		c.is_flip=False
 		c.flip_anim=0
 def platform_floating(m,c):
-	m.air_time+=time.dt
-	m.y+=time.dt
+	m.air_time+=time.dt/1.5
+	m.y+=time.dt/1.5
 	m.target.x=m.x
 	m.target.z=m.z
 	c.rotation_y=0
@@ -282,8 +304,7 @@ def platform_floating(m,c):
 		else:
 			load_gem_route(c=m.target)
 def jump_enemy(c,e):
-	e0=str(e)
-	if e0 in ['saw_turtle','lizard'] or e0 == 'hedgehog' and e.defend_mode:
+	if (e.vnum in [2,8]) or (e.vnum == 1 and e.defend_mode):
 		get_damage(c)
 		return
 	kill_by_jump(m=e,c=c)
@@ -523,7 +544,7 @@ def fly_away(n):
 				if not PNL.vnum == 6:# avoid checkp accidentally
 					PNL.destroy()
 		if is_enemie(PNL):
-			PNL.is_purge=True
+			PNL.is_hitten=True
 			wumpa_count(1)
 	if n.fly_time > .3:
 		npc_purge(n)
@@ -550,7 +571,7 @@ def is_enemie(n):
 def preload_items():
 	status.preload_phase=True
 	settings.SFX_VOLUME=0
-	FrameAnimation3d('res/crate/anim/bnc/bnc.obj',y=-255,loop=False,scale=.5,fps=20)
+	FrameAnimation3d('res/crate/anim/bnc/bnc',texture='res/crate/3/c_tex.png',y=-255,loop=True,scale=.5,fps=20)
 	for PRC in range(13):
 		C.place_crate(ID=PRC,p=(0+PRC,-255,0),m=99,l=13)
 		item.WumpaFruit(pos=(0+PRC,-255,0))

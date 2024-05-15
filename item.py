@@ -1,5 +1,5 @@
+import _core,status,sound,ui,_loc
 from ursina.shaders import *
-import _core,status,sound,ui
 from ursina import *
 
 i_path='res/item/'
@@ -10,7 +10,7 @@ class WumpaFruit(Entity):
 	def __init__(self,pos):
 		w_model='wumpa/WumpaFruitGameplay.obj'
 		w_tex='wumpa/images/Crash_WumpaFruit_C.png'
-		super().__init__(model=w_model,texture=w_tex,position=(pos[0],pos[1]+.3,pos[2]),scale=.005,collider=b,shader=lit_with_shadows_shader,visible=False)
+		super().__init__(model=w_model,texture=w_tex,position=(pos[0],pos[1]+.3,pos[2]),scale=.005,collider=b,visible=False)
 		self.org_tex=self.texture
 		if _core.level_ready:
 			status.W_RESET.append(self)
@@ -35,24 +35,33 @@ class ExtraLive(Entity):
 
 class GemStone(Entity):
 	def __init__(self,pos,c):
-		if c == 2:
-			ge_m=i_path+'gemstone/gem1.ply'
-			ge_t=i_path+'gemstone/gem1.tga'
-		elif c == 3:
-			ge_m=i_path+'gemstone/gem2.ply'
-			ge_t=i_path+'gemstone/gem2.tga'
+		gPA={2:i_path+'gemstone/gem1',3:i_path+'gemstone/gem2'}
+		if c in gPA:
+			ge_=gPA[c]
 		else:
-			ge_m=i_path+'gemstone/gem.ply'
-			ge_t=i_path+'gemstone/gem.tga'
+			ge_=i_path+'gemstone/gem'
 		R=120
 		ge_c={0:color.rgb32(R,R,R+10),1:color.rgb32(R,0,0),2:color.rgb32(0,R,0),3:color.rgb32(R,0,R),4:color.rgb32(0,0,R),5:color.rgb32(R,R,0)}
-		super().__init__(model=ge_m,texture=ge_t,color=ge_c[c],scale=.0011,position=pos,rotation_x=-90,unlit=False)
-		self.collider=b
-		if c == 4:
-			self.scale_z/=2
-		if c == 5:
-			self.scale_z*=1.25
+		super().__init__(model=ge_+'.ply',texture=ge_+'.tga',color=ge_c[c],scale=.0011,position=pos,rotation_x=-90,collider=b,unlit=False)
+		gSCA={4:self.scale_z/2,5:self.scale_z*1.5}
+		if c in gSCA:
+			self.scale_z=gSCA[c]
+		if c != 0:
+			_loc.C_GEM=self
 		self.gemID=c
+	def gem_fail(self):
+		sli=status.level_index
+		gID=self.gemID
+		if gID == 4 and (sli == 1 and status.crate_count > 0):
+			return True
+		if gID == 1 and (sli == 2 and status.gem_death):
+			return True
+		return False
+	def purge(self):
+		self.collider=None
+		self.parent=None
+		self.disable()
+		_loc.C_GEM=None
 	def collect(self):
 		if self.gemID == 0:
 			status.level_cle_gem=True
@@ -60,21 +69,18 @@ class GemStone(Entity):
 			status.level_col_gem=True
 		Audio(sound.snd_c_gem,volume=1)
 		status.show_gems=5
-		self.disable()
+		self.purge()
 	def update(self):
-		sli=status.level_index
-		geC=self.intersects()
 		if not status.gproc():
+			geC=self.intersects()
 			self.rotation_y-=time.dt*60
-		if self.gemID == 4 and sli == 1 and status.crate_count > 0 or self.gemID == 1 and sli == 2 and status.fails > 0:
-			self.collider=None
-			self.disable()
-			return
-		if geC and self.gemID == 0:
-			geE=geC.entity
-			if str(geE) == 'gem_stone':
-				if not self.y == self.y+.5:
-					self.y+=time.dt
+			if self.gem_fail():
+				self.purge()
+				return
+			if geC and self.gemID == 0:
+				geE=geC.entity
+				if isinstance(geE,GemStone):
+					self.y=lerp(self.y,self.y+.5,time.dt)
 
 class EnergyCrystal(Entity):
 	def __init__(self,pos):

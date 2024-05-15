@@ -33,13 +33,14 @@ def bonus1():
 
 def bonus2():
 	o.FallingZone(pos=(0,-40,0),s=(64,1,64))
-	for sw in range(20):
-		o.SnowWall(pos=(0+sw*7,-37,-2.5))
-		o.SnowWall(pos=(0+sw*7,-33,-2.5))
-	o.mBlock(pos=(0,-37,U),sca=(3,.5,.5))
-	o.mBlock(pos=(4,-37,U),sca=(3,.5,.5))
-	o.mBlock(pos=(8,-37,U),sca=(3,.5,.5))
-	o.mBlock(pos=(14,-37,U),sca=(3,.5,.5))
+	for sw in range(25):
+		o.SnowWall(pos=(-4+sw*5.4,-33.9,-2.5))
+		o.SnowWall(pos=(-4+sw*5.4,-37,-2.5))
+		o.SnowWall(pos=(-4+sw*5.4,-40.1,-2.5))
+	o.mBlock(pos=(0,-37.4,U),sca=(3,.5,.5))
+	o.mBlock(pos=(4,-37.4,U),sca=(3,.5,.5))
+	o.mBlock(pos=(8,-37.4,U),sca=(3,.5,.5))
+	o.mBlock(pos=(14,-37.4,U),sca=(3,.5,.5))
 	MT.crate_row(ID=0,POS=(3.8,-35,U),WAY=0,CNT=8)
 	MT.crate_wall(ID=2,POS=(4,-34.68,U),CNT=[2,2])
 	c.place_crate(ID=4,p=(5.3,-34.68,U))

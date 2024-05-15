@@ -139,3 +139,6 @@ class AkuMusic(Audio):
 			status.aku_hit=2
 			Audio(snd_damg,pitch=.8)
 			self.disable()
+		if status.is_dying:
+			self.fade_out()
+			self.disable()

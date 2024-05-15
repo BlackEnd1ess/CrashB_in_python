@@ -54,7 +54,10 @@ def destroy_event(c):
 				status.crate_to_sv+=1
 				status.crate_count+=1
 				status.show_crates=5
-		Audio(sn.snd_break,volume=settings.SFX_VOLUME)
+		if not status.b_audio:
+			status.b_audio=True
+			Audio(sn.snd_break,volume=settings.SFX_VOLUME)
+			invoke(cc.reset_audio,delay=.1)
 	animation.CrateBreak(cr=c)
 	scene.entities.remove(c)
 	cc.check_crates_over(c)
@@ -365,10 +368,7 @@ class Explosion(Entity):# missing fireball texture
 			invoke(lambda:Audio(sn.snd_glass,volume=settings.SFX_VOLUME/1.5,pitch=1.4),delay=.1)
 		self.eR=2
 		self.exp_radius()
-		invoke(self.reset_audio,delay=.5)
-	def reset_audio(self):
-		status.e_audio=False
-		status.n_audio=False
+		invoke(cc.reset_audio,delay=.1)
 	def exp_radius(self):
 		for exI in scene.entities[:]:
 			jD=distance(self,exI)

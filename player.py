@@ -29,21 +29,10 @@ class pShadow(Entity):## shadow point
 				return
 			self.y=self.target.y
 
-class pHitBox(Entity):## needed to avoid collider conflicts
-	def __init__(self):
-		self.target=cc.playerInstance[0]
-		super().__init__(model='cube',scale=.1,position=self.target.position,visible=False)
-		_loc.htBOX=self
-	def update(self):
-		if not status.gproc():
-			TG=self.target
-			self.position=TG.position
-			cc.obj_walk(self)
-
 class CrashB(Entity):
 	def __init__(self,pos):
 		cHr='res/character/'
-		super().__init__(model=cHr+'crash.ply',texture=cHr+'crash.tga',scale=.001,rotation_x=-90,collider='box',position=pos,unlit=False)
+		super().__init__(model=cHr+'crash.ply',texture=cHr+'crash.tga',scale=.001,rotation_x=-90,position=pos,unlit=False)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(200,200,700))
 		self.gnd_c=Entity(model='cube',scale=.1,position=self.position,visible=False)
 		cc.set_val(self)
@@ -53,7 +42,6 @@ class CrashB(Entity):
 		ui.LiveCounter()
 		ui.CollectedGem()
 		an.WarpRingEffect(pos=self.position)
-		pHitBox()
 		pShadow()
 	def input(self,key):
 		if self.freezed or status.is_dying:
@@ -87,6 +75,7 @@ class CrashB(Entity):
 			status.pause=False
 		##dev input
 		if key == 'b':
+			#print(f"c.place_crate(ID=1,p=({self.x},{self.y+.16},{self.z})")
 			print(self.position)
 		if key == 'e':
 			EditorCamera()
@@ -94,20 +83,21 @@ class CrashB(Entity):
 			scene.fog_color=color.random_color()
 			print(scene.fog_color)
 		if key == 'u':
-			self.position=(0,5,0)
+			self.position=(42,12,35)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD
+		if self.is_slippery:
+			cc.c_slide(self)
 		if mvD.length() > 0:
+			status.p_last_direc=mvD
 			self.walking=True
-			hT=boxcast(self.world_position+(0,.3,0),mvD,distance=.3,thickness=(.4,.4),ignore=[self,LC.htBOX,LC.shdw],debug=True)
+			hT=self.intersects()
 			self.walk_event()
-			self.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
+			if not status.gproc():#avoid sys error by missing ursina entity
+				self.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
 			if hT.normal != Vec3(0,1,0):
 				cc.obj_walls(c=self,H=hT)
-			if hT.normal == Vec3(0,-1,0):
-				self.jumping=False
-				self.y=self.y
 			return
 		self.walk_snd=0
 		self.walking=False
@@ -127,21 +117,18 @@ class CrashB(Entity):
 				self.walk_snd=.35
 				Audio(snd.snd_walk,volume=.3)
 	def fall(self):
-		if status.LEVEL_CLEAN:
-			return
-		if self.landed or self.jumping or not self.warped:
+		s=self
+		if (s.landed or s.jumping or s.freezed or status.is_dying) or not s.warped:
 			self.fall_time=0
 			return
-		self.y-=time.dt*2.3
+		self.y-=time.dt*1.5
 		self.fall_time+=time.dt
-		if self.fall_time > 1:
-			if not self.is_attack and not self.freezed:
-				self.is_flip=False
-				an.fall(self)
+		if s.fall_time > 2 and not (s.is_attack or s.freezed):
+			s.is_flip=False
+			an.fall(s)
 	def jump(self):
-		cc.obj_ceiling(self)
-		self.y+=time.dt*2.4
 		self.first_land=True
+		self.y+=time.dt*2.4
 		if self.walking:
 			self.is_flip=True
 		if self.y >= self.lpos:
@@ -152,6 +139,7 @@ class CrashB(Entity):
 		if not status.is_dying:
 			cc.cam_rotate(self)
 			cc.cam_follow(self)
+			#camera.y=self.y+1.2
 	def basic_animation(self):
 		if status.is_dying:
 			an.player_death(self)
@@ -172,6 +160,9 @@ class CrashB(Entity):
 	def char_misc(self):
 		if not status.is_dying and self.warped and not self.freezed:
 			self.move()
+		if self.intersects().normal == Vec3(0,-1,0):
+			cc.obj_ceiling(c=self,e=self.intersects().entity)
+		self.fall()
 		if self.is_attack:
 			cc.c_attack(self)
 		self.basic_animation()
@@ -188,6 +179,7 @@ class CrashB(Entity):
 	def update(self):
 		if status.pause or status.level_solved or status.gproc():
 			return
+		cc.obj_grnd(self)
 		self.char_misc()
 		if self.jumping:
 			self.jump()

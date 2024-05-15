@@ -62,18 +62,16 @@ def developer_level():
 
 def test():
 	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='grass',co=color.rgb32(130,130,50))
-	o.mBlock(pos=(0,.5,0),sca=(2,2))
-	invoke(free_level,delay=1)
+	
 	#for jk in range(6):
-	#	o.GemPlatform(pos=(1+jk,.5,-7),t=jk)
-	#	item.GemStone(pos=(1+jk,.5,-8),c=jk)
-	mt.crate_row(ID=0,POS=(1,.16,-4),CNT=14,WAY=0)
-	mt.crate_row(ID=0,POS=(1,1.6,-4),CNT=14,WAY=0)
-	#mt.crate_row(ID=0,POS=(1,1.5,-4),CNT=14,WAY=0)
-	#Entity(model='cube',collider='box',position=(0,2,-8),scale=(4,.7,4),alpha=.5,visible=True)
-	#N.spawn(mID=0,pos=(0,0,-6),mDirec=0,mTurn=0)
-	#mt.crate_row(ID=0,POS=(0,.16,-8),CNT=10,WAY=0)
-	#mt.crate_row(ID=2,POS=(0,.48,-8),CNT=5,WAY=2)
+		#o.GemPlatform(pos=(1+jk,.5,-7),t=jk)
+	item.GemStone(pos=(1,.5,-8),c=1)
+	#o.SnowWall(pos=(0,2,0))
+	o.EndRoom(pos=(1,2,6),c=color.rgb32(80,100,80))
+	mt.crate_plane(ID=1,POS=(0,.16,-4),CNT=[4,5])
+	#mt.crate_row(ID=0,POS=(4,.15,-4),CNT=12,WAY=0)
+	invoke(free_level,delay=1)
+
 
 def level1():##wood
 	TS=16
@@ -214,62 +212,77 @@ def level1():##wood
 	o.EndRoom(pos=(1,2.4,28.2),c=color.rgb32(80,100,80))
 	invoke(free_level,delay=3)
 
+#cam trigger, bounce bridge +.2,deco
 def level2():##snow
 	status.gem_death=False
 	o.FallingZone(pos=(0,-2,0),s=(128,1,128))
 	Entity(model='quad',scale=(512,512,1),color=color.white,z=64)
-	o.BonusPlatform(pos=(5,1.4,2.4))
+	o.BonusPlatform(pos=(5,1.1,2.1))
+	#cam trigger
+	o.CamSwitch(pos=(.5,1.4,.9),sca=(4,.3,1))
+	o.CamSwitch(pos=(.5,1.7,2.5),sca=(4,.2,.5))
+	o.CamSwitch(pos=(6,1.8,2.4),sca=(.5,.2,.5))
+	o.CamSwitch(pos=(7.4,2.3,2.4),sca=(1,.2,.5))
+	o.CamSwitch(pos=(10.5,2.5,2.3),sca=(2,.2,.5))
+	o.CamSwitch(pos=(16,2.9,2.3),sca=(7,.2,.5))
+	o.CamSwitch(pos=(23,6,2.4),sca=(.6,.3,.5))
+	o.CamSwitch(pos=(42,6.5,35),sca=(6,.3,1))
+	o.CamSwitch(pos=(42,7,37),sca=(6,.7,1))
 	#dangers
-	wlO=3.8
-	o.WoodLog(pos=(10.3,wlO,2.3))
-	o.WoodLog(pos=(9.2,wlO,2.3))
-	o.WoodLog(pos=(8.1,wlO,2.3))
+	wlO=3.7
+	o.WoodLog(pos=(10.5,wlO,2.2))
+	o.WoodLog(pos=(8.2,wlO,2.2))
 	o.Role(pos=(42.2,6.6,31),di=1)
 	o.Role(pos=(42.2,6.6,32),di=0)
 	#rock
 	for ro in range(40):
 		o.Rock(pos=(0+random.uniform(-3,3),-2,-61+ro*2))
 		o.Rock(pos=(0+random.uniform(-4,4),-2,-59+ro*2))
-	o.mBlock(pos=(0,.7,-59),sca=(3,6))
-	o.mBlock(pos=(0,.7,-41),sca=(3,4))
-	o.mBlock(pos=(0,.7,-20),sca=(3,4))
-	o.mBlock(pos=(0,.7,0),sca=(3,4))
-	o.mBlock(pos=(1.5,1.6,2.5),sca=(6,1))
-	o.mBlock(pos=(6,2,2.5),sca=(1,1))
-	o.mBlock(pos=(7,2.5,2.5),sca=(1,1))
-	o.mBlock(pos=(9,2.5,2.5),sca=(3,1))
-	o.IceGround(pos=(14,2.5,2.5),sca=(5,1))
-	o.mBlock(pos=(18,3.5,2.5),sca=(3,1))
-	o.mBlock(pos=(21,4,2.5),sca=(1,1))
-	o.mBlock(pos=(22,5,2.5),sca=(1,1))
-	o.mBlock(pos=(23,5.75,2.7),sca=(1,1))
-	o.mBlock(pos=(23,5.75,5.2),sca=(5,4))
-	o.mBlock(pos=(23,5.75,23),sca=(2,7))
-	o.mBlock(pos=(23.5,5.75,27),sca=(3,1))
-	o.mBlock(pos=(31.8,5.748,27.05),sca=(3,1))
-	o.mBlock(pos=(42,5.8,32),sca=(4,8))
-	o.mBlock(pos=(42,6.4,38),sca=(4,4))
+	o.mBlock(pos=(0,.8,-59),sca=(3,6))
+	o.mBlock(pos=(0,.8,-41),sca=(3,4))
+	o.mBlock(pos=(0,.8,-20),sca=(3,4))
+	o.mBlock(pos=(0,.8,0),sca=(3,4))
+	#2d area
+	o.mBlock(pos=(1.5,1.2,2.5),sca=(6,1))
+	o.mBlock(pos=(6,1.5,2.5),sca=(1,1))
+	o.mBlock(pos=(7.5,2,2.5),sca=(2,1))
+	o.mBlock(pos=(10.5,2,2.5),sca=(2,1))
+	o.mBlock(pos=(12,2.5,2.5),sca=(1,1))
+	o.IceGround(pos=(15,2.125,2.5),sca=(5,1))
+	o.mBlock(pos=(19,2.5,2.5),sca=(3,1))
+	o.mBlock(pos=(23,3,2.5),sca=(2,1))
+	
+	o.mBlock(pos=(23,5.25,2.2),sca=(1,1.75))##
+	o.mBlock(pos=(24.5,3.4,2.2),sca=(1,1))##
+	
+	o.mBlock(pos=(23,5.25,5.2),sca=(5,4))
+	o.mBlock(pos=(23,5.25,23),sca=(2,7))
+
+	o.mBlock(pos=(23.5,5.25,27),sca=(3,1))
+	o.mBlock(pos=(31.8,5.248,26.98),sca=(3,1))
+	o.mBlock(pos=(42,5.6,32),sca=(4,8))
+	o.mBlock(pos=(42,6.2,38),sca=(4,4))
 	#pillar
-	o.pillar_twin(p=(-.5,.8,-56),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.5,.8,-42.6),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.5,.8,-39),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.5,.8,-21.65),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.5,.8,-18),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.5,.8,-1.8),ro_y=(-90,45,0))
+	o.pillar_twin(p=(-.75,.8,-56),ro_y=(-90,45,0))
+	o.pillar_twin(p=(-.75,.8,-42.6),ro_y=(-90,45,0))
+	o.pillar_twin(p=(-.75,.8,-39),ro_y=(-90,45,0))
+	o.pillar_twin(p=(-.75,.8,-21.65),ro_y=(-90,45,0))
+	o.pillar_twin(p=(-.75,.8,-18),ro_y=(-90,45,0))
+	o.pillar_twin(p=(-.75,.8,-1.8),ro_y=(-90,45,0))
 	o.pillar_twin(p=(22.5,5.35,7),ro_y=(-90,45,0))
 	o.pillar_twin(p=(22.5,5.35,19.85),ro_y=(-90,45,0))
 	o.pillar_twin(p=(22.5,5.35,26.3),ro_y=(-90,45,0))
 	o.Ropes(pos=(-.5,.7,-56),le=55)
-	o.Ropes(pos=(22.5,5.4,7),le=16)
+	o.Ropes(pos=(22.5,5.3,7),le=16)
 	#npc
 	npc.spawn(pos=(3,1.4,2.5),mID=3,mDirec=0,mTurn=0)
 	npc.spawn(pos=(0,.9,1),mID=3,mDirec=0,mTurn=0)
-	npc.spawn(pos=(14.5,3,2.5),mID=5,mDirec=0,mTurn=0)
+	npc.spawn(pos=(14.5,2.7,2.5),mID=5,mDirec=0,mTurn=0)
 	#planks
 	_pl=.7
 	#bridge1
 	o.plank_bridge(pos=(0,_pl,-55),ro_y=0,typ=0,cnt=4,DST=1)
-	o.plank_bridge(pos=(0,_pl,-50),ro_y=0,typ=1,cnt=4,DST=1.5)
+	o.plank_bridge(pos=(0,_pl,-50),ro_y=0,typ=1,cnt=5,DST=1.5)
 	#bridge2
 	o.plank_bridge(pos=(0,_pl,-38),ro_y=0,typ=0,cnt=2,DST=1)
 	o.plank_bridge(pos=(0,_pl,-36),ro_y=0,typ=1,cnt=2,DST=.5)
@@ -287,51 +300,56 @@ def level2():##snow
 	o.plank_bridge(pos=(0,_pl,-6),ro_y=0,typ=1,cnt=2,DST=.5)
 	o.plank_bridge(pos=(0,_pl,-4),ro_y=0,typ=1,cnt=2,DST=.5)
 	o.plank_bridge(pos=(0,_pl,-3),ro_y=0,typ=0,cnt=1,DST=.5)
-	o.plank_bridge(pos=(23,5.4,7.3),ro_y=0,typ=0,cnt=6,DST=.45)
-	o.plank_bridge(pos=(23,5.4,11),ro_y=0,typ=1,cnt=3,DST=.45)
-	o.plank_bridge(pos=(23,5.4,13),ro_y=0,typ=1,cnt=2,DST=.45)
-	o.plank_bridge(pos=(23,5.4,15),ro_y=0,typ=1,cnt=1,DST=.45)
-	o.plank_bridge(pos=(23,5.4,16),ro_y=0,typ=1,cnt=1,DST=.45)
-	o.plank_bridge(pos=(23,5.4,17),ro_y=0,typ=1,cnt=1,DST=.45)
-	o.plank_bridge(pos=(23,5.4,18),ro_y=0,typ=1,cnt=1,DST=.45)
-	o.plank_bridge(pos=(23,5.4,19),ro_y=0,typ=0,cnt=1,DST=.45)
-	o.plank_bridge(pos=(25.2,5.4,27),ro_y=90,typ=1,cnt=12,DST=.45)
+	o.plank_bridge(pos=(23,5.3,8.3),ro_y=0,typ=0,cnt=3,DST=.5)
+	o.plank_bridge(pos=(23,5.3,11),ro_y=0,typ=1,cnt=1,DST=.5)
+	o.plank_bridge(pos=(23,5.3,13),ro_y=0,typ=1,cnt=2,DST=.5)
+	o.plank_bridge(pos=(23,5.3,15),ro_y=0,typ=1,cnt=1,DST=.5)
+	o.plank_bridge(pos=(23,5.3,16),ro_y=0,typ=1,cnt=1,DST=.5)
+	o.plank_bridge(pos=(23,5.3,17),ro_y=0,typ=1,cnt=1,DST=.5)
+	o.plank_bridge(pos=(23,5.3,18),ro_y=0,typ=1,cnt=1,DST=.5)
+	o.plank_bridge(pos=(23,5.3,19),ro_y=0,typ=0,cnt=1,DST=.5)
+	o.plank_bridge(pos=(25.2,5.3,27),ro_y=90,typ=1,cnt=12,DST=.45)
 	#ptf object
 	for ptf1 in range(4):
 		for ptf2 in range(3):
 			o.SnowPlatform(pos=(34+ptf1*1.5,5.8,27+ptf2*1.5))
 	#walls
 	for snw in range(40):
-		o.SnowWall(pos=(-10+snw*7,.75,3))
-		o.SnowWall(pos=(-10+snw*7,2.75,3))
+		o.SnowWall(pos=(-10+snw*5.4,.1,2.65))
+		o.SnowWall(pos=(-10+snw*5.4,3.2,2.65))
+	o.SnowWall(pos=(19,6.3,2.65))
+	o.SnowWall(pos=(27,6.3,2.65))
 	#crates
-	h1=.925
-	h2=.925+.1
-	h3=5.66
+	h1=.75+.16
+	h2=.925+.16
+	h3=5.375+.16
 	mt.crate_block(ID=1,POS=(.5,h2,-58),CNT=[2,2,2])
 	mt.crate_plane(ID=2,POS=(-.7,h2,-57),CNT=[2,2])
 	mt.crate_wall(ID=12,POS=(-.3,h2,-18.6),CNT=[3,3])
 	c.place_crate(ID=2,p=(0,h1,-54))
-	c.place_crate(ID=3,p=(.2,h1,-52))
+	c.place_crate(ID=3,p=(0,h1,-51))
 	c.place_crate(ID=2,p=(-.2,h1,-48))
 	c.place_crate(ID=5,p=(-.7,h2,-42.1))
-	c.place_crate(ID=11,p=(.8,h1+.1,-18.6))
-	c.place_crate(ID=12,p=(.2,h1,-15))
+	c.place_crate(ID=11,p=(.8,h2,-18.6))
+	c.place_crate(ID=12,p=(.2,h2,-15))
 	c.place_crate(ID=12,p=(0,h1,-13))
 	c.place_crate(ID=12,p=(-.3,h1,-10))
 	c.place_crate(ID=12,p=(0,h1,-8))
 	c.place_crate(ID=12,p=(-.2,h1,-6))
 	c.place_crate(ID=12,p=(0,h1,-4))
-	mt.crate_row(ID=2,POS=(18,3.41,2.5),CNT=4,WAY=0)
+	mt.crate_row(ID=2,POS=(18,2.625+.16,2.3),CNT=4,WAY=0)
+	mt.crate_row(ID=3,POS=(21,3,2.3),CNT=3,WAY=0)
+	c.place_crate(ID=8,p=(24.5,3.525+.16,2.2))
+	c.place_crate(ID=8,p=(23.7,4.5,2.2))
 	mt.crate_plane(ID=1,POS=(21.6,h3,5.4),CNT=[3,3])
-	c.place_crate(ID=3,p=(23,h3-.05,13))
-	c.place_crate(ID=10,p=(37,h3+.32,30.4))
-	c.place_crate(ID=5,p=(6.8,2.4,2.5))
+	c.place_crate(ID=3,p=(23,5.45+.16,13))
+	c.place_crate(ID=10,p=(37,h3+.48,30.4))
+	c.place_crate(ID=5,p=(6.8,2.125+.16,2.3))
 	c.place_crate(ID=5,p=(24.3,h3,5))
 	mt.bounce_twin(POS=(24.5,h3,6),CNT=1)
 	#checkpoints
 	c.place_crate(ID=6,p=(-.2,h2,-40))
-	c.place_crate(ID=6,p=(3.2,1.51,2.5))
+	c.place_crate(ID=6,p=(3.2,1.325+.16,2.3))
 	c.place_crate(ID=6,p=(23,h3,4.2))
 	c.place_crate(ID=6,p=(24.4,h3,27))
 	#wumpa fruits
@@ -345,7 +363,7 @@ def level2():##snow
 	mt.wumpa_plane(POS=(-.3,.75,-19.8),CNT=3)
 	mt.wumpa_double_row(POS=(-.5,1.35,2.45),CNT=8)
 	mt.wumpa_double_row(POS=(5.7,1.75,2.45),CNT=3)
-	mt.wumpa_double_row(POS=(12,3,2.45),CNT=12)
+	mt.wumpa_double_row(POS=(13,2.6,2.45),CNT=12)
 	mt.wumpa_plane(POS=(22.7,5.5,5),CNT=3)
 	mt.wumpa_plane(POS=(22.7,5.45,8.4),CNT=3)
 	mt.wumpa_plane(POS=(22.7,5.5,22),CNT=3)

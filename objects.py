@@ -46,7 +46,7 @@ def plank_bridge(pos,typ,cnt,ro_y,DST):
 
 def pillar_twin(p,ro_y):
 	Pillar(pos=(p[0],p[1],p[2]),ro=ro_y)
-	Pillar(pos=(p[0]+1.05,p[1],p[2]),ro=ro_y)
+	Pillar(pos=(p[0]+1.5,p[1],p[2]),ro=ro_y)
 
 #lv3
 def block_row(p,cnt,way):
@@ -174,7 +174,7 @@ class Pillar(Entity):
 
 class SnowWall(Entity):
 	def __init__(self,pos):
-		super().__init__(model=omf+'l2/snow_wall/snow_bonus.ply',texture=omf+'l2/snow_wall/snow_bonus.tga',scale=.03,position=pos,rotation=(-90,-90,0),color=color.cyan)
+		super().__init__(model=omf+'l2/snow_wall/snow_bonus.ply',texture=omf+'l2/snow_wall/snow_bonus.tga',scale=.02,position=pos,rotation=(-90,-90,0),collider=b)
 		unlit_obj(self)
 
 class Rock(Entity):
@@ -326,7 +326,7 @@ class MushroomTree(Entity):
 
 ##################
 ## logic objects #
-class IndoorZone(Entity): ## disable rain
+class IndoorZone(Entity):## disable rain
 	def __init__(self,pos,DI):
 		super().__init__(model='sphere',scale=1,position=pos,visible=False)
 		self.active=False
@@ -348,38 +348,31 @@ class FallingZone(Entity):## falling
 	def __init__(self,pos,s):
 		super().__init__(model='cube',collider=b,scale=s,position=pos,visible=False)
 
-class WaterHit(Entity): ## collider for water
+class WaterHit(Entity):## collider for water
 	def __init__(self,p,sc):
 		super().__init__(model='cube',collider=b,position=p,scale=(sc[0],.2,sc[1]),visible=False)
 
-class CrateScore(Entity): ## game finish
+class CrateScore(Entity):## game finish
 	def __init__(self,pos):
-		super().__init__(model='res/crate/crate_t2.obj',texture='res/crate/2/c_tex.png',alpha=.5,scale=.18,position=pos,origin_y=.5)
-		self.cc_text=Text(parent=scene,position=(self.x-self.scale_x,self.y,self.z),text=None,font='res/ui/font.ttf',color=color.rgb32(255,255,128),scale=10)
-	def gem_can_spawn(self):
-		if st.level_index == 1 and st.crate_count <= 0:
-			return True
-		if st.level_index == 2 and not st.gem_death:
-			return True
-		return False
+		super().__init__(model='res/crate/crate_t2.obj',texture='res/crate/2/c_tex.png',alpha=.4,scale=.18,position=pos,origin_y=.5)
+		self.cc_text=Text(parent=scene,position=(self.x-self.scale_x,self.y,self.z),text=None,font='res/ui/font.ttf',color=color.rgb32(255,255,100),scale=10)
 	def update(self):
-		self.cc_text.text=str(st.crate_count)+'/'+str(st.crates_in_level)
 		if not st.gproc():
-			self.rotation_y-=120*time.dt
-		if st.crates_in_level > 0 and st.crate_count >= st.crates_in_level:
-			Audio(sound.snd_rward)
-			item.GemStone(pos=(self.x,self.y-.3,self.z),c=0)
-			self.cc_text.disable()
-			self.disable()
-			return
-		if st.crates_in_level <= 0 or st.is_time_trial or self.gem_can_spawn():
-			self.hide()
-			self.cc_text.hide()
-			return
-		self.show()
-		self.cc_text.show()
+			if st.crates_in_level <= 0 or st.is_time_trial or (_loc.C_GEM and distance(self,_loc.C_GEM) < .5):
+				self.cc_text.hide()
+				self.hide()
+			else:
+				self.cc_text.show()
+				self.show()
+				self.cc_text.text=str(st.crate_count)+'/'+str(st.crates_in_level)
+				self.rotation_y-=120*time.dt
+			if st.crates_in_level > 0 and st.crate_count >= st.crates_in_level:
+				item.GemStone(pos=(self.x,self.y-.3,self.z),c=0)
+				Audio(sound.snd_rward)
+				self.cc_text.disable()
+				self.disable()
 
-class StartRoom(Entity): ## game spawn point
+class StartRoom(Entity):## game spawn point
 	def __init__(self,pos,lvID):
 		super().__init__(model=omf+'ev/s_room/room1.ply',texture=omf+'ev/s_room/room.tga',position=pos,scale=(.07,.07,.08),rotation=(270,90))
 		self.floor0=Entity(model='cube',collider=b,position=(self.x,self.y+.6,self.z-.2),scale=(1.7,.5,1.7),visible=False)
@@ -403,7 +396,7 @@ class StartRoom(Entity): ## game spawn point
 					4:lambda:level.test()}
 			m_info[lvID]()
 
-class EndRoom(Entity): ## finish level
+class EndRoom(Entity):## finish level
 	def __init__(self,pos,c):
 		eR=omf+'ev/e_room/e_room'
 		super().__init__(model=eR+'.ply',texture=eR+'.tga',scale=.025,rotation=(-90,90,0),position=pos,color=c,unlit=False)
@@ -426,7 +419,7 @@ class EndRoom(Entity): ## finish level
 			item.GemStone(pos=(self.x-1.1,self.y-1,self.z),c=1)
 		unlit_obj(self)
 
-class RoomDoor(Entity): ## door for start and end room
+class RoomDoor(Entity):## door for start and end room
 	def __init__(self,pos,typ):
 		self.dPA=omf+'ev/door/'
 		super().__init__(model=self.dPA+'u0.ply',texture=self.dPA+'u_door.tga',position=pos,scale=.001,rotation_x=90,collider=b)
@@ -450,7 +443,7 @@ class RoomDoor(Entity): ## door for start and end room
 					self.d_open=False
 					animation.door_close(self)
 
-class BonusPlatform(Entity): ## switch -> bonus round
+class BonusPlatform(Entity):## switch -> bonus round
 	def __init__(self,pos):
 		sIN='ev/bonus/bonus'
 		super().__init__(model=omf+sIN+'.ply',texture=omf+sIN+'.tga',collider=b,scale=-.001,rotation_x=90,position=pos)
@@ -468,7 +461,7 @@ class BonusPlatform(Entity): ## switch -> bonus round
 			if self.catch_player:
 				cc.platform_floating(m=self,c=self.target)
 
-class GemPlatform(Entity): ## gem platform
+class GemPlatform(Entity):## gem platform
 	def __init__(self,pos,t):
 		if t in status.COLOR_GEM:
 			ne='gem_ptf'
@@ -497,7 +490,7 @@ class GemPlatform(Entity): ## gem platform
 				cc.platform_floating(m=self,c=self.target)
 				return
 
-class LevelFinish(Entity): ## finish level
+class LevelFinish(Entity):## finish level
 	def __init__(self,p,V):
 		super().__init__(model=omf+'ev/podium/gear.obj',collider=b,texture=omf+'ev/podium/gear_diffuse.png',scale=(.6,.8,.6),position=p,visible=V)
 		self.prt_snd=Audio(sound.snd_portl,volume=0,loop=True)
@@ -506,6 +499,14 @@ class LevelFinish(Entity): ## finish level
 			self.prt_snd.volume=1
 		else:
 			self.prt_snd.volume=0
+
+class CamSwitch(Entity):## allow cam move y if player collide with them
+	def __init__(self,pos,sca):
+		self.target=cc.playerInstance[0]
+		super().__init__(model='cube',position=pos,scale=sca,collider=b,visible=False)
+	def collect(self):#avoid pyhsics with them
+		if not status.gproc():
+			camera.y=lerp(camera.y,self.target.y+1.2,time.dt*2)
 
 ##LOD -> hide objects outside visual range
 class ObjectLOD(Entity):

@@ -5,7 +5,7 @@ checkpoint=None
 day_mode=''
 
 ## game progress items
-COLOR_GEM=[1,2,3,4,5]
+COLOR_GEM=[2,3,5]
 CLEAR_GEM=[1,2,3]
 CRYSTAL=[]
 
@@ -15,6 +15,7 @@ C_RESET=[]
 W_RESET=[]
 
 ## player rule
+p_last_direc=None
 player_protect=0
 level_index=0
 c_delay=0

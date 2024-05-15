@@ -19,8 +19,16 @@
 - fixxed global block collider
 - aku mask follow smooth
 
-#12.05.2024 14:10
+#14.05.2024 14:10
 - shadow point below crash
 - rain particle effect
 - fixxed gem platform catch position Y
 - better quality rain sfx
+- slipperness walk effect, works now in any direction and stops by own acceleration
+
+
+#15.05.2024 10:00
+- level 2 better platform collision
+- icewall collider
+- new decoration
+

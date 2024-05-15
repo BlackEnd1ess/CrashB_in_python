@@ -22,6 +22,9 @@ def idle(d):
 	d.model=af+'idle/'+str(int(d.idle_anim))+'.ply'
 
 def run(d):
+	if status.LV_CLEAR_PROCESS:
+		d=None
+		return
 	d.run_anim+=time.dt*t
 	if d.run_anim >= 10.85:
 		d.run_anim=0
