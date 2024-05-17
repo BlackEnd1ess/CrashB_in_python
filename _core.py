@@ -240,17 +240,20 @@ def obj_grnd(c):
 			obj_act(c=c,e=vp)
 		return
 	c.landed=False
-def obj_walls(c,H):
-	hE=H.entity
-	if H.normal and H.normal != Vec3(0,1,0):
-		if isinstance(hE,crate.Nitro) and hE.collider != None:
-			hE.destroy()
-		if (is_enemie(hE) and not c.is_attack) or (str(hE) in LC.dangers and hE.danger):
-			get_damage(c)
-			return
-		else:
-			if not str(hE) in LC.item_lst and not hE == LC.shdw:
+def obj_walls(c):
+	hT=c.intersects()
+	vT=raycast(c.world_position+(0,.1,0),c.direc,distance=.2,ignore=[c,LC.shdw],debug=False)
+	for jF in [hT,vT]:
+		jV=jF.entity
+		if jF and jF.normal != Vec3(0,1,0):
+			if isinstance(jV,crate.Nitro) and jV.collider != None:
+				jV.destroy()
+			if (is_enemie(jV) and not c.is_attack) or (str(jV) in LC.dangers and jV.danger):
+				get_damage(c)
 				return
+			else:
+				if not str(jV) in LC.item_lst and not jV == LC.shdw:
+					return
 	if not status.gproc():#avoid sys error by missing ursina entity
 		c.position+=c.direc*time.dt*c.move_speed
 def obj_act(c,e):
@@ -351,8 +354,10 @@ def crate_set_val(cR,Cpos,Cpse):
 		cR.texture='res/crate/'+str(cR.vnum)+'/c_tex.png'
 	cR.org_tex=cR.texture
 	cR.destroy_exp=False
+	cR.fall_down=False
 	cR.is_stack=False
 	cR.spawn_pos=Cpos
+	cR.fall_pos=Cpos[1]-.32
 	cR.position=Cpos
 	cR.collider='box'
 	cR.poly=Cpse
@@ -382,11 +387,16 @@ def check_cstack():
 							cST.is_stack=True
 							cSD.is_stack=True
 def check_crates_over(c):
-	for co in scene.entities:
-		if is_crate(co) and not c.vnum == 3:
-			if c.x == co.x and c.z == co.z and co.y > c.y:
-				if co.is_stack:
-					co.animate_y(co.y-co.scale_y*2,duration=.15)
+	for co in scene.entities[:]:
+		if is_crate(co) and not co.vnum == 3 and co.is_stack:
+			if (c.x == co.x and co.z == c.z) and c.y < co.y:
+				co.fall_down=True
+def crate_fall_down(c):
+	if c.y > c.fall_pos:
+		c.y-=time.dt*2
+		return
+	c.fall_down=False
+	c.fall_pos=c.y-.32
 
 ## bonus level
 def load_bonus(c):
@@ -569,20 +579,9 @@ def is_enemie(n):
 
 ## reduce lagg by first spawn
 def preload_items():
-	status.preload_phase=True
-	settings.SFX_VOLUME=0
-	FrameAnimation3d('res/crate/anim/bnc/bnc',texture='res/crate/3/c_tex.png',y=-255,loop=True,scale=.5,fps=20)
-	for PRC in range(13):
-		C.place_crate(ID=PRC,p=(0+PRC,-255,0),m=99,l=13)
-		item.WumpaFruit(pos=(0+PRC,-255,0))
-	for DPR in scene.entities:
-		if is_crate(DPR) and DPR.collider != None and DPR.y <= -255:
-			if DPR.vnum == 3:
-				DPR.empty_destroy()
-			else:
-				DPR.destroy()
-	status.C_RESET.clear()
-	invoke(end_preload,delay=.3)
-def end_preload():
-	status.preload_phase=False
-	settings.SFX_VOLUME=2
+	return
+#	status.preload_phase=True
+#	settings.SFX_VOLUME=0
+#def end_preload():
+#	status.preload_phase=False
+#	settings.SFX_VOLUME=2

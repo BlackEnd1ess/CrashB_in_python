@@ -266,7 +266,7 @@ class Role(Entity):
 class WaterFlow(Entity):
 	def __init__(self,pos,sca):
 		super().__init__()
-		self.wtr=Animation('l3/water_flow/water_flow.gif',scale=sca,texture_scale=(1,sca[1]/4),position=pos,rotation_x=90,fps=40,color=color.rgb32(240,255,240),alpha=.85)
+		self.wtr=Animation('l3/water_flow/water_flow.gif',scale=sca,texture_scale=(1,sca[1]/4),position=pos,rotation_x=90,fps=40,color=color.rgb32(240,255,240),alpha=.8)
 		Entity(model='cube',texture=texp+'cobble_stone.png',position=(pos[0],pos[1]-.7,pos[2]+.05),scale=(10,.1,sca[1]),texture_scale=(10,sca[1]))
 		WaterHit(p=pos,sc=sca)
 	def update(self):
@@ -286,7 +286,7 @@ class SceneWall(Entity):
 class WaterFall(Entity):
 	def __init__(self,pos):
 		super().__init__(model='plane',texture=omf+'l3/water_fall/waterf0.png',position=pos,scale=(5,0,1),rotation_x=-90,texture_scale=(10,1),color=color.rgb32(240,255,240))
-		Entity(model='plane',color=color.black,scale=(6,1,16),position=(self.x,self.y-.2,self.z+1))
+		Entity(model='plane',color=color.black,scale=(6,1,16),position=(self.x,self.y-.71,self.z+1.3))
 		self.y+=1
 		self.frm=0
 	def update(self):
@@ -472,7 +472,7 @@ class GemPlatform(Entity):## gem platform
 		L=180
 		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
 		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=0.001,position=pos,collider=b)
-		self.bg_darkness=Entity(model=Circle(12,mode='ngon',thickness=.1),position=(self.x,self.y-.011,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
+		self.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),position=(self.x,self.y-.011,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
 		self.target=cc.playerInstance[0]
 		self.orginal_pos=self.position
 		self.catch_player=False
@@ -503,7 +503,7 @@ class LevelFinish(Entity):## finish level
 class CamSwitch(Entity):## allow cam move y if player collide with them
 	def __init__(self,pos,sca):
 		self.target=cc.playerInstance[0]
-		super().__init__(model='cube',position=pos,scale=sca,collider=b,visible=False)
+		super().__init__(model='cube',position=pos,scale=sca,collider=b,visible=True,alpha=.5)
 	def collect(self):#avoid pyhsics with them
 		if not status.gproc():
 			camera.y=lerp(camera.y,self.target.y+1.2,time.dt*2)
@@ -545,7 +545,7 @@ class ObjectLOD(Entity):
 ## global objects #
 class InvWall(Entity):
 	def __init__(self,pos,sca):
-		super().__init__(model='cube',position=pos,scale=sca,visible=False,collider=b)
+		super().__init__(model='cube',position=pos,scale=sca,visible=False,collider=b,color=color.red)
 
 class SingleBlock(Entity):
 	def __init__(self,pos):

@@ -59,6 +59,7 @@ class SawTurtle(Entity):
 		nN='saw_turtle'
 		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
+		self.is_defend_mode=True
 		cc.set_val_npc(self)
 		self.m_direction=d
 		self.move_speed=1
@@ -148,7 +149,7 @@ class EatingPlant(Entity):
 	def wait_on_player(self):
 		if cc.is_nearby_pc(self,DX=2,DY=2):
 			cc.rotate_to_crash(self)
-		if cc.is_nearby_pc(self,DX=1,DY=1) and self.atk_wait <= 0:
+		if cc.is_nearby_pc(self,DX=.75,DY=1) and self.atk_wait <= 0:
 			if not self.is_bite:
 				self.is_bite=True
 				Audio(sound.snd_eating_plant)
@@ -156,7 +157,9 @@ class EatingPlant(Entity):
 			self.atk_wait-=time.dt
 		if self.is_bite:
 			an.plant_bite(self)
-			if cc.is_nearby_pc(self,DX=1,DY=1) and not self.target.is_attack:
+			if cc.is_nearby_pc(self,DX=.75,DY=1):
+				if self.target.is_attack or status.p_in_air(self.target):
+					return
 				cc.get_damage(self.target)
 	def update(self):
 		if status.pause:

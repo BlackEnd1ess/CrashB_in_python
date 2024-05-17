@@ -38,7 +38,7 @@ def env_switch(env,wth,tdr):
 	#ShadowMap()
 	SkyBox(t=tdr)
 	#LightAmbience()
-	Fog()
+	#Fog()
 	if wth > 0:
 		wthr={1:lambda:RainFall(),2:lambda:SnowFall()}
 		wthr[wth]()

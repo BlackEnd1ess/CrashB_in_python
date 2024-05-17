@@ -43,7 +43,7 @@ def destroy_event(c):
 	c.parent=None
 	c.hide()
 	if c.vnum in [11,12]:
-		Explosion(cr=c)
+		explosion(cr=c)
 	if not status.preload_phase:
 		if not c.poly == 1:
 			status.C_RESET.append(c)
@@ -75,6 +75,28 @@ def spawn_ico(c):
 	ico.animate_y(c.y+1,duration=1.2)
 	invoke(ico.disable,delay=3)
 
+def explosion(cr):
+	Fireball(C=cr)
+	if not status.preload_phase:
+		if not status.e_audio:
+			status.e_audio=True
+			Audio(sn.snd_explo,volume=settings.SFX_VOLUME*1.5)
+		if cr.vnum == 12 and not status.n_audio:
+			status.n_audio=True
+			invoke(lambda:Audio(sn.snd_glass,volume=settings.SFX_VOLUME/1.5,pitch=1.4),delay=.1)
+		invoke(cc.reset_audio,delay=.2)
+		for exR in scene.entities[:]:
+			if distance(cr,exR) < 1:
+				if cc.is_crate(exR) and exR.collider != None and exR.y > -250:
+					if exR.vnum in [3,11]:
+						exR.empty_destroy()
+					else:
+						exR.destroy()
+				elif cc.is_enemie(exR) and exR.collider != None:
+					exR.is_hitten=True
+				elif exR == cc.playerInstance[0]:
+					cc.get_damage(exR)
+
 ##Crate Logics
 class Iron(Entity):
 	def __init__(self,pos,pse):
@@ -94,6 +116,10 @@ class Normal(Entity):
 		wuPo=self.position
 		item.WumpaFruit(pos=(wuPo[0],wuPo[1]-.16,wuPo[2]))
 		destroy_event(self)
+	def update(self):
+		if not status.gproc():
+			if self.fall_down:
+				cc.crate_fall_down(self)
 
 class QuestionMark(Entity):
 	def __init__(self,pos,pse):
@@ -104,6 +130,10 @@ class QuestionMark(Entity):
 		for _w in range(5):
 			item.WumpaFruit(pos=(self.x+random.uniform(-.1,.1),self.y-.16,self.z+random.uniform(-.1,.1)))
 		destroy_event(self)
+	def update(self):
+		if not status.gproc():
+			if self.fall_down:
+				cc.crate_fall_down(self)
 
 class Bounce(Entity):
 	def __init__(self,pos,pse):
@@ -146,6 +176,10 @@ class ExtraLife(Entity):
 	def destroy(self):
 		item.ExtraLive(pos=(self.x,self.y+.25,self.z))
 		destroy_event(self)
+	def update(self):
+		if not status.gproc():
+			if self.fall_down:
+				cc.crate_fall_down(self)
 
 class AkuAku(Entity):
 	def __init__(self,pos,pse):
@@ -162,6 +196,10 @@ class AkuAku(Entity):
 			if not status.aku_exist:
 				npc.AkuAkuMask(pos=(self.x,self.y,self.z))
 			destroy_event(self)
+	def update(self):
+		if not status.gproc():
+			if self.fall_down:
+				cc.crate_fall_down(self)
 
 class Checkpoint(Entity):
 	def __init__(self,pos,pse):
@@ -173,6 +211,10 @@ class Checkpoint(Entity):
 		destroy_event(self)
 		cc.collect_reset()
 		CheckpointAnimation(p=(self.x,self.y+.5,self.z))
+	def update(self):
+		if not status.gproc():
+			if self.fall_down:
+				cc.crate_fall_down(self)
 
 class SpringWood(Entity):
 	def __init__(self,pos,pse):
@@ -186,6 +228,10 @@ class SpringWood(Entity):
 	def destroy(self):
 		item.WumpaFruit(pos=self.position)
 		destroy_event(self)
+	def update(self):
+		if not status.gproc():
+			if self.fall_down:
+				cc.crate_fall_down(self)
 
 class SpringIron(Entity):
 	def __init__(self,pos,pse):
@@ -199,6 +245,10 @@ class SpringIron(Entity):
 		Audio(sound.snd_sprin)
 	def destroy(self):
 		block_destroy(self)
+	def update(self):
+		if not status.gproc():
+			if self.fall_down:
+				cc.crate_fall_down(self)
 
 class SwitchEmpty(Entity):
 	def __init__(self,pos,m,pse):
@@ -225,6 +275,10 @@ class SwitchEmpty(Entity):
 					invoke(_air.destroy,delay=ccount/3.5)
 					ccount+=.8
 			spawn_ico(self)
+	def update(self):
+		if not status.gproc():
+			if self.fall_down:
+				cc.crate_fall_down(self)
 
 class SwitchNitro(Entity):
 	def __init__(self,pos,pse):
@@ -254,13 +308,14 @@ class TNT(Entity):
 		self.vnum=11
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
-		self.e_snd=Audio(sn.snd_c_tnt,autoplay=False)
+		self.e_snd=Audio(sn.snd_c_tnt,autoplay=False,volume=settings.SFX_VOLUME)
 		self.activ=False
 		self.countdown=0
 	def destroy(self):
 		self.activ=True
 		self.e_snd.fade_in()
-		self.e_snd.play()
+		if not status.preload_phase:
+			self.e_snd.play()
 		self.countdown=3.99
 		self.shader=unlit_shader
 	def empty_destroy(self):
@@ -268,12 +323,15 @@ class TNT(Entity):
 		self.countdown=0
 		destroy_event(self)
 	def update(self):
-		if self.countdown > 0 and self.activ:
-			self.countdown-=time.dt/1.15
-			ctnt=int(self.countdown)
-			self.texture=pp+'11/crate_tnt_'+str(ctnt)+'.png'
-			if self.countdown <= 0:
-				self.empty_destroy()
+		if not status.gproc():
+			if self.fall_down:
+				cc.crate_fall_down(self)
+			if self.countdown > 0 and self.activ:
+				self.countdown-=time.dt/1.15
+				ctnt=int(self.countdown)
+				self.texture=pp+'11/crate_tnt_'+str(ctnt)+'.png'
+				if self.countdown <= 0:
+					self.empty_destroy()
 
 class Nitro(Entity):
 	def __init__(self,pos,pse):
@@ -293,6 +351,8 @@ class Nitro(Entity):
 			if not self.reload and status.level_index != 2:
 				self.reload=True
 				self.shader=unlit_shader
+			if self.fall_down:
+				cc.crate_fall_down(self)
 			dst=distance(cc.playerInstance[0].position,self.position)
 			self.snd_time-=time.dt
 			if self.snd_time <= 0:
@@ -319,6 +379,10 @@ class Air(Entity):
 		Audio(sn.snd_c_air,volume=settings.SFX_VOLUME)
 		scene.entities.remove(self)
 		self.disable()
+	def update(self):
+		if not status.gproc():
+			if self.fall_down:
+				cc.crate_fall_down(self)
 
 class Protected(Entity):
 	def __init__(self,pos,pse):
@@ -329,6 +393,10 @@ class Protected(Entity):
 		for dw in range(random.randint(5,10)):
 			item.WumpaFruit(pos=(self.x+random.uniform(-.1,.1),self.y-.16,self.z+random.uniform(-.1,.1)))
 		destroy_event(self)
+	def update(self):
+		if not status.gproc():
+			if self.fall_down:
+				cc.crate_fall_down(self)
 
 class cTime(Entity):
 	def __init__(self,pos,tm,pse):
@@ -338,6 +406,10 @@ class cTime(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
 		destroy_event(self)
+	def update(self):
+		if not status.gproc():
+			if self.fall_down:
+				cc.crate_fall_down(self)
 
 class LvInfo(Entity):
 	def __init__(self,pos,pse):
@@ -354,42 +426,42 @@ class LvInfo(Entity):
 		mText=Text(text=l_inf[status.level_index],parent=camera.ui,font='res/ui/font.ttf',color=color.orange,scale=2.5,position=(-.3,-.3,.1))
 		invoke(mText.disable,delay=5)
 		destroy_event(self)
-
-##crate effects
-class Explosion(Entity):# missing fireball texture
-	def __init__(self,cr):
-		nC={11:color.red,12:color.green}
-		super().__init__(model='sphere',position=cr.position,color=nC[cr.vnum],alpha=.7,scale=.1)
-		if not status.e_audio:
-			status.e_audio=True
-			Audio(sn.snd_explo,volume=settings.SFX_VOLUME*1.5)
-		if cr.vnum == 12 and not status.n_audio:
-			status.n_audio=True
-			invoke(lambda:Audio(sn.snd_glass,volume=settings.SFX_VOLUME/1.5,pitch=1.4),delay=.1)
-		self.eR=2
-		self.exp_radius()
-		invoke(cc.reset_audio,delay=.1)
-	def exp_radius(self):
-		for exI in scene.entities[:]:
-			jD=distance(self,exI)
-			if cc.is_crate(exI) and jD <= self.eR and exI.collider != None:
-				if not exI.vnum == 6:
-					if exI.vnum in [3,11]:
-						exI.empty_destroy()
-					else:
-						exI.destroy()
-			if str(exI) == 'crash_b' and jD < self.eR:
-				cc.get_damage(cc.playerInstance[0])
-		self.parent=None
-		self.disable()
 	def update(self):
 		if not status.gproc():
-			self.scale_x+=.2
-			self.scale_y+=.2
-			self.scale_z+=.2
-			if self.scale >= self.eR:
-				self.scale=0
-				self.hide()
+			if self.fall_down:
+				cc.crate_fall_down(self)
+
+##crate effects
+class Fireball(Entity):
+	def __init__(self,C):
+		nC={11:color.red,12:color.green}
+		super().__init__(model='quad',texture=None,position=(C.x,C.y+.1,C.z),color=nC[C.vnum],scale=.75)
+		self.wave=Entity(model=None,texture=pp+'anim/exp_wave/0.tga',position=self.position,scale=.001,rotation_x=-90,color=nC[C.vnum],alpha=.8)
+		self.e_step=0
+		self.w_step=0
+	def e_wave(self):
+		self.w_step+=time.dt*15
+		if self.w_step > 4.75:
+			self.w_step=0
+			self.wave.visible=False
+			return
+		self.wave.model=pp+'anim/exp_wave/'+str(int(self.w_step))+'.ply'
+	def f_ball(self):
+		self.e_step+=time.dt*25
+		if self.e_step > 14.75:
+			self.visible=False
+			self.e_step=0
+			return
+		self.texture=pp+'anim/exp_fire/'+str(int(self.e_step))+'.png'
+	def update(self):
+		if not status.gproc():
+			if self.visible:
+				self.f_ball()
+			if self.wave.visible:
+				self.e_wave()
+			if not self.visible and not self.wave.visible:
+				self.wave.disable()
+				self.disable()
 
 class CheckpointAnimation(Entity):
 	def __init__(self,p):

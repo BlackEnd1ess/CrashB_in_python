@@ -31,4 +31,8 @@
 - level 2 better platform collision
 - icewall collider
 - new decoration
+- crate fall force
+
+#17.05.2024 06:00
+- crate explosions effect
 

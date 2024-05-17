@@ -62,16 +62,18 @@ def developer_level():
 
 def test():
 	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='grass',co=color.rgb32(130,130,50))
-	
+	o.InvWall(pos=(-3,0,1.5),sca=(3,5,1))
 	#for jk in range(6):
 		#o.GemPlatform(pos=(1+jk,.5,-7),t=jk)
 	item.GemStone(pos=(1,.5,-8),c=1)
+	for vbn in range(3):
+		#N.spawn(mID=6,pos=(-.8+vbn,0,-5),mDirec=0,mTurn=0)
+		c.place_crate(ID=11,p=(-3+vbn*3,.16,-5))
+		c.place_crate(ID=12,p=(-3+vbn*3,.16,-7))
 	#o.SnowWall(pos=(0,2,0))
-	o.EndRoom(pos=(1,2,6),c=color.rgb32(80,100,80))
-	mt.crate_plane(ID=1,POS=(0,.16,-4),CNT=[4,5])
-	#mt.crate_row(ID=0,POS=(4,.15,-4),CNT=12,WAY=0)
+	#o.EndRoom(pos=(1,2,6),c=color.rgb32(80,100,80))
+	#mt.crate_plane(ID=12,POS=(0,.16,-4),CNT=[4,5])
 	invoke(free_level,delay=1)
-
 
 def level1():##wood
 	TS=16
@@ -212,12 +214,13 @@ def level1():##wood
 	o.EndRoom(pos=(1,2.4,28.2),c=color.rgb32(80,100,80))
 	invoke(free_level,delay=3)
 
-#cam trigger, bounce bridge +.2,deco
 def level2():##snow
 	status.gem_death=False
 	o.FallingZone(pos=(0,-2,0),s=(128,1,128))
 	Entity(model='quad',scale=(512,512,1),color=color.white,z=64)
 	o.BonusPlatform(pos=(5,1.1,2.1))
+	#invisible walls
+	o.InvWall(pos=(17,0,1.5),sca=(30,40,1))
 	#cam trigger
 	o.CamSwitch(pos=(.5,1.4,.9),sca=(4,.3,1))
 	o.CamSwitch(pos=(.5,1.7,2.5),sca=(4,.2,.5))
@@ -226,6 +229,8 @@ def level2():##snow
 	o.CamSwitch(pos=(10.5,2.5,2.3),sca=(2,.2,.5))
 	o.CamSwitch(pos=(16,2.9,2.3),sca=(7,.2,.5))
 	o.CamSwitch(pos=(23,6,2.4),sca=(.6,.3,.5))
+	o.CamSwitch(pos=(24.5,5,2.2),sca=(.3,2,.2))
+	o.CamSwitch(pos=(23,3,2.2),sca=(1.5,.2,.2))#
 	o.CamSwitch(pos=(42,6.5,35),sca=(6,.3,1))
 	o.CamSwitch(pos=(42,7,37),sca=(6,.7,1))
 	#dangers
@@ -250,14 +255,11 @@ def level2():##snow
 	o.mBlock(pos=(12,2.5,2.5),sca=(1,1))
 	o.IceGround(pos=(15,2.125,2.5),sca=(5,1))
 	o.mBlock(pos=(19,2.5,2.5),sca=(3,1))
-	o.mBlock(pos=(23,3,2.5),sca=(2,1))
-	
-	o.mBlock(pos=(23,5.25,2.2),sca=(1,1.75))##
-	o.mBlock(pos=(24.5,3.4,2.2),sca=(1,1))##
-	
+	o.mBlock(pos=(23,2.5,2.5),sca=(2,1))
+	o.mBlock(pos=(23,5.25,2.2),sca=(1,1.75))
+	o.mBlock(pos=(24.5,3,2.5),sca=(1,1))##
 	o.mBlock(pos=(23,5.25,5.2),sca=(5,4))
 	o.mBlock(pos=(23,5.25,23),sca=(2,7))
-
 	o.mBlock(pos=(23.5,5.25,27),sca=(3,1))
 	o.mBlock(pos=(31.8,5.248,26.98),sca=(3,1))
 	o.mBlock(pos=(42,5.6,32),sca=(4,8))
@@ -269,9 +271,9 @@ def level2():##snow
 	o.pillar_twin(p=(-.75,.8,-21.65),ro_y=(-90,45,0))
 	o.pillar_twin(p=(-.75,.8,-18),ro_y=(-90,45,0))
 	o.pillar_twin(p=(-.75,.8,-1.8),ro_y=(-90,45,0))
-	o.pillar_twin(p=(22.5,5.35,7),ro_y=(-90,45,0))
-	o.pillar_twin(p=(22.5,5.35,19.85),ro_y=(-90,45,0))
-	o.pillar_twin(p=(22.5,5.35,26.3),ro_y=(-90,45,0))
+	o.pillar_twin(p=(22.25,5.35,7),ro_y=(-90,45,0))
+	o.pillar_twin(p=(22.25,5.35,19.85),ro_y=(-90,45,0))
+	o.pillar_twin(p=(22.25,5.35,26.3),ro_y=(-90,45,0))
 	o.Ropes(pos=(-.5,.7,-56),le=55)
 	o.Ropes(pos=(22.5,5.3,7),le=16)
 	#npc
@@ -314,9 +316,9 @@ def level2():##snow
 		for ptf2 in range(3):
 			o.SnowPlatform(pos=(34+ptf1*1.5,5.8,27+ptf2*1.5))
 	#walls
-	for snw in range(40):
-		o.SnowWall(pos=(-10+snw*5.4,.1,2.65))
-		o.SnowWall(pos=(-10+snw*5.4,3.2,2.65))
+	for snw in range(7):
+		o.SnowWall(pos=(-5+snw*5.4,.1,2.65))
+		o.SnowWall(pos=(-5+snw*5.4,3.2,2.65))
 	o.SnowWall(pos=(19,6.3,2.65))
 	o.SnowWall(pos=(27,6.3,2.65))
 	#crates
@@ -338,11 +340,11 @@ def level2():##snow
 	c.place_crate(ID=12,p=(-.2,h1,-6))
 	c.place_crate(ID=12,p=(0,h1,-4))
 	mt.crate_row(ID=2,POS=(18,2.625+.16,2.3),CNT=4,WAY=0)
-	mt.crate_row(ID=3,POS=(21,3,2.3),CNT=3,WAY=0)
+	mt.crate_row(ID=3,POS=(21,2.6,2.3),CNT=3,WAY=0)
 	c.place_crate(ID=8,p=(24.5,3.525+.16,2.2))
 	c.place_crate(ID=8,p=(23.7,4.5,2.2))
 	mt.crate_plane(ID=1,POS=(21.6,h3,5.4),CNT=[3,3])
-	c.place_crate(ID=3,p=(23,5.45+.16,13))
+	c.place_crate(ID=3,p=(23.2,5.45+.16,13))
 	c.place_crate(ID=10,p=(37,h3+.48,30.4))
 	c.place_crate(ID=5,p=(6.8,2.125+.16,2.3))
 	c.place_crate(ID=5,p=(24.3,h3,5))
@@ -378,14 +380,12 @@ def level2():##snow
 
 def level3():##water
 	#default
-	o.EndRoom(pos=(1,3.7,88),c=color.rgb32(80,100,80))
+	o.EndRoom(pos=(1,3.7,88),c=color.rgb32(200,210,200))
 	o.BonusPlatform(pos=(.85,1.3,.85*8))
+	o.GemPlatform(pos=(.8,1.2,32),t=1)
 	#waterflow
 	o.WaterFlow(pos=(0,-.3,-16),sca=(5,32))
-	o.WaterFlow(pos=(0,.7,15),sca=(5,32))
-	o.WaterFlow(pos=(0,.7,31),sca=(5,32))
-	#o.WaterFlow(pos=(0,.7,49),sca=(5,18))
-	o.WaterFlow(pos=(0,.7,39),sca=(5,36))
+	o.WaterFlow(pos=(0,.7,30),sca=(5,62))
 	o.WaterFlow(pos=(0,1.7,73),sca=(5,32))
 	#waterfall
 	o.WaterFall(pos=(0,-.8,-1))
@@ -399,6 +399,36 @@ def level3():##water
 	o.SceneWall(pos=(3,1.7,45),s=2)
 	o.SceneWall(pos=(-3.1,2.4,74),s=1)
 	o.SceneWall(pos=(3,2.4,74),s=2)
+	#crate
+	u0=.82
+	mt.bounce_twin(POS=(-.85,.1,-26.5),CNT=1)
+	mt.crate_block(ID=2,POS=(.5,.1,-27.1),CNT=[2,2,2])
+	mt.crate_block(ID=1,POS=(-1.4,.24+.16,-21.6),CNT=[2,2,3])
+	c.place_crate(ID=4,p=(1.2,.24+.16,-21.4))
+	mt.crate_plane(ID=2,POS=(-.85,.16,-15),CNT=[3,3])
+	mt.bounce_twin(POS=(-1.4,.24+.16,-11.5),CNT=1)
+	mt.bounce_twin(POS=(1.6,.24+.16,-11.5),CNT=1)
+	mt.crate_wall(ID=2,POS=(-.2,.16,-3.8),CNT=[2,3])
+	mt.crate_row(ID=11,POS=(0,u0,19.7),CNT=5,WAY=1)
+	c.place_crate(ID=1,p=(0,u0,24.5))
+	c.place_crate(ID=2,p=(0,u0,27.5))
+	c.place_crate(ID=1,p=(0,u0,30.5))
+	c.place_crate(ID=3,p=(0,u0,33.5))
+	c.place_crate(ID=3,p=(0,u0,34.5))
+	c.place_crate(ID=3,p=(0,u0,35.5))
+	c.place_crate(ID=1,p=(-1,u0,35.5))
+	c.place_crate(ID=2,p=(-1,u0,36.5))
+	c.place_crate(ID=3,p=(-1,u0,37.5))
+	c.place_crate(ID=3,p=(0,u0,37.5))
+	c.place_crate(ID=1,p=(0,u0,38.5))
+	c.place_crate(ID=4,p=(0,u0,39.5))
+	mt.crate_plane(ID=1,POS=(-.7,u0,44),CNT=[3,3])
+	mt.crate_plane(ID=1,POS=(.3,u0,48),CNT=[2,2])
+	c.place_crate(ID=9,p=(1.3,1.16,52.4),m=1)
+	for _c in range(10):
+		c.place_crate(ID=13,p=(0,u0,52.4+.32*_c),m=1,l=0)
+	#checkpoints
+	#c.place_crate(ID=6,p=(0,1,19.4))
 	#temple
 	o.TempleWall(pos=(-2.55,-.3,-1.7),side=2)
 	o.TempleWall(pos=(2.7,-.3,-1.7),side=1)
@@ -423,9 +453,12 @@ def level3():##water
 	o.MossPlatform(p=(0,.2,-23.5),MO=False,TU=0,UD=False)
 	o.MossPlatform(p=(0,.4,-1.3),MO=False,TU=0,UD=False)
 	o.MossPlatform(p=(0,1,0),MO=False,TU=0,UD=False)
-	o.MossPlatform(p=(0,1.5,56.5),MO=False,TU=0,UD=False)
 	o.MossPlatform(p=(0,.2,-7),MO=False,TU=0,UD=False)
 	o.MossPlatform(p=(0,1.2,11.5),MO=True,TU=0,UD=False)
+	o.MossPlatform(p=(-.85,1,51),MO=False,TU=0,UD=False)
+	o.MossPlatform(p=(-.85,1,52.5),MO=False,TU=0,UD=False)
+	o.MossPlatform(p=(.85,1,52.5),MO=False,TU=0,UD=True)
+	o.MossPlatform(p=(0,1.5,56.5),MO=False,TU=0,UD=False)
 	#blocks
 	tH=-.2
 	#e0
@@ -441,6 +474,26 @@ def level3():##water
 	o.multi_tile(p=(0,tH+1.1,13),cnt=[1,3])
 	o.StoneTile(pos=(0,tH+1.1,17))
 	o.StoneTile(pos=(0,tH+1.1,19))
+	
+	o.multi_tile(p=(-.85,tH+1.1,23),cnt=[2,1])
+	o.multi_tile(p=(0,tH+1.1,26),cnt=[2,1])
+	o.multi_tile(p=(-.85,tH+1.1,29),cnt=[2,1])
+	o.multi_tile(p=(0,tH+1.1,32),cnt=[2,2])
+	o.multi_tile(p=(-.85,tH+1.1,40.5),cnt=[3,3])
+	o.multi_tile(p=(.85,tH+1.1,40.5+.85*3),cnt=[1,4])
+	o.multi_tile(p=(-.85,tH+1.1,40.5+.85*7),cnt=[3,1])
+	o.multi_tile(p=(-.85,tH+1.1,40.5+.85*8),cnt=[1,4])
+	o.multi_tile(p=(-.85,1.7,57.35),cnt=[3,1])
+	
+	#o.multi_tile(p=(0,tH+1.1,32.85),cnt=[1,4])
 	#e2
 	#o.multi_tile(p=(-.8,tH+2,58),cnt=[3,30])
+	#npc
+	N.spawn(mID=6,pos=(-.85,1.05,29),mDirec=0,mTurn=0)
+	N.spawn(mID=6,pos=(.85,1.05,25.4),mDirec=0,mTurn=0)
+	N.spawn(mID=6,pos=(-.85,1.05,23),mDirec=0,mTurn=0)
+	
+	N.spawn(mID=6,pos=(0,1.05,41.4),mDirec=0,mTurn=0)
+	N.spawn(mID=6,pos=(-.85,1.05,46.4),mDirec=0,mTurn=0)
+	N.spawn(mID=2,pos=(0,1.05,4.2),mDirec=0,mTurn=0)
 	invoke(free_level,delay=3)

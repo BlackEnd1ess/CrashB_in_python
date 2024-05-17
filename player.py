@@ -54,10 +54,12 @@ class CrashB(Entity):
 			if not status.p_in_air(self):
 				cc.set_jump_type(d=self,t=1)
 			return
-		if key == 'alt' and not self.is_attack:
-			self.is_attack=True
-			Audio(snd.snd_attk)
-			return
+		if key == 'alt':
+			if not self.is_attack:
+				self.is_attack=True
+				Audio(snd.snd_attk)
+			else:
+				Audio(snd.snd_atkw)
 		if key == 'tab':
 			status.show_wumpas=5
 			status.show_crates=5
@@ -83,7 +85,7 @@ class CrashB(Entity):
 			scene.fog_color=color.random_color()
 			print(scene.fog_color)
 		if key == 'u':
-			self.position=(42,12,35)
+			self.position=(-.8,7,49.7)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD
@@ -92,12 +94,10 @@ class CrashB(Entity):
 		if mvD.length() > 0:
 			status.p_last_direc=mvD
 			self.walking=True
-			hT=self.intersects()
 			self.walk_event()
+			cc.obj_walls(self)
 			if not status.gproc():#avoid sys error by missing ursina entity
 				self.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
-			if hT.normal != Vec3(0,1,0):
-				cc.obj_walls(c=self,H=hT)
 			return
 		self.walk_snd=0
 		self.walking=False
@@ -139,7 +139,7 @@ class CrashB(Entity):
 		if not status.is_dying:
 			cc.cam_rotate(self)
 			cc.cam_follow(self)
-			#camera.y=self.y+1.2
+			camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
 	def basic_animation(self):
 		if status.is_dying:
 			an.player_death(self)

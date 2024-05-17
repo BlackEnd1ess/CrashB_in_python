@@ -33,7 +33,7 @@ def bonus1():
 
 def bonus2():
 	o.FallingZone(pos=(0,-40,0),s=(64,1,64))
-	for sw in range(25):
+	for sw in range(5):
 		o.SnowWall(pos=(-4+sw*5.4,-33.9,-2.5))
 		o.SnowWall(pos=(-4+sw*5.4,-37,-2.5))
 		o.SnowWall(pos=(-4+sw*5.4,-40.1,-2.5))
