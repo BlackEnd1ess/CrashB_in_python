@@ -1,8 +1,7 @@
-import ui,crate,item,status,sound,npc,settings,_loc
+import ui,crate,item,status,sound,npc,settings,_loc,math
 from math import atan2,sqrt
 from ursina import *
 
-playerInstance=[]
 level_ready=False
 snd=sound
 LC=_loc
@@ -14,14 +13,14 @@ def set_val(d):
 	for _a in ['run_anim','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','count_time','fall_time',
 			'blink_time','death_anim','slide_fwd']:
 		setattr(d,_a,0)
-	for _v in ['block_input','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
+	for _v in ['aq_bonus','block_input','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
 		setattr(d,_v,False)
 	d.lpos=None
-	d.move_speed=2.2
+	d.move_speed=2.4
 	d.direc=(0,0,0)
 	d.jmp_hgt=0
 	d.CMS=4
-	playerInstance.append(d)
+	_loc.ACTOR=d
 def set_jump_type(d,t):
 	d.jumping=True
 	tp={0:1,1:1.2,2:1.5}
@@ -31,15 +30,16 @@ def get_damage(c):
 		if status.aku_hit > 0:
 			status.aku_hit-=1
 			c.injured=True
-			status.player_protect=2
 			Audio(snd.snd_damg,pitch=.8)
+			invoke(lambda:setattr(c,'injured',False),delay=2)
+			invoke(lambda:setattr(c,'alpha',1),delay=2)
 		else:
 			status.is_dying=True
 			Audio(snd.snd_woah,pitch=.8)
 def death_event(d):
 	if not status.death_event:
-		d.freezed=True
 		status.death_event=True
+		d.freezed=True
 		ui.BlackScreen()
 		status.crate_count-=status.crate_to_sv
 		if status.is_death_route:
@@ -60,6 +60,7 @@ def death_event(d):
 		else:
 			status.aku_hit=1
 			if not status.aku_exist:
+				Audio(sound.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
 				npc.AkuAkuMask(pos=(d.x,d.y,d.z))
 		reset_crates()
 		reset_wumpas()
@@ -75,41 +76,32 @@ def various_val(c):
 	if status.bonus_solved:
 		if status.wumpa_bonus > 0 or status.crate_bonus > 0 or status.lives_bonus > 0:
 			bonus_reward(c)
+		else:
+			c.aq_bonus=False
 	if c.walk_snd > 0:
 		c.walk_snd-=time.dt
 	if c.blink_time > 0:
 		c.blink_time-=time.dt
 	if c.injured:
 		c.hurt_blink()
-	if status.c_delay > 0:
-		status.c_delay-=time.dt
-	if status.d_delay > 0:
-		status.d_delay-=time.dt
-	if status.player_protect > 0:
-		status.player_protect-=time.dt
-		if status.player_protect <= 0:
-			c.alpha=1
-			c.injured=False
-def c_attack(c):
-	for AC in scene.entities[:]:
-		if AC.parent == scene and distance(AC,c) <= .5 and AC.collider != None:
-			if is_crate(AC):
-				if AC.vnum in [3,11]:
-					AC.empty_destroy()
-				else:
-					AC.destroy()
-			if is_enemie(AC) and not AC.is_hitten:
-				a=Vec3(c.x-AC.x,0,c.z-AC.z)
-				if a.x > 0 and a.x > a.z:
-					AC.fly_direc=0
-				if a.x < 0 and a.x < a.z:
-					AC.fly_direc=1
-				if a.z > 0 and a.z > a.x:
-					AC.fly_direc=2
-				if a.z < 0 and a.z < a.x:
-					AC.fly_direc=3
-				AC.is_hitten=True
-				Audio(snd.snd_nbeat)
+def c_attack(c,e):
+	if is_crate(e):
+		if e.vnum in [3,11]:
+			e.empty_destroy()
+		else:
+			e.destroy()
+	if is_enemie(e) and not e.is_hitten:
+		a=Vec3(c.x-e.x,0,c.z-e.z)
+		if a.x > 0 and a.x > a.z:
+			e.fly_direc=0
+		if a.x < 0 and a.x < a.z:
+			e.fly_direc=1
+		if a.z > 0 and a.z > a.x:
+			e.fly_direc=2
+		if a.z < 0 and a.z < a.x:
+			e.fly_direc=3
+		e.is_hitten=True
+		Audio(snd.snd_nbeat)
 def c_slide(c):
 	if not c.walking:
 		if c.slide_fwd > 0 and status.p_last_direc != None:
@@ -148,11 +140,6 @@ def cam_follow(c):
 		return
 	if (status.bonus_round or status.is_death_route) and not c.freezed:
 		camera.y=lerp(camera.y,c.y+1,time.dt)
-def free_view_field(o):
-	if o.z < playerInstance[0].z-2:
-		o.hide()
-		return
-	o.show()
 
 ## world, misc
 def collect_reset():
@@ -180,6 +167,9 @@ def reset_crates():
 				c_subtract(cY=cv.y)
 			C.place_crate(p=cv.spawn_pos,ID=cv.vnum,m=cv.mark,l=cv.c_ID,pse=cv.poly)
 		else:
+			if cv.vnum == 11:
+				cv.activ=False
+				cv.countdown=0
 			c_subtract(cY=cv.y)
 			C.place_crate(p=cv.spawn_pos,ID=cv.vnum)
 	status.C_RESET.clear()
@@ -241,11 +231,16 @@ def obj_grnd(c):
 		return
 	c.landed=False
 def obj_walls(c):
+	if status.LV_CLEAR_PROCESS:
+		c=None
+		return
 	hT=c.intersects()
 	vT=raycast(c.world_position+(0,.1,0),c.direc,distance=.2,ignore=[c,LC.shdw],debug=False)
 	for jF in [hT,vT]:
 		jV=jF.entity
 		if jF and jF.normal != Vec3(0,1,0):
+			if c.is_attack:
+				c_attack(c=c,e=jV)
 			if isinstance(jV,crate.Nitro) and jV.collider != None:
 				jV.destroy()
 			if (is_enemie(jV) and not c.is_attack) or (str(jV) in LC.dangers and jV.danger):
@@ -271,6 +266,10 @@ def obj_act(c,e):
 		return
 	if u == 'ice_ground':
 		c.is_slippery=True
+		return
+	if u == 'MO_PL' and not c.walking:
+		c.x=e.x
+		c.z=e.z
 		return
 	if u == 'plank' and e.typ == 1:
 		e.pl_touch()
@@ -307,7 +306,7 @@ def platform_floating(m,c):
 		else:
 			load_gem_route(c=m.target)
 def jump_enemy(c,e):
-	if (e.vnum in [2,8]) or (e.vnum == 1 and e.defend_mode):
+	if (e.vnum in [2,8]) or (e.vnum == 4 and e.def_mode):
 		get_damage(c)
 		return
 	kill_by_jump(m=e,c=c)
@@ -331,8 +330,8 @@ def wumpa_count(n):
 	else:
 		status.wumpa_fruits+=n
 		status.show_wumpas=5
-		sc_ps=playerInstance[0].screen_position
-		if status.wumpa_bonus <= 0:
+		sc_ps=LC.ACTOR.screen_position
+		if status.wumpa_bonus <= 0 and not LC.ACTOR.aq_bonus:
 			if n > 1:
 				ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]))
 			ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]+.1))
@@ -349,15 +348,13 @@ def give_extra_live():
 ## crate actions
 def crate_set_val(cR,Cpos,Cpse):
 	if cR.vnum == 15:
-		cR.texture='res/crate/'+str(cR.vnum)+'/crate_t'+str(cR.time_stop)+'.png'
+		cR.texture='res/crate/crate_t'+str(cR.time_stop)+'.png'
 	else:
-		cR.texture='res/crate/'+str(cR.vnum)+'/c_tex.png'
+		cR.texture='res/crate/'+str(cR.vnum)+'.png'
 	cR.org_tex=cR.texture
-	cR.destroy_exp=False
 	cR.fall_down=False
 	cR.is_stack=False
 	cR.spawn_pos=Cpos
-	cR.fall_pos=Cpos[1]-.32
 	cR.position=Cpos
 	cR.collider='box'
 	cR.poly=Cpse
@@ -387,16 +384,13 @@ def check_cstack():
 							cST.is_stack=True
 							cSD.is_stack=True
 def check_crates_over(c):
-	for co in scene.entities[:]:
-		if is_crate(co) and not co.vnum == 3 and co.is_stack:
-			if (c.x == co.x and co.z == c.z) and c.y < co.y:
-				co.fall_down=True
-def crate_fall_down(c):
-	if c.y > c.fall_pos:
-		c.y-=time.dt*2
+	if c.vnum in [3,7,8]:
 		return
-	c.fall_down=False
-	c.fall_pos=c.y-.32
+	for co in scene.entities[:]:
+		if is_crate(co) and co.is_stack:
+			if (c.x == co.x and co.z == c.z) and c.y < co.y:
+				if co.y > co.y-.32:
+					co.animate_y(co.y-.32,duration=.1,unscaled=True)
 
 ## bonus level
 def load_bonus(c):
@@ -429,13 +423,14 @@ def back_to_level(c):
 	camera.y=c.y+.5
 	status.loading=False
 def bonus_reward(p):
+	p.aq_bonus=True
 	p.count_time+=time.dt
 	if p.count_time >= .075:
 		p.count_time=0
 		if status.wumpa_bonus > 0:
 			status.wumpa_bonus-=1
+			ui.WumpaCollectAnim(pos=(-.2,-.4))
 			wumpa_count(1)
-			ui.wumpa_bonus_anim()
 		if status.crate_bonus > 0:
 			status.crate_bonus-=1
 			status.crate_count+=1
@@ -485,7 +480,10 @@ def npc_action(m):
 			return
 		if not m.is_hitten:
 			npc.walk_frames(m)
-			npc_walk(m)
+			if m.vnum == 9 and m.ro_mode:
+				npc_circle_move(m)
+			else:
+				npc_walk(m)
 			return
 		fly_away(m)
 def npc_purge(m):
@@ -530,9 +528,16 @@ def npc_walk(m):
 				if m.z <= m.spawn_point[2]-1:
 					m.rotation_y=180
 					m.turn=0
+def npc_circle_move(m):
+	m.angle+=time.dt*3
+	m.angle%=(2*math.pi)
+	new_x=m.spawn_pos[0]+1*math.cos(m.angle)
+	new_y=m.spawn_pos[1]+1*math.sin(m.angle)
+	m.position=Vec3(new_x,new_y,m.z)
+	#direction_to_center=m.spawn_pos-m.position
+	#self.rotation = Vec3(0, -math.degrees(math.atan2(direction_to_center.z, direction_to_center.x)) + 90, 0)
 def rotate_to_crash(m):
-	target=playerInstance[0]
-	relative_position=target.position-m.position
+	relative_position=LC.ACTOR.position-m.position
 	angle=atan2(relative_position.x,relative_position.z)*(180/pi)+180
 	m.rotation_y=angle
 	m.rotation_x=-90
@@ -563,11 +568,12 @@ def kill_by_jump(m,c):
 	set_jump_type(d=c,t=0)
 	Audio(snd.snd_jmph)
 def is_nearby_pc(n,DX,DY):
-	dist_y=abs(playerInstance[0].y-n.y)
-	dist_x=distance_xz(playerInstance[0],n)
-	if dist_y < DY and dist_x < DX:
-		return True
-	return False
+	if LC.ACTOR:
+		dist_y=abs(LC.ACTOR.y-n.y)
+		dist_x=distance_xz(LC.ACTOR,n)
+		if dist_y < DY and dist_x < DX:
+			return True
+		return False
 def is_enemie(n):
 	nnk=[N.Amadillo,N.Turtle,N.SawTurtle,
 		N.Penguin,N.Hedgehog,N.Seal,

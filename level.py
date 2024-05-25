@@ -20,7 +20,6 @@ def free_level():
 	if status.level_index == 3:
 		sound.AmbienceSound()
 		sound.WaterRiver()
-	o.ObjectLOD()
 	print('level '+str(status.level_index)+' loaded successfully')
 
 ## level settings
@@ -28,7 +27,7 @@ def main_instance(idx):
 	status.loading=True
 	status.level_index=idx
 	day_m=_loc.day_m
-	s_rm={0:(0,0,0),1:(-.3,1,-64.2),2:(0,1,-64.2),3:(0,0,-32.2),4:(0,0,-16.2)}
+	s_rm={0:(0,0,0),1:(-.3,1,-64.2),2:(0,1,-64.2),3:(0,0,-32.2),4:(0,.3,-64.2),5:(0,0,-32.2)}
 	status.day_mode=day_m[idx]
 	o.StartRoom(pos=s_rm[idx],lvID=idx)
 	bn.load_bonus_level(idx)
@@ -61,16 +60,10 @@ def developer_level():
 	invoke(free_level,delay=1)
 
 def test():
-	o.MapTerrain(MAP='map/0.png',size=(32,1,32),t='grass',co=color.rgb32(130,130,50))
-	o.InvWall(pos=(-3,0,1.5),sca=(3,5,1))
-	#for jk in range(6):
-		#o.GemPlatform(pos=(1+jk,.5,-7),t=jk)
-	item.GemStone(pos=(1,.5,-8),c=1)
-	for vbn in range(3):
-		#N.spawn(mID=6,pos=(-.8+vbn,0,-5),mDirec=0,mTurn=0)
-		c.place_crate(ID=11,p=(-3+vbn*3,.16,-5))
-		c.place_crate(ID=12,p=(-3+vbn*3,.16,-7))
-	#o.SnowWall(pos=(0,2,0))
+	o.MapTerrain(MAP='map/0.png',size=(64,1,64),t='grass',co=color.rgb32(150,150,70))
+	#mt.bounce_twin(POS=(0,.16,-23),CNT=5)
+	for gg in range(17):
+		c.place_crate(ID=gg,p=(0+.64*gg,.16,-23),l=1,m=1,tm=1)
 	#o.EndRoom(pos=(1,2,6),c=color.rgb32(80,100,80))
 	#mt.crate_plane(ID=12,POS=(0,.16,-4),CNT=[4,5])
 	invoke(free_level,delay=1)
@@ -78,7 +71,7 @@ def test():
 def level1():##wood
 	TS=16
 	cG=color.green
-	o.Water(pos=(0,.6,0),s=(10,128),c=color.rgb32(40,40,60),a=.8)
+	o.Water(pos=(0,.6,0),s=(10,128),c=color.rgb32(40,40,60),a=.8,typ=2)
 	o.InvWall(pos=(-5,.5,-64),sca=(5.,10,200))
 	o.InvWall(pos=(4.7,.5,-64),sca=(5.,10,200))
 	o.MapTerrain(MAP='map/'+str(status.level_index)+'.png',size=(TS/1.6,1.5,TS*8),t='grass',co=color.rgb32(0,70,0))
@@ -382,7 +375,15 @@ def level3():##water
 	#default
 	o.EndRoom(pos=(1,3.7,88),c=color.rgb32(200,210,200))
 	o.BonusPlatform(pos=(.85,1.3,.85*8))
-	o.GemPlatform(pos=(.8,1.2,32),t=1)
+	if not status.level_index in status.CRYSTAL:
+		item.EnergyCrystal(pos=(0,2.5,60.5))
+	if not 5 in status.COLOR_GEM:
+		c.place_crate(ID=16,p=(0,.24+.16,-21))
+	#cam switch
+	o.CamSwitch(pos=(1,1.2,2.5),sca=(2,.2,6))
+	o.CamSwitch(pos=(-.8,1.2,6.8),sca=(2,.2,1))
+	o.CamSwitch(pos=(0,1.2,54.7),sca=(1,.2,1))
+	o.CamSwitch(pos=(0,2.1,57.1),sca=(2,.2,1))
 	#waterflow
 	o.WaterFlow(pos=(0,-.3,-16),sca=(5,32))
 	o.WaterFlow(pos=(0,.7,30),sca=(5,62))
@@ -399,21 +400,30 @@ def level3():##water
 	o.SceneWall(pos=(3,1.7,45),s=2)
 	o.SceneWall(pos=(-3.1,2.4,74),s=1)
 	o.SceneWall(pos=(3,2.4,74),s=2)
+	#bush
+	for wbu in range(16):
+		o.bush(pos=(-3.2,2.7,-30+wbu*2),s=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=-35)
+		o.bush(pos=(3.2,3,-31+wbu*2),s=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=35)
+		o.bush(pos=(-3.2,3.5,1+wbu*2),s=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=-35)
+		o.bush(pos=(3.2,3.5,1+wbu*2),s=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=35)
+	for wba in range(32):
+		o.bush(pos=(-3.2,4.2,31+wba*2),s=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=-35)
+		o.bush(pos=(3.2,3.6,31+wba*2),s=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=35)
 	#crate
 	u0=.82
 	mt.bounce_twin(POS=(-.85,.1,-26.5),CNT=1)
 	mt.crate_block(ID=2,POS=(.5,.1,-27.1),CNT=[2,2,2])
-	mt.crate_block(ID=1,POS=(-1.4,.24+.16,-21.6),CNT=[2,2,3])
+	mt.crate_block(ID=1,POS=(-1.4,.24+.16,-21.6),CNT=[2,2,2])
 	c.place_crate(ID=4,p=(1.2,.24+.16,-21.4))
 	mt.crate_plane(ID=2,POS=(-.85,.16,-15),CNT=[3,3])
 	mt.bounce_twin(POS=(-1.4,.24+.16,-11.5),CNT=1)
 	mt.bounce_twin(POS=(1.6,.24+.16,-11.5),CNT=1)
-	mt.crate_wall(ID=2,POS=(-.2,.16,-3.8),CNT=[2,3])
-	mt.crate_row(ID=11,POS=(0,u0,19.7),CNT=5,WAY=1)
+	mt.crate_wall(ID=2,POS=(-.2,.16,-3.8),CNT=[2,2])
+	mt.crate_wall(ID=1,POS=(.65,1.05+.16,2.5),CNT=[2,2])
+	mt.crate_row(ID=1,POS=(0,u0,19.7),CNT=6,WAY=1)
 	c.place_crate(ID=1,p=(0,u0,24.5))
 	c.place_crate(ID=2,p=(0,u0,27.5))
 	c.place_crate(ID=1,p=(0,u0,30.5))
-	c.place_crate(ID=3,p=(0,u0,33.5))
 	c.place_crate(ID=3,p=(0,u0,34.5))
 	c.place_crate(ID=3,p=(0,u0,35.5))
 	c.place_crate(ID=1,p=(-1,u0,35.5))
@@ -427,8 +437,20 @@ def level3():##water
 	c.place_crate(ID=9,p=(1.3,1.16,52.4),m=1)
 	for _c in range(10):
 		c.place_crate(ID=13,p=(0,u0,52.4+.32*_c),m=1,l=0)
+	mt.crate_plane(ID=1,POS=(-.36,1.8,69.8),CNT=[3,6])
+	c.place_crate(ID=10,p=(.85,1.95+.16,80.85))
+	mt.crate_wall(ID=1,POS=(-.2,1.05+.16,14.5),CNT=[2,2])
+	mt.crate_row(ID=2,POS=(-.85,1.05+.16,40.4),CNT=4,WAY=1)
+	c.place_crate(ID=7,p=(-1,2.04+.16,58.4),m=1)
+	mt.crate_row(ID=2,POS=(-1,3.6,58.4),CNT=4,WAY=2)
+	mt.bounce_twin(POS=(1,2.04+.16,58.4),CNT=1)
+	#aku
+	c.place_crate(ID=5,p=(-.85,1.05+.16,9.3))
 	#checkpoints
-	#c.place_crate(ID=6,p=(0,1,19.4))
+	c.place_crate(ID=6,p=(0,.24+.16,-9.2))
+	c.place_crate(ID=6,p=(0,1.05+.16,32.8))
+	c.place_crate(ID=6,p=(.85,1.05+.16,44.6))
+	c.place_crate(ID=6,p=(0,2.04+.16,58.5))
 	#temple
 	o.TempleWall(pos=(-2.55,-.3,-1.7),side=2)
 	o.TempleWall(pos=(2.7,-.3,-1.7),side=1)
@@ -447,9 +469,9 @@ def level3():##water
 	#stage
 	o.WoodStage(pos=(0,.2,-20))
 	o.WoodStage(pos=(0,.2,-10))
-	#o.WoodStage(pos=(0,1,24))
+	o.WoodStage(pos=(0,2,60))
 	#platforms
-	o.MossPlatform(p=(0,.2,-25),MO=False,TU=0,UD=False)
+	o.MossPlatform(p=(0,.2,-25),MO=False,TU=0,UD=True)
 	o.MossPlatform(p=(0,.2,-23.5),MO=False,TU=0,UD=False)
 	o.MossPlatform(p=(0,.4,-1.3),MO=False,TU=0,UD=False)
 	o.MossPlatform(p=(0,1,0),MO=False,TU=0,UD=False)
@@ -459,6 +481,9 @@ def level3():##water
 	o.MossPlatform(p=(-.85,1,52.5),MO=False,TU=0,UD=False)
 	o.MossPlatform(p=(.85,1,52.5),MO=False,TU=0,UD=True)
 	o.MossPlatform(p=(0,1.5,56.5),MO=False,TU=0,UD=False)
+	o.MossPlatform(p=(0,2,65),MO=True,TU=0,UD=False)
+	o.MossPlatform(p=(0,2,76),MO=True,TU=0,UD=False)
+	o.MossPlatform(p=(0,2,77.8),MO=False,TU=0,UD=False)
 	#blocks
 	tH=-.2
 	#e0
@@ -474,26 +499,41 @@ def level3():##water
 	o.multi_tile(p=(0,tH+1.1,13),cnt=[1,3])
 	o.StoneTile(pos=(0,tH+1.1,17))
 	o.StoneTile(pos=(0,tH+1.1,19))
-	
 	o.multi_tile(p=(-.85,tH+1.1,23),cnt=[2,1])
 	o.multi_tile(p=(0,tH+1.1,26),cnt=[2,1])
 	o.multi_tile(p=(-.85,tH+1.1,29),cnt=[2,1])
-	o.multi_tile(p=(0,tH+1.1,32),cnt=[2,2])
+	o.multi_tile(p=(0,tH+1.1,32),cnt=[1,2])
 	o.multi_tile(p=(-.85,tH+1.1,40.5),cnt=[3,3])
 	o.multi_tile(p=(.85,tH+1.1,40.5+.85*3),cnt=[1,4])
 	o.multi_tile(p=(-.85,tH+1.1,40.5+.85*7),cnt=[3,1])
 	o.multi_tile(p=(-.85,tH+1.1,40.5+.85*8),cnt=[1,4])
-	o.multi_tile(p=(-.85,1.7,57.35),cnt=[3,1])
-	
-	#o.multi_tile(p=(0,tH+1.1,32.85),cnt=[1,4])
-	#e2
-	#o.multi_tile(p=(-.8,tH+2,58),cnt=[3,30])
+	#e3
+	o.multi_tile(p=(0,1.7,57.4),cnt=[1,1])
+	o.multi_tile(p=(0,1.8,66.5),cnt=[1,3])
+	o.multi_tile(p=(0,1.8,66.5+.85*7),cnt=[1,4])
+	o.multi_tile(p=(0,1.8,80),cnt=[1,5])
+	o.multi_tile(p=(.85,1.8,80+.85),cnt=[1,1])
 	#npc
+	N.Hippo(pos=(0,1.8,63))
 	N.spawn(mID=6,pos=(-.85,1.05,29),mDirec=0,mTurn=0)
-	N.spawn(mID=6,pos=(.85,1.05,25.4),mDirec=0,mTurn=0)
+	N.spawn(mID=6,pos=(.85,1.05,25.8),mDirec=0,mTurn=0)
 	N.spawn(mID=6,pos=(-.85,1.05,23),mDirec=0,mTurn=0)
-	
 	N.spawn(mID=6,pos=(0,1.05,41.4),mDirec=0,mTurn=0)
 	N.spawn(mID=6,pos=(-.85,1.05,46.4),mDirec=0,mTurn=0)
+	N.spawn(mID=6,pos=(0,1.95,74.1),mDirec=0,mTurn=0)
 	N.spawn(mID=2,pos=(0,1.05,4.2),mDirec=0,mTurn=0)
 	invoke(free_level,delay=3)
+
+def level4():## sewer
+	o.MapTerrain(MAP='map/0.png',size=(10,1,128),t='white_cube',co=color.rgb32(130,130,50))
+	o.Water(pos=(0,.2,-45),s=(8,8),c=color.rgb(100,100,130),a=.5,typ=1)
+	o.SewerTunnel(pos=(0,.4,-53))
+	o.SewerTunnel(pos=(0,.4,-44))
+	o.SewerTunnel(pos=(0,.4,-35))
+	o.SewerTunnel(pos=(0,.4,-26))
+	o.SewerPlatform(pos=(0,.5,-58))
+	#o.SewerTunnel(pos=(0,1.2,-45))
+	N.spawn(pos=(0,.5,-58),mID=9,mDirec=0,mTurn=0)
+	o.swr_multi_ptf(p=(-.5,.5,-61.3),cnt=[3,3])
+	#o.SewerEscape(pos=(0,-1,-52.6))
+	invoke(free_level,delay=1)

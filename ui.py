@@ -20,11 +20,6 @@ def live_get_anim():
 	lvA.animate_x(.7,duration=.3)
 	invoke(lvA.disable,delay=3.1)
 
-def wumpa_bonus_anim():
-	wmA=Entity(model='quad',texture=_icn+'wumpa_fruits/w0.png',scale=.075,parent=camera.ui,position=(-.2,-.4,-.1))
-	wmA.animate_position((-1.2,1.3,-.1),duration=.3)
-	invoke(wmA.disable,delay=.3)
-
 class WumpaCollectAnim(Entity):
 	def __init__(self,pos):
 		super().__init__(model='quad',texture=_icn+'wumpa_fruits/w0.png',scale=.075,parent=camera.ui,position=pos)
@@ -33,12 +28,11 @@ class WumpaCollectAnim(Entity):
 			dta_x=-.75-self.x
 			dta_y=.43-self.y
 			anp=time.dt*8
-			if abs(dta_x) < .05 and abs(dta_y) < .05:
-				self.disable()
-			else:
+			if abs(dta_x) > .05 and abs(dta_y) > .05:
 				self.x+=dta_x*anp
 				self.y+=dta_y*anp
-
+				return
+			self.disable()
 
 ## Main Counter ##
 class WumpaCounter(Entity):
@@ -48,6 +42,7 @@ class WumpaCounter(Entity):
 		self.digit_0=Entity(model='quad',texture=self.pa+'0.png',parent=camera.ui,position=(self.x+.075,self.y),scale=.06,visible=False)
 		self.digit_1=Entity(model='quad',texture=self.pa+'0.png',parent=camera.ui,position=(self.digit_0.x+.06,self.digit_0.y),scale=.06,visible=False)
 		self.w_animation=0
+		_loc.uiW=self
 		WumpaBonus()
 	def digits(self):
 		n=str(st.wumpa_fruits)
@@ -78,8 +73,8 @@ class WumpaCounter(Entity):
 
 class CrateCounter(Animation):
 	def __init__(self):
-		super().__init__(_icn+'crate.gif',parent=camera.ui,scale=.1,color=color.rgb32(92,57,27),position=(-.1,.43,0),fps=4,visible=False)
-		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.035,scale=3,color=color.rgb32(75,35,10),visible=False)
+		super().__init__(_icn+'crate.gif',parent=camera.ui,scale=.1,color=color.rgb32(90,70,0),position=(-.1,.43,0),fps=4,visible=False)
+		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.035,scale=3,color=self.color,visible=False)
 		CrateBonus()
 	def update(self):
 		if st.show_crates > 0 and st.crates_in_level > 0:
@@ -129,8 +124,8 @@ class WumpaBonus(Entity):
 
 class CrateBonus(Animation):
 	def __init__(self):
-		super().__init__(_icn+'crate.gif',parent=camera.ui,scale=.075,color=color.rgb32(92,57,27),position=(0,-.4,0),fps=4,visible=False)
-		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.025,scale=2,color=color.rgb32(75,35,10),visible=False)
+		super().__init__(_icn+'crate.gif',parent=camera.ui,scale=.075,color=color.rgb32(90,70,0),position=(0,-.4,0),fps=4,visible=False)
+		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.025,scale=2,color=self.color,visible=False)
 		if st.crates_in_level < 1:
 			self.hide()
 			self.c_text.hide()
@@ -239,35 +234,37 @@ class BonusText(Entity):
 					self.text_ch()
 
 K=40
-O=140
+O=130
 ## Pause Menu
 class PauseMenu(Entity):
 	def __init__(self):
-		e='res/ui/pause/pause_ui'
-		super().__init__(model=e+'.ply',texture=e+'.tga',rotation=(-90,180,0),scale=(.1/705,0,.1/550),parent=camera.ui,z=1,color=color.rgb32(130,140,130),visible=False)
+		e='res/ui/pause/'
+		super().__init__(parent=camera.ui,model='quad',texture=e+'c_pause1.png',scale=(1.05,.5),position=(-.375,-.25,.1),color=color.rgb32(130,140,130),visible=False)
+		self.ppt=Entity(parent=camera.ui,model='quad',texture=e+'c_pause2.png',scale=(.75,1),position=(.515,0,.1),color=color.rgb32(130,140,130),visible=False)
 		##text
 		self.selection=['RESUME','OPTIONS','QUIT']
 		self.font_color=color.rgb32(230,100,0)
 		self.need_loop=True
 		self.blink_time=0
 		self.choose=0
-		self.p_name=Text('Crash B.',font='res/ui/font.ttf',scale=3,position=(self.x+.4,self.y+.475,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
-		self.lvl_name=Text(LC.lv_name[st.level_index],font='res/ui/font.ttf',scale=3,position=(self.x-.7,self.y-.025,self.z-1),color=color.azure,parent=camera.ui,visible=False)
-		self.select_0=Text(self.selection[0],font='res/ui/font.ttf',scale=3,tag=0,position=(self.x-.5,self.y-.2,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
-		self.select_1=Text(self.selection[1],font='res/ui/font.ttf',scale=3,tag=1,position=(self.x-.5,self.y-.275,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
-		self.select_2=Text(self.selection[2],font='res/ui/font.ttf',scale=3,tag=2,position=(self.x-.5,self.y-.35,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
-		self.crystal_counter=Text('0/5',font='res/ui/font.ttf',scale=6,position=(self.x+.325,self.y+.325,self.z-1),color=color.rgb32(160,0,160),parent=camera.ui,visible=False)
-		self.gem_counter=Text('0/15 GEMS',font='res/ui/font.ttf',scale=5,position=(self.x+.3,self.y-.1,self.z-1),color=color.rgb32(170,170,190),parent=camera.ui,visible=False)
-		self.add_text=Text('+ 0',font='res/ui/font.ttf',scale=4,position=(self.x+.325,self.y+.025,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
-		self.game_progress=Text('Progress 0%',font='res/ui/font.ttf',scale=3,position=(self.x+.325,self.y-.35,self.z-1),color=color.gold,parent=camera.ui,visible=False)
+		vF=0
+		self.p_name=Text('Crash B.',font='res/ui/font.ttf',scale=3,position=(vF+.4,vF+.475,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
+		self.lvl_name=Text(LC.lv_name[st.level_index],font='res/ui/font.ttf',scale=3,position=(vF-.7,vF-.025,self.z-1),color=color.azure,parent=camera.ui,visible=False)
+		self.select_0=Text(self.selection[0],font='res/ui/font.ttf',scale=3,tag=0,position=(vF-.5,vF-.2,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
+		self.select_1=Text(self.selection[1],font='res/ui/font.ttf',scale=3,tag=1,position=(vF-.5,vF-.275,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
+		self.select_2=Text(self.selection[2],font='res/ui/font.ttf',scale=3,tag=2,position=(vF-.5,vF-.35,self.z-1),color=self.font_color,parent=camera.ui,visible=False)
+		self.crystal_counter=Text('0/5',font='res/ui/font.ttf',scale=6,position=(vF+.325,vF+.325,self.z-1),color=color.rgb32(160,0,160),parent=camera.ui,visible=False)
+		self.gem_counter=Text('0/15 GEMS',font='res/ui/font.ttf',scale=5,position=(vF+.3,vF-.1,self.z-1),color=color.rgb32(170,170,190),parent=camera.ui,visible=False)
+		self.add_text=Text('+ 0',font='res/ui/font.ttf',scale=4,position=(vF+.325,vF+.025,vF-1),color=self.font_color,parent=camera.ui,visible=False)
+		self.game_progress=Text('Progress 0%',font='res/ui/font.ttf',scale=3,position=(vF+.325,vF-.35,self.z-1),color=color.gold,parent=camera.ui,visible=False)
 		##animation
-		self.cry_anim=Animation('res/ui/icon/crystal.gif',position=(self.x+.6,self.y+.26,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.magenta,visible=False)
-		self.col_gem1=Animation('res/ui/icon/gem.gif',position=(self.x+.32,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
-		self.col_gem2=Animation('res/ui/icon/gem1.gif',position=(self.x+.44,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
-		self.col_gem3=Animation('res/ui/icon/gem2.gif',position=(self.x+.56,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
-		self.col_gem4=Animation('res/ui/icon/gem3.gif',position=(self.x+.68,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
-		self.col_gem5=Animation('res/ui/icon/gem.gif',position=(self.x+.8,self.y+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
-		self.cleargem=Animation('res/ui/icon/gem.gif',position=(self.x+.6,self.y-.03,self.z-1),scale=.2,fps=12,parent=camera.ui,color=color.rgb32(130,130,190),visible=False)
+		self.cry_anim=Animation('res/ui/icon/crystal.gif',position=(vF+.6,vF+.26,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.magenta,visible=False)
+		self.col_gem1=Animation('res/ui/icon/gem.gif',position=(vF+.25,vF+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
+		self.col_gem2=Animation('res/ui/icon/gem1.gif',position=(vF+.37,vF+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
+		self.col_gem3=Animation('res/ui/icon/gem2.gif',position=(vF+.49,vF+.075,self.z-1),scale=.15,fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
+		self.col_gem4=Animation('res/ui/icon/gem.gif',position=(vF+.61,vF+.075,self.z-1),scale=(.15,.075),fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
+		self.col_gem5=Animation('res/ui/icon/gem.gif',position=(vF+.73,vF+.075,self.z-1),scale=(.15,.19),fps=12,parent=camera.ui,color=color.rgb32(K,K,K),visible=False)
+		self.cleargem=Animation('res/ui/icon/gem.gif',position=(vF+.6,vF-.03,self.z-1),scale=.2,fps=12,parent=camera.ui,color=color.rgb32(130,130,190),visible=False)
 	def input(self,key):
 		if st.pause:
 			if key in ['down arrow','s']:
@@ -302,7 +299,7 @@ class PauseMenu(Entity):
 				if gC == 4:
 					self.col_gem4.color=color.rgb32(0,0,O)
 				if gC == 5:
-					self.col_gem5.color=color.rgb32(O,O,0)
+					self.col_gem5.color=color.rgb32(O-15,O-15,0)
 			if len(st.COLOR_GEM) >= 5:
 				self.need_loop=False
 	def select_menu(self):
@@ -318,6 +315,7 @@ class PauseMenu(Entity):
 			if self.blink_time > 0:
 				self.blink_time-=time.dt
 		for vis in [self.p_name,
+					self.ppt,
 					self.lvl_name,
 					self.select_0,
 					self.select_1,
@@ -343,25 +341,26 @@ class PauseMenu(Entity):
 class CollectedGem(Animation):
 	def __init__(self):
 		super().__init__(_icn+'crystal.gif',parent=camera.ui,scale=.15,color=color.magenta,visible=False,position=(0,-.4,-1))
-		cGLI={1:'gem3.gif',2:'gem.gif',3:'gem2.gif',4:'gem.gif',5:'gem.gif',6:'gem.gif'}
-		cGLO={1:color.rgb32(0,0,O),2:color.rgb32(O,0,0),3:color.rgb32(O,0,O),4:color.rgb32(O,0,0),5:color.rgb32(O,O,0),6:color.rgb32(O,0,0)}
+		cGLI={1:'gem3.gif',2:'gem.gif',3:'gem.gif',4:'gem.gif',5:'gem.gif',6:'gem.gif'}
+		cGLO={1:color.rgb32(0,0,O),2:color.rgb32(O,0,0),5:color.rgb32(O,0,O),4:color.rgb32(O,0,0),3:color.rgb32(O,O,0),6:color.rgb32(O,0,0)}
 		self.colored_gem=Animation(_icn+cGLI[st.level_index],parent=camera.ui,position=(self.x-.1,self.y,self.z),scale=self.scale,color=cGLO[st.level_index],visible=False)
 		self.clear_gem=Animation(_icn+'gem.gif',parent=camera.ui,position=(self.x+.1,self.y,self.z),scale=self.scale,color=color.rgb32(100,100,170),visible=False)
-		if st.level_index == 5:
+		if st.level_index == 3:
 			self.colored_gem.scale_y=.2
 	def update(self):
-		if st.show_gems > 0:
-			status.show_gems-=time.dt
-			if st.level_crystal:
-				self.show()
-			if st.level_col_gem:
-				self.colored_gem.show()
-			if st.level_cle_gem:
-				self.clear_gem.show()
-			return
-		self.colored_gem.hide()
-		self.clear_gem.hide()
-		self.hide()
+		if not status.gproc():
+			if st.show_gems > 0:
+				status.show_gems-=time.dt
+				if st.level_crystal:
+					self.show()
+				if st.level_col_gem:
+					self.colored_gem.show()
+				if st.level_cle_gem:
+					self.clear_gem.show()
+				return
+			self.colored_gem.visible=False
+			self.clear_gem.visible=False
+			self.hide()
 
 ## Time Trial
 class ElapsedTime(Entity):

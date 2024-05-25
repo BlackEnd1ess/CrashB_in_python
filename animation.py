@@ -1,14 +1,14 @@
-import status,_core,sound
+import status,_core,_loc
 from ursina import *
 
 npc_anim={'amadillo':7,'turtle':12,'saw_turtle':12,'penguin':15,
 		'hedgehog':12,'seal':14,'eating_plant':13,'rat':10,
 		'lizard':11,'scrubber':3,'mouse':8,'vulture':13}
 
-af='res/character/'
 cf='res/crate/anim/'
 nf='res/npc/'
-t=18
+af='res/pc/'
+t=19
 
 ## player animation
 def idle(d):
@@ -102,25 +102,23 @@ def player_death(d):
 	d.model=af+'death/'+str(int(d.death_anim))+'.ply'
 
 ## crate animation
-bT=30
+bT=40
 def bnc_animation(c):
-	if not c.is_bounc:
-		c.is_bounc=True
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc0.obj'),delay=0)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc1.obj'),delay=1/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc2.obj'),delay=2/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc3.obj'),delay=3/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc4.obj'),delay=4/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc5.obj'),delay=5/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc6.obj'),delay=6/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc7.obj'),delay=7/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc8.obj'),delay=8/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc9.obj'),delay=9/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc10.obj'),delay=10/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc11.obj'),delay=11/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc12.obj'),delay=12/bT)
-		invoke(lambda:setattr(c,'model',cf+'bnc/bnc0.obj'),delay=13/bT)
-		invoke(lambda:setattr(c,'is_bounc',False),delay=13/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc0.obj'),delay=0)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc1.obj'),delay=1/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc2.obj'),delay=2/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc3.obj'),delay=3/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc4.obj'),delay=4/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc5.obj'),delay=5/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc6.obj'),delay=6/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc7.obj'),delay=7/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc8.obj'),delay=8/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc9.obj'),delay=9/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc10.obj'),delay=10/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc11.obj'),delay=11/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc12.obj'),delay=12/bT)
+	invoke(lambda:setattr(c,'model',cf+'bnc/bnc0.obj'),delay=13/bT)
+	invoke(lambda:setattr(c,'is_bounc',False),delay=13/bT)
 
 class CrateBreak(Entity):
 	def __init__(self,cr):
@@ -133,7 +131,7 @@ class CrateBreak(Entity):
 		super().__init__(model=cf+'brk/0.ply',texture=cf+'brk/break.tga',rotation=(-90,cr.rotation_y,0),scale=.4/1000,color=bco,position=(anP[0],anP[1]-.16,anP[2]),unlit=False,collider=None)
 		self.frame_break=0
 	def update(self):
-		if not status.pause or status.loading:
+		if not status.gproc():
 			self.frame_break+=time.dt*20
 			if self.frame_break > 13.75:
 				self.frame_break=0
@@ -151,6 +149,7 @@ class WarpRingEffect(Entity): ## spawn animation
 	def __init__(self,pos):
 		self.omf='res/objects/ev/'
 		super().__init__(model=self.omf+'warp_rings/0.ply',texture=self.omf+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.8,unlit=False)
+		self.ta=_loc.ACTOR
 		self.rings=0
 		self.times=0
 	def update(self):
@@ -160,7 +159,7 @@ class WarpRingEffect(Entity): ## spawn animation
 				self.rings=0
 				self.times+=1
 			if self.times > 5:
-				_core.playerInstance[0].warped=True
+				self.ta.warped=True
 				self.disable()
 				return
 			self.model=self.omf+'warp_rings/'+str(int(self.rings))+'.ply'
@@ -196,12 +195,17 @@ def hippo_wait(m):
 	m.a_frame+=time.dt*t
 	if m.a_frame > 23.75:
 		m.a_frame=0
+		return
 	m.model=nf+'hippo/'+str(int(m.a_frame))+'.ply'
 def hippo_dive(m):
-	return
+	m.a_frame+=time.dt*t
+	if m.a_frame > 57.75:
+		m.a_frame=0
+		m.is_uw=True
+		return
+	m.model=nf+'hippo/'+str(int(m.a_frame))+'.ply'
 ## object animations
 def door_open(d):
-	Audio(sound.snd_d_opn)
 	invoke(lambda:setattr(d,'model',d.dPA+'u0.ply'),delay=0/t)
 	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d0.ply'),delay=0/t)
 	invoke(lambda:setattr(d,'model',d.dPA+'u1.ply'),delay=1/t)
@@ -214,7 +218,6 @@ def door_open(d):
 	d.collider=None
 
 def door_close(d):
-	Audio(sound.snd_d_opn,pitch=.9)
 	invoke(lambda:setattr(d,'model',d.dPA+'u3.ply'),delay=0/t)
 	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d3.ply'),delay=0/t)
 	invoke(lambda:setattr(d,'model',d.dPA+'u2.ply'),delay=1/t)

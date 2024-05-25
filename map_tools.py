@@ -11,7 +11,7 @@ def bounce_twin(POS,CNT):
 	for cbt in range(CNT):
 		pO=.32*cbt
 		c.place_crate(ID=3,p=(POS[0]+pO,POS[1],POS[2]))
-		c.place_crate(ID=3,p=(POS[0]+pO,POS[1]+1.6,POS[2]))
+		c.place_crate(ID=3,p=(POS[0]+pO,POS[1]+1.7,POS[2]))
 
 def steel_bridge(POS,CNT):
 	for cst in range(CNT):

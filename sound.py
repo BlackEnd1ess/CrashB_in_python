@@ -1,10 +1,20 @@
 import status,settings
 from ursina import *
 
-## misc sound effects
+##misc sfx
 SN='res/snd/misc/'
 
-#crate sfx
+snd_nbeat=SN+'npc_beat.wav'
+snd_d_opn=SN+'door_open.wav'
+snd_spawn=SN+'spawn.wav'
+snd_portl=SN+'portal.wav'
+snd_w_log=SN+'wlog.wav'
+snd_roles=SN+'role.wav'
+snd_wtr_1=SN+'waterf.wav'
+snd_bubbl=SN+'bubble.wav'
+snd_elect=SN+'electric.wav'
+
+##crate sfx
 snd_nitro=SN+'nitro_idle.wav'
 snd_explo=SN+'explode.wav'
 snd_break=SN+'break1.wav'
@@ -15,21 +25,42 @@ snd_bounc=SN+'bnc.wav'
 snd_c_tnt=SN+'tnt.wav'
 snd_c_air=SN+'air.wav'
 
-#misc sfx
-snd_nbeat=SN+'npc_beat.wav'
-snd_d_opn=SN+'door_open.wav'
-snd_spawn=SN+'spawn.wav'
-snd_portl=SN+'portal.wav'
-snd_w_log=SN+'wlog.wav'
-snd_roles=SN+'role.wav'
-snd_wtr_1=SN+'waterf.wav'
-
-#game/ui sfx
+##game/ui sfx
 snd_rward=SN+'reward.wav'
 snd_enter=SN+'enter.wav'
 snd_lifes=SN+'lives.wav'
 snd_aku_m=SN+'aku.wav'
 snd_c_gem=SN+'gem.wav'
+
+## ambience sound
+VS='res/snd/ambience/'
+
+snd_thu2=[VS+'thunder0.wav',VS+'thunder1.wav']
+snd_thu1=VS+'thunder_start.wav'
+snd_rain=VS+'rain.wav'
+
+## player sound
+SP='res/snd/player/'
+snd_jmph=SP+'jump_hit.wav'
+snd_jump=SP+'jump.wav'
+snd_attk=SP+'attack.wav'
+snd_atkw=SP+'atk_wait.wav'
+snd_walk=SP+'walk.wav'
+snd_land=SP+'land0.wav'
+snd_woah=SP+'woah.wav'
+snd_damg=SP+'damage.wav'
+snd_icew=SP+'ice_slide.wav'
+snd_icep=SP+'ice_slide_stop.wav'
+snd_wtrl=SP+'water_land.wav'
+
+## npc sound
+SA='res/snd/npc/'
+
+snd_eating_plant=SA+'plant_bite.wav'
+snd_scrubber=SA+'scrubber.wav'
+snd_mouse=SA+'mouse.wav'
+snd_seal=SA+'seal.wav'
+snd_rat=SA+'rat_idle.wav'
 
 def snd_switch():
 	Audio(SN+'switch.wav',volume=settings.SFX_VOLUME)
@@ -40,13 +71,6 @@ def snd_checkp():
 def snd_collect():
 	Audio(SN+'collect.wav',volume=.5)
 	invoke(lambda:Audio(snd_enter,volume=.3),delay=.5)
-
-## ambience sound
-VS='res/snd/ambience/'
-
-snd_thu2=[VS+'thunder0.wav',VS+'thunder1.wav']
-snd_thu1=VS+'thunder_start.wav'
-snd_rain=VS+'rain.wav'
 
 class WaterRiver(Audio):
 	def __init__(self):
@@ -68,29 +92,6 @@ class AmbienceSound(Entity):
 				if self.rpt <= 0:
 					self.rpt=1
 					Audio(VS+'jungle.wav',pitch=random.uniform(1,1.1),volume=.6)
-
-## player sound
-SP='res/snd/player/'
-snd_jmph=SP+'jump_hit.wav'
-snd_jump=SP+'jump.wav'
-snd_attk=SP+'attack.wav'
-snd_atkw=SP+'atk_wait.wav'
-snd_walk=SP+'walk.wav'
-snd_land=SP+'land0.wav'
-snd_woah=SP+'woah.wav'
-snd_damg=SP+'damage.wav'
-snd_icew=SP+'ice_slide.wav'
-snd_icep=SP+'ice_slide_stop.wav'
-
-## npc sound
-SA='res/snd/npc/'
-
-snd_eating_plant=SA+'plant_bite.wav'
-snd_scrubber=SA+'scrubber.wav'
-snd_mouse=SA+'mouse.wav'
-snd_seal=SA+'seal.wav'
-snd_rat=SA+'rat_idle.wav'
-snd_hpo=SA+'hippo.wav'
 
 ## BGM
 MC='res/snd/music/'

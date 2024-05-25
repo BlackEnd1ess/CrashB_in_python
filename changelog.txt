@@ -35,4 +35,11 @@
 
 #17.05.2024 06:00
 - crate explosions effect
+- added hippo npc
 
+#18.05.2024 16:15
+- fixxed bonus wumpa animation after counting the last one as normal
+
+#21.05 11:00
+- crate texture path -> own ID
+- LOD System fixx

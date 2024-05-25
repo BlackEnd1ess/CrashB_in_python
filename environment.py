@@ -1,7 +1,8 @@
-import status,settings,_core,sound
+import status,settings,_loc,sound
 from ursina import *
 
 SKY_COL={'day':color.rgb32(200,230,255),
+		'pipe':color.black,
 		'evening':color.rgb32(255,110,90),
 		'night':color.rgb32(0,0,85),
 		'dark':color.black,
@@ -10,7 +11,8 @@ SKY_COL={'day':color.rgb32(200,230,255),
 		'woods':color.rgb32(70,120,110)}
 
 FOG_COL={'day':color.rgb32(120,140,140),
-		'evening':color.rgb32(250,100,50),
+		'pipe':color.black,
+		'evening':color.rgb32(10,40,10),
 		'night':color.rgb32(0,0,0),
 		'dark':color.rgb32(0,0,0),
 		'rain':color.rgb32(0,0,0),
@@ -18,7 +20,8 @@ FOG_COL={'day':color.rgb32(120,140,140),
 		'woods':color.rgb32(30,80,60)}
 
 AMB_COL={'day':color.rgb32(180,180,180),
-		'evening':color.rgb32(250,150,100),
+		'pipe':color.rgb32(100,100,200),
+		'evening':color.rgb32(220,180,150),
 		'night':color.rgb32(0,0,0),
 		'dark':color.rgb32(0,0,0),
 		'rain':color.rgb32(0,0,0),
@@ -26,6 +29,7 @@ AMB_COL={'day':color.rgb32(180,180,180),
 		'woods':color.rgb32(140,170,170)}
 
 LGT_COL={'day':color.rgb32(0,0,0),
+		'pipe':color.rgb32(100,180,100),
 		'evening':color.rgb32(255,100,0),
 		'night':color.rgb32(0,0,0),
 		'dark':color.rgb32(0,0,0),
@@ -35,19 +39,18 @@ LGT_COL={'day':color.rgb32(0,0,0),
 
 def env_switch(env,wth,tdr):
 	status.day_mode=env
-	#ShadowMap()
 	SkyBox(t=tdr)
-	#LightAmbience()
-	#Fog()
+	LightAmbience()
+	Fog()
 	if wth > 0:
 		wthr={1:lambda:RainFall(),2:lambda:SnowFall()}
 		wthr[wth]()
 
-class ShadowMap(DirectionalLight):
-	def __init__(self):
-		RS=2048
-		super().__init__(shadows=True,shadow_map_resolution=(RS,RS),color=LGT_COL[status.day_mode],rotation_x=-260,position=(0,10,0))
-		invoke(lambda:setattr(window,'render_mode','default'),delay=.5)
+#class ShadowMap(DirectionalLight):
+#	def __init__(self):
+#		RS=1024
+#		super().__init__(shadows=True,shadow_map_resolution=(RS,RS),color=LGT_COL[status.day_mode],rotation_x=-260,position=(0,10,0))
+#		invoke(lambda:setattr(window,'render_mode','default'),delay=.5)
 
 class SkyBox(Sky):
 	def __init__(self,t):
@@ -61,7 +64,7 @@ class SkyBox(Sky):
 		self.thunder_time=random.randint(4,10)
 	def thunder_bolt(self):
 		self.color=color.white
-		Audio(sound.thu1,pitch=random.uniform(.1,.5))
+		Audio(sound.snd_thu1,pitch=random.uniform(.1,.5))
 		invoke(lambda:Audio(random.choice(sound.snd_thu2),pitch=random.uniform(.1,.5)),delay=.5)
 		invoke(self.reset,delay=random.uniform(.1,.4))
 	def update(self):
@@ -81,14 +84,15 @@ class LightAmbience(AmbientLight):
 class Fog(Entity):
 	def __init__(self):
 		super().__init__()
-		self.F_DST={0:(-1,30),1:(-1,15),2:(-1,15),3:(-1,30),4:(-1,15)}
+		self.L_DST={0:(-1,30),1:(-1,15),2:(-1,15),3:(10,30),4:(5,30),5:(5,20)}
+		self.B_DST={0:(0,0),1:(-5,20),2:(-1,20),3:(4,27),4:(13,15),5:(10,20)}
 		scene.fog_color=FOG_COL[status.day_mode]
-		scene.fog_density=self.F_DST[status.level_index]
+		scene.fog_density=self.L_DST[status.level_index]
 	def update(self):
 		if status.bonus_round:
-			scene.fog_density=(-5,20)
+			scene.fog_density=self.B_DST[status.level_index]
 			return
-		scene.fog_density=self.F_DST[status.level_index]
+		scene.fog_density=self.L_DST[status.level_index]
 
 #class RainFall(Animation):
 #	def __init__(self):
@@ -102,11 +106,12 @@ class Fog(Entity):
 #			self.r_pt.position=(.49,0)
 #	def update(self):
 #		print(self)
+
 class RainFall(FrameAnimation3d):
 	def __init__(self):
 		super().__init__('res/objects/ev/rain/rain',scale=(.004,.002,.004),color=color.rgb32(180,180,200),fps=60,loop=True,alpha=.6,rotation=(0,10,10))
 		self.soundR=Audio(sound.snd_rain,loop=True,volume=0)
-		self.target=_core.playerInstance[0]
+		self.ta=_loc.ACTOR
 	def rain_start(self):
 		self.fps=60
 		self.soundR.pitch=random.uniform(.9,1)
@@ -121,11 +126,11 @@ class RainFall(FrameAnimation3d):
 			if status.c_indoor:
 				self.rain_stop()
 				return
-			if distance(self,self.target) > 5:
-				tpp=self.target.position
+			if distance(self,self.ta) > 5:
+				tpp=self.ta.position
 				self.position=(tpp.x,tpp.y,tpp.z+.5)
 			else:
-				self.position=lerp(self.position,(self.target.x,camera.y-1.2,self.target.z+-.1),time.dt*4)
+				self.position=lerp(self.position,(self.ta.x,camera.y-1.2,self.ta.z+-.1),time.dt*4)
 			self.rain_start()
 
 class SnowFall(Entity):

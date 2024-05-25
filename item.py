@@ -1,4 +1,5 @@
 import _core,status,sound,ui,_loc
+from time import strftime,gmtime
 from ursina.shaders import *
 from ursina import *
 
@@ -12,6 +13,7 @@ class WumpaFruit(Entity):
 		w_tex='wumpa/images/Crash_WumpaFruit_C.png'
 		super().__init__(model=w_model,texture=w_tex,position=(pos[0],pos[1]+.3,pos[2]),scale=.005,collider=b,visible=False)
 		self.org_tex=self.texture
+		_loc.w_fruits.append(self)
 		if _core.level_ready:
 			status.W_RESET.append(self)
 	def destroy(self):
@@ -20,11 +22,11 @@ class WumpaFruit(Entity):
 		scene.entities.remove(self)
 	def collect(self):
 		self.disable()
+		_loc.w_fruits.remove(self)
 		cc.wumpa_count(1)
 	def update(self):
-		if not status.gproc():
-			if self.visible:
-				self.rotation_y-=time.dt*200
+		if not status.gproc() and self.visible:
+			self.rotation_y-=time.dt*180
 
 class ExtraLive(Entity):
 	def __init__(self,pos):
@@ -45,6 +47,9 @@ class GemStone(Entity):
 		super().__init__(model=ge_+'.ply',texture=ge_+'.tga',color=ge_c[c],scale=.0011,position=pos,rotation_x=-90,collider=b,unlit=False)
 		gSCA={4:self.scale_z/2,5:self.scale_z*1.5}
 		if c in gSCA:
+			if c == 5:
+				self.purge_time=120
+				self.ptext=Text(text=str(self.purge_time),parent=camera.ui,scale=3,position=(.7,-.4),font='res/ui/font.ttf',color=color.rgb32(200,200,100))
 			self.scale_z=gSCA[c]
 		if c != 0:
 			_loc.C_GEM=self
@@ -56,8 +61,12 @@ class GemStone(Entity):
 			return True
 		if gID == 1 and (sli == 2 and status.gem_death):
 			return True
+		if gID == 5 and self.purge_time <= 0:
+			return True
 		return False
 	def purge(self):
+		if self.gemID == 5:
+			self.ptext.disable()
 		self.collider=None
 		self.parent=None
 		self.disable()
@@ -77,6 +86,9 @@ class GemStone(Entity):
 			if self.gem_fail():
 				self.purge()
 				return
+			if self.gemID == 5 and self.purge_time > 0:
+				self.ptext.text=strftime("%M:%S",gmtime(self.purge_time))
+				self.purge_time-=time.dt
 			if geC and self.gemID == 0:
 				geE=geC.entity
 				if isinstance(geE,GemStone):

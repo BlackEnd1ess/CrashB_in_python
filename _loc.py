@@ -1,5 +1,8 @@
 ## lists, arrays and list access
 
+#player
+ACTOR=None
+
 # display the name in pause menu
 lv_name=['Warp Room',
 		'LEVEL 1 - TURTLE WOODS',
@@ -11,20 +14,29 @@ lv_name=['Warp Room',
 
 #item name list
 item_lst=['wumpa_fruit','extra_live','gem_stone','energy_crystal','trial_clock','cam_switch']
+free_cam=['t2b1','t2b2','t2b3','bush','tree_2d','tree_scene','STpltf','room_door','door_part']
 
-# objects in this list will hidden by LOD in _core.py
-free_fv=['start_room','bush','t2b1','t2b2','t2b3','tree_scene','pillow','door_part','room_door']
-LOD_LST=['tree2_d','tree_scene','bush','pillar','rock','moss_platform']
+# objects in this list will hidden by LOD
+w_fruits=[]
+LOD_LST=[]
 
 #danger zone
 d_zone=['water_hit','falling_zone']
 dangers=['wood_log','role']
 
 # checkpoint - bonus
-bonus_checkpoint=[None,(0,2,-6),(.3,2,2.3),(0,4,.85*8),(0,5,0),(0,5,0)]
+bonus_checkpoint=[None,(0,2,-6),(.3,2,2.3),(0,1.5,.85*8),(0,5,0),(0,5,0)]
 
 #day mode
-day_m={0:'default',1:'woods',2:'snow',3:'evening',4:'day',5:'night'}
+day_m={0:'default',
+	1:'woods',
+	2:'snow',
+	3:'evening',
+	4:'pipe',
+	5:'day'}
+
+#ui wumpa position
+uiW=None
 
 # shadow
 shdw=None

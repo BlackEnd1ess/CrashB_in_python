@@ -8,30 +8,30 @@ an=animation
 cc=_core
 LC=_loc
 
+cHr='res/pc/'
 class pShadow(Entity):## shadow point
 	def __init__(self):
-		super().__init__(model=Circle(16,thickness=1,radius=.08),rotation_x=90,color=color.black,alpha=.7,origin_z=.01,collider='box')
-		self.target=cc.playerInstance[0]
+		super().__init__(model=Circle(16,thickness=1,radius=.09),color=color.black,rotation_x=90,alpha=.6,origin_z=.01,collider='box')
+		self.ta=LC.ACTOR
 		_loc.shdw=self
 	def flw_p(self):
-		self.x=self.target.x
-		self.z=self.target.z
+		self.x=self.ta.x
+		self.z=self.ta.z
 	def check_obj(self):
-		vSH=raycast(self.target.world_position,-Vec3(0,1,0),distance=2,ignore=[self,self.target],debug=False)
+		vSH=raycast(self.ta.world_position,-Vec3(0,1,0),distance=2,ignore=[self,self.ta],debug=False)
 		if not cc.is_enemie(vSH.entity):
 			if vSH.normal and not str(vSH.entity) in LC.item_lst:
 				self.y=vSH.world_point.y
 	def update(self):
-		if not status.gproc():
+		if not status.gproc() and LC.ACTOR != None:
 			self.flw_p()
-			if not self.target.landed:
+			if not self.ta.landed:
 				self.check_obj()
 				return
-			self.y=self.target.y
+			self.y=self.ta.y
 
 class CrashB(Entity):
 	def __init__(self,pos):
-		cHr='res/character/'
 		super().__init__(model=cHr+'crash.ply',texture=cHr+'crash.tga',scale=.001,rotation_x=-90,position=pos,unlit=False)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(200,200,700))
 		self.gnd_c=Entity(model='cube',scale=.1,position=self.position,visible=False)
@@ -56,6 +56,7 @@ class CrashB(Entity):
 			return
 		if key == 'alt':
 			if not self.is_attack:
+				self.is_landing=False
 				self.is_attack=True
 				Audio(snd.snd_attk)
 			else:
@@ -78,14 +79,15 @@ class CrashB(Entity):
 		##dev input
 		if key == 'b':
 			#print(f"c.place_crate(ID=1,p=({self.x},{self.y+.16},{self.z})")
-			print(self.position)
+			an.CrateBounce()
+			#print(self.position)
 		if key == 'e':
 			EditorCamera()
 		if key == 'j':
 			scene.fog_color=color.random_color()
 			print(scene.fog_color)
 		if key == 'u':
-			self.position=(-.8,7,49.7)
+			self.position=(0,7,55)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD
@@ -121,14 +123,14 @@ class CrashB(Entity):
 		if (s.landed or s.jumping or s.freezed or status.is_dying) or not s.warped:
 			self.fall_time=0
 			return
-		self.y-=time.dt*1.5
+		self.y-=time.dt*1.8
 		self.fall_time+=time.dt
 		if s.fall_time > 2 and not (s.is_attack or s.freezed):
 			s.is_flip=False
 			an.fall(s)
 	def jump(self):
 		self.first_land=True
-		self.y+=time.dt*2.4
+		self.y+=time.dt*2.5
 		if self.walking:
 			self.is_flip=True
 		if self.y >= self.lpos:
@@ -139,7 +141,7 @@ class CrashB(Entity):
 		if not status.is_dying:
 			cc.cam_rotate(self)
 			cc.cam_follow(self)
-			camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
+			#camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
 	def basic_animation(self):
 		if status.is_dying:
 			an.player_death(self)
@@ -163,8 +165,6 @@ class CrashB(Entity):
 		if self.intersects().normal == Vec3(0,-1,0):
 			cc.obj_ceiling(c=self,e=self.intersects().entity)
 		self.fall()
-		if self.is_attack:
-			cc.c_attack(self)
 		self.basic_animation()
 		self.c_camera()
 		cc.c_item(self)
