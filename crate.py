@@ -7,8 +7,8 @@ ic=(.15,.2)
 cc=_core
 sn=sound
 LC=_loc
-cr1=pp+'crate_t1.obj'
-cr2=pp+'crate_t2.obj'
+cr1=pp+'cr_t0.ply'# single texture
+cr2=pp+'cr_t1.ply'# double texture
 
 ##spawn, destroy event
 def place_crate(p,ID,m=None,l=None,pse=None,tm=None):
@@ -64,9 +64,10 @@ def destroy_event(c):
 	c.disable()
 
 def block_destroy(c):
-	if not c.p_snd and not status.preload_phase:
+	if not c.p_snd:
 		c.p_snd=True
-		Audio(sn.snd_steel)
+		w={0:1,8:1,9:1,10:1,14:.55}
+		Audio(sn.snd_steel,pitch=w[c.vnum])
 		invoke(lambda:setattr(c,'p_snd',False),delay=.5)
 
 def spawn_ico(c):
@@ -114,7 +115,7 @@ class Normal(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
 		wuPo=self.position
-		item.WumpaFruit(pos=(wuPo[0],wuPo[1]-.16,wuPo[2]))
+		item.place_wumpa(self.position,cnt=1)
 		destroy_event(self)
 
 class QuestionMark(Entity):
@@ -123,8 +124,7 @@ class QuestionMark(Entity):
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
-		for _w in range(5):
-			item.WumpaFruit(pos=(self.x+random.uniform(-.1,.1),self.y-.16,self.z+random.uniform(-.1,.1)))
+		item.place_wumpa(self.position,cnt=5)
 		destroy_event(self)
 
 class Bounce(Entity):
@@ -203,11 +203,11 @@ class SpringWood(Entity):
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.is_bounc=False
-	def anim_act(self):
+	def c_action(self):
 		animation.bnc_animation(self)
 		Audio(sound.snd_sprin)
 	def destroy(self):
-		item.WumpaFruit(pos=self.position)
+		item.place_wumpa(self.position,cnt=1)
 		destroy_event(self)
 
 class SpringIron(Entity):
@@ -217,7 +217,7 @@ class SpringIron(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.is_bounc=False
 		self.p_snd=False
-	def anim_act(self):
+	def c_action(self):
 		animation.bnc_animation(self)
 		Audio(sound.snd_sprin)
 	def destroy(self):
@@ -350,9 +350,15 @@ class Protected(Entity):
 		self.vnum=14
 		super().__init__(model=cr1)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		self.hitten=False
+		self.p_snd=False
 	def destroy(self):
-		for dw in range(random.randint(5,10)):
-			item.WumpaFruit(pos=(self.x+random.uniform(-.1,.1),self.y-.16,self.z+random.uniform(-.1,.1)))
+		if not self.hitten:
+			self.hitten=True
+			animation.prtc_anim(self)
+		block_destroy(self)
+	def c_destroy(self):
+		item.place_wumpa(self.position,cnt=random.randint(5,10))
 		destroy_event(self)
 
 class cTime(Entity):

@@ -104,21 +104,38 @@ def player_death(d):
 ## crate animation
 bT=40
 def bnc_animation(c):
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc0.obj'),delay=0)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc1.obj'),delay=1/bT)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc2.obj'),delay=2/bT)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc3.obj'),delay=3/bT)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc4.obj'),delay=4/bT)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc5.obj'),delay=5/bT)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc6.obj'),delay=6/bT)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc7.obj'),delay=7/bT)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc8.obj'),delay=8/bT)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc9.obj'),delay=9/bT)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc10.obj'),delay=10/bT)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc11.obj'),delay=11/bT)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc12.obj'),delay=12/bT)
-	invoke(lambda:setattr(c,'model',cf+'bnc/bnc0.obj'),delay=13/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/0.ply'),delay=0)
+	invoke(lambda:setattr(c,'model',cf+'bn/1.ply'),delay=1/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/2.ply'),delay=2/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/3.ply'),delay=3/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/4.ply'),delay=4/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/5.ply'),delay=5/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/6.ply'),delay=6/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/7.ply'),delay=7/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/8.ply'),delay=8/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/9.ply'),delay=9/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/10.ply'),delay=10/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/11.ply'),delay=11/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/12.ply'),delay=12/bT)
+	invoke(lambda:setattr(c,'model',cf+'bn/0.ply'),delay=13/bT)
 	invoke(lambda:setattr(c,'is_bounc',False),delay=13/bT)
+
+def prtc_anim(c):
+	invoke(lambda:setattr(c,'model',cf+'prt/0.ply'),delay=0)
+	invoke(lambda:setattr(c,'model',cf+'prt/1.ply'),delay=1/bT)
+	invoke(lambda:setattr(c,'model',cf+'prt/2.ply'),delay=2/bT)
+	invoke(lambda:setattr(c,'model',cf+'prt/3.ply'),delay=3/bT)
+	invoke(lambda:setattr(c,'model',cf+'prt/4.ply'),delay=4/bT)
+	invoke(lambda:setattr(c,'model',cf+'prt/5.ply'),delay=5/bT)
+	invoke(lambda:setattr(c,'model',cf+'prt/6.ply'),delay=6/bT)
+	invoke(lambda:setattr(c,'model',cf+'prt/7.ply'),delay=7/bT)
+	invoke(lambda:setattr(c,'model',cf+'prt/8.ply'),delay=8/bT)
+	invoke(lambda:setattr(c,'model',cf+'prt/9.ply'),delay=9/bT)
+	invoke(lambda:setattr(c,'model',cf+'prt/10.ply'),delay=10/bT)
+	invoke(lambda:setattr(c,'model',cf+'prt/11.ply'),delay=11/bT)
+	invoke(lambda:setattr(c,'model',cf+'prt/12.ply'),delay=12/bT)
+	invoke(lambda:setattr(c,'model',cf+'prt/0.ply'),delay=13/bT)
+	invoke(lambda:setattr(c,'hitten',False),delay=20/bT)
 
 class CrateBreak(Entity):
 	def __init__(self,cr):
@@ -128,7 +145,7 @@ class CrateBreak(Entity):
 		else:
 			bco=color.orange
 		anP=cr.position
-		super().__init__(model=cf+'brk/0.ply',texture=cf+'brk/break.tga',rotation=(-90,cr.rotation_y,0),scale=.4/1000,color=bco,position=(anP[0],anP[1]-.16,anP[2]),unlit=False,collider=None)
+		super().__init__(model=cf+'brk/0.ply',texture=cf+'brk/break.tga',rotation=(-90,random.randint(0,360),0),scale=.4/1000,color=bco,position=(anP[0],anP[1]-.16,anP[2]),unlit=False,collider=None)
 		self.frame_break=0
 	def update(self):
 		if not status.gproc():

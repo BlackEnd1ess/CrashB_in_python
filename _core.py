@@ -9,22 +9,22 @@ C=crate
 N=npc
 
 ## player
-def set_val(d):
-	for _a in ['run_anim','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','count_time','fall_time',
+def set_val(c):
+	for _a in ['run_anim','jmp_typ','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','count_time','fall_time',
 			'blink_time','death_anim','slide_fwd']:
-		setattr(d,_a,0)
+		setattr(c,_a,0)
 	for _v in ['aq_bonus','block_input','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
-		setattr(d,_v,False)
-	d.lpos=None
-	d.move_speed=2.4
-	d.direc=(0,0,0)
-	d.jmp_hgt=0
-	d.CMS=4
-	_loc.ACTOR=d
-def set_jump_type(d,t):
-	d.jumping=True
-	tp={0:1,1:1.2,2:1.5}
-	d.lpos=d.y+tp[t]
+		setattr(c,_v,False)
+	c.move_speed=2.4
+	c.direc=(0,0,0)
+	c.vpos=None
+	c.CMS=4
+	_loc.ACTOR=c
+def set_jump_type(c,typ):
+	c.jmp_typ=typ
+	jmp_h={0:c.y+1.3,1:c.y+1,2:c.y+1.7,3:c.y+1.1}
+	c.vpos=jmp_h[typ]
+	c.jumping=True
 def get_damage(c):
 	if not c.injured and not status.is_dying and status.aku_hit < 3:
 		if status.aku_hit > 0:
@@ -84,24 +84,19 @@ def various_val(c):
 		c.blink_time-=time.dt
 	if c.injured:
 		c.hurt_blink()
-def c_attack(c,e):
-	if is_crate(e):
-		if e.vnum in [3,11]:
-			e.empty_destroy()
-		else:
-			e.destroy()
-	if is_enemie(e) and not e.is_hitten:
-		a=Vec3(c.x-e.x,0,c.z-e.z)
-		if a.x > 0 and a.x > a.z:
-			e.fly_direc=0
-		if a.x < 0 and a.x < a.z:
-			e.fly_direc=1
-		if a.z > 0 and a.z > a.x:
-			e.fly_direc=2
-		if a.z < 0 and a.z < a.x:
-			e.fly_direc=3
-		e.is_hitten=True
-		Audio(snd.snd_nbeat)
+def c_attack(c):
+	for e in scene.entities[:]:
+		if is_nearby_pc(e,DX=.5,DY=.5):
+			if is_crate(e):
+				if e.vnum in [3,11]:
+					e.empty_destroy()
+				else:
+					e.destroy()
+			if is_enemie(e) and not e.is_hitten:
+				e.is_hitten=True
+				a=Vec3(e.x-c.x,0,e.z-c.z)
+				e.fly_direc=a
+				Audio(snd.snd_nbeat)
 def c_slide(c):
 	if not c.walking:
 		if c.slide_fwd > 0 and status.p_last_direc != None:
@@ -204,26 +199,26 @@ def reset_audio():
 	status.b_audio=False
 
 ## collisions
-def obj_ceiling(c,e):
-	if not str(e) in LC.item_lst:
-		if is_crate(e) and not c.is_touch_crate:
-			c.is_touch_crate=True
-			e.destroy()
-			invoke(lambda:setattr(c,'is_touch_crate',False),delay=.1)
-		if str(e) in LC.dangers:
-			get_damage(c)
-		c.jumping=False
-		c.y=c.y
+def obj_ceiling(c):
+	vc=raycast(c.world_position+(0,.6,0),Vec3(0,-1,0),distance=.4,ignore=[c,LC.shdw],debug=True)
+	if vc.normal:
+		e=vc.entity
+		if not str(e) in LC.item_lst:
+			if is_crate(e) and not c.is_touch_crate:
+				c.is_touch_crate=True
+				e.destroy()
+				invoke(lambda:setattr(c,'is_touch_crate',False),delay=.1)
+			if str(e) in LC.dangers:
+				get_damage(c)
+			c.jumping=False
+			c.y=c.y
 def obj_grnd(c):
-	if LC.map_zone and c.intersects(LC.map_zone):
-		landing(c=c,e=terraincast(c.world_position,LC.map_zone,LC.map_height))
-		return
 	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.05,thickness=(.15,.15),ignore=[c,LC.shdw],debug=False)
 	vp=vj.entity
 	if vj and not (str(vp) in LC.item_lst or str(vp) in LC.dangers):
 		if (is_crate(vp) and not vp.vnum == 0) and not (is_crate(vp) and vp.vnum in [9,10,11] and vp.activ) and c.fall_time > .1:
 			crate_action(c=c,e=vp)
-		if is_enemie(vp):
+		if is_enemie(vp) and not vp.is_hitten:
 			jump_enemy(c=c,e=vp)
 		else:
 			landing(c=c,e=vj.world_point.y)
@@ -239,8 +234,6 @@ def obj_walls(c):
 	for jF in [hT,vT]:
 		jV=jF.entity
 		if jF and jF.normal != Vec3(0,1,0):
-			if c.is_attack:
-				c_attack(c=c,e=jV)
 			if isinstance(jV,crate.Nitro) and jV.collider != None:
 				jV.destroy()
 			if (is_enemie(jV) and not c.is_attack) or (str(jV) in LC.dangers and jV.danger):
@@ -267,7 +260,7 @@ def obj_act(c,e):
 	if u == 'ice_ground':
 		c.is_slippery=True
 		return
-	if u == 'MO_PL' and not c.walking:
+	if u == 'MO_PL' and not c.walking and e.movable:
 		c.x=e.x
 		c.z=e.z
 		return
@@ -368,11 +361,15 @@ def is_crate(e):
 	return False
 def crate_action(c,e):
 	if e.vnum in [7,8]:
-		set_jump_type(d=c,t=2)
-		e.anim_act()
+		set_jump_type(c,typ=2)
+		e.c_action()
 		return
+	elif e.vnum == 3:
+		set_jump_type(c,typ=3)
+	else:
+		if not e.vnum == 14:
+			set_jump_type(c,typ=1)
 	e.destroy()
-	set_jump_type(d=c,t=0)
 def check_cstack():
 	for cSD in scene.entities[:]:
 		if is_crate(cSD) and not cSD.vnum ==3:
@@ -461,7 +458,7 @@ def load_droute(c):
 
 ## npc
 def set_val_npc(m):
-	if str(m) in ['rat','eating_plant','vulture']:
+	if m.vnum in [6,7,11]:
 		m.can_move=False
 	else:
 		m.can_move=True
@@ -472,7 +469,6 @@ def set_val_npc(m):
 	m.unlit=False
 	m.anim_frame=0
 	m.fly_time=0
-	#m.collider.visible=True
 def npc_action(m):
 	if m.visible:
 		if m.is_purge:
@@ -542,13 +538,9 @@ def rotate_to_crash(m):
 	m.rotation_y=angle
 	m.rotation_x=-90
 def fly_away(n):
-	fSP=time.dt*20
-	flD={0:lambda:setattr(n,'x',n.x-fSP),
-		1:lambda:setattr(n,'x',n.x+fSP),
-		2:lambda:setattr(n,'z',n.z-fSP),
-		3:lambda:setattr(n,'z',n.z+fSP)}
-	flD[n.fly_direc]()
-	n.fly_time+=time.dt
+	fSP=time.dt*40
+	n.position+=n.fly_direc*fSP
+	n.fly_time-=time.dt
 	J=n.intersects()
 	if J:
 		PNL=J.entity
@@ -559,13 +551,16 @@ def fly_away(n):
 				if not PNL.vnum == 6:# avoid checkp accidentally
 					PNL.destroy()
 		if is_enemie(PNL):
+			PNL.fly_direc=n.fly_direc
 			PNL.is_hitten=True
 			wumpa_count(1)
-	if n.fly_time > .3:
+			npc_purge(n)
+			return
+	if abs(n.fly_time) > .3:
 		npc_purge(n)
 def kill_by_jump(m,c):
 	m.is_purge=True
-	set_jump_type(d=c,t=0)
+	set_jump_type(c,typ=1)
 	Audio(snd.snd_jmph)
 def is_nearby_pc(n,DX,DY):
 	if LC.ACTOR:

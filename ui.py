@@ -341,12 +341,19 @@ class PauseMenu(Entity):
 class CollectedGem(Animation):
 	def __init__(self):
 		super().__init__(_icn+'crystal.gif',parent=camera.ui,scale=.15,color=color.magenta,visible=False,position=(0,-.4,-1))
-		cGLI={1:'gem3.gif',2:'gem.gif',3:'gem.gif',4:'gem.gif',5:'gem.gif',6:'gem.gif'}
+		if st.level_index == 4:
+			cGLI='gem1.gif'
+		elif st.level_index == 5:
+			cGLI='gem2.gif'
+		else:
+			cGLI='gem.gif'
 		cGLO={1:color.rgb32(0,0,O),2:color.rgb32(O,0,0),5:color.rgb32(O,0,O),4:color.rgb32(O,0,0),3:color.rgb32(O,O,0),6:color.rgb32(O,0,0)}
-		self.colored_gem=Animation(_icn+cGLI[st.level_index],parent=camera.ui,position=(self.x-.1,self.y,self.z),scale=self.scale,color=cGLO[st.level_index],visible=False)
+		self.colored_gem=Animation(_icn+cGLI,parent=camera.ui,position=(self.x-.1,self.y,self.z),scale=self.scale,color=cGLO[st.level_index],visible=False)
 		self.clear_gem=Animation(_icn+'gem.gif',parent=camera.ui,position=(self.x+.1,self.y,self.z),scale=self.scale,color=color.rgb32(100,100,170),visible=False)
 		if st.level_index == 3:
 			self.colored_gem.scale_y=.2
+		if st.level_index == 1:
+			self.colored_gem.scale_y=.07
 	def update(self):
 		if not status.gproc():
 			if st.show_gems > 0:

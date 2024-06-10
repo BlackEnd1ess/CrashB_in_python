@@ -20,6 +20,7 @@ def free_level():
 	if status.level_index == 3:
 		sound.AmbienceSound()
 		sound.WaterRiver()
+	o.LODProcess()
 	print('level '+str(status.level_index)+' loaded successfully')
 
 ## level settings
@@ -27,7 +28,7 @@ def main_instance(idx):
 	status.loading=True
 	status.level_index=idx
 	day_m=_loc.day_m
-	s_rm={0:(0,0,0),1:(-.3,1,-64.2),2:(0,1,-64.2),3:(0,0,-32.2),4:(0,.3,-64.2),5:(0,0,-32.2)}
+	s_rm={0:(0,0,0),1:(-.3,.5,-66.5),2:(0,1,-64.2),3:(0,0,-32.2),4:(0,.3,-64.2),5:(0,0,-32.2)}
 	status.day_mode=day_m[idx]
 	o.StartRoom(pos=s_rm[idx],lvID=idx)
 	bn.load_bonus_level(idx)
@@ -61,22 +62,142 @@ def developer_level():
 
 def test():
 	o.MapTerrain(MAP='map/0.png',size=(64,1,64),t='grass',co=color.rgb32(150,150,70))
-	#mt.bounce_twin(POS=(0,.16,-23),CNT=5)
-	for gg in range(17):
-		c.place_crate(ID=gg,p=(0+.64*gg,.16,-23),l=1,m=1,tm=1)
-	#o.EndRoom(pos=(1,2,6),c=color.rgb32(80,100,80))
-	#mt.crate_plane(ID=12,POS=(0,.16,-4),CNT=[4,5])
+	#o.EndRoom(pos=(1,1.4,-15),c=color.rgb32(200,210,200))
+	#mt.crate_plane(ID=1,POS=(0,.16,-22),CNT=[30,1])
+	#mt.bounce_twin(POS=(0,.16,-18),CNT=20)
+	o.GrassSide(pos=(0,.5,-12))
+	#N.spawn(mID=7,pos=(0,0,-22),mDirec=0,mTurn=0)
+	#N.spawn(mID=7,pos=(4,0,-22),mDirec=0,mTurn=0)
+	#N.spawn(mID=7,pos=(2,0,-20),mDirec=0,mTurn=0)
+	#N.spawn(mID=7,pos=(-2,0,-20),mDirec=0,mTurn=0)
+	#c.place_crate(ID=1,p=(4,.16,-20))
 	invoke(free_level,delay=1)
 
-def level1():##wood
+def level1():
+	cG=color.green
+	#scene
+	o.EndRoom(pos=(1,2.3,55),c=color.rgb32(80,100,80))
+	o.GrassSide(pos=(-3.5,1.9,-47),ry=0)
+	o.GrassSide(pos=(-3.5,1.9,-16),ry=0)
+	o.GrassSide(pos=(-3.5,1.9,15),ry=0)
+	o.GrassSide(pos=(-3.5,1.9,46),ry=0)
+	o.GrassSide(pos=(3,1.9,-47),ry=180)
+	o.GrassSide(pos=(3,1.9,-16),ry=180)
+	o.GrassSide(pos=(3,1.9,15),ry=180)
+	o.GrassSide(pos=(3,1.9,46),ry=180)
+	o.LevelScene(pos=(0,0,128),sca=(150,40,1))
+	o.Water(pos=(0,.3,0),s=(10,128),c=color.rgb32(140,140,160),a=1,typ=2)
+	o.Corridor(pos=(0,.6,-5))
+	o.Corridor(pos=(0,.6,6.1))
+	o.TreeScene(pos=(-2.2,1.1,49),s=.0175)
+	o.TreeScene(pos=(1.7,1.1,49),s=.0175)
+	o.TreeScene(pos=(-1.7,1.1,36),s=.0175)
+	o.TreeScene(pos=(1.8,1.1,34),s=.0175)
+	o.TreeScene(pos=(-1.9,1.1,30),s=.0175)
+	o.TreeScene(pos=(-1.35,1.1,-45),s=.0175)
+	o.TreeScene(pos=(1.4,1.1,-45.5),s=.0175)
+	o.TreeScene(pos=(-4,1.1,-63),s=.0175)
+	o.TreeScene(pos=(3,1.1,-63.3),s=.0175)
+	o.TreeScene(pos=(-3.3,1.1,-62.7),s=.0175)
+	o.TreeScene(pos=(2.3,1.1,-62.7),s=.0175)
+	o.TreeScene(pos=(-1,1.1,-36.5),s=.0175)
+	o.TreeScene(pos=(1,1.1,-36.5),s=.0175)
+	o.TreeScene(pos=(-1,1.1,14.2),s=.0175)
+	o.TreeScene(pos=(1,1.1,10),s=.0175)
+	o.TreeScene(pos=(-1,1.1,-23.5),s=.0175)
+	o.TreeScene(pos=(1,1.1,-23.5),s=.0175)
+	o.TreeScene(pos=(-0.23,1.1,-52.93),s=.0175)
+	o.TreeScene(pos=(0.78,1.1,-16.98),s=.0175)
+	o.TreeScene(pos=(-0.54,1.1,-10.27),s=.0175)
+	o.TreeScene(pos=(1.30,1.1,30.00),s=.0175)
+	o.spawn_tree_wall(pos=(-3.4,2.6,-63),cnt=70,d=0)
+	o.spawn_tree_wall(pos=(3.4,2.6,-63),cnt=70,d=1)
+	o.bush(pos=(-1.2,1,-4.2),s=2,c=cG)
+	o.bush(pos=(1.2,1,-4.2),s=2,c=cG)
+	o.bush(pos=(-1.5,1,-6.2),s=2,c=cG)
+	o.bush(pos=(1.5,1,-6.2),s=2,c=cG)
+	o.bush(pos=(-1.2,1,7),s=2,c=cG)
+	o.bush(pos=(1.2,1,7),s=2,c=cG)
+	o.bush(pos=(-1.4,.9,4.9),s=1.5,c=cG)
+	o.bush(pos=(1.4,.9,4.9),s=1.5,c=cG)
+	md='moss_2.png'
+	gr='grass.png'
+	o.mTerrain(pos=(0,-.4,-60),sca=(8,2,8),typ=md)
+	o.mTerrain(pos=(0,-.4,-53.25),sca=(8,2,3),typ=md)
+	o.mTerrain(pos=(0,-.4,-48),sca=(8,2,5),typ=md)
+	o.mTerrain(pos=(0,-.4,-44),sca=(1,2,3),typ=md)
+	o.mTerrain(pos=(0,-.4,-38.5),sca=(3,2,5),typ=md)
+	o.mTerrain(pos=(0,-.4,-33.5),sca=(1,2,5),typ=md)
+	o.mTerrain(pos=(0,-.4,-33.5),sca=(1,2,5),typ=md)
+	o.mTerrain(pos=(0,-.4,-29),sca=(1,2,1),typ=md)
+	o.mTerrain(pos=(0,-.4,-27),sca=(1,2,1),typ=md)
+	o.mTerrain(pos=(0,-.4,-25),sca=(1,2,2),typ=md)
+	o.mTerrain(pos=(0,-.4,-14),sca=(3,2,20),typ=md)
+	o.mTerrain(pos=(0,-.4,1),sca=(1,2,10),typ=gr)
+	o.mTerrain(pos=(0,-.4,10),sca=(3,2,10),typ=gr)
+	o.mTerrain(pos=(0,-.4,16.5),sca=(1,2,1),typ=gr)
+	o.mTerrain(pos=(0,-.4,18.5),sca=(1,2,1),typ=gr)
+	o.mTerrain(pos=(0,-.4,20.5),sca=(1,2,1),typ=gr)
+	o.mTerrain(pos=(-1.5,-.4,20.5),sca=(1,2,1),typ=gr)
+	o.mTerrain(pos=(-1.5,-.4,22.5),sca=(1,2,1),typ=gr)
+	o.mTerrain(pos=(-1.5,-.4,24.5),sca=(1,2,1),typ=gr)
+	o.mTerrain(pos=(1.1,-.4,24.5),sca=(1,2,1),typ=gr)
+	o.mTerrain(pos=(-1.5,-.4,26.5),sca=(1,2,1),typ=gr)
+	o.mTerrain(pos=(-1.5,-.4,29.5),sca=(8,2,2),typ=gr)
+	o.mTerrain(pos=(-1.5,-.4,34),sca=(8,2,7),typ=gr)
+	o.mTerrain(pos=(-1.5,-.4,40.5),sca=(1,2,1),typ=gr)
+	o.mTerrain(pos=(-1.5,-.4,46),sca=(8,2,5),typ=gr)
+	o.mTerrain(pos=(-1.5,-.4,49),sca=(8,2,5),typ=gr)
+	#platforms
+	o.MossPlatform(p=(0,.6,39),MO=False,TU=0,UD=False)
+	o.MossPlatform(p=(0,.6,40.5),MO=False,TU=0,UD=False)
+	o.MossPlatform(p=(0,.6,42),MO=False,TU=0,UD=False)
+	o.BonusPlatform(pos=(1.1,.6,2))
+	o.GemPlatform(pos=(1.3,.8,24.5),t=4)
+	#crate
+	c.place_crate(ID=6,p=(-0.01,0.76,-39.26))
+	c.place_crate(ID=6,p=(0.03,0.76,6.12))
+	c.place_crate(ID=6,p=(-0.06,0.76,34.47))
+	c.place_crate(ID=5,p=(-0.02,0.76,-24.78))
+	c.place_crate(ID=5,p=(-0.02,0.76,-1.32))
+	#
+	mt.crate_wall(ID=1,POS=(1.18,.76,-59.26),CNT=[2,2])
+	mt.crate_plane(ID=1,POS=(-1.6,.76,-57.20),CNT=[2,3])
+	mt.crate_wall(ID=2,POS=(-.73,.76,-53.44),CNT=[2,2])
+	mt.crate_plane(ID=2,POS=(.06,.76,-46.58),CNT=[2,2])
+	mt.crate_wall(ID=1,POS=(.76,.76,-37.91),CNT=[2,2])
+	mt.crate_wall(ID=2,POS=(-.02,.76,-28.77),CNT=[2,2])
+	mt.crate_wall(ID=1,POS=(-.54,.76,-16.74),CNT=[2,2])
+	mt.crate_plane(ID=2,POS=(1,.76,-6.75),CNT=[2,2])
+	mt.crate_wall(ID=1,POS=(1,.76,14),CNT=[2,2])
+	mt.crate_plane(ID=1,POS=(-.02,.76,20.69),CNT=[2,2])
+	mt.crate_wall(ID=1,POS=(1.04,.76,31.04),CNT=[2,2])
+	mt.crate_plane(ID=2,POS=(1.38,.76,35.06),CNT=[2,2])
+	mt.crate_wall(ID=1,POS=(-1.51,.76,47.19),CNT=[2,2])
+	mt.crate_plane(ID=2,POS=(1.38,.76,44.88),CNT=[2,2])
+	mt.crate_block(ID=1,POS=(-1.47,.76,-59.36),CNT=[2,2,2])
+	mt.crate_block(ID=2,POS=(1.49,.76,-57.10),CNT=[2,2,2])
+	mt.crate_block(ID=1,POS=(1.33,.76,-53.48),CNT=[2,2,2])
+	mt.crate_block(ID=2,POS=(1.17,.76,-48.88),CNT=[2,2,2])
+	mt.crate_block(ID=1,POS=(-1.65,.76,-47.72),CNT=[2,2,2])
+	mt.crate_row(ID=1,POS=(-.85,.76-.34,24.4),CNT=5,WAY=0)
+	mt.crate_plane(ID=3,POS=(-1.55,.76,40.43),CNT=[2,2])
+	invoke(free_level,delay=1)
+
+def level11():##wood
 	TS=16
 	cG=color.green
 	o.Water(pos=(0,.6,0),s=(10,128),c=color.rgb32(40,40,60),a=.8,typ=2)
 	o.InvWall(pos=(-5,.5,-64),sca=(5.,10,200))
 	o.InvWall(pos=(4.7,.5,-64),sca=(5.,10,200))
-	o.MapTerrain(MAP='map/'+str(status.level_index)+'.png',size=(TS/1.6,1.5,TS*8),t='grass',co=color.rgb32(0,70,0))
+	
 	o.BonusPlatform(pos=(1.4,1,-6))
+	o.GemPlatform(pos=(-.2,.9,-18),t=4)
 	bn.gem_route1()
+	#scene
+	o.GrassSide(pos=(-3.5,1.4,-47))
+	o.GrassSide(pos=(-3.5,1.4,-23.5))
+	o.GrassSide(pos=(-3.5,1.4,1.5))
 	#plants
 	o.TreeScene(pos=(-1.37,1.5,-46),s=.0175)
 	o.TreeScene(pos=(1.32,1.5,-46),s=.0175)
@@ -86,10 +207,10 @@ def level1():##wood
 	o.TreeScene(pos=(-2,1.7,9.5),s=.02)
 	for trE in range(10):
 		o.TreeScene(pos=(0+random.uniform(-.1,.1),.7,-2+trE),s=.02)
-	o.spawn_tree_wall(pos=(-4.6,2.73,-64),cnt=48,d=0)
-	o.spawn_tree_wall(pos=(-5.7,2,-63),cnt=48,d=0)
-	o.spawn_tree_wall(pos=(3.6,2.73,-64),cnt=48,d=1)
-	o.spawn_tree_wall(pos=(4.5,2,-64),cnt=48,d=1)
+	o.spawn_tree_wall(pos=(-4.6,2.73,-64),cnt=36,d=0)
+	o.spawn_tree_wall(pos=(-5.7,2,-63),cnt=36,d=0)
+	o.spawn_tree_wall(pos=(3.6,2.73,-64),cnt=36,d=1)
+	o.spawn_tree_wall(pos=(4.5,2,-64),cnt=36,d=1)
 	o.bush(pos=(.37,1.3,-26.5),s=2,c=color.orange)
 	o.bush(pos=(1.5,1.4,-14.2),s=2,c=cG)
 	o.bush(pos=(-1.5,1.4,-14.2),s=2,c=color.orange)
@@ -130,10 +251,9 @@ def level1():##wood
 	o.bush(pos=(-.7,1,-55),s=(2,1.5,.1),c=color.orange)
 	o.bush(pos=(-.8,3,23),s=(2,1.5,.1),c=color.rgb32(0,80,0))
 	o.bush(pos=(.4,3,23.02),s=(2,1.5,.1),c=color.rgb32(0,80,0))
-	o.bush(pos=(-.2,3.3,23.01),s=(2,1.5,.1),c=color.rgb32(0,80,0))
+	o.bush(pos=(-.2,3.3,22.9),s=(2,1.5,.1),c=color.rgb32(0,80,0))
 	#platform
 	d0=.85
-	o.GemPlatform(pos=(-.2,.9,-18),t=4)
 	o.mBlock(pos=(0,d0,-57),sca=(4,24))
 	o.mBlock(pos=(0,d0,-36),sca=(4,5))
 	o.mBlock(pos=(0,d0,-30),sca=(1,7))
@@ -161,7 +281,7 @@ def level1():##wood
 	N.spawn(mID=0,pos=(0,1.1,-38),mDirec=0,mTurn=0)
 	N.spawn(mID=1,pos=(0,1.1,-15),mDirec=0,mTurn=0)
 	#wumpa fruits
-	wu_h=1
+	wu_h=1.4
 	mt.wumpa_plane(POS=(-.5,wu_h,-57),CNT=4)
 	mt.wumpa_plane(POS=(-.4,wu_h,-50),CNT=4)
 	mt.wumpa_row(POS=(0,wu_h,-44),CNT=4,WAY=2)
@@ -185,12 +305,12 @@ def level1():##wood
 	mt.bounce_twin(POS=(1,CRP,-36),CNT=1)
 	mt.crate_row(ID=1,POS=(-1.3,.9,-22.3),CNT=5,WAY=0)
 	c.place_crate(ID=9,m=1,l=0,p=(-1.3,.9,-22.82))
-	for aE in range(5):
-		c.place_crate(ID=13,m=1,l=0,p=(-1.3+.32*aE,.9,-22.82))
+	for aE in range(4):
+		c.place_crate(ID=13,m=1,l=0,p=(-.98+.32*aE,.9,-22.82))
 	mt.crate_row(ID=3,POS=(-1.3,.9,-27),CNT=3,WAY=0)
 	mt.crate_row(ID=2,POS=(-1.3,2.56,-27),CNT=3,WAY=0)
 	mt.crate_row(ID=1,POS=(1.8,.8,1.1),CNT=10,WAY=1)
-	mt.crate_row(ID=0,POS=(0,.85,20.16),CNT=10,WAY=1)
+	mt.crate_row(ID=0,POS=(0,.8,20.16),CNT=10,WAY=1)
 	c.place_crate(ID=4,p=(.9,CRP,-3.9))
 	c.place_crate(ID=3,m=1,l=0,p=(-2,CRP,-6))
 	mt.crate_block(ID=1,POS=(-1.09,CRP,17),CNT=[2,2,2])
@@ -525,7 +645,6 @@ def level3():##water
 	invoke(free_level,delay=3)
 
 def level4():## sewer
-	o.MapTerrain(MAP='map/0.png',size=(10,1,128),t='white_cube',co=color.rgb32(130,130,50))
 	o.Water(pos=(0,.2,-45),s=(8,8),c=color.rgb(100,100,130),a=.5,typ=1)
 	o.SewerTunnel(pos=(0,.4,-53))
 	o.SewerTunnel(pos=(0,.4,-44))

@@ -19,7 +19,7 @@ def cam():
 	print('settings loaded')
 
 SFX_VOLUME=1
-MUSIC_VOLUME=1
+MUSIC_VOLUME=.5
 #----------------------------
 #camera_contrast_shader
 #camera_vertical_blur_shader

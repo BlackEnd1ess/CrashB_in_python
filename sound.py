@@ -98,6 +98,7 @@ MC='res/snd/music/'
 class LevelMusic(Audio):
 	def __init__(self,T):
 		lM=MC+'lv'+str(T)+'/0.mp3'
+		VOL=settings.MUSIC_VOLUME
 		super().__init__(lM,volume=settings.MUSIC_VOLUME,loop=True)
 	def update(self):
 		if status.bonus_round or status.is_death_route:
@@ -106,7 +107,7 @@ class LevelMusic(Audio):
 		if status.pause or status.aku_hit >= 3:
 			self.volume=0
 			return
-		self.volume=1
+		self.volume=settings.MUSIC_VOLUME
 
 class BonusMusic(Audio):
 	def __init__(self,T):
@@ -121,7 +122,7 @@ class BonusMusic(Audio):
 		if status.pause:
 			self.volume=0
 			return
-		self.volume=1
+		self.volume=settings.MUSIC_VOLUME
 
 class SpecialMusic(Audio):
 	def __init__(self,T):

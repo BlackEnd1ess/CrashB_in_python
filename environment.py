@@ -26,7 +26,7 @@ AMB_COL={'day':color.rgb32(180,180,180),
 		'dark':color.rgb32(0,0,0),
 		'rain':color.rgb32(0,0,0),
 		'snow':color.rgb32(200,160,210),
-		'woods':color.rgb32(140,170,170)}
+		'woods':color.rgb32(120,130,120)}
 
 LGT_COL={'day':color.rgb32(0,0,0),
 		'pipe':color.rgb32(100,180,100),
@@ -84,13 +84,16 @@ class LightAmbience(AmbientLight):
 class Fog(Entity):
 	def __init__(self):
 		super().__init__()
-		self.L_DST={0:(-1,30),1:(-1,15),2:(-1,15),3:(10,30),4:(5,30),5:(5,20)}
+		self.L_DST={0:(-1,30),1:(2,20),2:(-1,15),3:(10,30),4:(5,30),5:(5,20)}
 		self.B_DST={0:(0,0),1:(-5,20),2:(-1,20),3:(4,27),4:(13,15),5:(10,20)}
 		scene.fog_color=FOG_COL[status.day_mode]
 		scene.fog_density=self.L_DST[status.level_index]
 	def update(self):
 		if status.bonus_round:
 			scene.fog_density=self.B_DST[status.level_index]
+			return
+		if status.is_death_route:
+			scene.fog_density=(10,40)
 			return
 		scene.fog_density=self.L_DST[status.level_index]
 

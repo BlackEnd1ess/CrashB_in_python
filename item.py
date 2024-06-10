@@ -6,14 +6,23 @@ from ursina import *
 i_path='res/item/'
 b='box'
 
+r=random
 cc=_core
-class WumpaFruit(Entity):
+##place wumpa fruits
+def place_wumpa(pos,cnt):
+	for wpo in range(cnt):
+		if cnt > 1:
+			vpu=pos+(r.uniform(-.1,.1),r.uniform(-.1,.1),r.uniform(-.1,.1))
+		else:
+			vpu=pos
+		WumpaFruit(p=pos)
+
+class WumpaFruitHD(Entity):##3D Model
 	def __init__(self,pos):
 		w_model='wumpa/WumpaFruitGameplay.obj'
 		w_tex='wumpa/images/Crash_WumpaFruit_C.png'
 		super().__init__(model=w_model,texture=w_tex,position=(pos[0],pos[1]+.3,pos[2]),scale=.005,collider=b,visible=False)
-		self.org_tex=self.texture
-		_loc.w_fruits.append(self)
+		self.org_tex=w_tex
 		if _core.level_ready:
 			status.W_RESET.append(self)
 	def destroy(self):
@@ -22,11 +31,31 @@ class WumpaFruit(Entity):
 		scene.entities.remove(self)
 	def collect(self):
 		self.disable()
-		_loc.w_fruits.remove(self)
 		cc.wumpa_count(1)
 	def update(self):
-		if not status.gproc() and self.visible:
-			self.rotation_y-=time.dt*180
+		if not status.gproc():
+			if self.visible:
+				self.rotation_y-=time.dt*180
+
+class WumpaFruit(Entity):##2D Animation
+	def __init__(self,p):
+		self.w_pa='res/ui/icon/wumpa_fruits/'
+		super().__init__(model='quad',texture=self.w_pa+'w0.png',position=(p[0],p[1],p[2]),scale=.22,visible=False)
+		self.collider=BoxCollider(self,size=Vec3(1,1,1))
+		self.frm=0
+	def destroy(self):
+		self.parent=None
+		self.disable()
+	def collect(self):
+		self.disable()
+		cc.wumpa_count(1)
+	def update(self):
+		if not status.gproc():
+			if self.visible:
+				self.frm+=time.dt*15
+				if self.frm > 13.75:
+					self.frm=0
+				self.texture=self.w_pa+'w'+str(int(self.frm))+'.png'
 
 class ExtraLive(Entity):
 	def __init__(self,pos):

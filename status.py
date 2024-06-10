@@ -5,7 +5,7 @@ checkpoint=None
 day_mode=''
 
 ## game progress items
-COLOR_GEM=[1,2,3,4]
+COLOR_GEM=[4]
 CLEAR_GEM=[]
 CRYSTAL=[]
 
@@ -89,7 +89,11 @@ def p_idle(d):
 	if not d.walking and not d.jumping and not d.is_attack and not p_walk(d) and d.landed:
 		return True
 	return False
+def p_rst(d):
+	if is_dying or not d.warped or d.freezed:
+		return True
+	return False
 def gproc():
-	if loading or pause or LV_CLEAR_PROCESS:
+	if loading or pause or LV_CLEAR_PROCESS or level_solved:
 		return True
 	return False

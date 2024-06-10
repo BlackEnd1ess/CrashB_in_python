@@ -1,4 +1,4 @@
-import _core,ui,status,animation,sound,_loc
+import _core,ui,status,animation,sound,_loc,map_tools
 from ursina.shaders import *
 from math import atan2
 from ursina import *
@@ -32,9 +32,11 @@ class pShadow(Entity):## shadow point
 
 class CrashB(Entity):
 	def __init__(self,pos):
-		super().__init__(model=cHr+'crash.ply',texture=cHr+'crash.tga',scale=.001,rotation_x=-90,position=pos,unlit=False)
+		super().__init__(model=cHr+'crash.ply',texture=cHr+'crash.tga',scale=.1/110,rotation_x=-90,position=pos,unlit=False)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(200,200,700))
 		self.gnd_c=Entity(model='cube',scale=.1,position=self.position,visible=False)
+		self.fall_speed={0:2.9,1:2.9,2:3,3:2.8}
+		self.jump_speed={0:2.7,1:2.7,2:3,3:3}
 		cc.set_val(self)
 		ui.PauseMenu()
 		ui.WumpaCounter()
@@ -46,14 +48,11 @@ class CrashB(Entity):
 	def input(self,key):
 		if self.freezed or status.is_dying:
 			return
-		if key == 'space' and not self.block_input:
-			if not self.warped:
-				return
-			Audio(snd.snd_jump)
+		if key == 'space' and not self.block_input and self.warped:
 			self.block_input=True
+			Audio(snd.snd_jump)
 			if not status.p_in_air(self):
-				cc.set_jump_type(d=self,t=1)
-			return
+				cc.set_jump_type(self,typ=0)
 		if key == 'alt':
 			if not self.is_attack:
 				self.is_landing=False
@@ -78,16 +77,14 @@ class CrashB(Entity):
 			status.pause=False
 		##dev input
 		if key == 'b':
-			#print(f"c.place_crate(ID=1,p=({self.x},{self.y+.16},{self.z})")
-			an.CrateBounce()
-			#print(self.position)
+			map_tools.pos_info(self)
 		if key == 'e':
 			EditorCamera()
 		if key == 'j':
 			scene.fog_color=color.random_color()
 			print(scene.fog_color)
 		if key == 'u':
-			self.position=(0,7,55)
+			self.position=(0,3,42)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD
@@ -120,21 +117,22 @@ class CrashB(Entity):
 				Audio(snd.snd_walk,volume=.3)
 	def fall(self):
 		s=self
-		if (s.landed or s.jumping or s.freezed or status.is_dying) or not s.warped:
+		if s.landed or s.jumping:
 			self.fall_time=0
 			return
-		self.y-=time.dt*1.8
+		self.y-=time.dt*self.fall_speed[self.jmp_typ]
 		self.fall_time+=time.dt
 		if s.fall_time > 2 and not (s.is_attack or s.freezed):
 			s.is_flip=False
 			an.fall(s)
 	def jump(self):
 		self.first_land=True
-		self.y+=time.dt*2.5
+		self.y+=time.dt*self.jump_speed[self.jmp_typ]
+		if self.y >= self.vpos:
+			self.jumping=False
+			return
 		if self.walking:
 			self.is_flip=True
-		if self.y >= self.lpos:
-			self.jumping=False
 		if not self.is_flip:
 			an.jup(self)
 	def c_camera(self):
@@ -159,16 +157,6 @@ class CrashB(Entity):
 				an.slide_stop(self)
 			else:
 				an.idle(self)
-	def char_misc(self):
-		if not status.is_dying and self.warped and not self.freezed:
-			self.move()
-		if self.intersects().normal == Vec3(0,-1,0):
-			cc.obj_ceiling(c=self,e=self.intersects().entity)
-		self.fall()
-		self.basic_animation()
-		self.c_camera()
-		cc.c_item(self)
-		cc.various_val(self)
 	def hurt_blink(self):
 		if self.blink_time <= 0:
 			self.blink_time=.1
@@ -177,11 +165,18 @@ class CrashB(Entity):
 			else:
 				self.alpha=1
 	def update(self):
-		if status.pause or status.level_solved or status.gproc():
-			return
-		cc.obj_grnd(self)
-		self.char_misc()
-		if self.jumping:
-			self.jump()
-		if cc.level_ready and not status.is_dying:
-			self.fall()
+		if not status.gproc():
+			cc.obj_grnd(self)
+			if not status.p_rst(self):
+				self.move()
+				self.fall()
+				self.c_camera()
+				cc.c_item(self)
+				if self.is_attack:
+					cc.c_attack(self)
+				if self.jumping:
+					self.jump()
+			self.basic_animation()
+			cc.various_val(self)
+			if status.p_in_air(self):
+				cc.obj_ceiling(self)

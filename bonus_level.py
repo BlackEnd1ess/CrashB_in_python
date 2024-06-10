@@ -89,6 +89,8 @@ def bonus4():
 ## gem route
 def gem_route1():
 	o.FallingZone(pos=(200,-4,0),s=(40,1,32))
+	Entity(model='quad',texture='res/sprite/bg_woods.png',scale=(90,20,1),position=(210,-15,25),texture_scale=(4,1),unlit=False)
+	Entity(model='quad',texture='res/sprite/bg_woods.png',color=color.rgb32(50,120,50),scale=(90,20,1),position=(210,-6,27),texture_scale=(4,1),unlit=False)
 	MT.crate_row(ID=0,POS=(200,-2,U),WAY=0,CNT=7)
 	MT.crate_row(ID=0,POS=(203,-1,U),WAY=0,CNT=7)
 	c.place_crate(ID=8,p=(206,0,U))

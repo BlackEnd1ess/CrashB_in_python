@@ -1,6 +1,5 @@
 - check wall collissions and falling zones
 - death cause by enemie/fall/drown
-- enemie hitbox size
 - fixx crate fall
 
 - game over event
