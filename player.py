@@ -48,8 +48,7 @@ class CrashB(Entity):
 	def input(self,key):
 		if self.freezed or status.is_dying:
 			return
-		if key == 'space' and not self.block_input and self.warped:
-			self.block_input=True
+		if key == 'space' and self.landed and self.warped:
 			Audio(snd.snd_jump)
 			if not status.p_in_air(self):
 				cc.set_jump_type(self,typ=0)
@@ -58,6 +57,7 @@ class CrashB(Entity):
 				self.is_landing=False
 				self.is_attack=True
 				Audio(snd.snd_attk)
+				invoke(lambda:setattr(self,'is_attack',False),delay=.6)
 			else:
 				Audio(snd.snd_atkw)
 		if key == 'tab':
@@ -84,7 +84,7 @@ class CrashB(Entity):
 			scene.fog_color=color.random_color()
 			print(scene.fog_color)
 		if key == 'u':
-			self.position=(0,3,42)
+			self.position=(0,3,35)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD

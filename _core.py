@@ -11,9 +11,9 @@ N=npc
 ## player
 def set_val(c):
 	for _a in ['run_anim','jmp_typ','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','count_time','fall_time',
-			'blink_time','death_anim','slide_fwd']:
+			'blink_time','death_anim','slide_fwd','indoor']:
 		setattr(c,_a,0)
-	for _v in ['aq_bonus','block_input','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
+	for _v in ['aq_bonus','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
 		setattr(c,_v,False)
 	c.move_speed=2.4
 	c.direc=(0,0,0)
@@ -78,12 +78,10 @@ def various_val(c):
 			bonus_reward(c)
 		else:
 			c.aq_bonus=False
-	if c.walk_snd > 0:
-		c.walk_snd-=time.dt
-	if c.blink_time > 0:
-		c.blink_time-=time.dt
-	if c.injured:
-		c.hurt_blink()
+	if c.blink_time > 0:c.blink_time-=time.dt
+	if c.walk_snd > 0:c.walk_snd-=time.dt
+	if c.indoor > 0:c.indoor-=time.dt
+	if c.injured:c.hurt_blink()
 def c_attack(c):
 	for e in scene.entities[:]:
 		if is_nearby_pc(e,DX=.5,DY=.5):
@@ -128,7 +126,7 @@ def cam_follow(c):
 	ftr=time.dt*3
 	camera.z=lerp(camera.z,c.z-c.CMS,ftr)
 	camera.x=lerp(camera.x,c.x,ftr)
-	if status.c_indoor:
+	if c.indoor:
 		if not status.p_in_air(c):
 			camera.y=lerp(camera.y,c.y+1,time.dt)
 		camera.rotation_x=12
@@ -200,20 +198,20 @@ def reset_audio():
 
 ## collisions
 def obj_ceiling(c):
-	vc=raycast(c.world_position+(0,.6,0),Vec3(0,-1,0),distance=.4,ignore=[c,LC.shdw],debug=True)
-	if vc.normal:
+	vc=c.intersects(ignore=[c,LC.shdw])
+	if vc and vc.normal == Vec3(0,-1,0):
 		e=vc.entity
 		if not str(e) in LC.item_lst:
 			if is_crate(e) and not c.is_touch_crate:
 				c.is_touch_crate=True
 				e.destroy()
 				invoke(lambda:setattr(c,'is_touch_crate',False),delay=.1)
-			if str(e) in LC.dangers:
+			if str(e) in LC.dangers or (is_enemie(e) and not c.is_attack):
 				get_damage(c)
 			c.jumping=False
 			c.y=c.y
 def obj_grnd(c):
-	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.05,thickness=(.15,.15),ignore=[c,LC.shdw],debug=False)
+	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.1,.1),ignore=[c,LC.shdw],debug=False)
 	vp=vj.entity
 	if vj and not (str(vp) in LC.item_lst or str(vp) in LC.dangers):
 		if (is_crate(vp) and not vp.vnum == 0) and not (is_crate(vp) and vp.vnum in [9,10,11] and vp.activ) and c.fall_time > .1:
@@ -229,21 +227,20 @@ def obj_walls(c):
 	if status.LV_CLEAR_PROCESS:
 		c=None
 		return
-	hT=c.intersects()
-	vT=raycast(c.world_position+(0,.1,0),c.direc,distance=.2,ignore=[c,LC.shdw],debug=False)
+	ig=[c,LC.shdw]
+	vT=raycast(c.world_position+(0,.1,0),c.direc,distance=.2,ignore=ig,debug=False)
+	hT=c.intersects(ignore=ig)
 	for jF in [hT,vT]:
 		jV=jF.entity
 		if jF and jF.normal != Vec3(0,1,0):
-			if isinstance(jV,crate.Nitro) and jV.collider != None:
-				jV.destroy()
+			if isinstance(jV,crate.Nitro) and jV.collider != None:jV.destroy()
 			if (is_enemie(jV) and not c.is_attack) or (str(jV) in LC.dangers and jV.danger):
 				get_damage(c)
 				return
 			else:
-				if not str(jV) in LC.item_lst and not jV == LC.shdw:
-					return
-	if not status.gproc():#avoid sys error by missing ursina entity
-		c.position+=c.direc*time.dt*c.move_speed
+				if not str(jV) in LC.item_lst and not jV == LC.shdw:return
+	#avoid sys error by missing ursina entity
+	if not status.gproc():c.position+=c.direc*time.dt*c.move_speed
 def obj_act(c,e):
 	u=str(e)
 	if u in LC.d_zone:
@@ -270,17 +267,16 @@ def obj_act(c,e):
 	c.is_slippery=False
 	c.move_speed=2.2
 def landing(c,e):
+	c.landed=True
 	if c.y < e and not c.jumping:
-		c.landed=True
 		c.y=e
-		if c.first_land:
-			c.first_land=False
-			c.is_landing=True
-			c.land_anim=0
-			Audio(snd.snd_land)
-		c.block_input=False
-		c.is_flip=False
-		c.flip_anim=0
+	if c.first_land:
+		c.first_land=False
+		c.is_landing=True
+		c.land_anim=0
+		Audio(snd.snd_land)
+	c.is_flip=False
+	c.flip_anim=0
 def platform_floating(m,c):
 	m.air_time+=time.dt/1.5
 	m.y+=time.dt/1.5
@@ -312,9 +308,9 @@ def death_zone(c,e):
 		status.is_dying=True
 		Audio(snd.snd_woah,pitch=.8)
 def c_item(c):
-	vL=c.intersects()
-	if vL and str(vL.entity) in LC.item_lst:
-		vL.entity.collect()
+	j=c.intersects(ignore=[c,LC.shdw])
+	if str(j.entity) in LC.item_lst:
+		j.entity.collect()
 
 ## interface,collectables
 def wumpa_count(n):

@@ -72,7 +72,6 @@ aku_exist=False
 on_terra=False
 gem_death=False
 is_dying=False
-c_indoor=True
 loading=False
 pause=False
 

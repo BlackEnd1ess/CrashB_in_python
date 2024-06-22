@@ -56,7 +56,6 @@ def spin(d):
 	d.spin_anim+=time.dt*25
 	if d.spin_anim > 11.75:
 		d.spin_anim=0
-		d.is_attack=False
 	d.texture=af+'spn/crash.tga'
 	d.model=af+'spn/'+str(int(d.spin_anim))+'.ply'
 

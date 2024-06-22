@@ -76,16 +76,18 @@ def test():
 def level1():
 	cG=color.green
 	#scene
+	gs=1.4
 	o.EndRoom(pos=(1,2.3,55),c=color.rgb32(80,100,80))
-	o.GrassSide(pos=(-3.5,1.9,-47),ry=0)
-	o.GrassSide(pos=(-3.5,1.9,-16),ry=0)
-	o.GrassSide(pos=(-3.5,1.9,15),ry=0)
-	o.GrassSide(pos=(-3.5,1.9,46),ry=0)
-	o.GrassSide(pos=(3,1.9,-47),ry=180)
-	o.GrassSide(pos=(3,1.9,-16),ry=180)
-	o.GrassSide(pos=(3,1.9,15),ry=180)
-	o.GrassSide(pos=(3,1.9,46),ry=180)
-	o.LevelScene(pos=(0,0,128),sca=(150,40,1))
+	o.GrassSide(pos=(-4,gs,-47),ry=0)
+	o.GrassSide(pos=(-4,gs,-16),ry=0)
+	o.GrassSide(pos=(-4,gs,15),ry=0)
+	o.GrassSide(pos=(-4,gs,46),ry=0)
+	o.GrassSide(pos=(3.5,gs,-47),ry=180)
+	o.GrassSide(pos=(3.5,gs,-16),ry=180)
+	o.GrassSide(pos=(3.5,gs,15),ry=180)
+	o.GrassSide(pos=(3.5,gs,46),ry=180)
+	o.LevelScene(pos=(0,0,128),sca=(400,40,1))
+	o.LevelScene(pos=(0,-20,127),sca=(400,40,1))
 	o.Water(pos=(0,.3,0),s=(10,128),c=color.rgb32(140,140,160),a=1,typ=2)
 	o.Corridor(pos=(0,.6,-5))
 	o.Corridor(pos=(0,.6,6.1))
@@ -110,8 +112,8 @@ def level1():
 	o.TreeScene(pos=(0.78,1.1,-16.98),s=.0175)
 	o.TreeScene(pos=(-0.54,1.1,-10.27),s=.0175)
 	o.TreeScene(pos=(1.30,1.1,30.00),s=.0175)
-	o.spawn_tree_wall(pos=(-3.4,2.6,-63),cnt=70,d=0)
-	o.spawn_tree_wall(pos=(3.4,2.6,-63),cnt=70,d=1)
+	o.spawn_tree_wall(pos=(-3.6,2,-63),cnt=70,d=0)
+	o.spawn_tree_wall(pos=(3.6,2.2,-63),cnt=70,d=1)
 	o.bush(pos=(-1.2,1,-4.2),s=2,c=cG)
 	o.bush(pos=(1.2,1,-4.2),s=2,c=cG)
 	o.bush(pos=(-1.5,1,-6.2),s=2,c=cG)
@@ -149,9 +151,10 @@ def level1():
 	o.mTerrain(pos=(-1.5,-.4,46),sca=(8,2,5),typ=gr)
 	o.mTerrain(pos=(-1.5,-.4,49),sca=(8,2,5),typ=gr)
 	#platforms
-	o.MossPlatform(p=(0,.6,39),MO=False,TU=0,UD=False)
-	o.MossPlatform(p=(0,.6,40.5),MO=False,TU=0,UD=False)
-	o.MossPlatform(p=(0,.6,42),MO=False,TU=0,UD=False)
+	o.MossPlatform(pos=(0,.1,39),ptm=2)
+	o.MossPlatform(pos=(0,.1,40.5),ptm=0)
+	o.MossPlatform(pos=(0,.1,42),ptm=0)
+	
 	o.BonusPlatform(pos=(1.1,.6,2))
 	o.GemPlatform(pos=(1.3,.8,24.5),t=4)
 	#crate

@@ -12,8 +12,8 @@ lv_name=['Warp Room',
 		'LEVEL 5 - RUINED',
 		'DEVELOPER TEST LEVEL']
 
-#item name list
-item_lst=['wumpa_fruit','extra_live','gem_stone','energy_crystal','trial_clock','cam_switch']
+#item/obj name list
+item_lst=['wumpa_fruit','extra_live','gem_stone','energy_crystal','trial_clock','cam_switch','indoor_zone']
 free_cam=['t2b1','t2b2','t2b3','bush','tree_2d','tree_scene','STpltf','room_door','door_part']
 
 #danger zone
