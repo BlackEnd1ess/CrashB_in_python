@@ -33,8 +33,7 @@ class pShadow(Entity):## shadow point
 class CrashB(Entity):
 	def __init__(self,pos):
 		super().__init__(model=cHr+'crash.ply',texture=cHr+'crash.tga',scale=.1/110,rotation_x=-90,position=pos,unlit=False)
-		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(200,200,700))
-		self.gnd_c=Entity(model='cube',scale=.1,position=self.position,visible=False)
+		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(200,200,600))
 		self.fall_speed={0:2.9,1:2.9,2:3,3:2.8}
 		self.jump_speed={0:2.7,1:2.7,2:3,3:3}
 		cc.set_val(self)

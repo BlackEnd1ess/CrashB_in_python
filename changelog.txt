@@ -44,7 +44,10 @@
 - crate texture path -> own ID
 - LOD System fixx
 
-# 10.06.2024
+#10.06.2024
 - Enemie fly Direction in any Way
 - new level1 proto typ
 - decrased player size and colliders
+
+#24.06.2024
+- LOD disable enemies,wumpa fruits and passive objects instead of hiding it

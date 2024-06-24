@@ -213,7 +213,7 @@ def obj_ceiling(c):
 def obj_grnd(c):
 	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.1,.1),ignore=[c,LC.shdw],debug=False)
 	vp=vj.entity
-	if vj and not (str(vp) in LC.item_lst or str(vp) in LC.dangers):
+	if vj.normal and not (str(vp) in LC.item_lst or str(vp) in LC.dangers):
 		if (is_crate(vp) and not vp.vnum == 0) and not (is_crate(vp) and vp.vnum in [9,10,11] and vp.activ) and c.fall_time > .1:
 			crate_action(c=c,e=vp)
 		if is_enemie(vp) and not vp.is_hitten:
@@ -238,9 +238,9 @@ def obj_walls(c):
 				get_damage(c)
 				return
 			else:
-				if not str(jV) in LC.item_lst and not jV == LC.shdw:return
+				if not str(jV) in LC.item_lst:return
 	#avoid sys error by missing ursina entity
-	if not status.gproc():c.position+=c.direc*time.dt*c.move_speed
+	c.position+=c.direc*time.dt*c.move_speed
 def obj_act(c,e):
 	u=str(e)
 	if u in LC.d_zone:
@@ -466,18 +466,17 @@ def set_val_npc(m):
 	m.anim_frame=0
 	m.fly_time=0
 def npc_action(m):
-	if m.visible:
-		if m.is_purge:
-			npc_purge(m)
-			return
-		if not m.is_hitten:
-			npc.walk_frames(m)
-			if m.vnum == 9 and m.ro_mode:
-				npc_circle_move(m)
-			else:
-				npc_walk(m)
-			return
-		fly_away(m)
+	if m.is_purge:
+		npc_purge(m)
+		return
+	if not m.is_hitten:
+		npc.walk_frames(m)
+		if m.vnum == 9 and m.ro_mode:
+			npc_circle_move(m)
+		else:
+			npc_walk(m)
+		return
+	fly_away(m)
 def npc_purge(m):
 	u=60
 	m.can_move=False
@@ -493,7 +492,7 @@ def npc_purge(m):
 		status.NPC_RESET.append(m)
 		m.disable()
 def npc_walk(m):
-	if status.pause:
+	if status.gproc():
 		return
 	if m.can_move:
 		s=m.move_speed
@@ -552,8 +551,7 @@ def fly_away(n):
 			wumpa_count(1)
 			npc_purge(n)
 			return
-	if abs(n.fly_time) > .3:
-		npc_purge(n)
+	if abs(n.fly_time) > .3:npc_purge(n)
 def kill_by_jump(m,c):
 	m.is_purge=True
 	set_jump_type(c,typ=1)

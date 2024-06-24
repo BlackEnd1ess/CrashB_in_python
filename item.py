@@ -40,26 +40,26 @@ class WumpaFruitHD(Entity):##3D Model
 class WumpaFruit(Entity):##2D Animation
 	def __init__(self,p):
 		self.w_pa='res/ui/icon/wumpa_fruits/'
-		super().__init__(model='quad',texture=self.w_pa+'w0.png',position=(p[0],p[1],p[2]),scale=.22,visible=False)
+		super().__init__(model='quad',texture=self.w_pa+'w0.png',position=(p[0],p[1],p[2]),scale=.22)
 		self.collider=BoxCollider(self,size=Vec3(1,1,1))
 		self.frm=0
 	def destroy(self):
 		self.parent=None
+		scene.entities.remove(self)
 		self.disable()
 	def collect(self):
-		self.disable()
 		cc.wumpa_count(1)
+		self.destroy()
 	def update(self):
-		if not status.gproc():
-			if self.visible:
-				self.frm+=time.dt*15
-				if self.frm > 13.75:
-					self.frm=0
-				self.texture=self.w_pa+'w'+str(int(self.frm))+'.png'
+		if not status.gproc() and self.enabled:
+			self.frm+=time.dt*15
+			if self.frm > 13.75:
+				self.frm=0
+			self.texture=self.w_pa+'w'+str(int(self.frm))+'.png'
 
 class ExtraLive(Entity):
 	def __init__(self,pos):
-		super().__init__(model='quad',texture=i_path+'/extra_live/live.png',position=pos,scale=0.25,collider=b)
+		super().__init__(model='quad',texture=i_path+'/extra_live/live.png',position=pos,scale=.25,collider=b)
 	def collect(self):
 		self.disable()
 		_core.give_extra_live()

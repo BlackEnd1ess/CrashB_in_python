@@ -3,13 +3,13 @@ from ursina.shaders import *
 from ursina import *
 
 SFX=settings.SFX_VOLUME
-texp='res/terrain/texture/'
-omf='res/objects/'
-m='mesh'
-b='box'
 st=status
 cc=_core
 LC=_loc
+
+omf='res/objects/'
+m='mesh'
+b='box'
 
 #####################
 ## object functions #
@@ -28,10 +28,8 @@ def unlit_obj(o):
 	o.double_sided=True
 	o.unlit=False
 
-
 ####################
 ##multible objects #
-
 #lv1
 def spawn_tree_wall(pos,cnt,d):
 	tro={0:-45,1:45}
@@ -89,11 +87,12 @@ class Tree2D(Entity):
 		super().__init__(model='quad',texture=omf+'l1/tree/tree'+str(random.randint(1,4))+'.png',scale=2,position=pos,rotation_y=rot,color=tCOL)
 
 class MossPlatform(Entity):
-	def __init__(self,pos,ptm):
+	def __init__(self,p,ptm):
 		#scale=.00075
 		MVP=omf+'l1/p_moss/moss'
-		super().__init__(model='cube',texture=None,position=pos,scale=(.6,1,.6),collider=b)
-		self.spawn_pos=pos
+		super().__init__(model='cube',texture=None,position=p,scale=(.6,1,.6),collider=b,visible=False)
+		self.opt_model=Entity(model=MVP+'.ply',texture=MVP+'.tga',scale=.75/1000,position=(p[0],p[1]+.475,p[2]),rotation_x=-90,double_sided=True)
+		self.spawn_pos=p
 		self.ptm=ptm
 		self.direct=0
 		self.turn=0
@@ -140,9 +139,7 @@ class TreeScene(Entity):
 class GrassSide(Entity):
 	def __init__(self,pos,ry):
 		gr=omf+'l1/grass_side/grass_side'
-		super().__init__(model=gr+'1.ply',texture=gr+'.jpg',position=pos,scale=(2,2,1.4),unlit=False,rotation=(-90,ry,0),collider='mesh')
-#	def update(self):
-#		print(self)
+		super().__init__(model=gr+'1.ply',texture=gr+'.jpg',position=pos,scale=(2,2,1.4),unlit=False,rotation=(-90,ry,0))
 
 ####################
 ## level 2 objects #
@@ -374,7 +371,6 @@ class IndoorZone(Entity):## disable rain
 		super().__init__(model='cube',scale=sca,position=pos,collider=b,visible=True,alpha=.3)
 	def collect(self):
 		LC.ACTOR.indoor=.3
-		print(time.dt)
 
 class FallingZone(Entity):## falling
 	def __init__(self,pos,s):
@@ -411,7 +407,7 @@ class Corridor(Entity):
 		self.wall0=Entity(model='cube',visible=False,scale=(3,3,2.2),position=(self.x+2.3,self.y,self.z),collider=b)
 		self.wall1=Entity(model='cube',visible=False,scale=(3,3,2.2),position=(self.x-2.3,self.y,self.z),collider=b)
 		self.wall1=Entity(model='cube',visible=False,scale=(3,3,2.2),position=(self.x,self.y+3,self.z),collider=b)
-		IndoorZone(pos=(self.x,self.y+1,self.z),sca=3)
+		IndoorZone(pos=(self.x,self.y+1.6,self.z),sca=3)
 		unlit_obj(self)
 
 class StartRoom(Entity):## game spawn point
@@ -564,9 +560,9 @@ class LODProcess(Entity):
 		self.rtime=.5
 	def wmp_lod(self,w,p):
 		if distance(w,p) < 8:
-			w.visible=True
+			w.enabled=True
 			return
-		w.visible=False
+		w.enabled=False
 	def crt_lod(self,c,p):
 		if distance(c,p) < 16:
 			c.show()
@@ -574,9 +570,9 @@ class LODProcess(Entity):
 		c.hide()
 	def enm_lod(self,e,p):
 		if distance(e,p) < 20:
-			e.show()
+			e.enabled=True
 			return
-		e.hide()
+		e.enabled=False
 	def vwi_lod(self,v,p):
 		if p.z > v.z+2 or v.z > p.z+28:
 			v.enabled=False
@@ -662,9 +658,10 @@ class mTerrain(Entity):
 class mBlock(Entity):
 	def __init__(self,pos,sca):
 		cHo=st.level_index
-		tPL={0:None,1:'moss.png',2:'snow.png',3:'moss.png',4:'snow.png'}
-		wPL={0:None,1:'bricks.png',2:'ice_wall.png',3:'moss.png',4:'ice_wall.png'}
-		super().__init__(model='cube',texture=texp+tPL[cHo],position=pos,scale=(sca[0],.25,sca[1]),collider=b)
+		PA='res/terrain/l'+str(cHo)+'/'
+		tPL={0:'grass.png',1:'grass.png',2:'snow.png',3:'moss.png',4:'snow.png'}
+		wPL={0:'grass.png',1:'bricks.png',2:'ice_wall.png',3:'moss.png',4:'ice_wall.png'}
+		super().__init__(model='cube',texture=PA+tPL[cHo],position=pos,scale=(sca[0],.25,sca[1]),collider=b)
 		self.mWall=Entity(model='cube',texture=wPL[cHo],scale=(sca[0]-.01,1,sca[1]),position=(self.x,self.y-(self.scale_y*2.5),self.z+.01),collider=b)
 		vts=(sca[0],1)
 		if sca[1] > 2:
