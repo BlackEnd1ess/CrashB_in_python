@@ -24,7 +24,7 @@ dangers=['wood_log','role']
 bonus_checkpoint=[None,(0,2,-6),(.3,2,2.3),(0,1.5,.85*8),(0,5,0),(0,5,0)]
 
 #LOD
-LOD_LST=['bush','tree2_d','tree_scene','t2b1','t2b2','t2b3','moss_platform','room_door','door_part','start_room']
+LOD_LST=['bush','tree2_d','tree_scene','t2b1','t2b2','moss_platform','room_door','door_part','start_room']
 
 #day mode
 day_m={0:'default',

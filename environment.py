@@ -112,28 +112,32 @@ class Fog(Entity):
 
 class RainFall(FrameAnimation3d):
 	def __init__(self):
-		super().__init__('res/objects/ev/rain/rain',scale=(.004,.002,.004),color=color.rgb32(180,180,200),fps=60,loop=True,alpha=.6,rotation=(0,10,10))
+		j=.004
+		super().__init__('res/objects/ev/rain/rain',scale=(j,j/2,j),color=color.rgb32(180,180,200),fps=60,loop=True,alpha=.7,rotation=(0,10,10))
 		self.soundR=Audio(sound.snd_rain,loop=True,volume=0)
 		self.ta=_loc.ACTOR
 	def rain_start(self):
 		self.fps=60
 		self.soundR.pitch=random.uniform(.9,1)
-		self.soundR.volume=.5
+		self.soundR.volume=settings.SFX_VOLUME
 		self.alpha=lerp(self.alpha,.7,time.dt*2)
 	def rain_stop(self):
-		self.alpha=lerp(self.alpha,0,time.dt*2)
-		self.soundR.volume=0
 		self.fps=0
+		self.soundR.volume=0
+		self.alpha=lerp(self.alpha,0,time.dt*2)
+	def follow_p(self):
+		s=self
+		tpp=s.ta.position
+		if distance(s,s.ta) > 5:
+			s.position=(tpp.x,tpp.y,tpp.z+.5)
+			return
+		s.position=lerp(s.position,(s.ta.x,camera.y-1.2,s.ta.z+-.1),time.dt*4)
 	def update(self):
-		if not status.gproc():
+		if not status.gproc() and self.ta.warped:
 			if self.ta.indoor > 0:
 				self.rain_stop()
 				return
-			if distance(self,self.ta) > 5:
-				tpp=self.ta.position
-				self.position=(tpp.x,tpp.y,tpp.z+.5)
-			else:
-				self.position=lerp(self.position,(self.ta.x,camera.y-1.2,self.ta.z+-.1),time.dt*4)
+			self.follow_p()
 			self.rain_start()
 
 class SnowFall(Entity):

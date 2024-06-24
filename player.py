@@ -91,7 +91,6 @@ class CrashB(Entity):
 			cc.c_slide(self)
 		if mvD.length() > 0:
 			status.p_last_direc=mvD
-			self.walking=True
 			self.walk_event()
 			cc.obj_walls(self)
 			if not status.gproc():#avoid sys error by missing ursina entity
@@ -100,6 +99,7 @@ class CrashB(Entity):
 		self.walk_snd=0
 		self.walking=False
 	def walk_event(self):
+		self.walking=True
 		if self.landed:
 			self.is_landing=False##stop the remaining landing frames after run
 			if not self.is_attack:

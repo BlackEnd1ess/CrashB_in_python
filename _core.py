@@ -11,13 +11,14 @@ N=npc
 ## player
 def set_val(c):
 	for _a in ['run_anim','jmp_typ','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','count_time','fall_time',
-			'blink_time','death_anim','slide_fwd','indoor']:
+			'blink_time','death_anim','slide_fwd']:
 		setattr(c,_a,0)
 	for _v in ['aq_bonus','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
 		setattr(c,_v,False)
 	c.move_speed=2.4
 	c.direc=(0,0,0)
 	c.vpos=None
+	c.indoor=.5
 	c.CMS=4
 	_loc.ACTOR=c
 def set_jump_type(c,typ):
@@ -126,7 +127,7 @@ def cam_follow(c):
 	ftr=time.dt*3
 	camera.z=lerp(camera.z,c.z-c.CMS,ftr)
 	camera.x=lerp(camera.x,c.x,ftr)
-	if c.indoor:
+	if c.indoor > 0:
 		if not status.p_in_air(c):
 			camera.y=lerp(camera.y,c.y+1,time.dt)
 		camera.rotation_x=12
@@ -140,8 +141,7 @@ def collect_reset():
 	status.W_RESET.clear()
 	status.crate_to_sv=0
 	status.fails=0
-	if level_ready:
-		status.NPC_RESET.clear()
+	if level_ready:status.NPC_RESET.clear()
 def c_subtract(cY):
 	if cY < -20:
 		status.crates_in_bonus-=1

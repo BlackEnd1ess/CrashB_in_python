@@ -15,7 +15,7 @@ def place_wumpa(pos,cnt):
 			vpu=pos+(r.uniform(-.1,.1),r.uniform(-.1,.1),r.uniform(-.1,.1))
 		else:
 			vpu=pos
-		WumpaFruit(p=pos)
+		WumpaFruit(p=vpu)
 
 class WumpaFruitHD(Entity):##3D Model
 	def __init__(self,pos):

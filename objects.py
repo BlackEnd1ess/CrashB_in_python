@@ -130,16 +130,15 @@ class TreeScene(Entity):
 	def __init__(self,pos,s):
 		sBU=omf+'l1/bush/bush1.png'
 		super().__init__(model=omf+'l1/tree/tree.ply',texture=omf+'l1/tree/wd_scn.tga',rotation_x=-90,scale=s,position=pos)
-		self.leaf0=Entity(model='quad',name='t2b1',texture=sBU,position=(self.x,self.y+1.3,self.z-.25),scale=1.6,color=color.rgb32(0,130,0))
-		self.leaf1=Entity(model='quad',name='t2b2',texture=sBU,position=(self.x-.6,self.y+1.2,self.z-.249),scale=1.6,color=color.rgb32(0,120,0),rotation_y=30)
-		self.leaf2=Entity(model='quad',name='t2b3',texture=sBU,position=(self.x+.6,self.y+1.2,self.z-.249),scale=1.6,color=color.rgb32(0,110,0),rotation_y=-30)
+		self.leaf0=Entity(model='quad',name='t2b1',texture=sBU,position=(self.x-.4,self.y+1.2,self.z-.249),scale=1.6,color=color.rgb32(0,120,0),rotation_y=0)
+		self.leaf1=Entity(model='quad',name='t2b2',texture=sBU,position=(self.x+.4,self.y+1.2,self.z-.249),scale=1.6,color=color.rgb32(0,110,0),rotation_y=-1)
 		self.wall0=Entity(model='cube',scale=(1,10,1),position=(self.x,self.y+4.6,self.z),visible=False,collider=b)
 		unlit_obj(self)
 
 class GrassSide(Entity):
 	def __init__(self,pos,ry):
 		gr=omf+'l1/grass_side/grass_side'
-		super().__init__(model=gr+'1.ply',texture=gr+'.jpg',position=pos,scale=(2,2,1.4),unlit=False,rotation=(-90,ry,0))
+		super().__init__(model=gr+'1.ply',texture=gr+'.jpg',position=pos,scale=(1,2,1.4),unlit=False,rotation=(-90,ry,0))
 
 ####################
 ## level 2 objects #
@@ -274,7 +273,7 @@ class Role(Entity):
 class WaterFlow(Animation):
 	def __init__(self,pos,sca):
 		super().__init__('l3/water_flow/water_flow.gif',scale=sca,texture_scale=(1,sca[1]/4),position=pos,rotation_x=90,fps=40,color=color.rgb32(240,255,240),alpha=.8)
-		self.cbst=Entity(model='cube',name='CBst',texture=texp+'cobble_stone.png',position=(pos[0],pos[1]-.7,pos[2]+.05),scale=(10,.1,sca[1]),texture_scale=(10,sca[1]))
+		self.cbst=Entity(model='cube',name='CBst',texture='res/terrain/l3/cobble_stone.png',position=(pos[0],pos[1]-.7,pos[2]+.05),scale=(10,.1,sca[1]),texture_scale=(10,sca[1]))
 		WaterHit(p=pos,sc=sca)
 	def update(self):
 		if not status.gproc() and self.visible:
@@ -425,7 +424,7 @@ class StartRoom(Entity):## game spawn point
 		cc.preload_items()
 		status.checkpoint=(self.x,self.y+2,self.z)
 		camera.position=(self.x,self.y+2,self.z-3)
-		#IndoorZone(pos=(self.x,self.y+1.5,self.z),sca=(3,.4,5))
+		IndoorZone(pos=(self.x,self.y+1.5,self.z),sca=(3,2,5))
 		unlit_obj(self)
 		if lvID > 0:
 			m_info={1:lambda:level.level1(),

@@ -49,5 +49,6 @@
 - new level1 proto typ
 - decrased player size and colliders
 
-#24.06.2024
+#25.06.2024
 - LOD disable enemies,wumpa fruits and passive objects instead of hiding it
+- wumpa function spawn normal or random position
