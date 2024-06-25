@@ -367,7 +367,7 @@ class SewerPlatform(Entity):
 ## logic objects #
 class IndoorZone(Entity):## disable rain
 	def __init__(self,pos,sca):
-		super().__init__(model='cube',scale=sca,position=pos,collider=b,visible=True,alpha=.3)
+		super().__init__(model='cube',scale=sca,position=pos,collider=b,visible=False)
 	def collect(self):
 		LC.ACTOR.indoor=.3
 
@@ -424,7 +424,7 @@ class StartRoom(Entity):## game spawn point
 		cc.preload_items()
 		status.checkpoint=(self.x,self.y+2,self.z)
 		camera.position=(self.x,self.y+2,self.z-3)
-		IndoorZone(pos=(self.x,self.y+1.5,self.z),sca=(3,2,5))
+		IndoorZone(pos=(self.x,self.y+1.5,self.z),sca=(3,2,7))
 		unlit_obj(self)
 		if lvID > 0:
 			m_info={1:lambda:level.level1(),
@@ -451,7 +451,7 @@ class EndRoom(Entity):## finish level
 		LevelFinish(p=(self.x-1.1,self.y-1.4,self.z+7),V=False)
 		RoomDoor(pos=(self.x-1.1,self.y+.25,self.z-4.78),typ=1)
 		CrateScore(pos=(self.x-1.1,self.y-.7,self.z))
-		IndoorZone(pos=(self.x-1,self.y,self.z+3),sca=3)
+		IndoorZone(pos=(self.x-1,self.y,self.z+1),sca=(5,2,12))
 		if status.level_index == 1 and not 4 in status.COLOR_GEM:
 			item.GemStone(pos=(self.x-1.1,self.y-1,self.z),c=4)
 		elif status.level_index == 2 and not 1 in status.COLOR_GEM:

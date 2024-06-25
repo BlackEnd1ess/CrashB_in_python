@@ -4,6 +4,7 @@ from ursina import *
 
 level_ready=False
 snd=sound
+st=status
 LC=_loc
 C=crate
 N=npc
@@ -28,7 +29,7 @@ def set_jump_type(c,typ):
 	c.jumping=True
 def get_damage(c):
 	if not c.injured and not status.is_dying and status.aku_hit < 3:
-		if status.aku_hit > 0:
+		if st.aku_hit > 0:
 			status.aku_hit-=1
 			c.injured=True
 			Audio(snd.snd_damg,pitch=.8)
@@ -38,29 +39,29 @@ def get_damage(c):
 			status.is_dying=True
 			Audio(snd.snd_woah,pitch=.8)
 def death_event(d):
-	if not status.death_event:
+	if not st.death_event:
 		status.death_event=True
 		d.freezed=True
 		ui.BlackScreen()
 		status.crate_count-=status.crate_to_sv
-		if status.is_death_route:
+		if st.is_death_route:
 			status.is_death_route=False
-		if status.bonus_round:
+		if st.bonus_round:
 			status.wumpa_bonus=0
 			status.crate_bonus=0
 			status.lives_bonus=0
 			status.bonus_round=False
 		else:
-			if not status.is_time_trial:
+			if not st.is_time_trial:
 				status.extra_lives-=1
 				status.fails+=1
 				if status.level_index == 2:
 					status.gem_death=True
-		if status.fails < 3:
+		if st.fails < 3:
 			status.aku_hit=0
 		else:
 			status.aku_hit=1
-			if not status.aku_exist:
+			if not st.aku_exist:
 				Audio(sound.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
 				npc.AkuAkuMask(pos=(d.x,d.y,d.z))
 		reset_crates()
@@ -74,8 +75,8 @@ def death_event(d):
 		status.death_event=False
 		invoke(lambda:setattr(d,'freezed',False),delay=2)
 def various_val(c):
-	if status.bonus_solved:
-		if status.wumpa_bonus > 0 or status.crate_bonus > 0 or status.lives_bonus > 0:
+	if st.bonus_solved and not st.wait_screen:
+		if st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0:
 			bonus_reward(c)
 		else:
 			c.aq_bonus=False
@@ -121,7 +122,7 @@ def cam_rotate(c):
 	if camera.rotation_x < 15:
 		camera.rotation_x+=ftt
 def cam_follow(c):
-	if status.LV_CLEAR_PROCESS:
+	if st.LV_CLEAR_PROCESS:
 		c=None
 		return
 	ftr=time.dt*3
@@ -132,7 +133,7 @@ def cam_follow(c):
 			camera.y=lerp(camera.y,c.y+1,time.dt)
 		camera.rotation_x=12
 		return
-	if (status.bonus_round or status.is_death_route) and not c.freezed:
+	if (st.bonus_round or st.is_death_route) and not c.freezed:
 		camera.y=lerp(camera.y,c.y+1,time.dt)
 
 ## world, misc
@@ -152,7 +153,7 @@ def reset_crates():
 			if ca.poly == 1:
 				scene.entities.remove(ca)
 				ca.disable()
-	for cv in status.C_RESET[:]:
+	for cv in st.C_RESET[:]:
 		if cv.vnum in [9,10]:
 			cv.c_reset()
 		elif cv.vnum == 13:
@@ -168,27 +169,27 @@ def reset_crates():
 	status.C_RESET.clear()
 	status.crate_to_sv=0
 def reset_wumpas():
-	for wu in status.W_RESET[:]:
+	for wu in st.W_RESET[:]:
 		wu.destroy()
 	status.W_RESET.clear()
 def reset_npc():
-	for NP in status.NPC_RESET[:]:
+	for NP in st.NPC_RESET[:]:
 		npc.spawn(mID=NP.vnum,pos=NP.spawn_pos,mDirec=NP.m_direction,mTurn=0)
 	status.NPC_RESET.clear()
 def clear_level(passed):
-	status.LV_CLEAR_PROCESS=True
+	st.LV_CLEAR_PROCESS=True
 	scene.clear()
 	if passed:
 		collect_rewards()
 	ui.WhiteScreen()
 def collect_rewards():
-	if status.level_crystal:
+	if st.level_crystal:
 		status.CRYSTAL.append(status.level_index)
 		status.collected_crystals+=1
-	if status.level_col_gem:
+	if st.level_col_gem:
 		status.COLOR_GEM.append(status.level_index)
 		status.color_gems+=1
-	if status.level_col_gem:
+	if st.level_col_gem:
 		status.CLEAR_GEM.append(status.level_index)
 		status.clear_gems+=1
 def reset_audio():
@@ -395,6 +396,7 @@ def load_bonus(c):
 	else:
 		invoke(lambda:enter_bonus(c),delay=.5)
 def enter_bonus(c):
+	ui.BlackScreen()
 	status.bonus_round=True
 	status.day_mode='bonus'
 	snd.BonusMusic(T=status.level_index)
@@ -404,6 +406,7 @@ def enter_bonus(c):
 	status.loading=False
 	c.freezed=False
 def back_to_level(c):
+	ui.BlackScreen()
 	if status.is_death_route:
 		status.is_death_route=False
 	if status.bonus_round:
@@ -442,6 +445,7 @@ def load_gem_route(c):
 	else:
 		invoke(lambda:load_droute(c),delay=.5)
 def load_droute(c):
+	ui.BlackScreen()
 	if not status.is_death_route:
 		status.is_death_route=True
 		c.position=(200,1,-3)

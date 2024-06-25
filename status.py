@@ -66,6 +66,7 @@ b_audio=False
 e_audio=False
 n_audio=False
 
+wait_screen=False
 death_event=False
 cam_unlock=False
 aku_exist=False

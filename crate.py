@@ -384,7 +384,7 @@ class LvInfo(Entity):
 				3:'yellow gem - reach the end of level before time up',
 				4:'green gem - solve the hard sewer path',
 				5:'purple gem - good luck, you will need it'}
-		mText=Text(text=l_inf[status.level_index],parent=camera.ui,font='res/ui/font.ttf',color=color.orange,scale=2.3,position=(-.4,-.3,.1))
+		mText=Text(text=l_inf[status.level_index],parent=camera.ui,font='res/ui/font.ttf',color=color.orange,scale=2.2,position=(-.6,-.3,.1))
 		invoke(mText.disable,delay=5)
 		destroy_event(self)
 

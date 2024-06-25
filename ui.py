@@ -192,10 +192,13 @@ class BlackScreen(Entity):
 	def __init__(self):
 		super().__init__(model='quad',parent=camera.ui,scale=5,color=color.black,alpha=1)
 		self.timer=2
+		status.wait_screen=True
 	def update(self):
 		if self.timer > 0:
 			self.timer-=time.dt/1.5
 			if self.timer <= 1:
+				if status.wait_screen:
+					status.wait_screen=False
 				self.alpha=self.timer
 				if self.timer <= 0:
 					self.parent=None
@@ -219,19 +222,20 @@ class BonusText(Entity):
 			self.ch_seq=0
 		self.ch_seq+=1
 	def update(self):
-		if not st.bonus_round:
-			self.bn_text.hide()
-			self.parent=None
-			self.disable()
-			return
-		if self.t_delay > 0:
-			self.t_delay-=time.dt
-			if self.t_delay <= 0:
-				self.t_delay=.5
-				if not self.bn_text.visible:
-					self.display()
-				else:
-					self.text_ch()
+		if not status.gproc() and not status.wait_screen:
+			if not st.bonus_round:
+				self.bn_text.hide()
+				self.parent=None
+				self.disable()
+				return
+			if self.t_delay > 0:
+				self.t_delay-=time.dt
+				if self.t_delay <= 0:
+					self.t_delay=.5
+					if not self.bn_text.visible:
+						self.display()
+					else:
+						self.text_ch()
 
 K=40
 O=130

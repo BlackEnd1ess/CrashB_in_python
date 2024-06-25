@@ -83,7 +83,7 @@ class CrashB(Entity):
 			scene.fog_color=color.random_color()
 			print(scene.fog_color)
 		if key == 'u':
-			self.position=(0,3,35)
+			self.position=(200,3,-3)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD

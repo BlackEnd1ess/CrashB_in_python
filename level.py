@@ -83,9 +83,15 @@ def level1():##wood
 	o.GrassSide(pos=(4,gs,-16),ry=180)
 	o.GrassSide(pos=(4,gs,15),ry=180)
 	o.GrassSide(pos=(4,gs,46),ry=180)
-	o.LevelScene(pos=(0,0,128),sca=(400,40,1))
-	o.LevelScene(pos=(0,-20,127),sca=(400,40,1))
+	o.LevelScene(pos=(0,0,128),sca=(350,40,1))
+	o.LevelScene(pos=(0,-20,127),sca=(350,40,1))
 	#plants
+	Entity(model='cube',texture='res/terrain/l1/bricks.png',scale=(9,2,.3),position=(0,-.2,-64.5),texture_scale=(9,2),color=color.rgb32(0,170,0))
+	o.TreeScene(pos=(-3.7,1,-63),s=.0175)
+	o.TreeScene(pos=(-4.7,1,-63),s=.0175)
+	o.TreeScene(pos=(3.6,1.2,-63.5),s=.0175)
+	o.TreeScene(pos=(4.6,1.2,-63.5),s=.0175)
+
 	o.TreeScene(pos=(-1.37,1.5,-46),s=.0175)
 	o.TreeScene(pos=(1.32,1.5,-46),s=.0175)
 	o.TreeScene(pos=(0,1.7,-26.4),s=.0175)
@@ -97,8 +103,8 @@ def level1():##wood
 	o.bush(pos=(-1.5,1.4,-14.2),s=2,c=color.orange)
 	o.bush(pos=(-1,1.4,-12),s=2,c=cG)
 	o.bush(pos=(1,1.4,-12),s=2,c=color.orange)
-	o.bush(pos=(2.43,1.4,10.7),s=3,c=cG)
-	o.bush(pos=(-2.37,1.4,10.7),s=3,c=color.yellow)
+	o.bush(pos=(2.43,1.5,10.7),s=2,c=cG)
+	o.bush(pos=(-2,1.5,10.2),s=2,c=color.yellow)
 	o.TreeScene(pos=(-1.5,1.6,19.3),s=.02)
 	o.TreeScene(pos=(1.2,1.8,19.3),s=.02)
 	o.bush(pos=(2.43,1.4,23),s=3,c=cG)
@@ -177,6 +183,8 @@ def level1():##wood
 	mt.wumpa_plane(POS=(0,wu_h,16.3),CNT=4)
 	#crates
 	CRP=1.16
+	if not 4 in status.COLOR_GEM:
+		c.place_crate(ID=16,p=(-.3,CRP,-58))
 	mt.crate_block(ID=2,POS=(-1.8,CRP,3.3),CNT=[2,2,2])
 	mt.crate_block(ID=1,POS=(-1.5,CRP,-2.5),CNT=[2,2,2])
 	mt.crate_wall(ID=1,POS=(1,CRP,-56.5),CNT=[2,2])
