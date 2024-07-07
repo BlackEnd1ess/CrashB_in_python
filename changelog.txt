@@ -52,3 +52,16 @@
 #25.06.2024
 - LOD disable enemies,wumpa fruits and passive objects instead of hiding it
 - wumpa function spawn normal or random position
+
+#29.06.2024
+- wumpa place random pos_y 0-.1
+- crate fireball spawns z+random -.1,.1
+- level 2 redesign, side hills and frozen water
+- level 2 fog distance
+- level 2 rope texture
+
+# 03.07.2024
+- Sparkle Effect
+
+#07.07.2024
+- changed code, fixxed errors, remove unnesseray codes

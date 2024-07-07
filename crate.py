@@ -38,30 +38,26 @@ def place_crate(p,ID,m=None,l=None,pse=None,tm=None):
 			status.crates_in_level-=1
 
 def destroy_event(c):
-	c.disable()
 	c.collider=None
-	c.parent=None
 	c.hide()
 	if c.vnum in [11,12]:
 		explosion(cr=c)
-	if not status.preload_phase:
-		if not c.poly == 1 and not c.vnum == 16:
-			status.C_RESET.append(c)
-		if status.bonus_round:
-			status.crate_bonus+=1
-		else:
-			if not c.vnum in [15,16]:
-				status.crate_to_sv+=1
-				status.crate_count+=1
-				status.show_crates=5
-		if not status.b_audio:
-			status.b_audio=True
-			Audio(sn.snd_break,volume=settings.SFX_VOLUME)
-			invoke(cc.reset_audio,delay=.1)
+	if not c.poly == 1 and not c.vnum == 16:
+		status.C_RESET.append(c)
+	if status.bonus_round:
+		status.crate_bonus+=1
+	else:
+		if not c.vnum in [15,16]:
+			status.crate_to_sv+=1
+			status.crate_count+=1
+			status.show_crates=5
+	if not status.b_audio:
+		status.b_audio=True
+		Audio(sn.snd_break,volume=settings.SFX_VOLUME)
+		invoke(cc.reset_audio,delay=.1)
 	animation.CrateBreak(cr=c)
-	scene.entities.remove(c)
 	cc.check_crates_over(c)
-	c.disable()
+	cc.purge_instance(c)
 
 def block_destroy(c):
 	if not c.p_snd:
@@ -154,12 +150,14 @@ class Bounce(Entity):
 			return
 		self.empty_destroy()
 	def update(self):
-		if not status.gproc() and self.visible:
+		if not status.gproc():
 			if status.is_dying and self.b_cnt > 0:
 				self.lf_time=5
 				self.b_cnt=0
-			if self.lf_time > 0 and self.b_cnt > 0:
-				self.lf_time-=time.dt
+				return
+			if self.visible:
+				if (self.lf_time > 0 and self.b_cnt > 0):
+					self.lf_time-=time.dt
 
 class ExtraLife(Entity):
 	def __init__(self,pos,pse):
@@ -269,8 +267,7 @@ class SwitchNitro(Entity):
 			spawn_ico(self)
 			status.C_RESET.append(self)
 			for ni in scene.entities[:]:
-				if isinstance(ni,Nitro) and ni.collider != None:
-					ni.destroy()
+				if isinstance(ni,Nitro) and ni.collider != None:ni.destroy()
 
 class TNT(Entity):
 	def __init__(self,pos,pse):
@@ -292,7 +289,7 @@ class TNT(Entity):
 		self.countdown=0
 		destroy_event(self)
 	def update(self):
-		if not status.gproc():
+		if not status.gproc() and self.visible:
 			if self.countdown > 0 and self.activ:
 				self.countdown-=time.dt/1.15
 				ctnt=int(self.countdown)
@@ -304,7 +301,6 @@ class Nitro(Entity):
 	def __init__(self,pos,pse):
 		self.vnum=12
 		super().__init__(model=cr2)
-		self.reload=False
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.start_y=self.y
 		self.acustic=False
@@ -314,18 +310,14 @@ class Nitro(Entity):
 	def destroy(self):
 		destroy_event(self)
 	def update(self):
-		if not status.gproc() and self.visible and LC.ACTOR != None:
-			if not self.reload and status.level_index != 2:
-				self.reload=True
-				self.shader=unlit_shader
-			dst=distance(LC.ACTOR.position,self.position)
-			self.snd_time-=time.dt
+		if not status.gproc() and self.visible:
+			self.snd_time=max(self.snd_time-time.dt,0)
 			if self.snd_time <= 0:
 				rh=random.uniform(.1,.2)
 				self.snd_time=random.randint(2,3)
-				if dst <= 2:
+				if distance(LC.ACTOR.position,self.position) <= 2:
 					Audio(sn.snd_nitro,volume=.2)
-				if not self.is_stack:
+				elif not self.is_stack:
 					self.animate_position((self.x,self.y+rh,self.z),duration=.02)
 					invoke(lambda:self.animate_position((self.x,self.start_y,self.z),duration=.2),delay=.15)
 
@@ -392,7 +384,7 @@ class LvInfo(Entity):
 class Fireball(Entity):
 	def __init__(self,C):
 		nC={11:color.red,12:color.green}
-		super().__init__(model='quad',texture=None,position=(C.x,C.y+.1,C.z),color=nC[C.vnum],scale=.75)
+		super().__init__(model='quad',texture=None,position=(C.x,C.y+.1,C.z+random.uniform(-.1,.1)),color=nC[C.vnum],scale=.75)
 		self.wave=Entity(model=None,texture=pp+'anim/exp_wave/0.tga',position=self.position,scale=.001,rotation_x=-90,color=nC[C.vnum],alpha=.8)
 		self.e_step=0
 		self.w_step=0
@@ -412,8 +404,7 @@ class Fireball(Entity):
 		self.texture=pp+'anim/exp_fire/'+str(int(self.e_step))+'.png'
 	def update(self):
 		if not status.gproc():
-			if self.visible:
-				self.f_ball()
+			self.f_ball()
 			if self.wave.visible:
 				self.e_wave()
 			if not self.visible and not self.wave.visible:
@@ -424,27 +415,22 @@ class CheckpointAnimation(Entity):
 	def __init__(self,p):
 		super().__init__(position=(p[0]-.1,p[1]+.4,p[2]))
 		self.c_text='CHECKPOINT'
-		self.run=True
-		self.wtime=0
+		self.wtime=.05
 		self.index=0
-		self.cr_snd(t=0)
-	def cr_snd(self,t):
-		if self.y > -250:
-			c_au={0:lambda:sn.snd_checkp(),1:lambda:Audio(sn.snd_jump,pitch=.9)}
-			c_au[t]()
+		sn.snd_checkp()
 	def shw_text(self):
-		self.wtime+=time.dt
-		if self.wtime >= .05:
-			self.wtime=0
+		self.wtime=max(self.wtime-time.dt,0)
+		if self.wtime <= 0:
+			self.wtime=.05
 			_d=1.5
 			letter=self.c_text[self.index]
 			ct=Text(letter,font='res/ui/font.ttf',position=(self.x+self.index/10,self.y,self.z),scale=7,parent=scene,color=color.rgb32(255,255,0))
 			invoke(ct.disable,delay=_d)
-			invoke(lambda:self.cr_snd(t=1),delay=_d+.1)
+			invoke(lambda:Audio(sn.snd_jump,pitch=.9),delay=_d+.1)
 			self.index+=1
 			if self.index >= 10:
-				self.run=False
-				self.disable()
+				self.index=0
+				cc.purge_instance(self)
 	def update(self):
-		if self.run:
+		if not status.gproc():
 			self.shw_text()

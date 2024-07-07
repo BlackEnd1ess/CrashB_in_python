@@ -1,14 +1,23 @@
 import status,_core,_loc
 from ursina import *
 
-npc_anim={'amadillo':7,'turtle':12,'saw_turtle':12,'penguin':15,
-		'hedgehog':12,'seal':14,'eating_plant':13,'rat':10,
-		'lizard':11,'scrubber':3,'mouse':8,'vulture':13}
+npc_anim={0:7,#amadillo
+		1:12,#turtle
+		2:12,#saw turtle
+		3:15,#penguin
+		4:12,#seal
+		5:14,#hedgehog
+		6:13,#eating plant
+		7:10,#rat
+		8:11,#lizard
+		9:3,#scrubber
+		10:8,#mouse
+		11:13}#vulture
 
 cf='res/crate/anim/'
 nf='res/npc/'
 af='res/pc/'
-t=19
+t=20
 
 ## player animation
 def idle(d):
@@ -26,7 +35,7 @@ def run(d):
 		d=None
 		return
 	d.run_anim+=time.dt*t
-	if d.run_anim >= 10.85:
+	if d.run_anim > 10.9:
 		d.run_anim=0
 	d.texture=af+'run/crash.tga'
 	d.model=af+'run/'+str(int(d.run_anim))+'.ply'
@@ -47,21 +56,21 @@ def slide_stop(d):
 
 def jup(d):
 	d.jump_anim+=time.dt*t
-	if d.jump_anim > 2.75:
+	if d.jump_anim > 2.9:
 		d.jump_anim=2
 	d.texture=af+'jmup/crash.tga'
 	d.model=af+'jmup/'+str(int(d.jump_anim))+'.ply'
 
 def spin(d):
 	d.spin_anim+=time.dt*25
-	if d.spin_anim > 11.75:
+	if d.spin_anim > 11.9:
 		d.spin_anim=0
 	d.texture=af+'spn/crash.tga'
 	d.model=af+'spn/'+str(int(d.spin_anim))+'.ply'
 
 def land(d):
 	d.land_anim+=time.dt*t
-	if d.land_anim > 12.75:
+	if d.land_anim > 12.9:
 		d.is_landing=False
 		d.land_anim=0
 		return
@@ -70,21 +79,21 @@ def land(d):
 
 def land_s(d):
 	d.land_s_anim+=time.dt*t
-	if d.land_s_anim > 7.75:
+	if d.land_s_anim > 7.9:
 		d.land_s_anim=0
 	d.texture=af+'slide_land/crash.tga'
 	d.model=af+'slide_land/'+str(int(d.land_anim))+'.ply'
 
 def fall(d):
 	d.fall_anim+=time.dt*t
-	if d.fall_anim > 7.75:
+	if d.fall_anim > 7.9:
 		d.fall_anim=7
 	d.texture=af+'fall/crash.tga'
 	d.model=af+'fall/'+str(int(d.fall_anim))+'.ply'
 
 def flip(d):
 	d.flip_anim+=time.dt*t
-	if d.flip_anim > 16.75:
+	if d.flip_anim > 16.9:
 		d.flip_anim=0
 		d.is_flip=False
 	d.texture=af+'flp/crash.tga'
@@ -93,12 +102,13 @@ def flip(d):
 def player_death(d):
 	d.death_anim+=time.dt*15
 	d.y+=time.dt/1.25
-	if d.death_anim > 20.75:
+	if d.death_anim > 20.9:
 		status.is_dying=False
 		d.death_anim=0
 		_core.death_event(d)
 	d.texture=af+'death/crash_death.tga'
 	d.model=af+'death/'+str(int(d.death_anim))+'.ply'
+
 
 ## crate animation
 bT=40
@@ -156,6 +166,7 @@ class CrateBreak(Entity):
 				return
 			self.model=cf+'brk/'+str(int(self.frame_break))+'.ply'
 
+
 ## Effects
 class WarpVortex(FrameAnimation3d):
 	def __init__(self,pos):
@@ -185,14 +196,14 @@ def npc_walking(m):
 	if status.pause:
 		return
 	m.anim_frame+=time.dt*t
-	if m.anim_frame > npc_anim[str(m)]+.75:
+	if m.anim_frame > npc_anim[m.vnum]+.9:
 		m.anim_frame=0
 	m.model=nf+str(m)+'/'+str(int(m.anim_frame))+'.ply'
 
 def plant_bite(m):
 	m.is_attacking=True
 	m.atk_frame+=time.dt*t
-	if m.atk_frame > 18.75:
+	if m.atk_frame > 18.9:
 		m.is_attacking=False
 		m.is_bite=False
 		m.atk_frame=0
@@ -202,24 +213,26 @@ def plant_bite(m):
 
 def hedge_defend(m):
 	m.def_frame+=time.dt*t
-	if m.def_frame > 6.75:
+	if m.def_frame > 6.9:
 		m.def_frame=0
 	m.texture=nf+str(m)+'/attack/attack.tga'
 	m.model=nf+str(m)+'/attack/'+str(int(m.def_frame))+'.ply'
 
 def hippo_wait(m):
 	m.a_frame+=time.dt*t
-	if m.a_frame > 23.75:
+	if m.a_frame > 23.9:
 		m.a_frame=0
 		return
 	m.model=nf+'hippo/'+str(int(m.a_frame))+'.ply'
 def hippo_dive(m):
 	m.a_frame+=time.dt*t
-	if m.a_frame > 57.75:
+	if m.a_frame > 57.9:
 		m.a_frame=0
 		m.is_uw=True
 		return
 	m.model=nf+'hippo/'+str(int(m.a_frame))+'.ply'
+
+
 ## object animations
 def door_open(d):
 	invoke(lambda:setattr(d,'model',d.dPA+'u0.ply'),delay=0/t)

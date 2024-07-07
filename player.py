@@ -45,11 +45,11 @@ class CrashB(Entity):
 		an.WarpRingEffect(pos=self.position)
 		pShadow()
 	def input(self,key):
-		if self.freezed or status.is_dying:
+		if status.p_rst(self):
 			return
-		if key == 'space' and self.landed and self.warped:
+		if key == 'space' and self.landed:
 			Audio(snd.snd_jump)
-			if not status.p_in_air(self):
+			if self.landed:
 				cc.set_jump_type(self,typ=0)
 		if key == 'alt':
 			if not self.is_attack:
@@ -76,14 +76,15 @@ class CrashB(Entity):
 			status.pause=False
 		##dev input
 		if key == 'b':
-			map_tools.pos_info(self)
+			print(self.position)
+			#map_tools.pos_info(self)
 		if key == 'e':
 			EditorCamera()
 		if key == 'j':
 			scene.fog_color=color.random_color()
 			print(scene.fog_color)
 		if key == 'u':
-			self.position=(200,3,-3)
+			self.position=(43,6,28)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD
@@ -91,23 +92,22 @@ class CrashB(Entity):
 			cc.c_slide(self)
 		if mvD.length() > 0:
 			status.p_last_direc=mvD
-			self.walk_event()
 			cc.obj_walls(self)
-			if not status.gproc():#avoid sys error by missing ursina entity
-				self.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
+			self.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
+			self.walk_event()
 			return
 		self.walk_snd=0
 		self.walking=False
 	def walk_event(self):
 		self.walking=True
+		self.is_landing=False#stop the remaining landing frames after run
 		if self.landed:
-			self.is_landing=False##stop the remaining landing frames after run
-			if not self.is_attack:
-				if self.is_slippery:
-					an.run_s(self)
-				else:
-					an.run(self)
-		if self.walk_snd <= 0 and not status.p_in_air(self):
+			if self.is_slippery:
+				an.run_s(self)
+			else:
+				an.run(self)
+		self.walk_snd=max(self.walk_snd-time.dt,0)
+		if self.walk_snd <= 0:
 			if self.is_slippery:
 				self.walk_snd=.5
 				Audio(snd.snd_icew,pitch=1.5)
@@ -140,29 +140,31 @@ class CrashB(Entity):
 			cc.cam_follow(self)
 			#camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
 	def basic_animation(self):
-		if status.is_dying:
-			an.player_death(self)
-			return
-		if self.is_attack:
-			an.spin(self)
-			return
-		if self.is_flip and status.p_in_air(self):
-			an.flip(self)
-		if self.is_landing and not self.walking and not status.p_in_air(self):
-			an.land(self)
-			return
-		if self.freezed or status.p_idle(self) and not self.is_landing or not self.warped:
-			if self.is_slippery:
-				an.slide_stop(self)
-			else:
-				an.idle(self)
+		if not status.gproc():
+			if status.is_dying:
+				an.player_death(self)
+				return
+			if self.is_attack:
+				an.spin(self)
+				return
+			if self.is_flip and not self.landed:
+				an.flip(self)
+			if (self.landed and self.is_landing) and not self.walking:
+				an.land(self)
+				return
+			if status.p_idle(self):
+				if self.is_slippery:
+					an.slide_stop(self)
+				else:
+					an.idle(self)
 	def hurt_blink(self):
+		self.blink_time=max(self.blink_time-time.dt,0)
 		if self.blink_time <= 0:
 			self.blink_time=.1
 			if self.alpha == 1:
 				self.alpha=0
-			else:
-				self.alpha=1
+				return
+			self.alpha=1
 	def update(self):
 		if not status.gproc():
 			cc.obj_grnd(self)
@@ -177,5 +179,5 @@ class CrashB(Entity):
 					self.jump()
 			self.basic_animation()
 			cc.various_val(self)
-			if status.p_in_air(self):
+			if not self.landed:
 				cc.obj_ceiling(self)

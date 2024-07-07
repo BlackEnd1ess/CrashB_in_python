@@ -41,9 +41,8 @@ def main_instance(idx):
 
 ##levels
 def developer_level():
-	o.RewardRoom(pos=(0,1,15),c=color.rgb32(80,100,80))##reward
 	o.EndRoom(pos=(0,1.5,27),c=color.rgb32(80,100,80))##end
-	o.MapTerrain(MAP='map/0.png',size=(8,1,64),t='white_cube',co=color.rgb32(150,150,150))
+	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
 	o.BonusPlatform(pos=(-2,0,-1))
 	for CC in range(14):
 		c.place_crate(ID=CC,p=(-3+CC/2,0,2),m=1,l=1)
@@ -61,7 +60,11 @@ def developer_level():
 	invoke(free_level,delay=1)
 
 def test():
-	o.EndRoom(pos=(1,1.4,-15),c=color.rgb32(200,210,200))
+	#o.EndRoom(pos=(1,2,-15),c=color.rgb32(200,210,200))
+	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
+	#o.IceGround(pos=(0,.5,-20),sca=(5,1))
+	for MM in range(1):
+		npc.spawn(pos=(0,0,-20+MM),mID=6,mDirec=0,mTurn=0)
 	invoke(free_level,delay=1)
 
 def level1():##wood
@@ -86,7 +89,7 @@ def level1():##wood
 	o.LevelScene(pos=(0,0,128),sca=(350,40,1))
 	o.LevelScene(pos=(0,-20,127),sca=(350,40,1))
 	#plants
-	Entity(model='cube',texture='res/terrain/l1/bricks.png',scale=(9,2,.3),position=(0,-.2,-64.5),texture_scale=(9,2),color=color.rgb32(0,170,0))
+	Entity(model='cube',texture='res/terrain/l1/bricks.png',scale=(9,2,.3),position=(0,-.2,-64.5),texture_scale=(9,2))
 	o.TreeScene(pos=(-3.7,1,-63),s=.0175)
 	o.TreeScene(pos=(-4.7,1,-63),s=.0175)
 	o.TreeScene(pos=(3.6,1.2,-63.5),s=.0175)
@@ -217,8 +220,14 @@ def level1():##wood
 	invoke(free_level,delay=3)
 
 def level2():##snow
+	o.spawn_ice_wall(pos=(-2.3,-.5,-58.6),cnt=8,d=0)
+	o.spawn_ice_wall(pos=(2.3,-.5,-58.6),cnt=7,d=1)
+	o.spawn_ice_wall(pos=(20,4,8),cnt=4,d=0)
+	o.spawn_ice_wall(pos=(26,4,8),cnt=2,d=1)
+	o.spawn_ice_wall(pos=(45,4,28),cnt=3,d=1)
 	status.gem_death=False
-	o.FallingZone(pos=(0,-2,0),s=(128,1,128))
+	o.Water(pos=(12,-.5,-32),s=(32,128),c=color.cyan,a=1,typ=0)
+	o.Water(pos=(51,4.5,23.5),s=(64,40),c=color.cyan,a=1,typ=0)
 	Entity(model='quad',scale=(512,512,1),color=color.white,z=64)
 	o.BonusPlatform(pos=(5,1.1,2.1))
 	#invisible walls
@@ -232,9 +241,26 @@ def level2():##snow
 	o.CamSwitch(pos=(16,2.9,2.3),sca=(7,.2,.5))
 	o.CamSwitch(pos=(23,6,2.4),sca=(.6,.3,.5))
 	o.CamSwitch(pos=(24.5,5,2.2),sca=(.3,2,.2))
-	o.CamSwitch(pos=(23,3,2.2),sca=(1.5,.2,.2))#
+	o.CamSwitch(pos=(23,3,2.2),sca=(1.5,.2,.2))
 	o.CamSwitch(pos=(42,6.5,35),sca=(6,.3,1))
 	o.CamSwitch(pos=(42,7,37),sca=(6,.7,1))
+	#ice
+	for i_ch in range(50):
+		o.IceChunk(pos=(-4-random.uniform(-.5,-1),1.8,-63+i_ch*1.5),rot=(-90,30,0),typ=1)
+		if i_ch < 38:
+			o.IceChunk(pos=(2.9+random.uniform(.5,1),1.8,-63+i_ch*1.5),rot=(-90,-30,0),typ=1)
+	for u_ch in range(20):
+		o.IceChunk(pos=(18.2-random.uniform(-.5,-1),6.3,3.7+u_ch*1.5),rot=(-90,30,0),typ=1)
+		if u_ch < 11:
+			o.IceChunk(pos=(26.5+random.uniform(.5,1),6.3,3.7+u_ch*1.5),rot=(-90,-30,0),typ=1)
+	for e_ch in range(20):
+		o.IceChunk(pos=(45.4+random.uniform(.5,1),6.3,26+e_ch*1.5),rot=(-90,-30,0),typ=1)
+	o.IceChunk(pos=(21.7,6,2.6),typ=1,rot=(-180,-90,0))
+	o.IceChunk(pos=(24.4,6,2.6),typ=1,rot=(0,-90,0))
+	o.IceChunk(pos=(21.2,5.3,3.2),typ=1,rot=(260,-90,0))
+	o.IceChunk(pos=(24.8,5.3,3.2),typ=1,rot=(-80,-90,0))
+	o.IceChunk(pos=(28,5.35,28.1),typ=1,rot=(-180,-90,0))
+	o.IceChunk(pos=(28,7.8,28),typ=1,rot=(-180,-90,0))
 	#dangers
 	wlO=3.7
 	o.WoodLog(pos=(10.5,wlO,2.2))
@@ -259,20 +285,21 @@ def level2():##snow
 	o.mBlock(pos=(19,2.5,2.5),sca=(3,1))
 	o.mBlock(pos=(23,2.5,2.5),sca=(2,1))
 	o.mBlock(pos=(23,5.25,2.2),sca=(1,1.75))
-	o.mBlock(pos=(24.5,3,2.5),sca=(1,1))##
-	o.mBlock(pos=(23,5.25,5.2),sca=(5,4))
+	o.mBlock(pos=(24.5,3,2.5),sca=(1,1))
+	o.mBlock(pos=(23,5.25,5.2),sca=(4,4))
 	o.mBlock(pos=(23,5.25,23),sca=(2,7))
 	o.mBlock(pos=(23.5,5.25,27),sca=(3,1))
 	o.mBlock(pos=(31.8,5.248,26.98),sca=(3,1))
 	o.mBlock(pos=(42,5.6,32),sca=(4,8))
 	o.mBlock(pos=(42,6.2,38),sca=(4,4))
 	#pillar
-	o.pillar_twin(p=(-.75,.8,-56),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.75,.8,-42.6),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.75,.8,-39),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.75,.8,-21.65),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.75,.8,-18),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.75,.8,-1.8),ro_y=(-90,45,0))
+	phe=1.1
+	o.pillar_twin(p=(-.75,phe,-56),ro_y=(-90,45,0))
+	o.pillar_twin(p=(-.75,phe,-42.6),ro_y=(-90,45,0))
+	o.pillar_twin(p=(-.75,phe,-39),ro_y=(-90,45,0))
+	o.pillar_twin(p=(-.75,phe,-21.65),ro_y=(-90,45,0))
+	o.pillar_twin(p=(-.75,phe,-18),ro_y=(-90,45,0))
+	o.pillar_twin(p=(-.75,phe,-1.8),ro_y=(-90,45,0))
 	o.pillar_twin(p=(22.25,5.35,7),ro_y=(-90,45,0))
 	o.pillar_twin(p=(22.25,5.35,19.85),ro_y=(-90,45,0))
 	o.pillar_twin(p=(22.25,5.35,26.3),ro_y=(-90,45,0))
@@ -323,6 +350,10 @@ def level2():##snow
 		o.SnowWall(pos=(-5+snw*5.4,3.2,2.65))
 	o.SnowWall(pos=(19,6.3,2.65))
 	o.SnowWall(pos=(27,6.3,2.65))
+	o.SnowWall(pos=(30,2,38))
+	for sna in range(2):
+		o.SnowWall(pos=(20+sna*5.4,5,28))
+		o.SnowWall(pos=(20+sna*5.4,8.2,28))
 	#crates
 	h1=.75+.16
 	h2=.925+.16
@@ -330,7 +361,7 @@ def level2():##snow
 	mt.crate_block(ID=1,POS=(.5,h2,-58),CNT=[2,2,2])
 	mt.crate_plane(ID=2,POS=(-.7,h2,-57),CNT=[2,2])
 	mt.crate_wall(ID=12,POS=(-.3,h2,-18.6),CNT=[3,3])
-	c.place_crate(ID=2,p=(0,h1,-54))
+	c.place_crate(ID=1,p=(0,h1,-54))
 	c.place_crate(ID=3,p=(0,h1,-51))
 	c.place_crate(ID=2,p=(-.2,h1,-48))
 	c.place_crate(ID=5,p=(-.7,h2,-42.1))
@@ -351,27 +382,29 @@ def level2():##snow
 	c.place_crate(ID=5,p=(6.8,2.125+.16,2.3))
 	c.place_crate(ID=5,p=(24.3,h3,5))
 	mt.bounce_twin(POS=(24.5,h3,6),CNT=1)
+	if not 1 in status.COLOR_GEM:
+		c.place_crate(ID=16,p=(.75,.925+.16,-56.7))
 	#checkpoints
 	c.place_crate(ID=6,p=(-.2,h2,-40))
 	c.place_crate(ID=6,p=(3.2,1.325+.16,2.3))
 	c.place_crate(ID=6,p=(23,h3,4.2))
 	c.place_crate(ID=6,p=(24.4,h3,27))
 	#wumpa fruits
-	whl=.85
+	whl=1.2
 	mt.wumpa_plane(POS=(-.5,whl,-58.4),CNT=3)
-	mt.wumpa_plane(POS=(-.3,.75,-46),CNT=3)
-	mt.wumpa_plane(POS=(-.3,.75,-37),CNT=3)
-	mt.wumpa_plane(POS=(-.3,.75,-29.5),CNT=3)
-	mt.wumpa_plane(POS=(-.3,.75,-27.8),CNT=2)
-	mt.wumpa_plane(POS=(-.3,.75,-24),CNT=2)
-	mt.wumpa_plane(POS=(-.3,.75,-19.8),CNT=3)
-	mt.wumpa_double_row(POS=(-.5,1.35,2.45),CNT=8)
-	mt.wumpa_double_row(POS=(5.7,1.75,2.45),CNT=3)
-	mt.wumpa_double_row(POS=(13,2.6,2.45),CNT=12)
-	mt.wumpa_plane(POS=(22.7,5.5,5),CNT=3)
-	mt.wumpa_plane(POS=(22.7,5.45,8.4),CNT=3)
-	mt.wumpa_plane(POS=(22.7,5.5,22),CNT=3)
-	mt.wumpa_double_row(POS=(25,5.45,27),CNT=16)
+	mt.wumpa_plane(POS=(-.3,1.1,-46),CNT=3)
+	mt.wumpa_plane(POS=(-.3,1.1,-37),CNT=3)
+	mt.wumpa_plane(POS=(-.3,1.1,-29.5),CNT=3)
+	mt.wumpa_plane(POS=(-.3,1.1,-27.8),CNT=2)
+	mt.wumpa_plane(POS=(-.3,1.1,-24),CNT=2)
+	mt.wumpa_plane(POS=(-.3,1.1,-19.8),CNT=3)
+	mt.wumpa_double_row(POS=(-.5,1.5,2.25),CNT=8)
+	mt.wumpa_double_row(POS=(5.7,1.8,2.25),CNT=3)
+	mt.wumpa_double_row(POS=(13,2.85,2.25),CNT=12)
+	mt.wumpa_plane(POS=(22.7,5.6,5),CNT=3)
+	mt.wumpa_plane(POS=(22.7,5.6,8.4),CNT=3)
+	mt.wumpa_plane(POS=(22.7,5.7,22),CNT=3)
+	mt.wumpa_double_row(POS=(25,5.6,27),CNT=16)
 	#collecable
 	if not status.level_index in status.CRYSTAL:
 		item.EnergyCrystal(pos=(35.5,6.4,28.5))
@@ -480,19 +513,17 @@ def level3():##water
 	o.WoodStage(pos=(0,.2,-10))
 	o.WoodStage(pos=(0,2,60))
 	#platforms
-	o.MossPlatform(p=(0,-.3,-25),ptm=0)
-	o.MossPlatform(p=(0,-.3,-23.5),ptm=0)
+	o.MossPlatform(p=(0,-.3,-24.5),ptm=3)
 	o.MossPlatform(p=(0,-.1,-1.3),ptm=0)
 	o.MossPlatform(p=(0,.5,0),ptm=0)
 	o.MossPlatform(p=(0,-.3,-7),ptm=0)
-	o.MossPlatform(p=(0,.7,11.5),ptm=0)
-	o.MossPlatform(p=(-.85,.5,51),ptm=0)
-	o.MossPlatform(p=(-.85,-.5,52.5),ptm=0)
+	o.MossPlatform(p=(0,.7,11.5),ptm=2)
+	o.MossPlatform(p=(-.85,.5,52.5),ptm=3)
 	o.MossPlatform(p=(.85,.5,52.5),ptm=0)
 	o.MossPlatform(p=(0,1,56.5),ptm=0)
-	o.MossPlatform(p=(0,1.5,65),ptm=0)
-	o.MossPlatform(p=(0,1.5,76),ptm=0)
-	o.MossPlatform(p=(0,1.5,77.8),ptm=0)
+	
+	o.MossPlatform(p=(0,1.5,63.5),ptm=3)
+	o.MossPlatform(p=(0,1.5,77),ptm=3)
 	#blocks
 	tH=-.2
 	#e0
@@ -523,12 +554,11 @@ def level3():##water
 	o.multi_tile(p=(0,1.8,80),cnt=[1,5])
 	o.multi_tile(p=(.85,1.8,80+.85),cnt=[1,1])
 	#npc
-	N.Hippo(pos=(0,1.8,63))
+	#N.Hippo(pos=(0,1.8,63))
 	N.spawn(mID=6,pos=(-.85,1.05,29),mDirec=0,mTurn=0)
 	N.spawn(mID=6,pos=(.85,1.05,25.8),mDirec=0,mTurn=0)
 	N.spawn(mID=6,pos=(-.85,1.05,23),mDirec=0,mTurn=0)
 	N.spawn(mID=6,pos=(0,1.05,41.4),mDirec=0,mTurn=0)
-	N.spawn(mID=6,pos=(-.85,1.05,46.4),mDirec=0,mTurn=0)
 	N.spawn(mID=6,pos=(0,1.95,74.1),mDirec=0,mTurn=0)
 	N.spawn(mID=2,pos=(0,1.05,4.2),mDirec=0,mTurn=0)
 	invoke(free_level,delay=3)

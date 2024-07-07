@@ -1,4 +1,5 @@
-- check wall collissions and falling zones
+- ice walk, slipperness
+- hide pillars+ cry
 - death cause by enemie/fall/drown
 - fixx crate fall
 

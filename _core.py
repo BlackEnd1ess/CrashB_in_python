@@ -11,7 +11,7 @@ N=npc
 
 ## player
 def set_val(c):
-	for _a in ['run_anim','jmp_typ','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','count_time','fall_time',
+	for _a in ['run_anim','jmp_typ','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','fall_time',
 			'blink_time','death_anim','slide_fwd']:
 		setattr(c,_a,0)
 	for _v in ['aq_bonus','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
@@ -35,9 +35,9 @@ def get_damage(c):
 			Audio(snd.snd_damg,pitch=.8)
 			invoke(lambda:setattr(c,'injured',False),delay=2)
 			invoke(lambda:setattr(c,'alpha',1),delay=2)
-		else:
-			status.is_dying=True
-			Audio(snd.snd_woah,pitch=.8)
+			return
+		status.is_dying=True
+		Audio(snd.snd_woah,pitch=.8)
 def death_event(d):
 	if not st.death_event:
 		status.death_event=True
@@ -65,7 +65,7 @@ def death_event(d):
 				Audio(sound.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
 				npc.AkuAkuMask(pos=(d.x,d.y,d.z))
 		reset_crates()
-		reset_wumpas()
+		rmv_wumpas()
 		reset_npc()
 		check_cstack()
 		d.position=status.checkpoint
@@ -75,23 +75,18 @@ def death_event(d):
 		status.death_event=False
 		invoke(lambda:setattr(d,'freezed',False),delay=2)
 def various_val(c):
-	if st.bonus_solved and not st.wait_screen:
-		if st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0:
-			bonus_reward(c)
-		else:
-			c.aq_bonus=False
-	if c.blink_time > 0:c.blink_time-=time.dt
-	if c.walk_snd > 0:c.walk_snd-=time.dt
-	if c.indoor > 0:c.indoor-=time.dt
+	c.indoor=max(c.indoor-time.dt,0)
 	if c.injured:c.hurt_blink()
+	if st.bonus_solved and not st.wait_screen:
+		c.aq_bonus=(st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0)
 def c_attack(c):
 	for e in scene.entities[:]:
-		if is_nearby_pc(e,DX=.5,DY=.5):
+		if distance(c,e) < .5:
 			if is_crate(e):
 				if e.vnum in [3,11]:
 					e.empty_destroy()
-				else:
-					e.destroy()
+					return
+				e.destroy()
 			if is_enemie(e) and not e.is_hitten:
 				e.is_hitten=True
 				a=Vec3(e.x-c.x,0,e.z-c.z)
@@ -129,7 +124,7 @@ def cam_follow(c):
 	camera.z=lerp(camera.z,c.z-c.CMS,ftr)
 	camera.x=lerp(camera.x,c.x,ftr)
 	if c.indoor > 0:
-		if not status.p_in_air(c):
+		if c.landed:
 			camera.y=lerp(camera.y,c.y+1,time.dt)
 		camera.rotation_x=12
 		return
@@ -139,7 +134,6 @@ def cam_follow(c):
 ## world, misc
 def collect_reset():
 	status.C_RESET.clear()
-	status.W_RESET.clear()
 	status.crate_to_sv=0
 	status.fails=0
 	if level_ready:status.NPC_RESET.clear()
@@ -168,10 +162,10 @@ def reset_crates():
 			C.place_crate(p=cv.spawn_pos,ID=cv.vnum)
 	status.C_RESET.clear()
 	status.crate_to_sv=0
-def reset_wumpas():
-	for wu in st.W_RESET[:]:
-		wu.destroy()
-	status.W_RESET.clear()
+def rmv_wumpas():
+	for wu in scene.entities[:]:
+		if isinstance(wu,item.WumpaFruit) and wu.auto_purge:
+			wu.destroy()
 def reset_npc():
 	for NP in st.NPC_RESET[:]:
 		npc.spawn(mID=NP.vnum,pos=NP.spawn_pos,mDirec=NP.m_direction,mTurn=0)
@@ -179,8 +173,7 @@ def reset_npc():
 def clear_level(passed):
 	st.LV_CLEAR_PROCESS=True
 	scene.clear()
-	if passed:
-		collect_rewards()
+	if passed:collect_rewards()
 	ui.WhiteScreen()
 def collect_rewards():
 	if st.level_crystal:
@@ -196,6 +189,11 @@ def reset_audio():
 	status.e_audio=False
 	status.n_audio=False
 	status.b_audio=False
+def purge_instance(v):
+	v.parent=None
+	scene.entities.remove(v)
+	v.disable()
+	del v
 
 ## collisions
 def obj_ceiling(c):
@@ -212,18 +210,22 @@ def obj_ceiling(c):
 			c.jumping=False
 			c.y=c.y
 def obj_grnd(c):
-	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.1,.1),ignore=[c,LC.shdw],debug=False)
+	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.15,.15),ignore=[c,LC.shdw],debug=False)
 	vp=vj.entity
 	if vj.normal and not (str(vp) in LC.item_lst or str(vp) in LC.dangers):
 		if (is_crate(vp) and not vp.vnum == 0) and not (is_crate(vp) and vp.vnum in [9,10,11] and vp.activ) and c.fall_time > .1:
-			crate_action(c=c,e=vp)
+			crate_action(e=vp)
+			return
 		if is_enemie(vp) and not vp.is_hitten:
 			jump_enemy(c=c,e=vp)
-		else:
-			landing(c=c,e=vj.world_point.y)
-			obj_act(c=c,e=vp)
+			return
+		landing(c,e=vj.world_point.y,o=vp)
+		if str(vp.name) in ['mptf','iceg']:vp.mv_player()
+		status.is_dying=(str(vp) in ['water_hit','falling_zone'])
 		return
 	c.landed=False
+	c.is_slippery=False
+	c.move_speed=2.4
 def obj_walls(c):
 	if status.LV_CLEAR_PROCESS:
 		c=None
@@ -239,35 +241,15 @@ def obj_walls(c):
 				get_damage(c)
 				return
 			else:
-				if not str(jV) in LC.item_lst:return
+				if not str(jV) in LC.item_lst:
+					return
 	#avoid sys error by missing ursina entity
 	c.position+=c.direc*time.dt*c.move_speed
-def obj_act(c,e):
+def obj_act(e):
 	u=str(e)
-	if u in LC.d_zone:
-		death_zone(c=c,e=e)
-		return
-	if (u == 'bonus_platform' and not status.bonus_solved) or u == 'gem_platform':
-		if not c.freezed:
-			c.freezed=True
-			e.catch_player=True
-		return
-	if u == 'level_finish':
-		jmp_lv_fin(c=c,e=e)
-		return
-	if u == 'ice_ground':
-		c.is_slippery=True
-		return
-	if u == 'MO_PL' and not c.walking and e.movable:
-		c.x=e.x
-		c.z=e.z
-		return
-	if u == 'plank' and e.typ == 1:
-		e.pl_touch()
-		return
-	c.is_slippery=False
-	c.move_speed=2.2
-def landing(c,e):
+	e.catch_p=(u in ['bonus_platform','gem_platform'])
+	if (u == 'plank' and e.typ == 1):e.pl_touch()
+def landing(c,e,o):
 	c.landed=True
 	if c.y < e and not c.jumping:
 		c.y=e
@@ -276,38 +258,31 @@ def landing(c,e):
 		c.is_landing=True
 		c.land_anim=0
 		Audio(snd.snd_land)
+		obj_act(o)
 	c.is_flip=False
 	c.flip_anim=0
-def platform_floating(m,c):
-	m.air_time+=time.dt/1.5
-	m.y+=time.dt/1.5
-	m.target.x=m.x
-	m.target.z=m.z
-	c.rotation_y=0
-	if m.air_time >= 3:
-		m.air_time=0
-		m.catch_player=False
-		m.position=m.orginal_pos
-		if status.level_index == 4:
-			c.freezed=False
+def ptf_up(p,c):
+	if not c.freezed:
+		c.freezed=True
+		c.position=(p.x,c.y,p.z)
+		c.rotation_y=0
+	p.y+=time.dt/1.5
+	if p.y >= p.start_y+3:
+		p.catch_p=False
+		p.y=p.start_y
+		if str(p) == 'bonus_platform':
+			load_bonus(c)
 			return
-		if str(m) == 'bonus_platform':
-			load_bonus(c=m.target)
-		else:
-			load_gem_route(c=m.target)
+		load_gem_route(c)
 def jump_enemy(c,e):
 	if (e.vnum in [2,8]) or (e.vnum == 4 and e.def_mode):
 		get_damage(c)
 		return
 	kill_by_jump(m=e,c=c)
-def jmp_lv_fin(c,e):
+def jmp_lv_fin():
 	if not status.LEVEL_CLEAN:
 		status.LEVEL_CLEAN=True
 		clear_level(passed=True)
-def death_zone(c,e):
-	if not status.is_dying:
-		status.is_dying=True
-		Audio(snd.snd_woah,pitch=.8)
 def c_item(c):
 	j=c.intersects(ignore=[c,LC.shdw])
 	if str(j.entity) in LC.item_lst:
@@ -315,17 +290,17 @@ def c_item(c):
 
 ## interface,collectables
 def wumpa_count(n):
+	snd.snd_collect()
 	if status.bonus_round:
 		status.wumpa_bonus+=n
-	else:
-		status.wumpa_fruits+=n
-		status.show_wumpas=5
-		sc_ps=LC.ACTOR.screen_position
-		if status.wumpa_bonus <= 0 and not LC.ACTOR.aq_bonus:
-			if n > 1:
-				ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]))
-			ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]+.1))
-	snd.snd_collect()
+		return
+	status.wumpa_fruits+=n
+	status.show_wumpas=5
+	sc_ps=LC.ACTOR.screen_position
+	if status.wumpa_bonus <= 0 and not LC.ACTOR.aq_bonus:
+		if n > 1:
+			ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]))
+		ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]+.1))
 def give_extra_live():
 	ui.live_get_anim()
 	Audio(snd.snd_lifes,volume=.5)
@@ -356,16 +331,16 @@ def is_crate(e):
 	if any(isinstance(e,crate_class) for crate_class in cck):
 		return True
 	return False
-def crate_action(c,e):
+def crate_action(e):
 	if e.vnum in [7,8]:
-		set_jump_type(c,typ=2)
+		set_jump_type(LC.ACTOR,typ=2)
 		e.c_action()
 		return
 	elif e.vnum == 3:
-		set_jump_type(c,typ=3)
+		set_jump_type(LC.ACTOR,typ=3)
 	else:
-		if not e.vnum == 14:
-			set_jump_type(c,typ=1)
+		if e.vnum != 14:
+			set_jump_type(LC.ACTOR,typ=1)
 	e.destroy()
 def check_cstack():
 	for cSD in scene.entities[:]:
@@ -387,17 +362,22 @@ def check_crates_over(c):
 					co.animate_y(co.y-.32,duration=.1,unscaled=True)
 
 ## bonus level
+def load_b_ui():
+	ui.WumpaBonus()
+	ui.CrateBonus()
+	ui.LiveBonus()
 def load_bonus(c):
 	status.loading=True
 	status.checkpoint=_loc.bonus_checkpoint[status.level_index]
 	collect_reset()
-	if status.bonus_round:
+	if st.bonus_round:
 		invoke(lambda:back_to_level(c),delay=.5)
-	else:
-		invoke(lambda:enter_bonus(c),delay=.5)
+		return
+	invoke(lambda:enter_bonus(c),delay=.5)
 def enter_bonus(c):
 	ui.BlackScreen()
 	status.bonus_round=True
+	load_b_ui()
 	status.day_mode='bonus'
 	snd.BonusMusic(T=status.level_index)
 	ui.BonusText()
@@ -407,35 +387,18 @@ def enter_bonus(c):
 	c.freezed=False
 def back_to_level(c):
 	ui.BlackScreen()
-	if status.is_death_route:
+	if st.is_death_route:
 		status.is_death_route=False
-	if status.bonus_round:
+		status.gem_path_solved=True
+	if st.bonus_round:
 		status.bonus_round=False
 		status.bonus_solved=True
 	dMN=_loc.day_m
-	status.day_mode=dMN[status.level_index]
+	st.day_mode=dMN[st.level_index]
 	c.position=status.checkpoint
 	c.freezed=False
 	camera.y=c.y+.5
 	status.loading=False
-def bonus_reward(p):
-	p.aq_bonus=True
-	p.count_time+=time.dt
-	if p.count_time >= .075:
-		p.count_time=0
-		if status.wumpa_bonus > 0:
-			status.wumpa_bonus-=1
-			ui.WumpaCollectAnim(pos=(-.2,-.4))
-			wumpa_count(1)
-		if status.crate_bonus > 0:
-			status.crate_bonus-=1
-			status.crate_count+=1
-			status.show_crates=1
-		if status.lives_bonus > 0:
-			status.lives_bonus-=1
-			status.extra_lives+=1
-			status.show_lives=1
-			Audio(sound.snd_lifes)
 
 ## gem route
 def load_gem_route(c):
@@ -462,7 +425,7 @@ def set_val_npc(m):
 		m.can_move=False
 	else:
 		m.can_move=True
-	m.spawn_point=m.position
+	m.spawn_pos=m.position
 	m.is_hitten=False
 	m.fly_direc=None
 	m.is_purge=False
@@ -474,7 +437,6 @@ def npc_action(m):
 		npc_purge(m)
 		return
 	if not m.is_hitten:
-		npc.walk_frames(m)
 		if m.vnum == 9 and m.ro_mode:
 			npc_circle_move(m)
 		else:
@@ -482,19 +444,14 @@ def npc_action(m):
 		return
 	fly_away(m)
 def npc_purge(m):
-	u=60
-	m.can_move=False
 	m.collider=None
+	m.can_move=False
 	m.fly_time=0
-	if m.scale_x > 0:
-		m.scale_x-=time.dt/u
-	if m.scale_y > 0:
-		m.scale_y-=time.dt/u
-	if m.scale_z > 0:
-		m.scale_z-=time.dt/u
-	if m.scale_x <= 0 and m.scale_y <= 0 and m.scale_z <= 0:
+	mc=time.dt/50
+	m.scale=max(m.scale-(mc,mc,mc),0)
+	if m.scale == 0:
 		status.NPC_RESET.append(m)
-		m.disable()
+		purge_instance(m)
 def npc_walk(m):
 	if status.gproc():
 		return
@@ -504,23 +461,23 @@ def npc_walk(m):
 		if m.m_direction == 0:
 			if m.turn == 0:
 				m.x+=time.dt*s
-				if m.x >= m.spawn_point[0]+1:
+				if m.x >= m.spawn_pos[0]+1:
 					m.rotation_y=90
 					m.turn=1
 			elif m.turn == 1:
 				m.x-=time.dt*s
-				if m.x <= m.spawn_point[0]-1:
+				if m.x <= m.spawn_pos[0]-1:
 					m.rotation_y=270
 					m.turn=0
 		if m.m_direction == 1:
 			if m.turn == 0:
 				m.z+=time.dt*s
-				if m.z >= m.spawn_point[2]+1:
+				if m.z >= m.spawn_pos[2]+1:
 					m.turn=1
 					m.rotation_y=0
 			elif m.turn == 1:
 				m.z-=time.dt*s
-				if m.z <= m.spawn_point[2]-1:
+				if m.z <= m.spawn_pos[2]-1:
 					m.rotation_y=180
 					m.turn=0
 def npc_circle_move(m):
@@ -537,41 +494,33 @@ def rotate_to_crash(m):
 	m.rotation_y=angle
 	m.rotation_x=-90
 def fly_away(n):
-	fSP=time.dt*40
-	n.position+=n.fly_direc*fSP
-	n.fly_time-=time.dt
-	J=n.intersects()
-	if J:
-		PNL=J.entity
+	n.position+=n.fly_direc*time.dt*40
+	n.fly_time+=time.dt
+	if n.fly_time > .5:
+		npc_purge(n)
+		return
+	if n.intersects():
+		PNL=n.intersects().entity
 		if is_crate(PNL):
 			if PNL.vnum in [3,11]:
 				PNL.empty_destroy()
 			else:
-				if not PNL.vnum == 6:# avoid checkp accidentally
+				if PNL.vnum != 6:# avoid checkp accidentally
 					PNL.destroy()
 		if is_enemie(PNL):
 			PNL.fly_direc=n.fly_direc
 			PNL.is_hitten=True
 			wumpa_count(1)
 			npc_purge(n)
-			return
-	if abs(n.fly_time) > .3:npc_purge(n)
 def kill_by_jump(m,c):
 	m.is_purge=True
 	set_jump_type(c,typ=1)
 	Audio(snd.snd_jmph)
-def is_nearby_pc(n,DX,DY):
-	if LC.ACTOR:
-		dist_y=abs(LC.ACTOR.y-n.y)
-		dist_x=distance_xz(LC.ACTOR,n)
-		if dist_y < DY and dist_x < DX:
-			return True
-		return False
 def is_enemie(n):
 	nnk=[N.Amadillo,N.Turtle,N.SawTurtle,
 		N.Penguin,N.Hedgehog,N.Seal,
 		N.EatingPlant,N.Rat,N.Lizard,
-		N.Scrubber,N.Mouse,N.Vulture]
+		N.Scrubber,N.Mouse,N.Vulture,N.Hippo]
 	if any(isinstance(n,npc_class) for npc_class in nnk):
 		return True
 	return False

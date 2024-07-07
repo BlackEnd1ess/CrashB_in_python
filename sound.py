@@ -76,7 +76,7 @@ class WaterRiver(Audio):
 	def __init__(self):
 		super().__init__(VS+'waterf.wav',volume=0,loop=True)
 	def update(self):
-		if not status.gproc() and not status.bonus_round and not status.is_death_route:
+		if not status.gproc() and not (status.bonus_round or status.is_death_route):
 			self.volume=.6
 			return
 		self.volume=0
@@ -87,11 +87,10 @@ class AmbienceSound(Entity):
 		self.rpt=1
 	def update(self):
 		if not status.gproc():
-			if self.rpt > 0:
-				self.rpt-=time.dt
-				if self.rpt <= 0:
-					self.rpt=1
-					Audio(VS+'jungle.wav',pitch=random.uniform(1,1.1),volume=.6)
+			self.rpt=max(self.rpt-time.dt,0)
+			if self.rpt <= 0:
+				self.rpt=1
+				Audio(VS+'jungle.wav',pitch=random.uniform(1,1.1),volume=.6)
 
 ## BGM
 MC='res/snd/music/'
@@ -104,7 +103,7 @@ class LevelMusic(Audio):
 		if status.bonus_round or status.is_death_route:
 			self.fade_out()
 			self.disable()
-		if status.pause or status.aku_hit >= 3:
+		if status.gproc() or status.aku_hit >= 3:
 			self.volume=0
 			return
 		self.volume=settings.MUSIC_VOLUME
@@ -119,7 +118,7 @@ class BonusMusic(Audio):
 			self.disable()
 			LevelMusic(T=status.level_index)
 			return
-		if status.pause:
+		if status.gproc():
 			self.volume=0
 			return
 		self.volume=settings.MUSIC_VOLUME
@@ -138,10 +137,11 @@ class AkuMusic(Audio):
 	def __init__(self):
 		super().__init__(MC+'ev/invinc.mp3',volume=settings.MUSIC_VOLUME)
 	def update(self):
-		if not self.playing:
-			status.aku_hit=2
-			Audio(snd_damg,pitch=.8)
-			self.disable()
-		if status.is_dying:
-			self.fade_out()
-			self.disable()
+		if not status.gproc():
+			if not self.playing:
+				status.aku_hit=2
+				Audio(snd_damg,pitch=.8)
+				self.disable()
+			if status.is_dying:
+				self.fade_out()
+				self.disable()

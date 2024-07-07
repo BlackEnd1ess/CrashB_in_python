@@ -1,12 +1,21 @@
-import status,_core,_loc
+import status,_core,_loc,sound
 from ursina import *
 
+w_pa='res/ui/icon/wumpa_fruit/w'
 _icn='res/ui/icon/'
 _fnt='res/ui/font.ttf'
 st=status
+cc=_core
 LC=_loc
 
 ## Interface 2D Animations
+# wumpa 2d animation
+def wmp_anim(w):
+	w.frm+=time.dt*15
+	if w.frm > 13.9:
+		w.frm=0
+	w.texture=w_pa+str(int(w.frm))+'.png'
+
 def text_blink(M,t):
 	if M.blink_time <= 0:
 		if t.color == M.font_color:
@@ -22,7 +31,7 @@ def live_get_anim():
 
 class WumpaCollectAnim(Entity):
 	def __init__(self,pos):
-		super().__init__(model='quad',texture=_icn+'wumpa_fruits/w0.png',scale=.075,parent=camera.ui,position=pos)
+		super().__init__(model='quad',texture=w_pa+'0.png',scale=.075,parent=camera.ui,position=pos)
 	def update(self):
 		if not st.gproc():
 			dta_x=-.75-self.x
@@ -38,12 +47,11 @@ class WumpaCollectAnim(Entity):
 class WumpaCounter(Entity):
 	def __init__(self):
 		self.pa='res/ui/wumpa_font/'
-		super().__init__(model='quad',texture=_icn+'wumpa_fruits/w0.png',parent=camera.ui,position=(-.75,.43,0),scale=(.07,.08,0),visible=False,texture_position=(0,0))
+		super().__init__(model='quad',texture=w_pa+'0.png',parent=camera.ui,position=(-.75,.43,0),scale=(.07,.08,0),visible=False,texture_position=(0,0))
 		self.digit_0=Entity(model='quad',texture=self.pa+'0.png',parent=camera.ui,position=(self.x+.075,self.y),scale=.06,visible=False)
 		self.digit_1=Entity(model='quad',texture=self.pa+'0.png',parent=camera.ui,position=(self.digit_0.x+.06,self.digit_0.y),scale=.06,visible=False)
-		self.w_animation=0
+		self.frm=0
 		_loc.uiW=self
-		WumpaBonus()
 	def digits(self):
 		n=str(st.wumpa_fruits)
 		self.digit_0.texture=self.pa+n[0]
@@ -53,20 +61,20 @@ class WumpaCounter(Entity):
 			self.digit_1.texture=self.pa+n[1]
 			return
 		self.digit_1.visible=False
-	def update(self):
+	def wumpa_max(self):
 		if st.wumpa_fruits > 99:
 			status.wumpa_fruits=0
-			_core.give_extra_live()
-		if st.show_wumpas > 0:
-			self.w_animation+=time.dt*20
-			if self.w_animation > 12:
-				self.w_animation=0
-			self.texture=_icn+'wumpa_fruits/w'+str(int(self.w_animation))+'.png'
-			self.show()
-			self.digits()
-			status.show_wumpas-=time.dt
+			cc.give_extra_live()
+	def update(self):
+		if not status.gproc():
+			self.wumpa_max()
+			if st.show_wumpas > 0:
+				self.digits()
+				self.show()
+				wmp_anim(self)
+			status.show_wumpas=max(status.show_wumpas-time.dt,0)
 			if st.show_wumpas <= 0:
-				self.w_animation=0
+				self.frm=0
 				self.hide()
 				self.digit_0.hide()
 				self.digit_1.hide()
@@ -75,84 +83,123 @@ class CrateCounter(Animation):
 	def __init__(self):
 		super().__init__(_icn+'crate.gif',parent=camera.ui,scale=.1,color=color.rgb32(90,70,0),position=(-.1,.43,0),fps=4,visible=False)
 		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.035,scale=3,color=self.color,visible=False)
-		CrateBonus()
 	def update(self):
-		if st.show_crates > 0 and st.crates_in_level > 0:
-			self.show()
-			self.c_text.show()
-			self.c_text.text=str(st.crate_count)+'/'+str(st.crates_in_level)
-			status.show_crates-=time.dt
-			if st.show_crates <= 0:
-				self.hide()
-				self.c_text.hide()
+		if not status.gproc() and st.crates_in_level > 0:
+			if st.show_crates > 0:
+				status.show_crates-=time.dt
+				if st.show_crates <= 0:
+					self.hide()
+					self.c_text.hide()
+					return
+				self.show()
+				self.c_text.show()
+				self.c_text.text=str(st.crate_count)+'/'+str(st.crates_in_level)
 
 class LiveCounter(Entity):
 	def __init__(self):
 		super().__init__(parent=camera.ui,model='quad',texture=_icn+'lives.png',scale=(.08,.085),position=(.7,.43,0),visible=False)
 		self.l_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.035,scale=3,color=color.rgb32(255,31,31),visible=False)
-		LiveBonus()
 	def update(self):
-		if st.show_lives > 0:
-			self.show()
-			self.l_text.show()
-			self.l_text.text=str(st.extra_lives)
-			status.show_lives-=time.dt
-			if st.show_lives <= 0:
-				self.hide()
-				self.l_text.hide()
+		if not status.gproc():
+			if st.show_lives > 0:
+				status.show_lives-=time.dt
+				if st.show_lives <= 0:
+					self.hide()
+					self.l_text.hide()
+					return
+				self.l_text.show()
+				self.show()
+				self.l_text.text=str(st.extra_lives)
 
 
 ## Bonus Counter ##
 class WumpaBonus(Entity):
 	def __init__(self):
-		super().__init__(model='quad',texture=_icn+'wumpa_fruits/w0.png',parent=camera.ui,position=(-.2,-.4,0),scale=(.05,.06,0),visible=False)
+		super().__init__(model='quad',texture=w_pa+'0.png',parent=camera.ui,position=(-.2,-.4,0),scale=(.05,.06,0),visible=False)
 		self.w_text=Text(text=None,font=_fnt,x=self.x+.04,y=self.y+.025,scale=2,color=color.rgb32(175,235,30),parent=camera.ui,visible=False)
-		self.w_animation=0
+		self.w_time=0
+		self.frm=0
+	def check_w(self):
+		if (st.bonus_solved and st.wumpa_bonus > 0):
+			return True
+		return False
+	def w_count(self):
+		if self.check_w() and not st.wait_screen:
+			self.w_time=max(self.w_time-time.dt,0)
+			if self.w_time <= 0:
+				self.w_time=.075
+				status.wumpa_bonus-=1
+				WumpaCollectAnim(pos=(-.2,-.4))
+				cc.wumpa_count(1)
 	def update(self):
-		if st.bonus_round or st.bonus_solved and st.wumpa_bonus > 0:
-			self.show()
-			self.w_text.show()
-			self.w_text.text=str(st.wumpa_bonus)
-			self.w_animation+=time.dt*20
-			if self.w_animation > 12:
-				self.w_animation=0
-			self.texture=_icn+'wumpa_fruits/w'+str(int(self.w_animation))+'.png'
-		else:
-			self.hide()
-			self.w_text.hide()
-			return
+		if not st.gproc():
+			if st.bonus_round or self.check_w():
+				self.w_count()
+				self.show()
+				self.w_text.show()
+				self.w_text.text=str(st.wumpa_bonus)
+				wmp_anim(self)
+				return
+			cc.purge_instance(self.w_text)
+			cc.purge_instance(self)
 
 class CrateBonus(Animation):
 	def __init__(self):
 		super().__init__(_icn+'crate.gif',parent=camera.ui,scale=.075,color=color.rgb32(90,70,0),position=(0,-.4,0),fps=4,visible=False)
 		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.025,scale=2,color=self.color,visible=False)
-		if st.crates_in_level < 1:
-			self.hide()
-			self.c_text.hide()
+		self.c_time=0
+	def check_c(self):
+		if (st.bonus_solved and st.crate_bonus > 0):
+			return True
+		return False
+	def c_count(self):
+		if self.check_c():
+			self.c_time=max(self.c_time-time.dt,0)
+			if self.c_time <= 0:
+				self.c_time=.075
+				status.crate_bonus-=1
+				status.crate_count+=1
+				status.show_crates=1
 	def update(self):
-		if st.bonus_round or st.bonus_solved and st.crate_bonus > 0:
-			self.show()
-			self.c_text.show()
-			self.c_text.text=str(st.crate_bonus)+'/'+str(st.crates_in_bonus)
-		else:
-			self.hide()
-			self.c_text.hide()
-			return
+		if not st.gproc():
+			if st.bonus_round or self.check_c():
+				self.c_count()
+				self.c_text.show()
+				self.show()
+				self.c_text.text=str(st.crate_bonus)+'/'+str(st.crates_in_bonus)
+				return
+			cc.purge_instance(self.c_text)
+			cc.purge_instance(self)
 
 class LiveBonus(Entity):
 	def __init__(self):
 		super().__init__(parent=camera.ui,model='quad',texture=_icn+'lives.png',scale=.06,position=(.225,-.4,0),visible=False)
 		self.l_text=Text(text=None,font=_fnt,x=self.x+.04,y=self.y+.023,scale=2,color=color.rgb32(255,31,31),visible=False)
+		self.l_time=0
+	def check_l(self):
+		if (st.bonus_solved and st.lives_bonus > 0):
+			return True
+		return False
+	def l_count(self):
+		if self.check_l():
+			self.l_time=max(self.l_time-time.dt,0)
+			if self.l_time <= 0:
+				self.l_time=.075
+				status.lives_bonus-=1
+				status.extra_lives+=1
+				status.show_lives=1
+				Audio(sound.snd_lifes)
 	def update(self):
-		if st.bonus_round or st.bonus_solved and st.lives_bonus > 0:
-			self.show()
-			self.l_text.show()
-			self.l_text.text=str(st.lives_bonus)
-		else:
-			self.hide()
-			self.l_text.hide()
-			return
-
+		if not st.gproc():
+			if st.bonus_round or self.check_l():
+				if st.lives_bonus > 0:
+					self.l_count()
+				self.l_text.show()
+				self.show()
+				self.l_text.text=str(st.lives_bonus)
+				return
+			cc.purge_instance(self.l_text)
+			cc.purge_instance(self)
 
 ## Game Over Screen
 class GameOverScreen(Entity):## call event?
@@ -186,6 +233,8 @@ class WhiteScreen(Entity):
 					status.loading=True
 					LoadingScreen()
 				if self.timer >= 2:
+					self.parent=None
+					scene.entities.remove(self)
 					self.disable()
 
 class BlackScreen(Entity):
@@ -194,16 +243,15 @@ class BlackScreen(Entity):
 		self.timer=2
 		status.wait_screen=True
 	def update(self):
-		if self.timer > 0:
-			self.timer-=time.dt/1.5
+		if not st.gproc():
+			self.timer=max(self.timer-time.dt/1.5,0)
 			if self.timer <= 1:
-				if status.wait_screen:
-					status.wait_screen=False
+				status.wait_screen=False
 				self.alpha=self.timer
 				if self.timer <= 0:
 					self.parent=None
+					scene.entities.remove(self)
 					self.disable()
-
 
 ## Bonusround Text
 class BonusText(Entity):
@@ -224,18 +272,16 @@ class BonusText(Entity):
 	def update(self):
 		if not status.gproc() and not status.wait_screen:
 			if not st.bonus_round:
-				self.bn_text.hide()
-				self.parent=None
-				self.disable()
+				cc.purge_instance(self.bn_text)
+				cc.purge_instance(self)
 				return
-			if self.t_delay > 0:
-				self.t_delay-=time.dt
-				if self.t_delay <= 0:
-					self.t_delay=.5
-					if not self.bn_text.visible:
-						self.display()
-					else:
-						self.text_ch()
+			self.t_delay=max(self.t_delay-time.dt,0)
+			if self.t_delay <= 0:
+				self.t_delay=.5
+				if not self.bn_text.visible:
+					self.display()
+					return
+				self.text_ch()
 
 K=40
 O=130
@@ -285,7 +331,7 @@ class PauseMenu(Entity):
 				if self.choose == 2:
 					if not st.LEVEL_CLEAN:
 						status.LEVEL_CLEAN=True
-						_core.clear_level(passed=False)
+						cc.clear_level(passed=False)
 	def check_collected(self):
 		gems_total=st.color_gems+st.clear_gems
 		self.gem_counter.text=str(gems_total)+'/15 GEMS'
