@@ -16,7 +16,6 @@ def free_level():
 	status.fails=0
 	status.loading=False
 	cc.level_ready=True
-	Audio(sound.snd_spawn)
 	if status.level_index == 3:
 		sound.AmbienceSound()
 		sound.WaterRiver()
@@ -60,11 +59,12 @@ def developer_level():
 	invoke(free_level,delay=1)
 
 def test():
-	#o.EndRoom(pos=(1,2,-15),c=color.rgb32(200,210,200))
+	o.EndRoom(pos=(1,2,-15),c=color.rgb32(200,210,200))
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
+	mt.crate_block(ID=11,POS=(.5,.16,-27.1),CNT=[1,1,1])
 	#o.IceGround(pos=(0,.5,-20),sca=(5,1))
-	for MM in range(1):
-		npc.spawn(pos=(0,0,-20+MM),mID=6,mDirec=0,mTurn=0)
+	#for MM in range(1):
+	#	npc.spawn(pos=(0,0,-20+MM),mID=6,mDirec=0,mTurn=0)
 	invoke(free_level,delay=1)
 
 def level1():##wood
@@ -94,13 +94,14 @@ def level1():##wood
 	o.TreeScene(pos=(-4.7,1,-63),s=.0175)
 	o.TreeScene(pos=(3.6,1.2,-63.5),s=.0175)
 	o.TreeScene(pos=(4.6,1.2,-63.5),s=.0175)
-
 	o.TreeScene(pos=(-1.37,1.5,-46),s=.0175)
 	o.TreeScene(pos=(1.32,1.5,-46),s=.0175)
 	o.TreeScene(pos=(0,1.7,-26.4),s=.0175)
 	o.TreeScene(pos=(3,1.7,10.6),s=.02)
-	o.spawn_tree_wall(pos=(-4,2.3,-63),cnt=50,d=0)
+	o.spawn_tree_wall(pos=(-4,2.3,-64),cnt=50,d=0)
+	o.spawn_tree_wall(pos=(-4,2,-64),cnt=50,d=0)
 	o.spawn_tree_wall(pos=(4.5,2.3,-64),cnt=50,d=1)
+	o.spawn_tree_wall(pos=(4,2.3,-63),cnt=50,d=1)
 	o.bush(pos=(.37,1.3,-26.5),s=2,c=color.orange)
 	o.bush(pos=(1.5,1.4,-14.2),s=2,c=cG)
 	o.bush(pos=(-1.5,1.4,-14.2),s=2,c=color.orange)
@@ -110,6 +111,8 @@ def level1():##wood
 	o.bush(pos=(-2,1.5,10.2),s=2,c=color.yellow)
 	o.TreeScene(pos=(-1.5,1.6,19.3),s=.02)
 	o.TreeScene(pos=(1.2,1.8,19.3),s=.02)
+	o.TreeScene(pos=(-.2,1.5,-2.6),s=.02)
+	o.TreeScene(pos=(1.1,1.5,11),s=.02)
 	o.bush(pos=(2.43,1.4,23),s=3,c=cG)
 	o.bush(pos=(-2.37,1.4,23),s=3,c=color.yellow)
 	o.TreeScene(pos=(1,1.6,-34.6),s=.02)
@@ -517,12 +520,11 @@ def level3():##water
 	o.MossPlatform(p=(0,-.1,-1.3),ptm=0)
 	o.MossPlatform(p=(0,.5,0),ptm=0)
 	o.MossPlatform(p=(0,-.3,-7),ptm=0)
-	o.MossPlatform(p=(0,.7,11.5),ptm=2)
+	o.MossPlatform(p=(-.3,.7,11.5),ptm=2)
 	o.MossPlatform(p=(-.85,.5,52.5),ptm=3)
 	o.MossPlatform(p=(.85,.5,52.5),ptm=0)
 	o.MossPlatform(p=(0,1,56.5),ptm=0)
-	
-	o.MossPlatform(p=(0,1.5,63.5),ptm=3)
+	#o.MossPlatform(p=(0,1.5,63.5),ptm=3)
 	o.MossPlatform(p=(0,1.5,77),ptm=3)
 	#blocks
 	tH=-.2
@@ -554,7 +556,8 @@ def level3():##water
 	o.multi_tile(p=(0,1.8,80),cnt=[1,5])
 	o.multi_tile(p=(.85,1.8,80+.85),cnt=[1,1])
 	#npc
-	#N.Hippo(pos=(0,1.8,63))
+	N.Hippo(pos=(0,1.8,64))
+	N.Hippo(pos=(0,1.8,63))
 	N.spawn(mID=6,pos=(-.85,1.05,29),mDirec=0,mTurn=0)
 	N.spawn(mID=6,pos=(.85,1.05,25.8),mDirec=0,mTurn=0)
 	N.spawn(mID=6,pos=(-.85,1.05,23),mDirec=0,mTurn=0)

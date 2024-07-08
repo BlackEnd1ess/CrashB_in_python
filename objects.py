@@ -4,6 +4,7 @@ from ursina import *
 
 SFX=settings.SFX_VOLUME
 st=status
+sn=sound
 cc=_core
 LC=_loc
 
@@ -129,7 +130,7 @@ class MossPlatform(Entity):
 				self.is_sfc=False
 				self.opt_model.animate_y(self.opt_model.y-1,duration=.3)
 				self.animate_y(self.y-1,duration=.3)
-				Audio(sound.snd_bubbl,volume=SFX)
+				sn.obj_audio(ID=6)
 				return
 			self.is_sfc=True
 			self.animate_y(self.spawn_pos[1],duration=.3)
@@ -186,7 +187,7 @@ class Plank(Entity):
 		self.show()
 	def fall_down(self):
 		self.collider=None
-		Audio(sound.snd_break,pitch=.8)
+		sn.crate_audio(ID=2,pit=.8)
 		self.animate_y(self.y-3,duration=.2)
 		invoke(self.obj_reset,delay=5)
 	def pl_touch(self):
@@ -220,13 +221,13 @@ class Rock(Entity):
 
 class IceCrystal(Entity):
 	def __init__(self,pos):
-		super().__init__(model=omf+'l2/ice_crystal/ice_crystal.ply',texture=omf+'l2/ice_crystal/snow_2.tga',scale=(.025,.02,.03),position=pos,rotation=(-90,45,0),color=color.cyan)
+		super().__init__(model=omf+'l2/ice_crystal/ice_crystal.ply',name='icec',texture=omf+'l2/ice_crystal/snow_2.tga',scale=(.025,.02,.03),position=pos,rotation=(-90,45,0),color=color.cyan)
 		unlit_obj(self)
 
 class WoodLog(Entity):
 	def __init__(self,pos):
 		inp=omf+'l2/wood_log/wood_log'
-		super().__init__(model=inp+'.ply',texture=inp+'.tga',position=pos,scale=(.001,.001,.0015),rotation=(-90,0,0),collider=b)
+		super().__init__(model=inp+'.ply',texture=inp+'.tga',name='wdlg',position=pos,scale=(.001,.001,.0015),rotation=(-90,0,0),collider=b)
 		Entity(model='cube',texture='res/terrain/l1/bricks.png',position=(self.x,self.y+.8,self.z-.075),scale=(.5,2,.5),collider=b)
 		self.danger=False
 		self.or_pos=self.y
@@ -243,7 +244,7 @@ class WoodLog(Entity):
 			self.y-=time.dt*4
 			if self.y <= self.or_pos:
 				if distance(self,LC.ACTOR) < 2:
-					Audio(sound.snd_w_log,volume=SFX)
+					sn.obj_audio(ID=3)
 				self.danger=False
 				self.stat=0
 
@@ -296,19 +297,17 @@ class Role(Entity):
 			self.direc=0
 	def update(self):
 		if not status.gproc():
-			if self.roll_wait > 0:
-				self.is_rolling=False
-				self.roll_wait-=time.dt
-				self.danger=False
-				if self.roll_wait <= 0:
-					if distance(self,LC.ACTOR) < .4:
-						Audio(sound.snd_roles)
-				return
+			self.roll_wait=max(self.roll_wait-time.dt,0)
 			if self.roll_wait <= 0:
-				self.danger=True
-				self.is_rolling=True
-				rdi={0:self.roll_right,1:self.roll_left}
-				rdi[self.direc]()
+				self.is_rolling=False
+				self.danger=False
+				if distance(self,LC.ACTOR) < .4:
+					sn.obj_audio(ID=4)
+				return
+			self.danger=True
+			self.is_rolling=True
+			rdi={0:self.roll_right,1:self.roll_left}
+			rdi[self.direc]()
 
 ####################
 ## level 3 objects #
@@ -324,7 +323,7 @@ class WaterFlow(Animation):
 class WaterFall(Entity):
 	def __init__(self,pos):
 		self.pa=omf+'l3/water_fall/waterf'
-		super().__init__(model='plane',texture=self.pa+'0.png',position=pos,scale=(5,0,1),rotation_x=-90,texture_scale=(10,1),color=color.rgb32(240,255,240))
+		super().__init__(model='plane',name='wtfa',texture=self.pa+'0.png',position=pos,scale=(5,0,1),rotation_x=-90,texture_scale=(10,1),color=color.rgb32(240,255,240))
 		Entity(model='plane',color=color.black,scale=(12,1,20),position=(self.x,self.y-.7,self.z+1.3))
 		self.y+=1
 		self.frm=0
@@ -361,7 +360,7 @@ class StoneTile(Entity):
 	def __init__(self,pos):
 		tlX=omf+'l3/tile/'
 		super().__init__(model='cube',position=pos,scale=(.85,.3,.85),collider=b,visible=False)
-		self.vis=Entity(model=tlX+'tile.ply',name='STpltf',texture=tlX+'platform_top.png',position=(self.x,self.y,self.z),rotation_x=-90,scale=.35)
+		self.vis=Entity(model=tlX+'tile.ply',name='stL',texture=tlX+'platform_top.png',position=(self.x,self.y,self.z),rotation_x=-90,scale=.35)
 		unlit_obj(self.vis)
 
 class MushroomTree(Entity):
@@ -423,23 +422,21 @@ class WaterHit(Entity):## collider for water
 class CrateScore(Entity):## level reward
 	def __init__(self,pos):
 		ev='res/crate/'
-		super().__init__(model=ev+'cr_t0.ply',texture=ev+'1.png',alpha=.4,scale=.18,position=pos,origin_y=.5)
+		super().__init__(model=ev+'cr_t0.ply',name='ctsc',texture=ev+'1.png',alpha=.4,scale=.18,position=pos,origin_y=.5)
 		self.cc_text=Text(parent=scene,position=(self.x-.2,self.y,self.z),text=None,font='res/ui/font.ttf',color=color.rgb32(255,255,100),scale=10)
 	def update(self):
 		if not st.gproc():
-			if st.crates_in_level <= 0 or st.is_time_trial or (LC.C_GEM and distance(self,LC.C_GEM) < .5):
-				self.cc_text.hide()
-				self.hide()
-			else:
-				self.cc_text.show()
-				self.show()
+			tk=not(st.crates_in_level <= 0 or (LC.C_GEM and distance(self,LC.C_GEM) < .5))
+			self.cc_text.visible=tk
+			self.visible=tk
+			if tk:
 				self.cc_text.text=str(st.crate_count)+'/'+str(st.crates_in_level)
 				self.rotation_y-=120*time.dt
-			if st.crates_in_level > 0 and st.crate_count >= st.crates_in_level:
+			if st.crates_in_level > 0 and (st.crate_count >= st.crates_in_level):
 				item.GemStone(pos=(self.x,self.y-.3,self.z),c=0)
-				Audio(sound.snd_rward)
-				self.cc_text.disable()
-				self.disable()
+				sn.ui_audio(ID=4)
+				cc.purge_instance(self.cc_text)
+				cc.purge_instance(self)
 
 class Corridor(Entity):
 	def __init__(self,pos):
@@ -501,8 +498,8 @@ class EndRoom(Entity):## finish level
 class RoomDoor(Entity):## door for start and end room
 	def __init__(self,pos,typ):
 		self.dPA=omf+'ev/door/'
-		super().__init__(model=self.dPA+'u0.ply',texture=self.dPA+'u_door.tga',position=pos,scale=.001,rotation_x=90,collider=b)
-		self.door_part=Entity(model=self.dPA+'d0.ply',name='door_part',texture=self.dPA+'d_door.tga',position=(self.x,self.y+.1,self.z),scale=.001,rotation_x=90,collider=b)
+		super().__init__(model=self.dPA+'u0.ply',texture=self.dPA+'u_door.tga',name='rmd1',position=pos,scale=.001,rotation_x=90,collider=b)
+		self.door_part=Entity(model=self.dPA+'d0.ply',name='rmd2',texture=self.dPA+'d_door.tga',position=(self.x,self.y+.1,self.z),scale=.001,rotation_x=90,collider=b)
 		self.DS={0:2,1:3}
 		self.d_open=False
 		self.typ=typ
@@ -514,12 +511,12 @@ class RoomDoor(Entity):## door for start and end room
 				if not self.d_open:
 					self.d_open=True
 					animation.door_open(self)
-					Audio(sound.snd_d_opn)
+					sn.obj_audio(ID=1)
 				return
 			if self.d_open:
 				self.d_open=False
 				animation.door_close(self)
-				Audio(sound.snd_d_opn,pitch=.9)
+				sn.obj_audio(ID=1,pit=.9)
 
 class BonusPlatform(Entity):## switch -> bonus round
 	def __init__(self,pos):
@@ -555,7 +552,7 @@ class GemPlatform(Entity):## gem platform
 		self.color=GMC[t]
 		if not self.is_enabled:
 			self.collider=None
-			self.bg_darkness.hide()
+			#self.bg_darkness.hide()
 		unlit_obj(self)
 	def update(self):
 		if not status.gproc():
@@ -584,21 +581,16 @@ class CamSwitch(Entity):## allow cam move y if player collide with them
 
 class LevelFinish(Entity):## finish level
 	def __init__(self,p):
-		super().__init__(model='sphere',collider=b,scale=1,position=p,visible=True)
-		self.prt_snd=Audio(sound.snd_portl,volume=0,loop=True)
+		super().__init__(model='sphere',collider=b,scale=1,position=p,visible=False)
 	def collect(self):
 		cc.jmp_lv_fin()
-	def update(self):
-		if not status.gproc():
-			if distance(self,LC.ACTOR) < .5:
-				self.prt_snd.volume=1
-				return
-			self.prt_snd.volume=0
 
 class LODProcess(Entity):
 	def __init__(self):
 		super().__init__()
 		self.rt=.5
+		CLW={1:LC.LV1_LOD,2:LC.LV2_LOD,3:LC.LV3_LOD,4:LC.LV3_LOD,5:LC.LV3_LOD}
+		self.MAIN_LOD=CLW[st.level_index]
 	def wmp_lod(self,w,p):
 		w.enabled=distance(w,p) < 8
 	def crt_lod(self,c,p):
@@ -606,21 +598,20 @@ class LODProcess(Entity):
 	def enm_lod(self,e,p):
 		e.enabled=distance(e,p) < 20
 	def vwi_lod(self,v,p):
-		v.enabled=not(p.z > v.z+2 or v.z > p.z+28)
+		v.enabled=(p.z < v.z+2 and v.z < p.z+28)
 	def refr(self):
 		for b in scene.entities[:]:
 			A=LC.ACTOR
 			if isinstance(b,item.WumpaFruit):self.wmp_lod(w=b,p=A)
 			if cc.is_crate(b):self.crt_lod(c=b,p=A)
 			if cc.is_enemie(b):self.enm_lod(e=b,p=A)
-			if str(b) in LC.LOD_LST:self.vwi_lod(v=b,p=A)
+			if str(b) in self.MAIN_LOD:self.vwi_lod(v=b,p=A)
 	def update(self):
 		if not status.gproc():
 			self.rt=max(self.rt-time.dt,0)
 			if self.rt <= 0:
 				self.rt=.5
 				self.refr()
-
 
 ###################
 ## global objects #
@@ -655,7 +646,7 @@ class Water(Animation):
 		self.alpha=self.transp
 		self.shader=lit_with_shadows_shader
 	def set_danger(self):
-		Audio(sound.snd_elect,volume=SFX,pitch=.9)
+		sn.obj_audio(ID=7,pit=.9)
 		self.electric=True
 		self.active=True
 		self.shader=unlit_shader

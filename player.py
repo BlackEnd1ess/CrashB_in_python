@@ -3,7 +3,7 @@ from ursina.shaders import *
 from math import atan2
 from ursina import *
 
-snd=sound
+sn=sound
 an=animation
 cc=_core
 LC=_loc
@@ -48,23 +48,22 @@ class CrashB(Entity):
 		if status.p_rst(self):
 			return
 		if key == 'space' and self.landed:
-			Audio(snd.snd_jump)
+			sn.pc_audio(ID=1)
 			if self.landed:
 				cc.set_jump_type(self,typ=0)
 		if key == 'alt':
 			if not self.is_attack:
 				self.is_landing=False
 				self.is_attack=True
-				Audio(snd.snd_attk)
+				sn.pc_audio(ID=3)
 				invoke(lambda:setattr(self,'is_attack',False),delay=.6)
 			else:
-				Audio(snd.snd_atkw)
+				sn.pc_audio(ID=0)
 		if key == 'tab':
 			status.show_wumpas=5
 			status.show_crates=5
 			status.show_lives=5
 			status.show_gems=5
-			return
 		if key == 'w':
 			self.CMS=3
 		if key == 's':
@@ -76,8 +75,10 @@ class CrashB(Entity):
 			status.pause=False
 		##dev input
 		if key == 'b':
+			print('Entities: '+str(len(scene.entities)))
+			print('CRATE reset: '+str(len(status.C_RESET)))
+			print(scene.entities[-1])
 			print(self.position)
-			#map_tools.pos_info(self)
 		if key == 'e':
 			EditorCamera()
 		if key == 'j':
@@ -110,10 +111,10 @@ class CrashB(Entity):
 		if self.walk_snd <= 0:
 			if self.is_slippery:
 				self.walk_snd=.5
-				Audio(snd.snd_icew,pitch=1.5)
+				sn.pc_audio(ID=8,pit=1.5)
 			else:
 				self.walk_snd=.35
-				Audio(snd.snd_walk,volume=.3)
+				sn.pc_audio(ID=0)
 	def fall(self):
 		s=self
 		if s.landed or s.jumping:

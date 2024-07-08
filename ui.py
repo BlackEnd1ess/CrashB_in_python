@@ -5,6 +5,7 @@ w_pa='res/ui/icon/wumpa_fruit/w'
 _icn='res/ui/icon/'
 _fnt='res/ui/font.ttf'
 st=status
+sn=sound
 cc=_core
 LC=_loc
 
@@ -41,7 +42,7 @@ class WumpaCollectAnim(Entity):
 				self.x+=dta_x*anp
 				self.y+=dta_y*anp
 				return
-			self.disable()
+			cc.purge_instance(self)
 
 ## Main Counter ##
 class WumpaCounter(Entity):
@@ -188,7 +189,7 @@ class LiveBonus(Entity):
 				status.lives_bonus-=1
 				status.extra_lives+=1
 				status.show_lives=1
-				Audio(sound.snd_lifes)
+				sn.ui_audio(ID=0)
 	def update(self):
 		if not st.gproc():
 			if st.bonus_round or self.check_l():

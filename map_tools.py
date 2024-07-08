@@ -4,6 +4,7 @@ from ursina import *
 c=crate
 o=objects
 I=item
+
 ## pos info
 def pos_info(c):
 	sx=f"{c.x:.2f}"

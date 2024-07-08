@@ -18,7 +18,7 @@ def cam():
 	camera.fov=60
 	print('settings loaded')
 
-MUSIC_VOLUME=0
+MUSIC_VOLUME=1
 SFX_VOLUME=1
 #----------------------------
 #camera_contrast_shader

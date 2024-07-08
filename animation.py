@@ -1,4 +1,4 @@
-import status,_core,_loc
+import status,_core,_loc,sound
 from ursina import *
 
 npc_anim={0:7,#amadillo
@@ -17,6 +17,8 @@ npc_anim={0:7,#amadillo
 cf='res/crate/anim/'
 nf='res/npc/'
 af='res/pc/'
+sn=sound
+cc=_core
 t=20
 
 ## player animation
@@ -101,7 +103,7 @@ def flip(d):
 
 def player_death(d):
 	d.death_anim+=time.dt*15
-	d.y+=time.dt/1.25
+	d.y+=time.dt/1.3
 	if d.death_anim > 20.9:
 		status.is_dying=False
 		d.death_anim=0
@@ -162,7 +164,7 @@ class CrateBreak(Entity):
 			if self.frame_break > 13.75:
 				self.frame_break=0
 				self.parent=None
-				self.disable()
+				_core.purge_instance(self)
 				return
 			self.model=cf+'brk/'+str(int(self.frame_break))+'.ply'
 
@@ -176,20 +178,25 @@ class WarpRingEffect(Entity): ## spawn animation
 	def __init__(self,pos):
 		self.omf='res/objects/ev/'
 		super().__init__(model=self.omf+'warp_rings/0.ply',texture=self.omf+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.8,unlit=False)
+		self.activ=False
 		self.ta=_loc.ACTOR
 		self.rings=0
 		self.times=0
 	def update(self):
-		if _core.level_ready:
-			self.rings+=time.dt*30
-			if self.rings > 8.75:
-				self.rings=0
-				self.times+=1
-			if self.times > 5:
-				self.ta.warped=True
-				self.disable()
-				return
-			self.model=self.omf+'warp_rings/'+str(int(self.rings))+'.ply'
+		if cc.level_ready:
+			s=self
+			if not s.activ:
+				s.activ=True
+				sn.obj_audio(ID=0)
+			s.rings+=time.dt*30
+			if s.rings > 8.9:
+				s.rings=0
+				s.times+=1
+				sn.pc_audio(ID=1,pit=.35)
+			s.model=s.omf+'warp_rings/'+str(int(s.rings))+'.ply'
+			if s.times > 7:
+				s.ta.warped=True
+				cc.purge_instance(s)
 
 ## npc animation
 def npc_walking(m):

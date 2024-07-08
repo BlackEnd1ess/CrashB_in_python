@@ -3,8 +3,9 @@ from math import radians,cos,sin
 from ursina import *
 
 npc_folder='res/npc/'
-m_SC=0.8/1000
+m_SC=.8/1000
 an=animation
+sn=sound
 cc=_core
 LC=_loc
 
@@ -118,16 +119,15 @@ class Seal(Entity):
 		cc.set_val_npc(self)
 		self.m_direction=d
 		self.move_speed=1.1
-		self.snd_time=1
+		self.n_snd=False
 		self.turn=t
 	def update(self):
-		if not status.gproc():
+		if not status.gproc() and self.visible:
 			cc.npc_action(self)
-			self.snd_time=max(self.snd_time-time.dt,0)
-			if self.snd_time <= 0:
-				if distance(self,LC.ACTOR) < 1:
-					self.snd_time=random.choice([1,1.5,1.2])
-					Audio(sound.snd_seal,pitch=random.uniform(.36,.38))
+			if not self.n_snd and distance(self,LC.ACTOR) < 1:
+				self.n_snd=True
+				sn.npc_audio(ID=3,pit=random.uniform(.36,.38))
+				invoke(lambda:setattr(self,'n_snd',False),delay=random.choice([1,1.5,1.2]))
 
 class EatingPlant(Entity):
 	def __init__(self,p,d,t):
@@ -135,6 +135,7 @@ class EatingPlant(Entity):
 		self.vnum=6
 		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(400,400,1200))
+		self.m_direction=0
 		cc.set_val_npc(self)
 		self.atk_frame=0
 		self.eat=False
@@ -145,7 +146,7 @@ class EatingPlant(Entity):
 			if dc < 1:
 				if not self.eat:
 					self.eat=True
-					Audio(sound.snd_eating_plant)
+					sn.npc_audio(ID=0)
 					invoke(lambda:setattr(self,'eat',False),delay=1)
 	def update(self):
 		if not status.gproc():
@@ -178,7 +179,7 @@ class Rat(Entity):
 				self.snd_time=max(self.snd_time-time.dt,0)
 				if self.snd_time <= 0:
 					self.snd_time=random.choice([1,1.5,1.2])
-					Audio(sound.snd_rat,pitch=random.uniform(.7,.8))
+					sn.npc_audio(ID=4,pit=random.uniform(.7,.8))
 
 class Lizard(Entity):
 	def __init__(self,p,d,t):
@@ -208,14 +209,16 @@ class Scrubber(Entity):
 		self.turn=t
 		self.angle=0
 	def update(self):
-		if not status.gproc() and self.enabled:
+		if not status.gproc() and self.visible:
 			cc.npc_action(self)
-			if self.is_hitten or self.is_purge:
+			if (self.is_hitten or self.is_purge):
 				self.n_snd.fade_out()
+				cc.purge_instance(self.n_snd)
+				return
 			if distance(self,LC.ACTOR) < 2:
 				self.n_snd.volume=1
-			return
-		self.n_snd.volume=0
+				return
+			self.n_snd.volume=0
 
 class Mouse(Entity):
 	def __init__(self,p,d,t):
@@ -230,14 +233,16 @@ class Mouse(Entity):
 		self.snd_time=.5
 		self.turn=t
 	def update(self):
-		if not status.gproc() and self.enabled:
+		if not status.gproc() and self.visible:
 			cc.npc_action(self)
-			if self.is_hitten or self.is_purge:
+			if (self.is_hitten or self.is_purge):
 				self.n_snd.fade_out()
+				cc.purge_instance(self.n_snd)
+				return
 			if distance(self,LC.ACTOR) < 2:
 				self.n_snd.volume=1
-			return
-		self.n_snd.volume=0
+				return
+			self.n_snd.volume=0
 
 class Vulture(Entity):
 	def __init__(self,p,d,t):
@@ -303,7 +308,7 @@ class AkuAkuMask(Entity):
 			self.change_skin()
 			if status.aku_hit < 1:
 				status.aku_exist=False
-				self.disable()
+				cc.purge_instance(self)
 
 class Hippo(Entity):
 	def __init__(self,pos):
@@ -332,8 +337,8 @@ class Hippo(Entity):
 	def dive_down(self):
 		if not self.p_aud:
 			self.p_aud=True
-			Audio(sound.snd_wtrl,volume=settings.SFX_VOLUME)
-			invoke(lambda:Audio(sound.snd_bubbl,volume=settings.SFX_VOLUME),delay=.3)
+			sn.pc_audio(ID=10)
+			invoke(lambda:sn.obj_audio(ID=6),delay=.3)
 		if self.a_frame > 40:
 			self.col.collider=None
 			self.y-=time.dt/2
@@ -341,9 +346,8 @@ class Hippo(Entity):
 				self.active=False
 	def update(self):
 		if not status.gproc():
-			if not self.active:
-				if self.col.intersects().entity == LC.ACTOR:self.active=True
-			else:
+			self.active=(self.col.intersects(LC.ACTOR))
+			if self.active:
 				if self.is_uw:
 					self.underwtr()
 				else:

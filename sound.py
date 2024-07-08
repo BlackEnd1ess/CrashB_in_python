@@ -1,83 +1,99 @@
-import status,settings
+import status,settings,_core
 from ursina import *
 
-##misc sfx
+se=settings
+VS='res/snd/ambience/'
 SN='res/snd/misc/'
-
-snd_nbeat=SN+'npc_beat.wav'
-snd_d_opn=SN+'door_open.wav'
-snd_spawn=SN+'spawn.wav'
-snd_portl=SN+'portal.wav'
-snd_w_log=SN+'wlog.wav'
-snd_roles=SN+'role.wav'
-snd_wtr_1=SN+'waterf.wav'
-snd_bubbl=SN+'bubble.wav'
-snd_elect=SN+'electric.wav'
-
-##crate sfx
-snd_nitro=SN+'nitro_idle.wav'
-snd_explo=SN+'explode.wav'
-snd_break=SN+'break1.wav'
-snd_glass=SN+'glass.wav'
-snd_steel=SN+'steel.wav'
-snd_sprin=SN+'spring.wav'
-snd_bounc=SN+'bnc.wav'
-snd_c_tnt=SN+'tnt.wav'
-snd_c_air=SN+'air.wav'
-
-##game/ui sfx
-snd_rward=SN+'reward.wav'
-snd_enter=SN+'enter.wav'
-snd_lifes=SN+'lives.wav'
-snd_aku_m=SN+'aku.wav'
-snd_c_gem=SN+'gem.wav'
+SP='res/snd/player/'
+SA='res/snd/npc/'
+cc=_core
 
 ## ambience sound
-VS='res/snd/ambience/'
-
 snd_thu2=[VS+'thunder0.wav',VS+'thunder1.wav']
 snd_thu1=VS+'thunder_start.wav'
 snd_rain=VS+'rain.wav'
 
-## player sound
-SP='res/snd/player/'
-snd_jmph=SP+'jump_hit.wav'
-snd_jump=SP+'jump.wav'
-snd_attk=SP+'attack.wav'
-snd_atkw=SP+'atk_wait.wav'
-snd_walk=SP+'walk.wav'
-snd_land=SP+'land0.wav'
-snd_woah=SP+'woah.wav'
-snd_damg=SP+'damage.wav'
-snd_icew=SP+'ice_slide.wav'
-snd_icep=SP+'ice_slide_stop.wav'
-snd_wtrl=SP+'water_land.wav'
+## INTERFACE SFX
+SND_UI={0:'select.wav',
+		1:'enter.wav',
+		2:'collect.wav',
+		3:'lives.wav',
+		4:'reward.wav',
+		5:'gem.wav'}
+def ui_audio(ID,pit=1):
+	if ID == 1:
+		ua=Audio(SN+SND_UI[ID],pitch=pit,volume=se.SFX_VOLUME/2)
+	else:
+		ua=Audio(SN+SND_UI[ID],pitch=pit,volume=se.SFX_VOLUME)
+	cc.purge_instance(ua)
 
-## npc sound
-SA='res/snd/npc/'
+## PLAYER SFX
+SND_PC={0:'walk.wav',
+		1:'jump.wav',
+		2:'land0.wav',
+		3:'attack.wav',
+		4:'atk_wait.wav',
+		5:'jump_hit.wav',
+		6:'damage.wav',
+		7:'woah.wav',
+		8:'ice_slide.wav',
+		9:'ice_slide_stop.wav',
+		10:'water_land.wav'}
+def pc_audio(ID,pit=1):
+	pc=Audio(SP+SND_PC[ID],pitch=pit,volume=se.SFX_VOLUME)
+	cc.purge_instance(pc)
 
-snd_eating_plant=SA+'plant_bite.wav'
-snd_scrubber=SA+'scrubber.wav'
-snd_mouse=SA+'mouse.wav'
-snd_seal=SA+'seal.wav'
-snd_rat=SA+'rat_idle.wav'
+## CRATE SFX
+SND_CRT={0:'steel.wav',
+		1:'block.wav',
+		2:'break1.wav',
+		3:'break2.wav',
+		4:'bnc.wav',
+		5:'spring.wav',
+		6:'checkp.wav',
+		7:'check_d.wav',
+		8:'tnt.wav',
+		9:'nitro_idle.wav',
+		10:'explode.wav',
+		11:'glass.wav',
+		12:'switch.wav',
+		13:'air.wav',
+		14:'aku.wav'}
+def crate_audio(ID,pit=1):
+	ca=Audio(SN+SND_CRT[ID],pitch=pit,volume=se.SFX_VOLUME)
+	cc.purge_instance(ca)
 
-def snd_switch():
-	Audio(SN+'switch.wav',volume=settings.SFX_VOLUME)
-	Audio(SN+'block.wav',volume=settings.SFX_VOLUME)
-def snd_checkp():
-	Audio(SN+'check_d.wav',volume=settings.SFX_VOLUME)
-	Audio(SN+'checkp.wav',volume=settings.SFX_VOLUME)
-def snd_collect():
-	Audio(SN+'collect.wav',volume=.5)
-	invoke(lambda:Audio(snd_enter,volume=.3),delay=.5)
+## NPC SFX
+SND_NPC={0:'plant_bite.wav',
+		1:'scrubber.wav',
+		2:'mouse.wav',
+		3:'seal.wav',
+		4:'rat_idle.wav'}
+def npc_audio(ID,pit=1):
+	np=Audio(SA+SND_NPC[ID],pitch=pit,volume=se.SFX_VOLUME)
+	cc.purge_instance(np)
 
+## OBJECTS/ITEM SFX
+SND_OBJ={0:'spawn.wav',
+		1:'door_open.wav',
+		2:'portal.wav',
+		3:'wlog.wav',
+		4:'role.wav',
+		5:'waterf.wav',
+		6:'bubble.wav',
+		7:'electric.wav',
+		8:'npc_beat.wav'}
+def obj_audio(ID,pit=1):
+	ob=Audio(SN+SND_OBJ[ID],pitch=pit,volume=se.SFX_VOLUME)
+	cc.purge_instance(ob)
+
+## Background Sounds
 class WaterRiver(Audio):
 	def __init__(self):
 		super().__init__(VS+'waterf.wav',volume=0,loop=True)
 	def update(self):
 		if not status.gproc() and not (status.bonus_round or status.is_death_route):
-			self.volume=.6
+			self.volume=se.SFX_VOLUME
 			return
 		self.volume=0
 
@@ -90,58 +106,58 @@ class AmbienceSound(Entity):
 			self.rpt=max(self.rpt-time.dt,0)
 			if self.rpt <= 0:
 				self.rpt=1
-				Audio(VS+'jungle.wav',pitch=random.uniform(1,1.1),volume=.6)
+				fb=Audio(VS+'jungle.wav',pitch=random.uniform(1,1.1),volume=se.SFX_VOLUME)
+				cc.purge_instance(fb)
 
-## BGM
+## Background Music
 MC='res/snd/music/'
 class LevelMusic(Audio):
 	def __init__(self,T):
 		lM=MC+'lv'+str(T)+'/0.mp3'
 		VOL=settings.MUSIC_VOLUME
-		super().__init__(lM,volume=settings.MUSIC_VOLUME,loop=True)
+		super().__init__(lM,volume=se.MUSIC_VOLUME,loop=True)
 	def update(self):
-		if status.bonus_round or status.is_death_route:
+		if (status.bonus_round or status.is_death_route):
 			self.fade_out()
-			self.disable()
-		if status.gproc() or status.aku_hit >= 3:
+			cc.purge_instance(self)
+		if status.gproc() or status.aku_hit > 2:
 			self.volume=0
 			return
-		self.volume=settings.MUSIC_VOLUME
+		self.volume=se.MUSIC_VOLUME
 
 class BonusMusic(Audio):
 	def __init__(self,T):
 		lB=MC+'lv'+str(T)+'/0b.mp3'
-		super().__init__(lB,volume=settings.MUSIC_VOLUME,loop=True)
+		super().__init__(lB,volume=se.MUSIC_VOLUME,loop=True)
 	def update(self):
 		if not status.bonus_round or status.is_death_route:
 			self.fade_out()
-			self.disable()
+			cc.purge_instance(self)
 			LevelMusic(T=status.level_index)
 			return
 		if status.gproc():
 			self.volume=0
 			return
-		self.volume=settings.MUSIC_VOLUME
+		self.volume=se.MUSIC_VOLUME
 
 class SpecialMusic(Audio):
 	def __init__(self,T):
-		super().__init__(MC+'lv'+str(T)+'/0c.mp3',volume=settings.MUSIC_VOLUME,loop=True)
+		super().__init__(MC+'lv'+str(T)+'/0c.mp3',volume=se.MUSIC_VOLUME,loop=True)
 	def update(self):
 		if not status.is_death_route:
 			self.fade_out()
-			self.disable()
+			cc.purge_instance(self)
 			LevelMusic(T=status.level_index)
-			return
 
 class AkuMusic(Audio):
 	def __init__(self):
-		super().__init__(MC+'ev/invinc.mp3',volume=settings.MUSIC_VOLUME)
+		super().__init__(MC+'ev/invinc.mp3',volume=se.MUSIC_VOLUME)
 	def update(self):
 		if not status.gproc():
 			if not self.playing:
 				status.aku_hit=2
-				Audio(snd_damg,pitch=.8)
+				pc_audio(ID=6,pit=.8)
 				self.disable()
 			if status.is_dying:
 				self.fade_out()
-				self.disable()
+				cc.purge_instance(self)

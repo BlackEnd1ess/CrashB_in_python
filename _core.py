@@ -3,7 +3,7 @@ from math import atan2,sqrt
 from ursina import *
 
 level_ready=False
-snd=sound
+sn=sound
 st=status
 LC=_loc
 C=crate
@@ -28,20 +28,20 @@ def set_jump_type(c,typ):
 	c.vpos=jmp_h[typ]
 	c.jumping=True
 def get_damage(c):
-	if not c.injured and not status.is_dying and status.aku_hit < 3:
+	if not (c.injured or st.is_dying) and st.aku_hit < 3:
 		if st.aku_hit > 0:
 			status.aku_hit-=1
 			c.injured=True
-			Audio(snd.snd_damg,pitch=.8)
+			sn.pc_audio(ID=6,pit=.8)
 			invoke(lambda:setattr(c,'injured',False),delay=2)
 			invoke(lambda:setattr(c,'alpha',1),delay=2)
 			return
 		status.is_dying=True
-		Audio(snd.snd_woah,pitch=.8)
-def death_event(d):
+		sn.pc_audio(ID=7,pit=.8)
+def death_event(c):
 	if not st.death_event:
 		status.death_event=True
-		d.freezed=True
+		c.freezed=True
 		ui.BlackScreen()
 		status.crate_count-=status.crate_to_sv
 		if st.is_death_route:
@@ -62,18 +62,18 @@ def death_event(d):
 		else:
 			status.aku_hit=1
 			if not st.aku_exist:
-				Audio(sound.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
-				npc.AkuAkuMask(pos=(d.x,d.y,d.z))
+				sn.crate_audio(ID=14,pit=1.2)
+				npc.AkuAkuMask(pos=(c.x,c.y,c.z))
 		reset_crates()
 		rmv_wumpas()
 		reset_npc()
 		check_cstack()
-		d.position=status.checkpoint
-		camera.position=d.position
+		c.position=status.checkpoint
+		camera.position=c.position
 		camera.rotation=(15,0,0)
-		d.is_reset_phase=False
+		c.is_reset_phase=False
 		status.death_event=False
-		invoke(lambda:setattr(d,'freezed',False),delay=2)
+		invoke(lambda:setattr(c,'freezed',False),delay=2)
 def various_val(c):
 	c.indoor=max(c.indoor-time.dt,0)
 	if c.injured:c.hurt_blink()
@@ -91,7 +91,7 @@ def c_attack(c):
 				e.is_hitten=True
 				a=Vec3(e.x-c.x,0,e.z-c.z)
 				e.fly_direc=a
-				Audio(snd.snd_nbeat)
+				sn.obj_audio(ID=8)
 def c_slide(c):
 	if not c.walking:
 		if c.slide_fwd > 0 and status.p_last_direc != None:
@@ -145,8 +145,7 @@ def reset_crates():
 	for ca in scene.entities[:]:
 		if is_crate(ca):
 			if ca.poly == 1:
-				scene.entities.remove(ca)
-				ca.disable()
+				purge_instance(ca)
 	for cv in st.C_RESET[:]:
 		if cv.vnum in [9,10]:
 			cv.c_reset()
@@ -220,11 +219,12 @@ def obj_grnd(c):
 			jump_enemy(c=c,e=vp)
 			return
 		landing(c,e=vj.world_point.y,o=vp)
-		if str(vp.name) in ['mptf','iceg']:vp.mv_player()
+		if str(vp.name) == 'mptf':
+			vp.mv_player()
+		c.is_slippery=(str(vp.name) == 'iceg')
 		status.is_dying=(str(vp) in ['water_hit','falling_zone'])
 		return
 	c.landed=False
-	c.is_slippery=False
 	c.move_speed=2.4
 def obj_walls(c):
 	if status.LV_CLEAR_PROCESS:
@@ -257,7 +257,7 @@ def landing(c,e,o):
 		c.first_land=False
 		c.is_landing=True
 		c.land_anim=0
-		Audio(snd.snd_land)
+		sn.pc_audio(ID=2)
 		obj_act(o)
 	c.is_flip=False
 	c.flip_anim=0
@@ -290,7 +290,8 @@ def c_item(c):
 
 ## interface,collectables
 def wumpa_count(n):
-	snd.snd_collect()
+	sn.ui_audio(ID=2)
+	invoke(lambda:sn.ui_audio(ID=1),delay=.5)
 	if status.bonus_round:
 		status.wumpa_bonus+=n
 		return
@@ -303,7 +304,7 @@ def wumpa_count(n):
 		ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]+.1))
 def give_extra_live():
 	ui.live_get_anim()
-	Audio(snd.snd_lifes,volume=.5)
+	sn.ui_audio(ID=3)
 	if status.bonus_round:
 		status.lives_bonus+=1
 	else:
@@ -379,7 +380,7 @@ def enter_bonus(c):
 	status.bonus_round=True
 	load_b_ui()
 	status.day_mode='bonus'
-	snd.BonusMusic(T=status.level_index)
+	sn.BonusMusic(T=st.level_index)
 	ui.BonusText()
 	c.position=(0,-35,-3)
 	camera.y=-35
@@ -409,15 +410,15 @@ def load_gem_route(c):
 		invoke(lambda:load_droute(c),delay=.5)
 def load_droute(c):
 	ui.BlackScreen()
-	if not status.is_death_route:
-		status.is_death_route=True
-		c.position=(200,1,-3)
-		camera.position=(200,.5,-3)
-		status.loading=False
-		c.freezed=False
-		snd.SpecialMusic(T=status.level_index)
-	else:
+	if st.is_death_route:
 		c.back_to_level(c)
+		return
+	status.is_death_route=True
+	c.position=(200,1,-3)
+	camera.position=(200,.5,-3)
+	status.loading=False
+	c.freezed=False
+	sn.SpecialMusic(T=st.level_index)
 
 ## npc
 def set_val_npc(m):
@@ -447,9 +448,8 @@ def npc_purge(m):
 	m.collider=None
 	m.can_move=False
 	m.fly_time=0
-	mc=time.dt/50
-	m.scale=max(m.scale-(mc,mc,mc),0)
-	if m.scale == 0:
+	m.scale_z=max(m.scale_z-time.dt/100,0)
+	if m.scale_z <= 0:
 		status.NPC_RESET.append(m)
 		purge_instance(m)
 def npc_walk(m):
@@ -515,7 +515,7 @@ def fly_away(n):
 def kill_by_jump(m,c):
 	m.is_purge=True
 	set_jump_type(c,typ=1)
-	Audio(snd.snd_jmph)
+	sn.pc_audio(ID=5)
 def is_enemie(n):
 	nnk=[N.Amadillo,N.Turtle,N.SawTurtle,
 		N.Penguin,N.Hedgehog,N.Seal,

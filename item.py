@@ -8,6 +8,7 @@ b='box'
 
 r=random
 cc=_core
+sn=sound
 ##place wumpa fruits
 def place_wumpa(pos,cnt):
 	for wpo in range(cnt):
@@ -26,12 +27,10 @@ class WumpaFruitHD(Entity):##3D Model
 		if _core.level_ready:
 			status.W_RESET.append(self)
 	def destroy(self):
-		self.parent=None
-		self.disable()
-		scene.entities.remove(self)
+		cc.purge_instance(self)
 	def collect(self):
-		self.disable()
 		cc.wumpa_count(1)
+		destroy()
 	def update(self):
 		if not status.gproc():
 			if self.visible:
@@ -94,7 +93,7 @@ class GemStone(Entity):
 		return False
 	def purge(self):
 		if self.gemID == 5:
-			self.ptext.disable()
+			cc.purge_instance(self.ptext)
 		self.collider=None
 		cc.purge_instance(self)
 		_loc.C_GEM=None
@@ -103,7 +102,7 @@ class GemStone(Entity):
 			status.level_cle_gem=True
 		else:
 			status.level_col_gem=True
-		Audio(sound.snd_c_gem,volume=1)
+		sn.ui_audio(ID=5)
 		status.show_gems=5
 		self.purge()
 	def push_gem(self):
@@ -132,7 +131,7 @@ class EnergyCrystal(Entity):
 		self.collider=b
 	def collect(self):
 		status.level_crystal=True
-		Audio(sound.snd_c_gem,volume=1)
+		sn.ui_audio(ID=2)
 		status.show_gems=5
 		cc.purge_instance(self)
 	def update(self):
@@ -144,7 +143,7 @@ class TrialClock(Entity):
 		Clk='clock/clock'
 		super().__init__(model=i_path+Clk+'.obj',texture=i_path+Clk+'.png',position=pos,scale=.003,unlit=False,double_sided=True)
 	def collect(self):
-		self.disable()
+		cc.purge_instance(self)
 		status.is_time_trial=True
 	def update(self):
 		self.rotation_y+=time.dt*120

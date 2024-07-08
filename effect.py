@@ -17,4 +17,4 @@ class Sparkle(Entity):
 				return
 			self.scale-=Vec3(time.dt/2,time.dt/2,0)
 			if self.scale_x <= 0:
-				self.disable()
+				_core.purge_instance(self)

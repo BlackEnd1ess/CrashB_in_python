@@ -53,7 +53,7 @@ def destroy_event(c):
 			status.show_crates=5
 	if not status.b_audio:
 		status.b_audio=True
-		Audio(sn.snd_break,volume=settings.SFX_VOLUME)
+		sn.crate_audio(ID=2)
 		invoke(cc.reset_audio,delay=.1)
 	animation.CrateBreak(cr=c)
 	cc.check_crates_over(c)
@@ -62,37 +62,36 @@ def destroy_event(c):
 def block_destroy(c):
 	if not c.p_snd:
 		c.p_snd=True
-		w={0:1,8:1,9:1,10:1,14:.55}
-		Audio(sn.snd_steel,pitch=w[c.vnum])
+		sn.crate_audio(ID=0)
 		invoke(lambda:setattr(c,'p_snd',False),delay=.5)
 
 def spawn_ico(c):
-	sound.snd_switch()
+	sn.crate_audio(ID=12)
+	sn.crate_audio(ID=1)
 	ico=Entity(model='quad',texture='res/ui/icon/trigger.png',position=(c.x,c.y,c.z),scale=ic)
 	ico.animate_y(c.y+1,duration=1.2)
-	invoke(ico.disable,delay=3)
+	invoke(lambda:cc.purge_instance(ico),delay=3)
 
 def explosion(cr):
 	Fireball(C=cr)
-	if not status.preload_phase:
-		if not status.e_audio:
-			status.e_audio=True
-			Audio(sn.snd_explo,volume=settings.SFX_VOLUME*1.5)
-		if cr.vnum == 12 and not status.n_audio:
-			status.n_audio=True
-			invoke(lambda:Audio(sn.snd_glass,volume=settings.SFX_VOLUME/1.5,pitch=1.4),delay=.1)
-		invoke(cc.reset_audio,delay=.2)
-		for exR in scene.entities[:]:
-			if distance(cr,exR) < 1:
-				if cc.is_crate(exR) and exR.collider != None and exR.y > -250:
-					if exR.vnum in [3,11]:
-						exR.empty_destroy()
-					else:
-						exR.destroy()
-				elif cc.is_enemie(exR) and exR.collider != None:
-					exR.is_hitten=True
-				elif exR == LC.ACTOR:
-					cc.get_damage(exR)
+	if not status.e_audio:
+		status.e_audio=True
+		sn.crate_audio(ID=10)
+	if cr.vnum == 12 and not status.n_audio:
+		status.n_audio=True
+		invoke(lambda:sn.crate_audio(ID=11,pit=1.4),delay=.1)
+	invoke(cc.reset_audio,delay=.2)
+	for exR in scene.entities[:]:
+		if distance(cr,exR) < 1:
+			if cc.is_crate(exR) and exR.collider != None and exR.y > -250:
+				if exR.vnum in [3,11]:
+					exR.empty_destroy()
+				else:
+					exR.destroy()
+			elif cc.is_enemie(exR) and exR.collider != None:
+				exR.is_hitten=True
+			elif exR == LC.ACTOR:
+				cc.get_damage(exR)
 
 ##Crate Logics
 class Iron(Entity):
@@ -135,7 +134,7 @@ class Bounce(Entity):
 		destroy_event(self)
 	def bnc_event(self):
 		cc.wumpa_count(2)
-		Audio(sn.snd_bounc,pitch=1+self.b_cnt/10)
+		sn.crate_audio(ID=4,pit=1+self.b_cnt/10)
 		self.b_cnt+=1
 		self.lf_time=5
 		if not self.is_bounc:
@@ -174,15 +173,14 @@ class AkuAku(Entity):
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
-		if not status.preload_phase:
-			Audio(sn.snd_aku_m,pitch=1.2,volume=settings.SFX_VOLUME)
-			if status.aku_hit < 4:
-				status.aku_hit+=1
-				if status.aku_hit >= 3:
-					sn.AkuMusic()
-			if not status.aku_exist:
-				npc.AkuAkuMask(pos=(self.x,self.y,self.z))
-			destroy_event(self)
+		sn.crate_audio(ID=14,pit=1.2)
+		if status.aku_hit < 4:
+			status.aku_hit+=1
+			if status.aku_hit >= 3:
+				sn.AkuMusic()
+		if not status.aku_exist:
+			npc.AkuAkuMask(pos=(self.x,self.y,self.z))
+		destroy_event(self)
 
 class Checkpoint(Entity):
 	def __init__(self,pos,pse):
@@ -203,7 +201,7 @@ class SpringWood(Entity):
 		self.is_bounc=False
 	def c_action(self):
 		animation.bnc_animation(self)
-		Audio(sound.snd_sprin)
+		sn.crate_audio(ID=5)
 	def destroy(self):
 		item.place_wumpa(self.position,cnt=1)
 		destroy_event(self)
@@ -217,7 +215,7 @@ class SpringIron(Entity):
 		self.p_snd=False
 	def c_action(self):
 		animation.bnc_animation(self)
-		Audio(sound.snd_sprin)
+		sn.crate_audio(ID=5)
 	def destroy(self):
 		block_destroy(self)
 
@@ -272,28 +270,25 @@ class SwitchNitro(Entity):
 class TNT(Entity):
 	def __init__(self,pos,pse):
 		self.vnum=11
+		self.tx=pp+'crate_tnt_'
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
-		self.e_snd=Audio(sn.snd_c_tnt,autoplay=False,volume=settings.SFX_VOLUME)
 		self.activ=False
 		self.countdown=0
 	def destroy(self):
+		sn.crate_audio(ID=8)
 		self.activ=True
-		self.e_snd.fade_in()
-		if not status.preload_phase:
-			self.e_snd.play()
 		self.countdown=3.99
 		self.shader=unlit_shader
 	def empty_destroy(self):
-		self.e_snd.fade_out()
 		self.countdown=0
 		destroy_event(self)
 	def update(self):
-		if not status.gproc() and self.visible:
-			if self.countdown > 0 and self.activ:
-				self.countdown-=time.dt/1.15
+		if not status.gproc():
+			if self.activ and self.visible:
+				self.countdown=max(self.countdown-time.dt/1.15,0)
 				ctnt=int(self.countdown)
-				self.texture=pp+'crate_tnt_'+str(ctnt)+'.png'
+				self.texture=self.tx+str(ctnt)+'.png'
 				if self.countdown <= 0:
 					self.empty_destroy()
 
@@ -316,7 +311,7 @@ class Nitro(Entity):
 				rh=random.uniform(.1,.2)
 				self.snd_time=random.randint(2,3)
 				if distance(LC.ACTOR.position,self.position) <= 2:
-					Audio(sn.snd_nitro,volume=.2)
+					sn.crate_audio(ID=9)
 				elif not self.is_stack:
 					self.animate_position((self.x,self.y+rh,self.z),duration=.02)
 					invoke(lambda:self.animate_position((self.x,self.start_y,self.z),duration=.2),delay=.15)
@@ -333,9 +328,8 @@ class Air(Entity):
 	def destroy(self):
 		status.C_RESET.append(self)
 		place_crate(p=self.position,ID=self.c_ID,pse=1)
-		Audio(sn.snd_c_air,volume=settings.SFX_VOLUME)
-		scene.entities.remove(self)
-		self.disable()
+		sn.crate_audio(ID=13)
+		cc.purge_instance(self)
 
 class Protected(Entity):
 	def __init__(self,pos,pse):
@@ -417,7 +411,7 @@ class CheckpointAnimation(Entity):
 		self.c_text='CHECKPOINT'
 		self.wtime=.05
 		self.index=0
-		sn.snd_checkp()
+		sn.crate_audio(ID=6)
 	def shw_text(self):
 		self.wtime=max(self.wtime-time.dt,0)
 		if self.wtime <= 0:
@@ -426,7 +420,7 @@ class CheckpointAnimation(Entity):
 			letter=self.c_text[self.index]
 			ct=Text(letter,font='res/ui/font.ttf',position=(self.x+self.index/10,self.y,self.z),scale=7,parent=scene,color=color.rgb32(255,255,0))
 			invoke(ct.disable,delay=_d)
-			invoke(lambda:Audio(sn.snd_jump,pitch=.9),delay=_d+.1)
+			invoke(lambda:sn.pc_audio(ID=1,pit=.9),delay=_d+.1)
 			self.index+=1
 			if self.index >= 10:
 				self.index=0

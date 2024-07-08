@@ -64,8 +64,8 @@ class SkyBox(Sky):
 		self.thunder_time=random.randint(4,10)
 	def thunder_bolt(self):
 		self.color=color.white
-		Audio(sound.snd_thu1,pitch=random.uniform(.1,.5))
-		invoke(lambda:Audio(random.choice(sound.snd_thu2),pitch=random.uniform(.1,.5)),delay=.5)
+		#Audio(sound.snd_thu1,pitch=random.uniform(.1,.5))
+		#invoke(lambda:Audio(random.choice(sound.snd_thu2),pitch=random.uniform(.1,.5)),delay=.5)
 		invoke(self.reset,delay=random.uniform(.1,.4))
 	def update(self):
 		if status.bonus_round:
@@ -113,17 +113,19 @@ class Fog(Entity):
 class RainFall(FrameAnimation3d):
 	def __init__(self):
 		j=.004
-		super().__init__('res/objects/ev/rain/rain',scale=(j,j/2,j),color=color.rgb32(180,180,200),fps=60,loop=True,alpha=.7,rotation=(0,10,10))
-		self.soundR=Audio(sound.snd_rain,loop=True,volume=0)
+		super().__init__('res/objects/ev/rain/rain',scale=(j,j/2,j),color=color.rgb32(180,180,200),fps=60,loop=True,alpha=0,rotation=(0,10,10),visible=False)
+		#self.soundR=Audio(sound.snd_rain,loop=True,volume=0)
 		self.ta=_loc.ACTOR
+		self.ta.indoor=.5
 	def rain_start(self):
 		self.fps=60
-		self.soundR.pitch=random.uniform(.9,1)
-		self.soundR.volume=settings.SFX_VOLUME
+		self.visible=True
+		#self.soundR.pitch=random.uniform(.9,1)
+		#self.soundR.volume=settings.SFX_VOLUME
 		self.alpha=lerp(self.alpha,.7,time.dt*2)
 	def rain_stop(self):
 		self.fps=0
-		self.soundR.volume=0
+		#self.soundR.volume=0
 		self.alpha=lerp(self.alpha,0,time.dt*2)
 	def follow_p(self):
 		s=self
@@ -134,11 +136,11 @@ class RainFall(FrameAnimation3d):
 		s.position=lerp(s.position,(s.ta.x,camera.y-1.2,s.ta.z+-.1),time.dt*4)
 	def update(self):
 		if not status.gproc() and self.ta.warped:
-			if self.ta.indoor > 0:
-				self.rain_stop()
+			if self.ta.indoor <= 0:
+				self.rain_start()
+				self.follow_p()
 				return
-			self.follow_p()
-			self.rain_start()
+			self.rain_stop()
 
 class SnowFall(Entity):
 	def __init__(self):

@@ -1,5 +1,4 @@
-- ice walk, slipperness
-- hide pillars+ cry
+- fixx: plant bite, hippo one act, lv3 wumpas, death animation stop
 - death cause by enemie/fall/drown
 - fixx crate fall
 
