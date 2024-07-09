@@ -1,5 +1,5 @@
-- fixx: plant bite, hippo one act, lv3 wumpas, death animation stop
-- death cause by enemie/fall/drown
+- fixx: plant bite, lv3 wumpas
+- death event fixx / cause by enemie/fall/drown
 - fixx crate fall
 
 - game over event

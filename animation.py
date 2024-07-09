@@ -101,16 +101,16 @@ def flip(d):
 	d.texture=af+'flp/crash.tga'
 	d.model=af+'flp/'+str(int(d.flip_anim))+'.ply'
 
-def player_death(d):
-	d.death_anim+=time.dt*15
-	d.y+=time.dt/1.3
-	if d.death_anim > 20.9:
+def p_death(c):
+	c.death_anim+=time.dt*15
+	c.y+=time.dt/1.5
+	if c.death_anim > 20.9:
 		status.is_dying=False
-		d.death_anim=0
-		_core.death_event(d)
-	d.texture=af+'death/crash_death.tga'
-	d.model=af+'death/'+str(int(d.death_anim))+'.ply'
-
+		c.death_anim=0
+		cc.death_event(c)
+		return
+	c.texture=af+'death/crash_death.tga'
+	c.model=af+'death/'+str(int(c.death_anim))+'.ply'
 
 ## crate animation
 bT=40
@@ -208,13 +208,9 @@ def npc_walking(m):
 	m.model=nf+str(m)+'/'+str(int(m.anim_frame))+'.ply'
 
 def plant_bite(m):
-	m.is_attacking=True
 	m.atk_frame+=time.dt*t
 	if m.atk_frame > 18.9:
-		m.is_attacking=False
-		m.is_bite=False
 		m.atk_frame=0
-		m.atk_wait=1
 	m.texture=nf+str(m)+'/attack/plant.tga'
 	m.model=nf+str(m)+'/attack/'+str(int(m.atk_frame))+'.ply'
 
@@ -226,16 +222,15 @@ def hedge_defend(m):
 	m.model=nf+str(m)+'/attack/'+str(int(m.def_frame))+'.ply'
 
 def hippo_wait(m):
-	m.a_frame+=time.dt*t
+	m.a_frame+=time.dt*18
 	if m.a_frame > 23.9:
 		m.a_frame=0
 		return
 	m.model=nf+'hippo/'+str(int(m.a_frame))+'.ply'
 def hippo_dive(m):
-	m.a_frame+=time.dt*t
+	m.a_frame+=time.dt*18
 	if m.a_frame > 57.9:
 		m.a_frame=0
-		m.is_uw=True
 		return
 	m.model=nf+'hippo/'+str(int(m.a_frame))+'.ply'
 

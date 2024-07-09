@@ -131,7 +131,7 @@ class EnergyCrystal(Entity):
 		self.collider=b
 	def collect(self):
 		status.level_crystal=True
-		sn.ui_audio(ID=2)
+		sn.ui_audio(ID=5)
 		status.show_gems=5
 		cc.purge_instance(self)
 	def update(self):

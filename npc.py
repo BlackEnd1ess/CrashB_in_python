@@ -136,18 +136,20 @@ class EatingPlant(Entity):
 		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(400,400,1200))
 		self.m_direction=0
+		self.ta=LC.ACTOR
 		cc.set_val_npc(self)
 		self.atk_frame=0
 		self.eat=False
 	def action(self):
-		dc=distance(self,LC.ACTOR)
-		if dc < 2:
+		dc=distance(self,self.ta)
+		if dc < 3:
 			cc.rotate_to_crash(self)
-			if dc < 1:
-				if not self.eat:
-					self.eat=True
-					sn.npc_audio(ID=0)
-					invoke(lambda:setattr(self,'eat',False),delay=1)
+			if dc <= 1 and not self.eat:
+				if not (self.ta.is_attack or self.ta.jumping):
+					_core.get_damage(LC.ACTOR)
+				self.eat=True
+				sn.npc_audio(ID=0)
+				invoke(lambda:setattr(self,'eat',False),delay=1)
 	def update(self):
 		if not status.gproc():
 			if self.is_hitten:
@@ -314,44 +316,31 @@ class Hippo(Entity):
 	def __init__(self,pos):
 		hPO=npc_folder+'hippo/'
 		super().__init__(model=hPO+'0.ply',texture=hPO+'hpo.tga',position=pos,rotation_x=-90,scale=.0005,double_sided=True,unlit=False)
-		self.col=Entity(model='cube',name='HPP',position=(self.x,self.y-.15,self.z-.2),scale=(.6,.5,1),alpha=.5,collider='box')
-		self.up_y=self.y
-		self.down_y=self.y-.5
-		self.is_hitten=False
+		self.col=Entity(model='cube',name='HPP',position=(self.x,self.y-.15,self.z-.2),scale=(.6,.5,1),visible=False,collider='box')
+		self.col.active=False
 		self.active=False
-		self.p_aud=False
-		self.is_uw=False
 		self.a_frame=0
-		self.uw_time=0
-	def underwtr(self):
-		if self.uw_time < 3:self.uw_time+=time.dt
-		if self.uw_time >= 3:
-			self.y+=time.dt/2
-			if self.y >= self.up_y:
-				self.col.collider='box'
-				self.active=False
-				self.is_uw=False
-				self.p_aud=False
-				self.a_frame=0
-				self.uw_time=0
-	def dive_down(self):
-		if not self.p_aud:
-			self.p_aud=True
+		self.start_y=self.y
+	def do_act(self):
+		if not self.active:
+			self.active=True
 			sn.pc_audio(ID=10)
-			invoke(lambda:sn.obj_audio(ID=6),delay=.3)
-		if self.a_frame > 40:
-			self.col.collider=None
-			self.y-=time.dt/2
-			if self.y <= self.down_y:
-				self.active=False
+			invoke(lambda:self.dive_down(),delay=1)
+	def dive_down(self):
+		self.animate_y(self.start_y-1,duration=1)
+		invoke(lambda:setattr(self.col,'collider',None),delay=1)
+		invoke(self.dive_up,delay=3)
+	def dive_up(self):
+		self.animate_y(self.start_y,duration=1)
+		invoke(lambda:setattr(self,'active',False),delay=3)
+		invoke(lambda:setattr(self.col,'collider','box'),delay=1)
 	def update(self):
 		if not status.gproc():
-			self.active=(self.col.intersects(LC.ACTOR))
-			if self.active:
-				if self.is_uw:
-					self.underwtr()
-				else:
-					self.dive_down()
-					animation.hippo_dive(self)
+			if self.col.active:
+				self.col.active=False
+				self.do_act()
 				return
-			animation.hippo_wait(self)
+			if not self.active:
+				animation.hippo_wait(self)
+				return
+			animation.hippo_dive(self)

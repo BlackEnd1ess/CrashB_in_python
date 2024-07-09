@@ -59,12 +59,11 @@ def developer_level():
 	invoke(free_level,delay=1)
 
 def test():
-	o.EndRoom(pos=(1,2,-15),c=color.rgb32(200,210,200))
+	#o.EndRoom(pos=(1,2,-15),c=color.rgb32(200,210,200))
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
-	mt.crate_block(ID=11,POS=(.5,.16,-27.1),CNT=[1,1,1])
-	#o.IceGround(pos=(0,.5,-20),sca=(5,1))
-	#for MM in range(1):
-	#	npc.spawn(pos=(0,0,-20+MM),mID=6,mDirec=0,mTurn=0)
+	#mt.crate_block(ID=11,POS=(.5,.16,-25.1),CNT=[1,1,1])
+	#npc.spawn(pos=(1,0,-23),mID=6,mDirec=0,mTurn=0)
+	o.Role(pos=(0,.5,-24),di=1)
 	invoke(free_level,delay=1)
 
 def level1():##wood
@@ -556,7 +555,7 @@ def level3():##water
 	o.multi_tile(p=(0,1.8,80),cnt=[1,5])
 	o.multi_tile(p=(.85,1.8,80+.85),cnt=[1,1])
 	#npc
-	N.Hippo(pos=(0,1.8,64))
+	N.Hippo(pos=(0,1.8,64.7))
 	N.Hippo(pos=(0,1.8,63))
 	N.spawn(mID=6,pos=(-.85,1.05,29),mDirec=0,mTurn=0)
 	N.spawn(mID=6,pos=(.85,1.05,25.8),mDirec=0,mTurn=0)

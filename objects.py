@@ -289,25 +289,28 @@ class Role(Entity):
 		if self.x >= self.main_pos[0]+1.8:
 			self.roll_wait=1
 			self.direc=1
+			invoke(self.p_snd,delay=.5)
 	def roll_left(self):
 		self.x-=time.dt*2
 		self.rotation_x-=time.dt*80
 		if self.x <= self.main_pos[0]-1.8:
 			self.roll_wait=1
 			self.direc=0
+			invoke(self.p_snd,delay=.5)
+	def p_snd(self):
+		if distance(self,LC.ACTOR) < 3:
+			sn.obj_audio(ID=4)
 	def update(self):
-		if not status.gproc():
+		if not status.gproc() and self.visible:
 			self.roll_wait=max(self.roll_wait-time.dt,0)
 			if self.roll_wait <= 0:
-				self.is_rolling=False
-				self.danger=False
-				if distance(self,LC.ACTOR) < .4:
-					sn.obj_audio(ID=4)
+				self.is_rolling=True
+				self.danger=True
+				rdi={0:self.roll_right,1:self.roll_left}
+				rdi[self.direc]()
 				return
-			self.danger=True
-			self.is_rolling=True
-			rdi={0:self.roll_right,1:self.roll_left}
-			rdi[self.direc]()
+			self.is_rolling=False
+			self.danger=False
 
 ####################
 ## level 3 objects #
@@ -515,6 +518,10 @@ class RoomDoor(Entity):## door for start and end room
 				return
 			if self.d_open:
 				self.d_open=False
+				if self.typ == 0:
+					cc.purge_instance(self.door_part)
+					cc.purge_instance(self)
+					return
 				animation.door_close(self)
 				sn.obj_audio(ID=1,pit=.9)
 

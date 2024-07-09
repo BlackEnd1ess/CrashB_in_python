@@ -143,7 +143,7 @@ class CrashB(Entity):
 	def basic_animation(self):
 		if not status.gproc():
 			if status.is_dying:
-				an.player_death(self)
+				an.p_death(self)
 				return
 			if self.is_attack:
 				an.spin(self)
@@ -153,7 +153,7 @@ class CrashB(Entity):
 			if (self.landed and self.is_landing) and not self.walking:
 				an.land(self)
 				return
-			if status.p_idle(self):
+			if status.p_idle(self) or self.freezed:
 				if self.is_slippery:
 					an.slide_stop(self)
 				else:

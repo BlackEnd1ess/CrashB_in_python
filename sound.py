@@ -1,11 +1,11 @@
 import status,settings,_core
 from ursina import *
 
-se=settings
 VS='res/snd/ambience/'
 SN='res/snd/misc/'
 SP='res/snd/player/'
 SA='res/snd/npc/'
+se=settings
 cc=_core
 
 ## ambience sound

@@ -28,7 +28,7 @@ def set_jump_type(c,typ):
 	c.vpos=jmp_h[typ]
 	c.jumping=True
 def get_damage(c):
-	if not (c.injured or st.is_dying) and st.aku_hit < 3:
+	if not (c.injured or st.is_dying):
 		if st.aku_hit > 0:
 			status.aku_hit-=1
 			c.injured=True
@@ -73,7 +73,7 @@ def death_event(c):
 		camera.rotation=(15,0,0)
 		c.is_reset_phase=False
 		status.death_event=False
-		invoke(lambda:setattr(c,'freezed',False),delay=2)
+		invoke(lambda:setattr(c,'freezed',False),delay=3)
 def various_val(c):
 	c.indoor=max(c.indoor-time.dt,0)
 	if c.injured:c.hurt_blink()
@@ -248,6 +248,7 @@ def obj_walls(c):
 def obj_act(e):
 	u=str(e)
 	e.catch_p=(u in ['bonus_platform','gem_platform'])
+	e.active=(u == 'HPP')
 	if (u == 'plank' and e.typ == 1):e.pl_touch()
 def landing(c,e,o):
 	c.landed=True
