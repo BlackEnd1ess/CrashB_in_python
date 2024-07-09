@@ -20,7 +20,7 @@ FOG_COL={'day':color.rgb32(120,140,140),
 		'woods':color.rgb32(30,80,60)}
 
 AMB_COL={'day':color.rgb32(180,180,180),
-		'pipe':color.rgb32(100,100,200),
+		'pipe':color.rgb32(180,180,180),
 		'evening':color.rgb32(220,180,150),
 		'night':color.rgb32(0,0,0),
 		'dark':color.rgb32(0,0,0),

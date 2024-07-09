@@ -30,7 +30,7 @@ def place_crate(p,ID,m=None,l=None,pse=None,tm=None):
 			15:lambda:cTime(pos=p,pse=pse,tm=tm),
 			16:lambda:LvInfo(pos=p,pse=pse)}
 	CRATES[ID]()
-	if not ID in [0,8,9,10,15,16] and not pse == 1 and not p[1] <= -255:
+	if not ID in [0,8,9,10,15,16] and not pse == 1:
 		status.crates_in_level+=1
 		if p[1] < -20:
 			status.crates_in_bonus+=1

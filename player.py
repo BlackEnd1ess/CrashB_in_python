@@ -85,7 +85,7 @@ class CrashB(Entity):
 			scene.fog_color=color.random_color()
 			print(scene.fog_color)
 		if key == 'u':
-			self.position=(43,6,28)
+			self.position=(0,1,0)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD
@@ -108,13 +108,16 @@ class CrashB(Entity):
 			else:
 				an.run(self)
 		self.walk_snd=max(self.walk_snd-time.dt,0)
-		if self.walk_snd <= 0:
+		if self.walk_snd <= 0 and self.landed:
 			if self.is_slippery:
 				self.walk_snd=.5
 				sn.pc_audio(ID=8,pit=1.5)
 			else:
 				self.walk_snd=.35
-				sn.pc_audio(ID=0)
+				if self.in_water:
+					sn.pc_audio(ID=11,pit=random.uniform(.9,1))
+				else:
+					sn.pc_audio(ID=0)
 	def fall(self):
 		s=self
 		if s.landed or s.jumping:
@@ -139,7 +142,7 @@ class CrashB(Entity):
 		if not status.is_dying:
 			cc.cam_rotate(self)
 			cc.cam_follow(self)
-			#camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
+			camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
 	def basic_animation(self):
 		if not status.gproc():
 			if status.is_dying:

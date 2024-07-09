@@ -13,7 +13,7 @@ lv_name=['Warp Room',
 		'DEVELOPER TEST LEVEL']
 
 #item/obj name list
-item_lst=['wumpa_fruit','extra_live','gem_stone','energy_crystal','trial_clock','cam_switch','indoor_zone','level_finish']
+item_lst=['wumpa_fruit','extra_live','gem_stone','energy_crystal','trial_clock','cam_switch','indoor_zone','level_finish','elwt']
 
 #danger zone
 d_zone=['water_hit','falling_zone']

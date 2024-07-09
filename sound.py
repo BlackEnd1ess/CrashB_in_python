@@ -38,7 +38,8 @@ SND_PC={0:'walk.wav',
 		7:'woah.wav',
 		8:'ice_slide.wav',
 		9:'ice_slide_stop.wav',
-		10:'water_land.wav'}
+		10:'water_land.wav',
+		11:'water_step'}
 def pc_audio(ID,pit=1):
 	pc=Audio(SP+SND_PC[ID],pitch=pit,volume=se.SFX_VOLUME)
 	cc.purge_instance(pc)

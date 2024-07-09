@@ -63,13 +63,13 @@ def test():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
 	#mt.crate_block(ID=11,POS=(.5,.16,-25.1),CNT=[1,1,1])
 	#npc.spawn(pos=(1,0,-23),mID=6,mDirec=0,mTurn=0)
-	o.Role(pos=(0,.5,-24),di=1)
+	o.Foam(pos=(0,.5,-20))
 	invoke(free_level,delay=1)
 
 def level1():##wood
 	TS=16
 	cG=color.green
-	o.Water(pos=(0,.6,0),s=(10,128),c=color.rgb32(80,80,120),a=1,typ=2)
+	o.Water(pos=(0,.6,0),s=(10,128),c=color.rgb32(80,80,120),a=1)
 	o.InvWall(pos=(-5,.5,-64),sca=(5.,10,200))
 	o.InvWall(pos=(4.7,.5,-64),sca=(5.,10,200))
 	o.BonusPlatform(pos=(1.4,1,-6))
@@ -228,8 +228,8 @@ def level2():##snow
 	o.spawn_ice_wall(pos=(26,4,8),cnt=2,d=1)
 	o.spawn_ice_wall(pos=(45,4,28),cnt=3,d=1)
 	status.gem_death=False
-	o.Water(pos=(12,-.5,-32),s=(32,128),c=color.cyan,a=1,typ=0)
-	o.Water(pos=(51,4.5,23.5),s=(64,40),c=color.cyan,a=1,typ=0)
+	o.Water(pos=(12,-.5,-32),s=(32,128),c=color.cyan,a=1)
+	o.Water(pos=(51,4.5,23.5),s=(64,40),c=color.cyan,a=1)
 	Entity(model='quad',scale=(512,512,1),color=color.white,z=64)
 	o.BonusPlatform(pos=(5,1.1,2.1))
 	#invisible walls
@@ -423,6 +423,8 @@ def level3():##water
 		item.EnergyCrystal(pos=(0,2.5,60.5))
 	if not 5 in status.COLOR_GEM:
 		c.place_crate(ID=16,p=(0,.24+.16,-21))
+	#foam
+	#o.Foam(pos=())
 	#cam switch
 	o.CamSwitch(pos=(1,1.2,2.5),sca=(2,.2,6))
 	o.CamSwitch(pos=(-.8,1.2,6.8),sca=(2,.2,1))
@@ -435,6 +437,8 @@ def level3():##water
 	#waterfall
 	o.WaterFall(pos=(0,-.8,-1))
 	o.WaterFall(pos=(0,.2,57))
+	#foam
+	o.Foam(pos=(0,-.29,-1.5))
 	#scene
 	o.SceneWall(pos=(-3.1,.65,-13),s=1)
 	o.SceneWall(pos=(3,.5,-13),s=2)
@@ -485,7 +489,7 @@ def level3():##water
 	c.place_crate(ID=10,p=(.85,1.95+.16,80.85))
 	mt.crate_wall(ID=1,POS=(-.2,1.05+.16,14.5),CNT=[2,2])
 	mt.crate_row(ID=2,POS=(-.85,1.05+.16,40.4),CNT=4,WAY=1)
-	c.place_crate(ID=7,p=(-1,2.04+.16,58.4),m=1)
+	c.place_crate(ID=7,p=(-1,2.04+.16,58.4))
 	mt.crate_row(ID=2,POS=(-1,3.6,58.4),CNT=4,WAY=2)
 	mt.bounce_twin(POS=(1,2.04+.16,58.4),CNT=1)
 	#aku
@@ -566,14 +570,43 @@ def level3():##water
 	invoke(free_level,delay=3)
 
 def level4():## sewer
-	o.Water(pos=(0,.2,-45),s=(8,8),c=color.rgb(100,100,130),a=.5,typ=1)
+	o.BonusPlatform(pos=(1.4,.9,4.8))
+	o.EletricWater(pos=(0,.2,-48),sca=(8,96))
+	Entity(model='cube',scale=(16,1,96),position=(0,-.5,-48),texture_scale=(16,64),collider='box',texture='res/terrain/l4/metal_01.jpg')
+	Entity(model='cube',scale=(4,.5,5),position=(0,.5,1.5),texture_scale=(4,5),collider='box',texture='res/terrain/l4/metal_01.jpg')
+	#Entity(model='cube',scale=(8,.5,4),position=(4,.5,18),texture_scale=(8,4),collider='box',texture='res/terrain/l4/metal_01.jpg')
+	#tunels
 	o.SewerTunnel(pos=(0,.4,-53))
 	o.SewerTunnel(pos=(0,.4,-44))
 	o.SewerTunnel(pos=(0,.4,-35))
 	o.SewerTunnel(pos=(0,.4,-26))
-	o.SewerPlatform(pos=(0,.5,-58))
-	#o.SewerTunnel(pos=(0,1.2,-45))
-	N.spawn(pos=(0,.5,-58),mID=9,mDirec=0,mTurn=0)
-	o.swr_multi_ptf(p=(-.5,.5,-61.3),cnt=[3,3])
+	o.SewerEscape(pos=(0,-1,-22.7))
+	o.SewerEscape(pos=(0,-1,-13))
+	o.SewerEscape(pos=(0,-1,-3.3))
+	
+	o.SewerEscape(pos=(5,1,17))
+	o.SewerEscape(pos=(5,1,26.7))
+	#walls
+	#o.SewerWall(pos=(0,1,26))
+	#o.SewerWall(pos=(11,1,26))
+	#N.spawn(pos=(0,.5,-58),mID=9,mDirec=0,mTurn=0)
+	#platforms
+	ph=.3
+	pg=.65
+	o.swr_multi_ptf(p=(-.5,ph,-61.3),cnt=[3,3])
+	o.swr_multi_ptf(p=(0,ph,-58.7),cnt=[1,5])
+	o.swr_multi_ptf(p=(.6,ph,-50),cnt=[2,6])
+	o.swr_multi_ptf(p=(-.8,ph,-42),cnt=[2,4])
+	o.swr_multi_ptf(p=(0,ph,-30),cnt=[3,3])
+	o.swr_multi_ptf(p=(-.9,ph,-23),cnt=[2,2])
+	o.swr_multi_ptf(p=(-1,ph,-13),cnt=[1,3])
+	o.swr_multi_ptf(p=(1.2,ph,-5),cnt=[1,3])
+	o.swr_multi_ptf(p=(-.5,pg,2.75),cnt=[3,8])
+	o.swr_multi_ptf(p=(-.5,pg,8),cnt=[3,3])
+	o.swr_multi_ptf(p=(0,pg,10),cnt=[1,8])
+	o.swr_multi_ptf(p=(.5,pg,(.85*16)-.1),cnt=[5,1])
+	o.swr_multi_ptf(p=(3,pg+.4,(.85*16)-.1),cnt=[2,1])
+	o.swr_multi_ptf(p=(4,pg+.7,(.85*16)-.1),cnt=[2,1])
+	o.swr_multi_ptf(p=(5,pg+1,(.85*16)-.1),cnt=[2,8])
 	#o.SewerEscape(pos=(0,-1,-52.6))
 	invoke(free_level,delay=1)

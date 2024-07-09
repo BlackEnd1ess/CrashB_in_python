@@ -27,7 +27,7 @@ def steel_bridge(POS,CNT):
 	for cst in range(CNT):
 		c.place_crate(ID=0,p=(POS[0]-.32*cst,POS[1],POS[2]))
 
-def crate_row(ID,POS,CNT,WAY):# WAY: 0=right,1=front,2=up
+def crate_row(ID,POS,CNT,WAY,l=None,m=None):# WAY: 0=right,1=front,2=up
 	for cro in range(CNT):
 		pO=.32*cro
 		if WAY == 0:

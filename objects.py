@@ -385,6 +385,17 @@ class MushroomTree(Entity):
 		self.rotation=(-90,90,0)
 		unlit_obj(self)
 
+class Foam(Entity):
+	def __init__(self,pos):
+		self.t=omf+'l3/foam/'
+		super().__init__(model='quad',texture=self.t+'0.png',position=pos,scale=(5,1),texture_scale=(10,1),rotation_x=90)
+		self.frm=0
+	def update(self):
+		if not status.gproc():
+			self.frm+=time.dt*6
+			if self.frm > 15.9:
+				self.frm=0
+			self.texture=self.t+str(int(self.frm))+'.png'
 
 ####################
 ## level 4 objects #
@@ -396,7 +407,7 @@ class SewerTunnel(Entity):
 class SewerEscape(Entity):
 	def __init__(self,pos):
 		_SE=omf+'l4/scn/'
-		super().__init__(model=_SE+'pipe_1.ply',texture=_SE+'sewers.tga',position=pos,scale=.045,rotation=(-90,90,0),double_sided=True)
+		super().__init__(model=_SE+'pipe_1.ply',texture=_SE+'sewers.tga',position=pos,scale=.048,rotation=(-90,90,0),double_sided=True)
 
 class SewerPlatform(Entity):
 	def __init__(self,pos):
@@ -404,6 +415,58 @@ class SewerPlatform(Entity):
 		super().__init__(model='cube',scale=(.5,.2,.5),collider=b,position=pos,alpha=.7,visible=False)
 		self.vis=Entity(model=pPF+'ptf.ply',texture=pPF+'swr_ptf.tga',position=(self.x,self.y+.05,self.z),scale=.02,rotation_x=-90)
 		unlit_obj(self.vis)
+
+class SewerWall(Entity):
+	def __init__(self,pos):
+		mo=omf+'l4/scn/sewer_wall'
+		super().__init__(model=mo+'.ply',texture=mo+'.tga',position=pos,scale=.03,rotation=(-90,-90,0))
+		self.color=color.rgb32(180,200,180)
+		#self.color=color.rgb32(0,120,150)
+
+class EletricWater(Entity):
+	def __init__(self,pos,sca):
+		self.wtt=omf+'l4/wtr/'
+		super().__init__(model='cube',texture=self.wtt+'0.png',name='elwt',position=pos,scale=(sca[0],.1,sca[1]),texture_scale=(sca[0],sca[1]),collider=b)
+		self.color=color.rgb32(0,180,180)
+		self.alpha=.9
+		self.electric=False
+		self.ta=LC.ACTOR
+		self.tx=(sca[0],sca[1])
+		self.frm=0
+		self.tme=10
+		self.switch_water()
+	def anim(self):
+		self.frm+=time.dt*8
+		if self.frm > 29.9:
+			self.frm=0
+		self.texture=self.wtt+str(int(self.frm))+'.png'
+	def switch_water(self):
+		self.color=color.yellow
+		self.shader=unlit_shader
+		self.alpha=.9
+		self.texture_scale=self.tx
+		sn.obj_audio(ID=7)
+		self.electric=True
+		invoke(self.harmless,delay=3)
+	def harmless(self):
+		self.color=color.rgb32(0,180,180)
+		self.shader=None
+		self.alpha=.9
+		self.texture_scale=self.tx
+		self.electric=False
+	def collect(self):
+		return
+		#if self.electric:
+		#	cc.get_damage(self.ta)
+	def update(self):
+		if not status.gproc():
+			self.anim()
+			self.ta.in_water=(self.intersects(self.ta).hit)
+			self.tme=max(self.tme-time.dt,0)
+			if self.tme <= 0:
+				self.tme=10
+				self.switch_water()
+
 
 ###################
 ##################
@@ -633,46 +696,16 @@ class SingleBlock(Entity):
 		unlit_obj(self)
 
 class Water(Animation):
-	def __init__(self,pos,s,c,a,typ):
+	def __init__(self,pos,s,c,a):
 		super().__init__(omf+'ev/water/water.gif',position=pos,scale=(s[0],s[1]),rotation_x=90,fps=20,color=c,alpha=a)
-		self.typ=typ
-		if typ == 1:
-			self.texture_scale=(3,12)
-			self.electric=False
-			self.active=False
-			self.unlit=False
-			self.transp=a
-			self.e_time=5
-			return
 		WaterHit(p=(pos[0],pos[1]-.1,pos[2]),sc=s)
 		self.texture_scale=(s[0]/4,s[1]/4)
-	def set_normal(self):
-		self.electric=False
-		self.active=False
-		self.color=color.rgb(100,100,130)
-		self.alpha=self.transp
-		self.shader=lit_with_shadows_shader
-	def set_danger(self):
-		sn.obj_audio(ID=7,pit=.9)
-		self.electric=True
-		self.active=True
-		self.shader=unlit_shader
-		self.texture_scale=(4,16)
-		self.color=color.yellow
-		self.slpha=self.transp
-		invoke(self.set_normal,delay=2)
 	def update(self):
 		if not status.gproc():
 			if st.level_index != 2:
 				self.resume()
-			if self.typ == 1 and self.e_time > 0:
-				if not self.active:
-					self.e_time-=time.dt
-					if self.e_time <= 0:
-						self.e_time=5
-						self.set_danger()
-			return
-		self.pause()
+				return
+			self.pause()
 
 class mTerrain(Entity):
 	def __init__(self,pos,sca,typ):

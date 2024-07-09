@@ -203,7 +203,7 @@ class Scrubber(Entity):
 		self.vnum=9
 		super().__init__(model=npc_folder+nN+'/'+nN+'.ply',texture=npc_folder+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
-		self.n_snd=Audio(sound.snd_scrubber,volume=0,loop=True)
+		self.n_snd=Audio(sn.SND_NPC[1],volume=0,loop=True)
 		self.ro_mode=True
 		cc.set_val_npc(self)
 		self.move_speed=1.2
@@ -215,10 +215,9 @@ class Scrubber(Entity):
 			cc.npc_action(self)
 			if (self.is_hitten or self.is_purge):
 				self.n_snd.fade_out()
-				cc.purge_instance(self.n_snd)
 				return
 			if distance(self,LC.ACTOR) < 2:
-				self.n_snd.volume=1
+				self.n_snd.volume=settings.SFX_VOLUME
 				return
 			self.n_snd.volume=0
 

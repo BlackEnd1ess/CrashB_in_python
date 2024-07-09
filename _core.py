@@ -14,7 +14,7 @@ def set_val(c):
 	for _a in ['run_anim','jmp_typ','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','fall_time',
 			'blink_time','death_anim','slide_fwd']:
 		setattr(c,_a,0)
-	for _v in ['aq_bonus','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
+	for _v in ['aq_bonus','in_water','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
 		setattr(c,_v,False)
 	c.move_speed=2.4
 	c.direc=(0,0,0)
