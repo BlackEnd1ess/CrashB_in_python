@@ -114,18 +114,18 @@ class RainFall(FrameAnimation3d):
 	def __init__(self):
 		j=.004
 		super().__init__('res/objects/ev/rain/rain',scale=(j,j/2,j),color=color.rgb32(180,180,200),fps=60,loop=True,alpha=0,rotation=(0,10,10),visible=False)
-		#self.soundR=Audio(sound.snd_rain,loop=True,volume=0)
+		self.soundR=Audio(sound.snd_rain,loop=True,volume=0)
 		self.ta=_loc.ACTOR
 		self.ta.indoor=.5
 	def rain_start(self):
 		self.fps=60
 		self.visible=True
-		#self.soundR.pitch=random.uniform(.9,1)
-		#self.soundR.volume=settings.SFX_VOLUME
+		self.soundR.pitch=random.uniform(.9,1)
+		self.soundR.volume=settings.SFX_VOLUME
 		self.alpha=lerp(self.alpha,.7,time.dt*2)
 	def rain_stop(self):
 		self.fps=0
-		#self.soundR.volume=0
+		self.soundR.volume=0
 		self.alpha=lerp(self.alpha,0,time.dt*2)
 	def follow_p(self):
 		s=self

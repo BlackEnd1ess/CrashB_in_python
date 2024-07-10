@@ -6,6 +6,7 @@ pp='res/crate/'
 ic=(.15,.2)
 cc=_core
 sn=sound
+st=status
 LC=_loc
 cr1=pp+'cr_t0.ply'# single texture
 cr2=pp+'cr_t1.ply'# double texture
@@ -31,7 +32,7 @@ def place_crate(p,ID,m=None,l=None,pse=None,tm=None):
 			16:lambda:LvInfo(pos=p,pse=pse)}
 	CRATES[ID]()
 	if not ID in [0,8,9,10,15,16] and not pse == 1:
-		status.crates_in_level+=1
+		st.crates_in_level+=1
 		if p[1] < -20:
 			status.crates_in_bonus+=1
 		if ID == 13 and l in [0,8]:
@@ -44,14 +45,14 @@ def destroy_event(c):
 		explosion(cr=c)
 	if not c.poly == 1 and not c.vnum == 16:
 		status.C_RESET.append(c)
-	if status.bonus_round:
+	if st.bonus_round:
 		status.crate_bonus+=1
 	else:
 		if not c.vnum in [15,16]:
 			status.crate_to_sv+=1
 			status.crate_count+=1
 			status.show_crates=5
-	if not status.b_audio:
+	if not st.b_audio:
 		status.b_audio=True
 		sn.crate_audio(ID=2)
 		invoke(cc.reset_audio,delay=.1)
@@ -74,10 +75,10 @@ def spawn_ico(c):
 
 def explosion(cr):
 	Fireball(C=cr)
-	if not status.e_audio:
+	if not st.e_audio:
 		status.e_audio=True
 		sn.crate_audio(ID=10)
-	if cr.vnum == 12 and not status.n_audio:
+	if cr.vnum == 12 and not st.n_audio:
 		status.n_audio=True
 		invoke(lambda:sn.crate_audio(ID=11,pit=1.4),delay=.1)
 	invoke(cc.reset_audio,delay=.2)
@@ -91,7 +92,7 @@ def explosion(cr):
 			elif cc.is_enemie(exR) and exR.collider != None:
 				exR.is_hitten=True
 			elif exR == LC.ACTOR:
-				cc.get_damage(exR)
+				cc.get_damage(exR,rsn=4)
 
 ##Crate Logics
 class Iron(Entity):
@@ -150,7 +151,7 @@ class Bounce(Entity):
 		self.empty_destroy()
 	def update(self):
 		if not status.gproc():
-			if status.is_dying and self.b_cnt > 0:
+			if self.b_cnt > 0 and st.death_event:
 				self.lf_time=5
 				self.b_cnt=0
 				return

@@ -65,3 +65,8 @@
 
 #07.07.2024
 - changed code, fixxed errors, remove unnesseray codes
+
+#11.07.2024
+- added new death animations, change death event
+- added new NPC: Eeel(ID 12), changed vnums vulture from 11 to 3)
+- level 4 prototyp

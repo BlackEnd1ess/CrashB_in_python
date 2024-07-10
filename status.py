@@ -5,7 +5,7 @@ checkpoint=None
 day_mode=''
 
 ## game progress items
-COLOR_GEM=[]
+COLOR_GEM=[4]
 CLEAR_GEM=[]
 CRYSTAL=[]
 
@@ -70,7 +70,6 @@ wait_screen=False
 death_event=False
 aku_exist=False
 gem_death=False
-is_dying=False
 loading=False
 pause=False
 
@@ -80,7 +79,7 @@ def p_idle(c):
 		return True
 	return False
 def p_rst(c):
-	if is_dying or not c.warped or c.freezed:
+	if death_event or not c.warped or c.freezed:
 		return True
 	return False
 def gproc():

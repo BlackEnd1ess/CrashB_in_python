@@ -100,6 +100,8 @@ class CrashB(Entity):
 		self.walk_snd=0
 		self.walking=False
 	def walk_event(self):
+		if status.death_event:
+			return
 		self.walking=True
 		self.is_landing=False#stop the remaining landing frames after run
 		if self.landed:
@@ -128,6 +130,8 @@ class CrashB(Entity):
 		if s.fall_time > 2 and not (s.is_attack or s.freezed):
 			s.is_flip=False
 			an.fall(s)
+		if self.y < -5 and not status.bonus_round:
+			cc.dth_event(self,rsn=0)
 	def jump(self):
 		self.first_land=True
 		self.y+=time.dt*self.jump_speed[self.jmp_typ]
@@ -139,28 +143,32 @@ class CrashB(Entity):
 		if not self.is_flip:
 			an.jup(self)
 	def c_camera(self):
-		if not status.is_dying:
+		if not status.death_event:
 			cc.cam_rotate(self)
 			cc.cam_follow(self)
 			camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
+	def death_action(self,rsn):
+		if rsn > 0:
+			dca={1:lambda:an.angel_fly(self),
+				2:lambda:an.water_swim(self),
+				3:lambda:an.fire_ash(self),
+				4:lambda:an.electric(self),
+				5:lambda:an.eat_by_plant(self)}
+			dca[rsn]()
 	def basic_animation(self):
-		if not status.gproc():
-			if status.is_dying:
-				an.p_death(self)
-				return
-			if self.is_attack:
-				an.spin(self)
-				return
-			if self.is_flip and not self.landed:
-				an.flip(self)
-			if (self.landed and self.is_landing) and not self.walking:
-				an.land(self)
-				return
-			if status.p_idle(self) or self.freezed:
-				if self.is_slippery:
-					an.slide_stop(self)
-				else:
-					an.idle(self)
+		if self.is_attack:
+			an.spin(self)
+			return
+		if self.is_flip and not self.landed:
+			an.flip(self)
+		if (self.landed and self.is_landing) and not self.walking:
+			an.land(self)
+			return
+		if status.p_idle(self) or self.freezed:
+			if self.is_slippery:
+				an.slide_stop(self)
+			else:
+				an.idle(self)
 	def hurt_blink(self):
 		self.blink_time=max(self.blink_time-time.dt,0)
 		if self.blink_time <= 0:
@@ -181,7 +189,8 @@ class CrashB(Entity):
 					cc.c_attack(self)
 				if self.jumping:
 					self.jump()
-			self.basic_animation()
+			if not status.death_event:
+				self.basic_animation()
 			cc.various_val(self)
 			if not self.landed:
 				cc.obj_ceiling(self)

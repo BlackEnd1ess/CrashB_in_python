@@ -405,10 +405,13 @@ class SewerTunnel(Entity):
 		super().__init__(model=_sPA+'tunnel.ply',texture=_sPA+'sewer2.tga',position=pos,scale=(.032,.034,.03),rotation=(-90,90,0),double_sided=True)
 
 class SewerEscape(Entity):
-	def __init__(self,pos):
+	def __init__(self,pos,typ=None):
 		_SE=omf+'l4/scn/'
 		super().__init__(model=_SE+'pipe_1.ply',texture=_SE+'sewers.tga',position=pos,scale=.048,rotation=(-90,90,0),double_sided=True)
-
+		if typ == 1:
+			self.color=color.rgb32(255,50,0)
+			self.shader=unlit_shader
+			#self.collider='mesh'
 class SewerPlatform(Entity):
 	def __init__(self,pos):
 		pPF=omf+'l4/scn/'
@@ -455,9 +458,8 @@ class EletricWater(Entity):
 		self.texture_scale=self.tx
 		self.electric=False
 	def collect(self):
-		return
-		#if self.electric:
-		#	cc.get_damage(self.ta)
+		if self.electric:
+			cc.get_damage(self.ta,rsn=4)
 	def update(self):
 		if not status.gproc():
 			self.anim()
@@ -615,21 +617,22 @@ class GemPlatform(Entity):## gem platform
 		L=180
 		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
 		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=0.001,position=pos,collider=b,double_sided=True)
-		#self.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),position=(self.x,self.y-.011,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
+		self.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),position=(self.x,self.y-.011,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
 		self.start_y=self.y
 		self.catch_p=False
 		self.ta=LC.ACTOR
 		self.color=GMC[t]
 		if not self.is_enabled:
 			self.collider=None
-			#self.bg_darkness.hide()
+			self.bg_darkness.hide()
 		unlit_obj(self)
 	def update(self):
 		if not status.gproc():
 			if status.gem_path_solved:
+				cc.purge_instance(self.bg_darkness)
 				cc.purge_instance(self)
 				return
-			#self.bg_darkness.position=(self.x,self.y-.01,self.z)
+			self.bg_darkness.position=(self.x,self.y-.01,self.z)
 			if self.is_enabled:
 				self.rotation_y+=time.dt*20
 			if self.catch_p:

@@ -4,19 +4,21 @@ from ursina import *
 npc_anim={0:7,#amadillo
 		1:12,#turtle
 		2:12,#saw turtle
-		3:15,#penguin
-		4:12,#seal
-		5:14,#hedgehog
-		6:13,#eating plant
-		7:10,#rat
-		8:11,#lizard
-		9:3,#scrubber
-		10:8,#mouse
-		11:13}#vulture
+		3:13,#vulture
+		4:15,#penguin
+		5:14,#seal
+		6:12,#hedgehog
+		7:13,#eating plant
+		8:10,#rat
+		9:11,#lizard
+		10:3,#scrubber
+		11:8,#mouse
+		12:12}#eel
 
 cf='res/crate/anim/'
 nf='res/npc/'
 af='res/pc/'
+mo='model'
 sn=sound
 cc=_core
 t=20
@@ -101,16 +103,107 @@ def flip(d):
 	d.texture=af+'flp/crash.tga'
 	d.model=af+'flp/'+str(int(d.flip_anim))+'.ply'
 
-def p_death(c):
-	c.death_anim+=time.dt*15
-	c.y+=time.dt/1.5
-	if c.death_anim > 20.9:
-		status.is_dying=False
-		c.death_anim=0
-		cc.death_event(c)
-		return
-	c.texture=af+'death/crash_death.tga'
-	c.model=af+'death/'+str(int(c.death_anim))+'.ply'
+# crash death animationsa
+def angel_fly(c):
+	DTH=13
+	ATF=af+'death/angel/'
+	c.model=ATF+'0.ply'
+	c.texture=ATF+'crash_death.tga'
+	c.animate_y(c.y+2,duration=1)
+	invoke(lambda:setattr(c,mo,ATF+'1.ply'),delay=1/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'2.ply'),delay=2/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'3.ply'),delay=3/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'4.ply'),delay=4/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'5.ply'),delay=5/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'6.ply'),delay=6/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'7.ply'),delay=7/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'8.ply'),delay=8/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'9.ply'),delay=9/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'10.ply'),delay=10/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'11.ply'),delay=11/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'12.ply'),delay=12/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'13.ply'),delay=13/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'14.ply'),delay=14/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'15.ply'),delay=15/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'16.ply'),delay=16/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'17.ply'),delay=17/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'18.ply'),delay=18/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'19.ply'),delay=19/DTH)
+	invoke(lambda:setattr(c,mo,ATF+'20.ply'),delay=20/DTH)
+	invoke(lambda:cc.reset_state(c),delay=20/DTH)
+
+def water_swim(c):
+	DTW=18
+	ATW=af+'death/water/'
+	c.model=ATW+'0.ply'
+	c.texture=ATW+'0.tga'
+	invoke(lambda:setattr(c,mo,ATW+'1.ply'),delay=1/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'2.ply'),delay=2/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'3.ply'),delay=3/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'4.ply'),delay=4/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'5.ply'),delay=5/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'6.ply'),delay=6/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'7.ply'),delay=7/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'8.ply'),delay=8/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'9.ply'),delay=9/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'10.ply'),delay=10/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'11.ply'),delay=11/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'12.ply'),delay=12/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'13.ply'),delay=13/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'14.ply'),delay=14/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'15.ply'),delay=15/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'16.ply'),delay=16/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'17.ply'),delay=17/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'18.ply'),delay=18/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'19.ply'),delay=19/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'20.ply'),delay=20/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'21.ply'),delay=21/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'22.ply'),delay=22/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'23.ply'),delay=23/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'24.ply'),delay=24/DTW)
+	invoke(lambda:setattr(c,mo,ATW+'25.ply'),delay=25/DTW)
+	invoke(lambda:cc.reset_state(c),delay=25/DTW)
+
+def fire_ash(c):
+	DTE=18
+	ATA=af+'death/fire/'
+	c.model=ATA+'0.ply'
+	c.texture=ATA+'0.tga'
+	invoke(lambda:setattr(c,mo,ATA+'1.ply'),delay=1/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'2.ply'),delay=2/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'3.ply'),delay=3/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'4.ply'),delay=4/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'5.ply'),delay=5/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'6.ply'),delay=6/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'7.ply'),delay=7/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'8.ply'),delay=8/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'9.ply'),delay=9/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'10.ply'),delay=10/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'11.ply'),delay=11/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'12.ply'),delay=12/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'13.ply'),delay=13/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'14.ply'),delay=14/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'15.ply'),delay=15/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'16.ply'),delay=16/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'17.ply'),delay=17/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'18.ply'),delay=18/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'19.ply'),delay=19/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'20.ply'),delay=20/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'21.ply'),delay=21/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'22.ply'),delay=22/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'23.ply'),delay=23/DTE)
+	invoke(lambda:setattr(c,mo,ATA+'24.ply'),delay=24/DTE)
+	invoke(lambda:cc.reset_state(c),delay=24/DTE)
+
+def electric(c):
+	ATV=af+'death/volt/'
+	c.model=ATV+'0.ply'
+	c.texture=ATV+'0.tga'
+	invoke(lambda:cc.reset_state(c),delay=3)
+
+def eat_by_plant(c):
+	c.visible=False
+	invoke(lambda:cc.reset_state(c),delay=3)
 
 ## crate animation
 bT=40

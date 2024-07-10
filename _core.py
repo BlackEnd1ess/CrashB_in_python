@@ -27,53 +27,54 @@ def set_jump_type(c,typ):
 	jmp_h={0:c.y+1.3,1:c.y+1,2:c.y+1.7,3:c.y+1.1}
 	c.vpos=jmp_h[typ]
 	c.jumping=True
-def get_damage(c):
-	if not (c.injured or st.is_dying):
+def get_damage(c,rsn):
+	if not (c.injured or st.death_event):
 		if st.aku_hit > 0:
 			status.aku_hit-=1
 			c.injured=True
 			sn.pc_audio(ID=6,pit=.8)
 			invoke(lambda:setattr(c,'injured',False),delay=2)
 			invoke(lambda:setattr(c,'alpha',1),delay=2)
+			del rsn
 			return
-		status.is_dying=True
-		sn.pc_audio(ID=7,pit=.8)
-def death_event(c):
+		dth_event(c,rsn=rsn)
+def dth_event(c,rsn):
 	if not st.death_event:
+		sn.pc_audio(ID=7,pit=.8)
 		status.death_event=True
 		c.freezed=True
-		ui.BlackScreen()
-		status.crate_count-=status.crate_to_sv
-		if st.is_death_route:
-			status.is_death_route=False
-		if st.bonus_round:
-			status.wumpa_bonus=0
-			status.crate_bonus=0
-			status.lives_bonus=0
-			status.bonus_round=False
-		else:
-			if not st.is_time_trial:
-				status.extra_lives-=1
-				status.fails+=1
-				if status.level_index == 2:
-					status.gem_death=True
-		if st.fails < 3:
-			status.aku_hit=0
-		else:
-			status.aku_hit=1
-			if not st.aku_exist:
-				sn.crate_audio(ID=14,pit=1.2)
-				npc.AkuAkuMask(pos=(c.x,c.y,c.z))
-		reset_crates()
-		rmv_wumpas()
-		reset_npc()
-		check_cstack()
-		c.position=status.checkpoint
-		camera.position=c.position
-		camera.rotation=(15,0,0)
-		c.is_reset_phase=False
-		status.death_event=False
-		invoke(lambda:setattr(c,'freezed',False),delay=3)
+		c.death_action(rsn=rsn)
+def reset_state(c):
+	ui.BlackScreen()
+	status.crate_count-=st.crate_to_sv
+	if st.is_death_route:
+		status.is_death_route=False
+	if st.bonus_round:
+		status.wumpa_bonus=0
+		status.crate_bonus=0
+		status.lives_bonus=0
+		status.bonus_round=False
+	else:
+		status.extra_lives-=1
+		status.fails+=1
+		if st.level_index == 2:
+			status.gem_death=True
+	if st.fails < 3:
+		status.aku_hit=0
+	else:
+		status.aku_hit=1
+		if not st.aku_exist:
+			sn.crate_audio(ID=14,pit=1.2)
+			npc.AkuAkuMask(pos=(c.x,c.y,c.z))
+	reset_crates()
+	rmv_wumpas()
+	reset_npc()
+	check_cstack()
+	c.position=st.checkpoint
+	camera.position=c.position
+	camera.rotation=(15,0,0)
+	status.death_event=False
+	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def various_val(c):
 	c.indoor=max(c.indoor-time.dt,0)
 	if c.injured:c.hurt_blink()
@@ -205,7 +206,7 @@ def obj_ceiling(c):
 				e.destroy()
 				invoke(lambda:setattr(c,'is_touch_crate',False),delay=.1)
 			if str(e) in LC.dangers or (is_enemie(e) and not c.is_attack):
-				get_damage(c)
+				get_damage(c,rsn=1)
 			c.jumping=False
 			c.y=c.y
 def obj_grnd(c):
@@ -221,8 +222,10 @@ def obj_grnd(c):
 		landing(c,e=vj.world_point.y,o=vp)
 		if str(vp.name) == 'mptf':
 			vp.mv_player()
+		if str(vp) == 'water_hit':
+			dth_event(c,rsn=2)
+			return
 		c.is_slippery=(str(vp.name) == 'iceg')
-		status.is_dying=(str(vp) in ['water_hit','falling_zone'])
 		return
 	c.landed=False
 	c.move_speed=2.4
@@ -238,7 +241,7 @@ def obj_walls(c):
 		if jF and jF.normal != Vec3(0,1,0):
 			if isinstance(jV,crate.Nitro) and jV.collider != None:jV.destroy()
 			if (is_enemie(jV) and not c.is_attack) or (str(jV) in LC.dangers and jV.danger):
-				get_damage(c)
+				get_damage(c,rsn=1)
 				return
 			else:
 				if not str(jV) in LC.item_lst:
@@ -276,8 +279,8 @@ def ptf_up(p,c):
 			return
 		load_gem_route(c)
 def jump_enemy(c,e):
-	if (e.vnum in [2,8]) or (e.vnum == 4 and e.def_mode):
-		get_damage(c)
+	if (e.vnum in [2,9]) or (e.vnum == 5 and e.def_mode):
+		get_damage(c,rsn=1)
 		return
 	kill_by_jump(m=e,c=c)
 def jmp_lv_fin():
@@ -407,8 +410,8 @@ def load_gem_route(c):
 	status.loading=True
 	if status.is_death_route:
 		invoke(lambda:back_to_level(c),delay=.5)
-	else:
-		invoke(lambda:load_droute(c),delay=.5)
+		return
+	invoke(lambda:load_droute(c),delay=.5)
 def load_droute(c):
 	ui.BlackScreen()
 	if st.is_death_route:
@@ -422,24 +425,25 @@ def load_droute(c):
 	sn.SpecialMusic(T=st.level_index)
 
 ## npc
-def set_val_npc(m):
-	if m.vnum in [6,7,11]:
-		m.can_move=False
-	else:
-		m.can_move=True
+def set_val_npc(m,tu,di,cm=True):
+	if m.vnum in [3,7,8]:
+		cm=False
+	m.can_move=cm
 	m.spawn_pos=m.position
 	m.is_hitten=False
 	m.fly_direc=None
 	m.is_purge=False
-	m.unlit=False
+	m.m_direction=di
 	m.anim_frame=0
+	m.unlit=False
 	m.fly_time=0
+	m.turn=tu
 def npc_action(m):
 	if m.is_purge:
 		npc_purge(m)
 		return
 	if not m.is_hitten:
-		if m.vnum == 9 and m.ro_mode:
+		if m.vnum == 10 and m.ro_mode:
 			npc_circle_move(m)
 		else:
 			npc_walk(m)

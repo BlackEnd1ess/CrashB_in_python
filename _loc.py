@@ -12,6 +12,9 @@ lv_name=['Warp Room',
 		'LEVEL 5 - RUINED',
 		'DEVELOPER TEST LEVEL']
 
+# crash death actions/animations
+dt_act={0:'fall_endl',1:'angel',2:'water',3:'explode',4:'burn',5:'electric',6:'eat_by_plant'}
+
 #item/obj name list
 item_lst=['wumpa_fruit','extra_live','gem_stone','energy_crystal','trial_clock','cam_switch','indoor_zone','level_finish','elwt']
 

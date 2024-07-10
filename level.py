@@ -61,10 +61,10 @@ def developer_level():
 def test():
 	#o.EndRoom(pos=(1,2,-15),c=color.rgb32(200,210,200))
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
-	#mt.crate_block(ID=11,POS=(.5,.16,-25.1),CNT=[1,1,1])
-	#npc.spawn(pos=(1,0,-23),mID=6,mDirec=0,mTurn=0)
-	o.Foam(pos=(0,.5,-20))
-	invoke(free_level,delay=1)
+	mt.crate_block(ID=11,POS=(.5,.16,-25.1),CNT=[1,1,1])
+	npc.spawn(pos=(1,0,-23),mID=6,mDirec=0,mTurn=0)
+	#o.Foam(pos=(0,.5,-20))
+	free_level()
 
 def level1():##wood
 	TS=16
@@ -308,9 +308,9 @@ def level2():##snow
 	o.Ropes(pos=(-.5,.7,-56),le=55)
 	o.Ropes(pos=(22.5,5.3,7),le=16)
 	#npc
-	npc.spawn(pos=(3,1.4,2.5),mID=3,mDirec=0,mTurn=0)
-	npc.spawn(pos=(0,.9,1),mID=3,mDirec=0,mTurn=0)
-	npc.spawn(pos=(14.5,2.7,2.5),mID=5,mDirec=0,mTurn=0)
+	npc.spawn(pos=(3,1.4,2.5),mID=4,mDirec=0,mTurn=0)
+	npc.spawn(pos=(0,.9,1),mID=4,mDirec=0,mTurn=0)
+	npc.spawn(pos=(14.5,2.7,2.5),mID=6,mDirec=0,mTurn=0)
 	#planks
 	_pl=.7
 	#bridge1
@@ -561,11 +561,11 @@ def level3():##water
 	#npc
 	N.Hippo(pos=(0,1.8,64.7))
 	N.Hippo(pos=(0,1.8,63))
-	N.spawn(mID=6,pos=(-.85,1.05,29),mDirec=0,mTurn=0)
-	N.spawn(mID=6,pos=(.85,1.05,25.8),mDirec=0,mTurn=0)
-	N.spawn(mID=6,pos=(-.85,1.05,23),mDirec=0,mTurn=0)
-	N.spawn(mID=6,pos=(0,1.05,41.4),mDirec=0,mTurn=0)
-	N.spawn(mID=6,pos=(0,1.95,74.1),mDirec=0,mTurn=0)
+	N.spawn(mID=7,pos=(-.85,1.05,29),mDirec=0,mTurn=0)
+	N.spawn(mID=7,pos=(.85,1.05,25.8),mDirec=0,mTurn=0)
+	N.spawn(mID=7,pos=(-.85,1.05,23),mDirec=0,mTurn=0)
+	N.spawn(mID=7,pos=(0,1.05,41.4),mDirec=0,mTurn=0)
+	N.spawn(mID=7,pos=(0,1.95,74.1),mDirec=0,mTurn=0)
 	N.spawn(mID=2,pos=(0,1.05,4.2),mDirec=0,mTurn=0)
 	invoke(free_level,delay=3)
 
@@ -584,8 +584,8 @@ def level4():## sewer
 	o.SewerEscape(pos=(0,-1,-13))
 	o.SewerEscape(pos=(0,-1,-3.3))
 	
-	o.SewerEscape(pos=(5,1,17))
-	o.SewerEscape(pos=(5,1,26.7))
+	o.SewerEscape(pos=(5,1,17),typ=1)
+	o.SewerEscape(pos=(5,1,26.7),typ=1)
 	#walls
 	#o.SewerWall(pos=(0,1,26))
 	#o.SewerWall(pos=(11,1,26))
@@ -608,5 +608,9 @@ def level4():## sewer
 	o.swr_multi_ptf(p=(3,pg+.4,(.85*16)-.1),cnt=[2,1])
 	o.swr_multi_ptf(p=(4,pg+.7,(.85*16)-.1),cnt=[2,1])
 	o.swr_multi_ptf(p=(5,pg+1,(.85*16)-.1),cnt=[2,8])
-	#o.SewerEscape(pos=(0,-1,-52.6))
-	invoke(free_level,delay=1)
+	o.swr_multi_ptf(p=(5,pg+1,(.85*23)-.1),cnt=[2,4])
+	o.swr_multi_ptf(p=(5,pg+1,(.85*27)-.1),cnt=[2,1])
+	o.swr_multi_ptf(p=(5,pg+1,(.85*29)-.1),cnt=[2,5])
+	o.swr_multi_ptf(p=(5,pg+1,(.85*34)-.1),cnt=[2,3])
+	o.swr_multi_ptf(p=(5,pg+1,(.85*38)-.1),cnt=[2,6])
+	invoke(free_level,delay=3)
