@@ -58,9 +58,10 @@ class WumpaFruit(Entity):##2D Animation
 class ExtraLive(Entity):
 	def __init__(self,pos):
 		super().__init__(model='quad',texture=i_path+'/extra_live/live.png',position=pos,scale=.25,collider=b)
+		self.collider=BoxCollider(self,size=Vec3(1,1,1))
 	def collect(self):
-		cc.purge_instance(self)
 		_core.give_extra_live()
+		cc.purge_instance(self)
 
 class GemStone(Entity):
 	def __init__(self,pos,c):

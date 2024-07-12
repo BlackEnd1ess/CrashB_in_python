@@ -4,8 +4,9 @@ from ursina import *
 mt=map_tools
 bn=bonus_level
 env=environment
-cc=_core
+st=status
 o=objects
+cc=_core
 c=crate
 N=npc
 
@@ -13,22 +14,22 @@ N=npc
 def free_level():
 	sound.LevelMusic(T=status.level_index)
 	cc.check_cstack()
-	status.fails=0
-	status.loading=False
+	st.fails=0
+	st.loading=False
 	cc.level_ready=True
-	if status.level_index == 3:
+	if st.level_index == 3:
 		sound.AmbienceSound()
 		sound.WaterRiver()
 	o.LODProcess()
-	print('level '+str(status.level_index)+' loaded successfully')
+	print('level '+str(st.level_index)+' loaded successfully')
 
 ## level settings
 def main_instance(idx):
-	status.loading=True
-	status.level_index=idx
+	st.loading=True
+	st.level_index=idx
 	day_m=_loc.day_m
 	s_rm={0:(0,0,0),1:(-.3,1,-66.5),2:(0,1,-64.2),3:(0,0,-32.2),4:(0,.3,-64.2),5:(0,0,-32.2)}
-	status.day_mode=day_m[idx]
+	st.day_mode=day_m[idx]
 	o.StartRoom(pos=s_rm[idx],lvID=idx)
 	bn.load_bonus_level(idx)
 	WEATHER={0:0,1:1,2:2,3:0,4:0,5:0}
@@ -61,9 +62,11 @@ def developer_level():
 def test():
 	#o.EndRoom(pos=(1,2,-15),c=color.rgb32(200,210,200))
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
-	mt.crate_block(ID=11,POS=(.5,.16,-25.1),CNT=[1,1,1])
-	npc.spawn(pos=(1,0,-23),mID=6,mDirec=0,mTurn=0)
-	#o.Foam(pos=(0,.5,-20))
+	#mt.crate_row(ID=4,POS=(.5,.16,-25.1),CNT=4,WAY=0)
+	npc.spawn(pos=(1,0,-23),mID=7,mDirec=0,mTurn=0)
+	npc.spawn(pos=(3,0,-23),mID=7,mDirec=0,mTurn=0)
+	npc.spawn(pos=(5,0,-23),mID=7,mDirec=0,mTurn=0)
+	#o.WoodLog(pos=(0,1.5,-25))
 	free_level()
 
 def level1():##wood
@@ -73,7 +76,7 @@ def level1():##wood
 	o.InvWall(pos=(-5,.5,-64),sca=(5.,10,200))
 	o.InvWall(pos=(4.7,.5,-64),sca=(5.,10,200))
 	o.BonusPlatform(pos=(1.4,1,-6))
-	o.GemPlatform(pos=(-.2,.9,-18),t=4)
+	o.GemPlatform(pos=(-.3,1.2,-18),t=4)
 	bn.gem_route1()
 	#scene
 	gs=1.6
@@ -233,7 +236,7 @@ def level2():##snow
 	Entity(model='quad',scale=(512,512,1),color=color.white,z=64)
 	o.BonusPlatform(pos=(5,1.1,2.1))
 	#invisible walls
-	o.InvWall(pos=(17,0,1.5),sca=(30,40,1))
+	o.InvWall(pos=(16.5,9,1.75),sca=(30,15,.5))
 	#cam trigger
 	o.CamSwitch(pos=(.5,1.4,.9),sca=(4,.3,1))
 	o.CamSwitch(pos=(.5,1.7,2.5),sca=(4,.2,.5))
@@ -384,7 +387,7 @@ def level2():##snow
 	c.place_crate(ID=5,p=(6.8,2.125+.16,2.3))
 	c.place_crate(ID=5,p=(24.3,h3,5))
 	mt.bounce_twin(POS=(24.5,h3,6),CNT=1)
-	if not 1 in status.COLOR_GEM:
+	if not 1 in st.COLOR_GEM:
 		c.place_crate(ID=16,p=(.75,.925+.16,-56.7))
 	#checkpoints
 	c.place_crate(ID=6,p=(-.2,h2,-40))
@@ -408,7 +411,7 @@ def level2():##snow
 	mt.wumpa_plane(POS=(22.7,5.7,22),CNT=3)
 	mt.wumpa_double_row(POS=(25,5.6,27),CNT=16)
 	#collecable
-	if not status.level_index in status.CRYSTAL:
+	if not st.level_index in st.CRYSTAL:
 		item.EnergyCrystal(pos=(35.5,6.4,28.5))
 	#end
 	o.EndRoom(pos=(43,8,44),c=color.rgb32(80,80,120))
@@ -419,9 +422,9 @@ def level3():##water
 	#default
 	o.EndRoom(pos=(1,3.7,88),c=color.rgb32(200,210,200))
 	o.BonusPlatform(pos=(.85,1.3,.85*8))
-	if not status.level_index in status.CRYSTAL:
+	if not st.level_index in st.CRYSTAL:
 		item.EnergyCrystal(pos=(0,2.5,60.5))
-	if not 5 in status.COLOR_GEM:
+	if not 5 in st.COLOR_GEM:
 		c.place_crate(ID=16,p=(0,.24+.16,-21))
 	#foam
 	#o.Foam(pos=())
@@ -571,6 +574,7 @@ def level3():##water
 
 def level4():## sewer
 	o.BonusPlatform(pos=(1.4,.9,4.8))
+	o.GemPlatform(pos=(4.2,2,31.7),t=5)
 	o.EletricWater(pos=(0,.2,-48),sca=(8,96))
 	Entity(model='cube',scale=(16,1,96),position=(0,-.5,-48),texture_scale=(16,64),collider='box',texture='res/terrain/l4/metal_01.jpg')
 	Entity(model='cube',scale=(4,.5,5),position=(0,.5,1.5),texture_scale=(4,5),collider='box',texture='res/terrain/l4/metal_01.jpg')
@@ -584,8 +588,8 @@ def level4():## sewer
 	o.SewerEscape(pos=(0,-1,-13))
 	o.SewerEscape(pos=(0,-1,-3.3))
 	
-	o.SewerEscape(pos=(5,1,17),typ=1)
-	o.SewerEscape(pos=(5,1,26.7),typ=1)
+	o.SewerEscape(pos=(5,1,12),typ=1)
+	o.SewerEscape(pos=(5,1,21.7),typ=1)
 	#walls
 	#o.SewerWall(pos=(0,1,26))
 	#o.SewerWall(pos=(11,1,26))
@@ -593,6 +597,7 @@ def level4():## sewer
 	#platforms
 	ph=.3
 	pg=.65
+	#e0
 	o.swr_multi_ptf(p=(-.5,ph,-61.3),cnt=[3,3])
 	o.swr_multi_ptf(p=(0,ph,-58.7),cnt=[1,5])
 	o.swr_multi_ptf(p=(.6,ph,-50),cnt=[2,6])
@@ -601,16 +606,26 @@ def level4():## sewer
 	o.swr_multi_ptf(p=(-.9,ph,-23),cnt=[2,2])
 	o.swr_multi_ptf(p=(-1,ph,-13),cnt=[1,3])
 	o.swr_multi_ptf(p=(1.2,ph,-5),cnt=[1,3])
-	o.swr_multi_ptf(p=(-.5,pg,2.75),cnt=[3,8])
-	o.swr_multi_ptf(p=(-.5,pg,8),cnt=[3,3])
-	o.swr_multi_ptf(p=(0,pg,10),cnt=[1,8])
-	o.swr_multi_ptf(p=(.5,pg,(.85*16)-.1),cnt=[5,1])
-	o.swr_multi_ptf(p=(3,pg+.4,(.85*16)-.1),cnt=[2,1])
-	o.swr_multi_ptf(p=(4,pg+.7,(.85*16)-.1),cnt=[2,1])
-	o.swr_multi_ptf(p=(5,pg+1,(.85*16)-.1),cnt=[2,8])
-	o.swr_multi_ptf(p=(5,pg+1,(.85*23)-.1),cnt=[2,4])
-	o.swr_multi_ptf(p=(5,pg+1,(.85*27)-.1),cnt=[2,1])
-	o.swr_multi_ptf(p=(5,pg+1,(.85*29)-.1),cnt=[2,5])
-	o.swr_multi_ptf(p=(5,pg+1,(.85*34)-.1),cnt=[2,3])
-	o.swr_multi_ptf(p=(5,pg+1,(.85*38)-.1),cnt=[2,6])
+	o.swr_multi_ptf(p=(-.5,pg,4),cnt=[3,8])
+	#e1
+	o.swr_multi_ptf(p=(-.5,pg,(.5*16)),cnt=[6,1])
+	o.swr_multi_ptf(p=(3,pg+.4,(.5*16)),cnt=[2,1])
+	o.swr_multi_ptf(p=(4,pg+.7,(.5*16)),cnt=[2,1])
+	o.swr_multi_ptf(p=(5,pg+1,(.5*16)),cnt=[2,9])
+	o.swr_multi_ptf(p=(5,pg+1,(.5*27)),cnt=[2,1])
+	o.swr_multi_ptf(p=(5,pg+1,(.5*30)),cnt=[2,4])
+	o.swr_multi_ptf(p=(5,pg+1,(.5*36)),cnt=[2,2])
+	o.swr_multi_ptf(p=(5.5,pg+1,(.5*37)),cnt=[1,8])
+	o.swr_multi_ptf(p=(4.5,pg+1,(.5*44)),cnt=[2,1])
+	o.swr_multi_ptf(p=(4.5,pg+1,(.5*45)),cnt=[1,6])
+	o.swr_multi_ptf(p=(4.5,pg+1,(.5*51)),cnt=[2,1])
+	o.swr_multi_ptf(p=(5,pg+1,(.5*52)),cnt=[1,8])
+	o.swr_multi_ptf(p=(4,pg+1,(.5*60)),cnt=[5,5])
+	o.swr_multi_ptf(p=(5,pg+1,(.5*66)),cnt=[1,6])
+	o.swr_multi_ptf(p=(4,pg+1,(.5*72)),cnt=[5,1])
+	o.swr_multi_ptf(p=(5,pg+1,(.5*73)),cnt=[1,3])
+	#npc
+	npc.spawn(pos=(0,.3,-50),mID=10,mDirec=0,mTurn=0)
+	#npc.spawn(pos=(0,.3,-40),mID=10,mDirec=0,mTurn=0)
+	
 	invoke(free_level,delay=3)

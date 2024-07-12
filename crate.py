@@ -34,9 +34,9 @@ def place_crate(p,ID,m=None,l=None,pse=None,tm=None):
 	if not ID in [0,8,9,10,15,16] and not pse == 1:
 		st.crates_in_level+=1
 		if p[1] < -20:
-			status.crates_in_bonus+=1
+			st.crates_in_bonus+=1
 		if ID == 13 and l in [0,8]:
-			status.crates_in_level-=1
+			st.crates_in_level-=1
 
 def destroy_event(c):
 	c.collider=None
@@ -44,16 +44,16 @@ def destroy_event(c):
 	if c.vnum in [11,12]:
 		explosion(cr=c)
 	if not c.poly == 1 and not c.vnum == 16:
-		status.C_RESET.append(c)
+		st.C_RESET.append(c)
 	if st.bonus_round:
-		status.crate_bonus+=1
+		st.crate_bonus+=1
 	else:
 		if not c.vnum in [15,16]:
-			status.crate_to_sv+=1
-			status.crate_count+=1
-			status.show_crates=5
+			st.crate_to_sv+=1
+			st.crate_count+=1
+			st.show_crates=5
 	if not st.b_audio:
-		status.b_audio=True
+		st.b_audio=True
 		sn.crate_audio(ID=2)
 		invoke(cc.reset_audio,delay=.1)
 	animation.CrateBreak(cr=c)
@@ -76,23 +76,23 @@ def spawn_ico(c):
 def explosion(cr):
 	Fireball(C=cr)
 	if not st.e_audio:
-		status.e_audio=True
+		st.e_audio=True
 		sn.crate_audio(ID=10)
 	if cr.vnum == 12 and not st.n_audio:
-		status.n_audio=True
+		st.n_audio=True
 		invoke(lambda:sn.crate_audio(ID=11,pit=1.4),delay=.1)
 	invoke(cc.reset_audio,delay=.2)
 	for exR in scene.entities[:]:
-		if distance(cr,exR) < 1:
-			if cc.is_crate(exR) and exR.collider != None and exR.y > -250:
+		if distance(cr,exR) < 1 and exR.collider != None:
+			if cc.is_crate(exR):
 				if exR.vnum in [3,11]:
 					exR.empty_destroy()
 				else:
 					exR.destroy()
-			elif cc.is_enemie(exR) and exR.collider != None:
+			if cc.is_enemie(exR):
 				exR.is_hitten=True
-			elif exR == LC.ACTOR:
-				cc.get_damage(exR,rsn=4)
+			if exR == LC.ACTOR:
+				cc.get_damage(exR,rsn=3)
 
 ##Crate Logics
 class Iron(Entity):
@@ -165,7 +165,7 @@ class ExtraLife(Entity):
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
-		item.ExtraLive(pos=(self.x,self.y+.25,self.z))
+		item.ExtraLive(pos=(self.x,self.y+.1,self.z))
 		destroy_event(self)
 
 class AkuAku(Entity):
@@ -175,11 +175,11 @@ class AkuAku(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
 		sn.crate_audio(ID=14,pit=1.2)
-		if status.aku_hit < 4:
-			status.aku_hit+=1
-			if status.aku_hit >= 3:
+		if st.aku_hit < 4:
+			st.aku_hit+=1
+			if st.aku_hit >= 3:
 				sn.AkuMusic()
-		if not status.aku_exist:
+		if not st.aku_exist:
 			npc.AkuAkuMask(pos=(self.x,self.y,self.z))
 		destroy_event(self)
 
@@ -189,7 +189,7 @@ class Checkpoint(Entity):
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
-		status.checkpoint=(self.x,self.y+1.5,self.z)
+		st.checkpoint=(self.x,self.y+1.5,self.z)
 		destroy_event(self)
 		cc.collect_reset()
 		CheckpointAnimation(p=(self.x,self.y+.5,self.z))
@@ -274,22 +274,26 @@ class TNT(Entity):
 		self.tx=pp+'crate_tnt_'
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		self.aud=Audio('res/snd/misc/tnt.wav',name='ctn',volume=settings.SFX_VOLUME,autoplay=False)
 		self.activ=False
 		self.countdown=0
 	def destroy(self):
-		sn.crate_audio(ID=8)
+		self.aud.fade_in()
+		self.aud.play()
 		self.activ=True
 		self.countdown=3.99
 		self.shader=unlit_shader
 	def empty_destroy(self):
+		if self.activ:
+			self.activ=False
+			self.aud.fade_out()
 		self.countdown=0
 		destroy_event(self)
 	def update(self):
-		if not status.gproc():
-			if self.activ and self.visible:
+		if not st.gproc():
+			if self.activ:
 				self.countdown=max(self.countdown-time.dt/1.15,0)
-				ctnt=int(self.countdown)
-				self.texture=self.tx+str(ctnt)+'.png'
+				self.texture=self.tx+str(int(self.countdown))+'.png'
 				if self.countdown <= 0:
 					self.empty_destroy()
 
@@ -306,7 +310,7 @@ class Nitro(Entity):
 	def destroy(self):
 		destroy_event(self)
 	def update(self):
-		if not status.gproc() and self.visible:
+		if not st.gproc() and self.visible:
 			self.snd_time=max(self.snd_time-time.dt,0)
 			if self.snd_time <= 0:
 				rh=random.uniform(.1,.2)
@@ -379,32 +383,28 @@ class LvInfo(Entity):
 class Fireball(Entity):
 	def __init__(self,C):
 		nC={11:color.red,12:color.green}
-		super().__init__(model='quad',texture=None,position=(C.x,C.y+.1,C.z+random.uniform(-.1,.1)),color=nC[C.vnum],scale=.75)
-		self.wave=Entity(model=None,texture=pp+'anim/exp_wave/0.tga',position=self.position,scale=.001,rotation_x=-90,color=nC[C.vnum],alpha=.8)
+		super().__init__(model='quad',texture=None,position=(C.x,C.y+.1,C.z+random.uniform(-.1,.1)),color=nC[C.vnum],scale=.75,unlit=False,shader=unlit_shader)
+		self.wave=Entity(model=None,texture=pp+'anim/exp_wave/0.tga',position=self.position,scale=.001,rotation_x=-90,color=nC[C.vnum],alpha=.8,unlit=False,shader=unlit_shader)
 		self.e_step=0
 		self.w_step=0
 	def e_wave(self):
 		self.w_step+=time.dt*15
-		if self.w_step > 4.75:
+		if self.w_step > 4.9:
 			self.w_step=0
-			self.wave.visible=False
+			cc.purge_instance(self.wave)
 			return
 		self.wave.model=pp+'anim/exp_wave/'+str(int(self.w_step))+'.ply'
 	def f_ball(self):
 		self.e_step+=time.dt*25
-		if self.e_step > 14.75:
-			self.visible=False
+		if self.e_step > 14.9:
 			self.e_step=0
+			cc.purge_instance(self)
 			return
 		self.texture=pp+'anim/exp_fire/'+str(int(self.e_step))+'.png'
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			self.f_ball()
-			if self.wave.visible:
-				self.e_wave()
-			if not self.visible and not self.wave.visible:
-				self.wave.disable()
-				self.disable()
+			self.e_wave()
 
 class CheckpointAnimation(Entity):
 	def __init__(self,p):

@@ -109,7 +109,7 @@ def angel_fly(c):
 	ATF=af+'death/angel/'
 	c.model=ATF+'0.ply'
 	c.texture=ATF+'crash_death.tga'
-	c.animate_y(c.y+2,duration=1)
+	c.animate_y(c.y+1.7,duration=2)
 	invoke(lambda:setattr(c,mo,ATF+'1.ply'),delay=1/DTH)
 	invoke(lambda:setattr(c,mo,ATF+'2.ply'),delay=2/DTH)
 	invoke(lambda:setattr(c,mo,ATF+'3.ply'),delay=3/DTH)
@@ -130,10 +130,11 @@ def angel_fly(c):
 	invoke(lambda:setattr(c,mo,ATF+'18.ply'),delay=18/DTH)
 	invoke(lambda:setattr(c,mo,ATF+'19.ply'),delay=19/DTH)
 	invoke(lambda:setattr(c,mo,ATF+'20.ply'),delay=20/DTH)
-	invoke(lambda:cc.reset_state(c),delay=20/DTH)
+	invoke(lambda:cc.reset_state(c),delay=3)
 
 def water_swim(c):
 	DTW=18
+	sn.pc_audio(ID=10)
 	ATW=af+'death/water/'
 	c.model=ATW+'0.ply'
 	c.texture=ATW+'0.tga'
@@ -162,7 +163,7 @@ def water_swim(c):
 	invoke(lambda:setattr(c,mo,ATW+'23.ply'),delay=23/DTW)
 	invoke(lambda:setattr(c,mo,ATW+'24.ply'),delay=24/DTW)
 	invoke(lambda:setattr(c,mo,ATW+'25.ply'),delay=25/DTW)
-	invoke(lambda:cc.reset_state(c),delay=25/DTW)
+	invoke(lambda:cc.reset_state(c),delay=3)
 
 def fire_ash(c):
 	DTE=18
@@ -193,7 +194,7 @@ def fire_ash(c):
 	invoke(lambda:setattr(c,mo,ATA+'22.ply'),delay=22/DTE)
 	invoke(lambda:setattr(c,mo,ATA+'23.ply'),delay=23/DTE)
 	invoke(lambda:setattr(c,mo,ATA+'24.ply'),delay=24/DTE)
-	invoke(lambda:cc.reset_state(c),delay=24/DTE)
+	invoke(lambda:cc.reset_state(c),delay=3)
 
 def electric(c):
 	ATV=af+'death/volt/'
@@ -253,11 +254,10 @@ class CrateBreak(Entity):
 		self.frame_break=0
 	def update(self):
 		if not status.gproc():
-			self.frame_break+=time.dt*20
-			if self.frame_break > 13.75:
+			self.frame_break+=time.dt*t
+			if self.frame_break > 13.9:
 				self.frame_break=0
-				self.parent=None
-				_core.purge_instance(self)
+				cc.purge_instance(self)
 				return
 			self.model=cf+'brk/'+str(int(self.frame_break))+'.ply'
 
@@ -306,6 +306,13 @@ def plant_bite(m):
 		m.atk_frame=0
 	m.texture=nf+str(m)+'/attack/plant.tga'
 	m.model=nf+str(m)+'/attack/'+str(int(m.atk_frame))+'.ply'
+def plant_eat(m):
+	if status.pause:
+		return
+	m.eat_frame+=time.dt*t
+	if m.eat_frame > 30.9:
+		m.eat_frame=0
+	m.model=nf+str(m)+'/eat/'+str(int(m.anim_frame))+'.ply'
 
 def hedge_defend(m):
 	m.def_frame+=time.dt*t

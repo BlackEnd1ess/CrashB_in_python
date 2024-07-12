@@ -14,78 +14,81 @@ snd_thu1=VS+'thunder_start.wav'
 snd_rain=VS+'rain.wav'
 
 ## INTERFACE SFX
-SND_UI={0:'select.wav',
-		1:'enter.wav',
-		2:'collect.wav',
-		3:'lives.wav',
-		4:'reward.wav',
-		5:'gem.wav'}
+SND_UI={0:'select',
+		1:'enter',
+		2:'collect',
+		3:'lives',
+		4:'reward',
+		5:'gem'}
 def ui_audio(ID,pit=1):
 	if ID == 1:
-		ua=Audio(SN+SND_UI[ID],pitch=pit,volume=se.SFX_VOLUME/2)
+		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME/2)
 	else:
-		ua=Audio(SN+SND_UI[ID],pitch=pit,volume=se.SFX_VOLUME)
+		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
 	cc.purge_instance(ua)
 
 ## PLAYER SFX
-SND_PC={0:'walk.wav',
-		1:'jump.wav',
-		2:'land0.wav',
-		3:'attack.wav',
-		4:'atk_wait.wav',
-		5:'jump_hit.wav',
-		6:'damage.wav',
-		7:'woah.wav',
-		8:'ice_slide.wav',
-		9:'ice_slide_stop.wav',
-		10:'water_land.wav',
-		11:'water_step'}
+SND_PC={0:'walk',
+		1:'jump',
+		2:'land_sand',
+		3:'attack',
+		4:'atk_wait',
+		5:'jump_hit',
+		6:'damage',
+		7:'woah',
+		8:'ice_slide',
+		9:'ice_slide_stop',
+		10:'splash',
+		11:'water_step',
+		12:'metal_step',
+		13:'land_metal',
+		14:'fall_death'}
 def pc_audio(ID,pit=1):
-	pc=Audio(SP+SND_PC[ID],pitch=pit,volume=se.SFX_VOLUME)
+	pc=Audio(SP+SND_PC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
 	cc.purge_instance(pc)
 
 ## CRATE SFX
-SND_CRT={0:'steel.wav',
-		1:'block.wav',
-		2:'break1.wav',
-		3:'break2.wav',
-		4:'bnc.wav',
-		5:'spring.wav',
-		6:'checkp.wav',
-		7:'check_d.wav',
-		8:'tnt.wav',
-		9:'nitro_idle.wav',
-		10:'explode.wav',
-		11:'glass.wav',
-		12:'switch.wav',
-		13:'air.wav',
-		14:'aku.wav'}
+SND_CRT={0:'steel',
+		1:'block',
+		2:'break1',
+		3:'break2',
+		4:'bnc',
+		5:'spring',
+		6:'checkp',
+		7:'check_d',
+		8:'tnt',
+		9:'nitro_idle',
+		10:'explode',
+		11:'glass',
+		12:'switch',
+		13:'air',
+		14:'aku'}
 def crate_audio(ID,pit=1):
-	ca=Audio(SN+SND_CRT[ID],pitch=pit,volume=se.SFX_VOLUME)
+	ca=Audio(SN+SND_CRT[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
 	cc.purge_instance(ca)
 
 ## NPC SFX
-SND_NPC={0:'plant_bite.wav',
-		1:'scrubber.wav',
-		2:'mouse.wav',
-		3:'seal.wav',
-		4:'rat_idle.wav'}
+SND_NPC={0:'plant_bite',
+		1:'scrubber',
+		2:'mouse',
+		3:'seal',
+		4:'rat_idle'}
 def npc_audio(ID,pit=1):
-	np=Audio(SA+SND_NPC[ID],pitch=pit,volume=se.SFX_VOLUME)
+	np=Audio(SA+SND_NPC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
 	cc.purge_instance(np)
 
 ## OBJECTS/ITEM SFX
-SND_OBJ={0:'spawn.wav',
-		1:'door_open.wav',
-		2:'portal.wav',
-		3:'wlog.wav',
-		4:'role.wav',
-		5:'waterf.wav',
-		6:'bubble.wav',
-		7:'electric.wav',
-		8:'npc_beat.wav'}
+SND_OBJ={0:'spawn',
+		1:'door_open',
+		2:'portal',
+		3:'wlog',
+		4:'role',
+		5:'waterf',
+		6:'bubble',
+		7:'electric',
+		8:'npc_beat'}
 def obj_audio(ID,pit=1):
-	ob=Audio(SN+SND_OBJ[ID],pitch=pit,volume=se.SFX_VOLUME)
+	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
 	cc.purge_instance(ob)
 
 ## Background Sounds

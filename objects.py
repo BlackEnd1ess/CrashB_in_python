@@ -136,7 +136,7 @@ class MossPlatform(Entity):
 			self.animate_y(self.spawn_pos[1],duration=.3)
 			self.opt_model.animate_y(self.spawn_pos[1]+.475,duration=.3)
 	def update(self):
-		if not status.gproc() and self.ptm > 0:
+		if not st.gproc() and self.ptm > 0:
 			if self.ptm in [2,3]:
 				platform_move(self)
 				self.opt_model.x=self.x
@@ -229,24 +229,28 @@ class WoodLog(Entity):
 		inp=omf+'l2/wood_log/wood_log'
 		super().__init__(model=inp+'.ply',texture=inp+'.tga',name='wdlg',position=pos,scale=(.001,.001,.0015),rotation=(-90,0,0),collider=b)
 		Entity(model='cube',texture='res/terrain/l1/bricks.png',position=(self.x,self.y+.8,self.z-.075),scale=(.5,2,.5),collider=b)
-		self.danger=False
+		self.danger=True
 		self.or_pos=self.y
 		self.stat=0
 		unlit_obj(self)
+	def reset_pos(self):
+		self.y+=time.dt
+		if self.y >= self.or_pos+1.3:
+			self.danger=True
+			self.stat=1
+	def stomp(self):
+		self.y-=time.dt*4
+		if self.y <= self.or_pos:
+			if distance(self,LC.ACTOR) < 2:
+				sn.obj_audio(ID=3)
+			self.danger=False
+			self.stat=0
 	def update(self):
-		if not status.gproc():
-			if self.stat == 0:
-				self.y+=time.dt
-				if self.y >= self.or_pos+1.3:
-					self.danger=True
-					self.stat=1
-				return
-			self.y-=time.dt*4
-			if self.y <= self.or_pos:
-				if distance(self,LC.ACTOR) < 2:
-					sn.obj_audio(ID=3)
-				self.danger=False
-				self.stat=0
+		if not st.gproc() and self.visible:
+			if self.intersects(LC.ACTOR) and self.danger:
+				cc.get_damage(LC.ACTOR,rsn=1)
+			ttr={0:self.reset_pos,1:self.stomp}
+			ttr[self.stat]()
 
 class IceGround(Entity):
 	def __init__(self,pos,sca):
@@ -301,7 +305,9 @@ class Role(Entity):
 		if distance(self,LC.ACTOR) < 3:
 			sn.obj_audio(ID=4)
 	def update(self):
-		if not status.gproc() and self.visible:
+		if not st.gproc() and self.visible:
+			if self.intersects(LC.ACTOR) and self.danger:
+				cc.get_damage(LC.ACTOR,rsn=1)
 			self.roll_wait=max(self.roll_wait-time.dt,0)
 			if self.roll_wait <= 0:
 				self.is_rolling=True
@@ -321,7 +327,7 @@ class WaterFlow(Animation):
 		WaterHit(p=pos,sc=sca)
 	def update(self):
 		pt={True:self.pause,False:self.resume}
-		pt[status.gproc()]()
+		pt[st.gproc()]()
 
 class WaterFall(Entity):
 	def __init__(self,pos):
@@ -331,7 +337,7 @@ class WaterFall(Entity):
 		self.y+=1
 		self.frm=0
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			self.frm+=time.dt*7
 			if self.frm > 31.9:
 				self.frm=0
@@ -391,7 +397,7 @@ class Foam(Entity):
 		super().__init__(model='quad',texture=self.t+'0.png',position=pos,scale=(5,1),texture_scale=(10,1),rotation_x=90)
 		self.frm=0
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			self.frm+=time.dt*6
 			if self.frm > 15.9:
 				self.frm=0
@@ -411,7 +417,7 @@ class SewerEscape(Entity):
 		if typ == 1:
 			self.color=color.rgb32(255,50,0)
 			self.shader=unlit_shader
-			#self.collider='mesh'
+
 class SewerPlatform(Entity):
 	def __init__(self,pos):
 		pPF=omf+'l4/scn/'
@@ -435,6 +441,7 @@ class EletricWater(Entity):
 		self.electric=False
 		self.ta=LC.ACTOR
 		self.tx=(sca[0],sca[1])
+		self.can_splash=0
 		self.frm=0
 		self.tme=10
 		self.switch_water()
@@ -458,13 +465,17 @@ class EletricWater(Entity):
 		self.texture_scale=self.tx
 		self.electric=False
 	def collect(self):
+		if self.can_splash <= 0:
+			sn.pc_audio(ID=10)
+			self.can_splash=.5
 		if self.electric:
 			cc.get_damage(self.ta,rsn=4)
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			self.anim()
 			self.ta.in_water=(self.intersects(self.ta).hit)
 			self.tme=max(self.tme-time.dt,0)
+			self.can_splash=max(self.tme-time.dt,0)
 			if self.tme <= 0:
 				self.tme=10
 				self.switch_water()
@@ -527,7 +538,6 @@ class StartRoom(Entity):## game spawn point
 		self.curt=Entity(model='plane',position=(self.x,self.y+0.01,self.z),color=color.black,scale=3)
 		RoomDoor(pos=(self.x,self.y+1.9,self.z+2.3),typ=0)
 		player.CrashB(pos=(self.x,self.y+.85,self.z-.1))
-		cc.preload_items()
 		status.checkpoint=(self.x,self.y+2,self.z)
 		camera.position=(self.x,self.y+2,self.z-3)
 		IndoorZone(pos=(self.x,self.y+1.5,self.z),sca=(3,2,7))
@@ -552,15 +562,15 @@ class EndRoom(Entity):## finish level
 		self.bck=Entity(model='cube',scale=(6,4,2),position=(self.x,self.y,self.z+9),collider=b,visible=False)
 		self.pod1=Entity(model='cube',scale=(6,1,2.5),position=(self.x-1,self.y-1.85,self.z+.45),collider=b,visible=False)
 		self.pod2=Entity(model='cube',scale=(.85,1,.85),position=(self.x-1.1,self.y-1.6,self.z+.3),collider=b,visible=False)
-		self.pod3=Entity(model='cube',scale=(1.6,1,1),position=(self.x-1.1,self.y-1.5,self.z+6.5),collider=b,visible=False)
+		self.pod3=Entity(model='cube',scale=(1.6,1,1),position=(self.x-1.1,self.y-1.51,self.z+6.5),collider=b,visible=False)
 		Entity(model='cube',scale=(20,10,.1),position=(self.x,self.y-5,self.z+16),color=color.black)
 		LevelFinish(p=(self.x-1.1,self.y-1.1,self.z+7))
 		RoomDoor(pos=(self.x-1.1,self.y+.25,self.z-4.78),typ=1)
 		CrateScore(pos=(self.x-1.1,self.y-.7,self.z))
 		IndoorZone(pos=(self.x-1,self.y,self.z+1),sca=(5,2,12))
-		if status.level_index == 1 and not 4 in status.COLOR_GEM:
+		if st.level_index == 1 and not 4 in st.COLOR_GEM:
 			item.GemStone(pos=(self.x-1.1,self.y-1,self.z),c=4)
-		elif status.level_index == 2 and not 1 in status.COLOR_GEM:
+		if st.level_index == 2 and not 1 in st.COLOR_GEM:
 			item.GemStone(pos=(self.x-1.1,self.y-1,self.z),c=1)
 
 class RoomDoor(Entity):## door for start and end room
@@ -574,7 +584,7 @@ class RoomDoor(Entity):## door for start and end room
 		unlit_obj(self)
 		unlit_obj(self.door_part)
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			if distance(self,LC.ACTOR) < self.DS[self.typ]:
 				if not self.d_open:
 					self.d_open=True
@@ -599,7 +609,7 @@ class BonusPlatform(Entity):## switch -> bonus round
 		self.ta=LC.ACTOR
 		unlit_obj(self)
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			if self.catch_p:
 				cc.ptf_up(p=self,c=self.ta)
 			if st.bonus_solved:
@@ -608,7 +618,7 @@ class BonusPlatform(Entity):## switch -> bonus round
 
 class GemPlatform(Entity):## gem platform
 	def __init__(self,pos,t):
-		if t in status.COLOR_GEM:
+		if t in st.COLOR_GEM:
 			ne='gem_ptf'
 			self.is_enabled=True
 		else:
@@ -627,8 +637,8 @@ class GemPlatform(Entity):## gem platform
 			self.bg_darkness.hide()
 		unlit_obj(self)
 	def update(self):
-		if not status.gproc():
-			if status.gem_path_solved:
+		if not st.gproc():
+			if st.gem_path_solved:
 				cc.purge_instance(self.bg_darkness)
 				cc.purge_instance(self)
 				return
@@ -649,7 +659,7 @@ class CamSwitch(Entity):## allow cam move y if player collide with them
 	def __init__(self,pos,sca):
 		super().__init__(model='cube',position=pos,scale=sca,collider=b,visible=False,alpha=.5)
 	def collect(self):#avoid pyhsics with them
-		if not status.gproc() and LC.ACTOR != None:
+		if not st.gproc() and LC.ACTOR != None:
 			camera.y=lerp(camera.y,LC.ACTOR.y+1.2,time.dt*2)
 
 class LevelFinish(Entity):## finish level
@@ -676,6 +686,7 @@ class LODProcess(Entity):
 		for b in scene.entities[:]:
 			A=LC.ACTOR
 			if isinstance(b,item.WumpaFruit):self.wmp_lod(w=b,p=A)
+			if 'tnt.wav' in str(b) and not b.playing:scene.entities.remove(b)
 			if cc.is_crate(b):self.crt_lod(c=b,p=A)
 			if cc.is_enemie(b):self.enm_lod(e=b,p=A)
 			if str(b) in self.MAIN_LOD:self.vwi_lod(v=b,p=A)
@@ -704,7 +715,7 @@ class Water(Animation):
 		WaterHit(p=(pos[0],pos[1]-.1,pos[2]),sc=s)
 		self.texture_scale=(s[0]/4,s[1]/4)
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			if st.level_index != 2:
 				self.resume()
 				return
@@ -712,7 +723,7 @@ class Water(Animation):
 
 class mTerrain(Entity):
 	def __init__(self,pos,sca,typ):
-		terra='res/terrain/l'+str(status.level_index)+'/'
+		terra='res/terrain/l'+str(st.level_index)+'/'
 		super().__init__(model='cube',position=pos,collider=b,scale=sca,texture=terra+typ,texture_scale=(sca[0],sca[2]))
 
 class mBlock(Entity):

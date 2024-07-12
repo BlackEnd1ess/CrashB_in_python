@@ -70,3 +70,4 @@
 - added new death animations, change death event
 - added new NPC: Eeel(ID 12), changed vnums vulture from 11 to 3)
 - level 4 prototyp
+- landing/walking on metal,sand,water has different sound

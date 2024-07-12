@@ -7,6 +7,7 @@ sn=sound
 an=animation
 cc=_core
 LC=_loc
+st=status
 
 cHr='res/pc/'
 class pShadow(Entity):## shadow point
@@ -17,18 +18,14 @@ class pShadow(Entity):## shadow point
 	def flw_p(self):
 		self.x=self.ta.x
 		self.z=self.ta.z
-	def check_obj(self):
 		vSH=raycast(self.ta.world_position,-Vec3(0,1,0),distance=2,ignore=[self,self.ta],debug=False)
-		if not cc.is_enemie(vSH.entity):
-			if vSH.normal and not str(vSH.entity) in LC.item_lst:
-				self.y=vSH.world_point.y
+		if vSH.hit and not str(vSH.entity) in LC.item_lst:
+			self.y=vSH.world_point.y
 	def update(self):
-		if not status.gproc() and LC.ACTOR != None:
-			self.flw_p()
-			if not self.ta.landed:
-				self.check_obj()
-				return
-			self.y=self.ta.y
+		if not st.gproc():
+			self.visible=not(self.ta.landed)
+			if self.visible:
+				self.flw_p()
 
 class CrashB(Entity):
 	def __init__(self,pos):
@@ -45,7 +42,7 @@ class CrashB(Entity):
 		an.WarpRingEffect(pos=self.position)
 		pShadow()
 	def input(self,key):
-		if status.p_rst(self):
+		if st.p_rst(self):
 			return
 		if key == 'space' and self.landed:
 			sn.pc_audio(ID=1)
@@ -60,23 +57,23 @@ class CrashB(Entity):
 			else:
 				sn.pc_audio(ID=0)
 		if key == 'tab':
-			status.show_wumpas=5
-			status.show_crates=5
-			status.show_lives=5
-			status.show_gems=5
+			st.show_wumpas=5
+			st.show_crates=5
+			st.show_lives=5
+			st.show_gems=5
 		if key == 'w':
 			self.CMS=3
 		if key == 's':
 			self.CMS=4
 		if key in ['p','escape']:
-			if not status.pause:
-				status.pause=True
+			if not st.pause:
+				st.pause=True
 				return
-			status.pause=False
+			st.pause=False
 		##dev input
 		if key == 'b':
 			print('Entities: '+str(len(scene.entities)))
-			print('CRATE reset: '+str(len(status.C_RESET)))
+			print('CRATE reset: '+str(len(st.C_RESET)))
 			print(scene.entities[-1])
 			print(self.position)
 		if key == 'e':
@@ -85,22 +82,26 @@ class CrashB(Entity):
 			scene.fog_color=color.random_color()
 			print(scene.fog_color)
 		if key == 'u':
-			self.position=(0,1,0)
+			#self.position=(0,1,0)
+			#self.position=(5,4,29)
+			self.position=(0,2,2)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD
 		if self.is_slippery:
 			cc.c_slide(self)
 		if mvD.length() > 0:
-			status.p_last_direc=mvD
-			cc.obj_walls(self)
+			st.p_last_direc=mvD
+			mc=raycast(self.world_position+(0,.1,0),self.direc,distance=.2,ignore=[self,LC.shdw],debug=False)
+			if not mc or (mc and str(mc.entity) in LC.item_lst):
+				self.position+=self.direc*time.dt*self.move_speed
 			self.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
 			self.walk_event()
 			return
 		self.walk_snd=0
 		self.walking=False
 	def walk_event(self):
-		if status.death_event:
+		if st.death_event:
 			return
 		self.walking=True
 		self.is_landing=False#stop the remaining landing frames after run
@@ -119,7 +120,10 @@ class CrashB(Entity):
 				if self.in_water:
 					sn.pc_audio(ID=11,pit=random.uniform(.9,1))
 				else:
-					sn.pc_audio(ID=0)
+					if st.level_index == 4:
+						sn.pc_audio(ID=12)
+					else:
+						sn.pc_audio(ID=0)
 	def fall(self):
 		s=self
 		if s.landed or s.jumping:
@@ -156,19 +160,20 @@ class CrashB(Entity):
 				5:lambda:an.eat_by_plant(self)}
 			dca[rsn]()
 	def basic_animation(self):
-		if self.is_attack:
-			an.spin(self)
-			return
-		if self.is_flip and not self.landed:
-			an.flip(self)
-		if (self.landed and self.is_landing) and not self.walking:
-			an.land(self)
-			return
-		if status.p_idle(self) or self.freezed:
-			if self.is_slippery:
-				an.slide_stop(self)
-			else:
-				an.idle(self)
+		if not st.LV_CLEAR_PROCESS:
+			if self.is_attack:
+				an.spin(self)
+				return
+			if self.is_flip and not self.landed:
+				an.flip(self)
+			if (self.landed and self.is_landing) and not self.walking:
+				an.land(self)
+				return
+			if status.p_idle(self) or self.freezed:
+				if self.is_slippery:
+					an.slide_stop(self)
+				else:
+					an.idle(self)
 	def hurt_blink(self):
 		self.blink_time=max(self.blink_time-time.dt,0)
 		if self.blink_time <= 0:
@@ -184,7 +189,7 @@ class CrashB(Entity):
 				self.move()
 				self.fall()
 				self.c_camera()
-				cc.c_item(self)
+				cc.obj_walls(self)
 				if self.is_attack:
 					cc.c_attack(self)
 				if self.jumping:

@@ -14,7 +14,7 @@ def set_val(c):
 	for _a in ['run_anim','jmp_typ','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','fall_time',
 			'blink_time','death_anim','slide_fwd']:
 		setattr(c,_a,0)
-	for _v in ['aq_bonus','in_water','walking','jumping','landed','is_touch_crate','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
+	for _v in ['w_stop','aq_bonus','in_water','walking','jumping','landed','tcr','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
 		setattr(c,_v,False)
 	c.move_speed=2.4
 	c.direc=(0,0,0)
@@ -40,7 +40,10 @@ def get_damage(c,rsn):
 		dth_event(c,rsn=rsn)
 def dth_event(c,rsn):
 	if not st.death_event:
-		sn.pc_audio(ID=7,pit=.8)
+		if rsn == 0:
+			sn.pc_audio(ID=14,pit=.8)
+		else:
+			sn.pc_audio(ID=7,pit=.8)
 		status.death_event=True
 		c.freezed=True
 		c.death_action(rsn=rsn)
@@ -78,6 +81,7 @@ def reset_state(c):
 def various_val(c):
 	c.indoor=max(c.indoor-time.dt,0)
 	if c.injured:c.hurt_blink()
+	if not c.is_slippery:c.move_speed=2.4
 	if st.bonus_solved and not st.wait_screen:
 		c.aq_bonus=(st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0)
 def c_attack(c):
@@ -86,9 +90,11 @@ def c_attack(c):
 			if is_crate(e):
 				if e.vnum in [3,11]:
 					e.empty_destroy()
-					return
-				e.destroy()
+				else:
+					e.destroy()
 			if is_enemie(e) and not e.is_hitten:
+				if (e.vnum in [1,9]) or (e.vnum == 5 and e.def_mode):
+					get_damage(c,rsn=1)
 				e.is_hitten=True
 				a=Vec3(e.x-c.x,0,e.z-c.z)
 				e.fly_direc=a
@@ -201,16 +207,14 @@ def obj_ceiling(c):
 	if vc and vc.normal == Vec3(0,-1,0):
 		e=vc.entity
 		if not str(e) in LC.item_lst:
-			if is_crate(e) and not c.is_touch_crate:
-				c.is_touch_crate=True
+			if is_crate(e) and not c.tcr:
+				c.tcr=True
 				e.destroy()
-				invoke(lambda:setattr(c,'is_touch_crate',False),delay=.1)
-			if str(e) in LC.dangers or (is_enemie(e) and not c.is_attack):
-				get_damage(c,rsn=1)
-			c.jumping=False
+				invoke(lambda:setattr(c,'tcr',False),delay=.1)
 			c.y=c.y
+			c.jumping=False
 def obj_grnd(c):
-	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.15,.15),ignore=[c,LC.shdw],debug=False)
+	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=[c,LC.shdw],debug=False)
 	vp=vj.entity
 	if vj.normal and not (str(vp) in LC.item_lst or str(vp) in LC.dangers):
 		if (is_crate(vp) and not vp.vnum == 0) and not (is_crate(vp) and vp.vnum in [9,10,11] and vp.activ) and c.fall_time > .1:
@@ -228,26 +232,26 @@ def obj_grnd(c):
 		c.is_slippery=(str(vp.name) == 'iceg')
 		return
 	c.landed=False
-	c.move_speed=2.4
 def obj_walls(c):
-	if status.LV_CLEAR_PROCESS:
-		c=None
+	if st.LV_CLEAR_PROCESS:
+		del c
 		return
-	ig=[c,LC.shdw]
-	vT=raycast(c.world_position+(0,.1,0),c.direc,distance=.2,ignore=ig,debug=False)
-	hT=c.intersects(ignore=ig)
-	for jF in [hT,vT]:
-		jV=jF.entity
-		if jF and jF.normal != Vec3(0,1,0):
-			if isinstance(jV,crate.Nitro) and jV.collider != None:jV.destroy()
-			if (is_enemie(jV) and not c.is_attack) or (str(jV) in LC.dangers and jV.danger):
-				get_damage(c,rsn=1)
+	hT=c.intersects(ignore=[c,LC.shdw])
+	jV=hT.entity
+	if hT and hT.normal != Vec3(0,1,0):
+		if isinstance(jV,crate.Nitro) and jV.collider != None:
+			jV.destroy()
+			return
+		if str(jV) in LC.item_lst:
+			jV.collect()
+			return
+		if (is_enemie(jV) and not c.is_attack):
+			if jV.vnum == 7:
+				get_damage(c,rsn=5)
 				return
-			else:
-				if not str(jV) in LC.item_lst:
-					return
-	#avoid sys error by missing ursina entity
-	c.position+=c.direc*time.dt*c.move_speed
+			get_damage(c,rsn=1)
+			return
+		c.position-=c.direc*time.dt*c.move_speed
 def obj_act(e):
 	u=str(e)
 	e.catch_p=(u in ['bonus_platform','gem_platform'])
@@ -261,7 +265,12 @@ def landing(c,e,o):
 		c.first_land=False
 		c.is_landing=True
 		c.land_anim=0
-		sn.pc_audio(ID=2)
+		if str(o) == 'sewer_platform':
+			sn.pc_audio(ID=13)
+		elif c.in_water:
+			sn.pc_audio(ID=10)
+		else:
+			sn.pc_audio(ID=2)
 		obj_act(o)
 	c.is_flip=False
 	c.flip_anim=0
@@ -284,36 +293,32 @@ def jump_enemy(c,e):
 		return
 	kill_by_jump(m=e,c=c)
 def jmp_lv_fin():
-	if not status.LEVEL_CLEAN:
+	if not st.LEVEL_CLEAN:
 		status.LEVEL_CLEAN=True
 		clear_level(passed=True)
-def c_item(c):
-	j=c.intersects(ignore=[c,LC.shdw])
-	if str(j.entity) in LC.item_lst:
-		j.entity.collect()
 
 ## interface,collectables
 def wumpa_count(n):
 	sn.ui_audio(ID=2)
 	invoke(lambda:sn.ui_audio(ID=1),delay=.5)
-	if status.bonus_round:
-		status.wumpa_bonus+=n
+	if st.bonus_round:
+		st.wumpa_bonus+=n
 		return
-	status.wumpa_fruits+=n
-	status.show_wumpas=5
+	st.wumpa_fruits+=n
+	st.show_wumpas=5
 	sc_ps=LC.ACTOR.screen_position
-	if status.wumpa_bonus <= 0 and not LC.ACTOR.aq_bonus:
+	if st.wumpa_bonus <= 0 and not LC.ACTOR.aq_bonus:
 		if n > 1:
 			ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]))
 		ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]+.1))
 def give_extra_live():
 	ui.live_get_anim()
 	sn.ui_audio(ID=3)
-	if status.bonus_round:
-		status.lives_bonus+=1
+	if st.bonus_round:
+		st.lives_bonus+=1
 	else:
-		status.extra_lives+=1
-		status.show_lives=5
+		st.extra_lives+=1
+		st.show_lives=5
 
 ## crate actions
 def crate_set_val(cR,Cpos,Cpse):
@@ -337,16 +342,17 @@ def is_crate(e):
 		return True
 	return False
 def crate_action(e):
+	A=LC.ACTOR
 	if e.vnum in [7,8]:
-		set_jump_type(LC.ACTOR,typ=2)
+		set_jump_type(A,typ=2)
 		e.c_action()
 		return
-	elif e.vnum == 3:
-		set_jump_type(LC.ACTOR,typ=3)
-	else:
-		if e.vnum != 14:
-			set_jump_type(LC.ACTOR,typ=1)
-	e.destroy()
+	if e.vnum != 14:
+		if e.vnum == 3:
+			set_jump_type(A,typ=3)
+		else:
+			set_jump_type(A,typ=1)
+		e.destroy()
 def check_cstack():
 	for cSD in scene.entities[:]:
 		if is_crate(cSD) and not cSD.vnum ==3:
@@ -373,7 +379,7 @@ def load_b_ui():
 	ui.LiveBonus()
 def load_bonus(c):
 	status.loading=True
-	status.checkpoint=_loc.bonus_checkpoint[status.level_index]
+	status.checkpoint=_loc.bonus_checkpoint[st.level_index]
 	collect_reset()
 	if st.bonus_round:
 		invoke(lambda:back_to_level(c),delay=.5)
@@ -408,7 +414,7 @@ def back_to_level(c):
 ## gem route
 def load_gem_route(c):
 	status.loading=True
-	if status.is_death_route:
+	if st.is_death_route:
 		invoke(lambda:back_to_level(c),delay=.5)
 		return
 	invoke(lambda:load_droute(c),delay=.5)
@@ -474,6 +480,7 @@ def npc_walk(m):
 				if m.x <= m.spawn_pos[0]-1:
 					m.rotation_y=270
 					m.turn=0
+			return
 		if m.m_direction == 1:
 			if m.turn == 0:
 				m.z+=time.dt*s
@@ -486,13 +493,14 @@ def npc_walk(m):
 					m.rotation_y=180
 					m.turn=0
 def npc_circle_move(m):
-	m.angle+=time.dt*3
+	m.angle+=time.dt*4
 	m.angle%=(2*math.pi)
 	new_x=m.spawn_pos[0]+1*math.cos(m.angle)
 	new_y=m.spawn_pos[1]+1*math.sin(m.angle)
 	m.position=Vec3(new_x,new_y,m.z)
-	#direction_to_center=m.spawn_pos-m.position
-	#self.rotation = Vec3(0, -math.degrees(math.atan2(direction_to_center.z, direction_to_center.x)) + 90, 0)
+	rot=math.degrees(math.atan2(new_y-m.spawn_pos[1],new_x-m.spawn_pos[0]))
+	m.rotation_x=rot
+	m.rotation_y=-90
 def rotate_to_crash(m):
 	relative_position=LC.ACTOR.position-m.position
 	angle=atan2(relative_position.x,relative_position.z)*(180/pi)+180
@@ -529,12 +537,3 @@ def is_enemie(n):
 	if any(isinstance(n,npc_class) for npc_class in nnk):
 		return True
 	return False
-
-## reduce lagg by first spawn
-def preload_items():
-	return
-#	status.preload_phase=True
-#	settings.SFX_VOLUME=0
-#def end_preload():
-#	status.preload_phase=False
-#	settings.SFX_VOLUME=2

@@ -150,6 +150,7 @@ class EatingPlant(Entity):
 		self.m_direction=0
 		self.ta=LC.ACTOR
 		self.atk_frame=0
+		self.eat_frame=0
 		self.eat=False
 	def action(self):
 		dc=distance(self,self.ta)
@@ -251,14 +252,16 @@ class Mouse(Entity):
 			self.n_snd.volume=0
 
 class Eel(Entity):
-	def __init__(self,pos):
+	def __init__(self,p,d,t):
 		nN='eel'
 		self.vnum=12
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/0.tga',rotation_x=-90,scale=m_SC,position=p)
 		cc.set_val_npc(self,tu=t,di=d)
 	def update(self):
 		if not status.gproc():
 			an.npc_walking(self)
+			if distance(self,LC.ACTOR) < 2:
+				self.x=lerp(self.x,LC.ACTOR.x,time.dt*2)
 
 ## passive NPC
 class AkuAkuMask(Entity):
