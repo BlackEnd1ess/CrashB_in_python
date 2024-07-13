@@ -1,4 +1,4 @@
-- fixx: plant bite, lv3 wumpas
+- lv3 wumpas
 - fixx crate fall
 - game over event
 

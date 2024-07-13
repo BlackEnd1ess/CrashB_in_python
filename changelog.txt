@@ -71,3 +71,7 @@
 - added new NPC: Eeel(ID 12), changed vnums vulture from 11 to 3)
 - level 4 prototyp
 - landing/walking on metal,sand,water has different sound
+
+#14.07.2024
+- Eating Plant Animation - eat crash
+- fixxed level 2 wood log/stone role collision

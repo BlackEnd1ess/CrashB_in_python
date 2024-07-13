@@ -77,6 +77,7 @@ def reset_state(c):
 	camera.position=c.position
 	camera.rotation=(15,0,0)
 	status.death_event=False
+	c.visible=True
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def various_val(c):
 	c.indoor=max(c.indoor-time.dt,0)

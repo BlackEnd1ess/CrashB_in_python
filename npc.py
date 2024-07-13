@@ -8,6 +8,7 @@ an=animation
 sn=sound
 cc=_core
 LC=_loc
+st=status
 
 def spawn(pos,mID,mDirec,mTurn):
 	npc_={0:lambda:Amadillo(p=pos,d=mDirec,t=mTurn),
@@ -35,7 +36,7 @@ class Amadillo(Entity):
 		cc.set_val_npc(self,tu=t,di=d)
 		self.move_speed=1
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			an.npc_walking(self)
 			cc.npc_action(self)
 
@@ -48,7 +49,7 @@ class Turtle(Entity):
 		cc.set_val_npc(self,tu=t,di=d)
 		self.move_speed=.7
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			an.npc_walking(self)
 			cc.npc_action(self)
 
@@ -62,7 +63,7 @@ class SawTurtle(Entity):
 		self.def_mode=True
 		self.move_speed=1
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			an.npc_walking(self)
 			cc.npc_action(self)
 
@@ -82,7 +83,7 @@ class Vulture(Entity):
 			self.x=self.target.x
 			self.y=self.target.y
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			if not self.is_hitten:
 				self.wait_on_player()
 			cc.npc_action(self)
@@ -96,7 +97,7 @@ class Penguin(Entity):
 		cc.set_val_npc(self,tu=t,di=d)
 		self.move_speed=1.1
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			an.npc_walking(self)
 			cc.npc_action(self)
 
@@ -113,7 +114,7 @@ class Hedgehog(Entity):
 	def anim_act(self):
 		an.hedge_defend(self)
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			an.npc_walking(self)
 			cc.npc_action(self)
 			if distance(self,LC.ACTOR) < 2:
@@ -132,7 +133,7 @@ class Seal(Entity):
 		self.move_speed=1.1
 		self.n_snd=False
 	def update(self):
-		if not status.gproc() and self.visible:
+		if not st.gproc() and self.visible:
 			cc.npc_action(self)
 			an.npc_walking(self)
 			if not self.n_snd and distance(self,LC.ACTOR) < 1:
@@ -151,30 +152,36 @@ class EatingPlant(Entity):
 		self.ta=LC.ACTOR
 		self.atk_frame=0
 		self.eat_frame=0
+		self.atk=False
 		self.eat=False
 	def action(self):
 		dc=distance(self,self.ta)
 		if dc < 3:
 			cc.rotate_to_crash(self)
-			if dc <= 1 and not self.eat:
+			if dc <= 1 and not self.atk:
+				if st.death_event:
+					return
+				self.atk=True
+				sn.npc_audio(ID=0)
 				if not (self.ta.is_attack or self.ta.jumping):
 					if status.aku_hit < 1:
-						an.plant_eat(self)
+						self.eat=True
 					_core.get_damage(LC.ACTOR,rsn=5)
-				self.eat=True
-				sn.npc_audio(ID=0)
-				invoke(lambda:setattr(self,'eat',False),delay=1)
+				invoke(lambda:setattr(self,'atk',False),delay=1)
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			if self.is_hitten:
 				cc.fly_away(self)
 				return
-			if self.eat and not status.death_event:
-				an.plant_bite(self)
+			if not self.eat:
+				if self.atk:
+					an.plant_bite(self)
+				else:
+					self.atk_frame=0
+					an.npc_walking(self)
+					self.action()
 				return
-			self.atk_frame=0
-			an.npc_walking(self)
-			self.action()
+			an.plant_eat(self)
 
 class Rat(Entity):
 	def __init__(self,p,d,t):
@@ -186,7 +193,7 @@ class Rat(Entity):
 		self.move_speed=.25
 		self.snd_time=1
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			cc.npc_action(self)
 			if distance(self,LC.ACTOR) < 2:
 				cc.rotate_to_crash(self)
@@ -205,7 +212,7 @@ class Lizard(Entity):
 		self.move_speed=1.3
 		self.spawn_pos=p
 	def update(self):
-		if not status.gproc():cc.npc_action(self)
+		if not st.gproc():cc.npc_action(self)
 
 class Scrubber(Entity):
 	def __init__(self,p,d,t):
@@ -219,7 +226,7 @@ class Scrubber(Entity):
 		self.move_speed=1.2
 		self.angle=0
 	def update(self):
-		if not status.gproc() and self.visible:
+		if not st.gproc() and self.visible:
 			cc.npc_action(self)
 			if (self.is_hitten or self.is_purge):
 				self.n_snd.fade_out()
@@ -240,7 +247,7 @@ class Mouse(Entity):
 		self.move_speed=1.2
 		self.snd_time=.5
 	def update(self):
-		if not status.gproc() and self.visible:
+		if not st.gproc() and self.visible:
 			cc.npc_action(self)
 			if (self.is_hitten or self.is_purge):
 				self.n_snd.fade_out()
@@ -258,7 +265,7 @@ class Eel(Entity):
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/0.tga',rotation_x=-90,scale=m_SC,position=p)
 		cc.set_val_npc(self,tu=t,di=d)
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			an.npc_walking(self)
 			if distance(self,LC.ACTOR) < 2:
 				self.x=lerp(self.x,LC.ACTOR.x,time.dt*2)
@@ -269,11 +276,11 @@ class AkuAkuMask(Entity):
 		self.tpa='res/npc/akuaku/'
 		super().__init__(model=None,texture=None,scale=.00075,rotation_x=-90,position=pos,unlit=False)
 		self.ta=LC.ACTOR
-		status.aku_exist=True
+		st.aku_exist=True
 		self.change_skin()
 		self.spt=.5
 	def change_skin(self):
-		if status.aku_hit > 1:
+		if st.aku_hit > 1:
 			self.model=self.tpa+'aku2.ply'
 			self.texture=self.tpa+'aku2.tga'
 			self.spark()
@@ -289,7 +296,7 @@ class AkuAkuMask(Entity):
 		TG=self.ta
 		aSP=time.dt*4
 		self.rotation_y=lerp(self.rotation_y,TG.rotation_y,aSP)
-		if status.aku_hit < 3:
+		if st.aku_hit < 3:
 			self.position=lerp(self.position,(TG.x-.25,TG.y+.6,TG.z-.4),aSP)
 			return
 		fwd=Vec3(-sin(radians(TG.rotation_y)),0,-cos(radians(TG.rotation_y)))
@@ -298,12 +305,12 @@ class AkuAkuMask(Entity):
 	def check_dist_player(self):
 		if distance(self,self.ta) > 3:self.position=self.ta.position
 	def update(self):
-		if not status.gproc() and LC.ACTOR != None:
+		if not st.gproc() and LC.ACTOR != None:
 			self.check_dist_player()
 			self.follow_player()
 			self.change_skin()
-			if status.aku_hit < 1:
-				status.aku_exist=False
+			if st.aku_hit < 1:
+				st.aku_exist=False
 				cc.purge_instance(self)
 
 class Hippo(Entity):
@@ -329,7 +336,7 @@ class Hippo(Entity):
 		invoke(lambda:setattr(self,'active',False),delay=3)
 		invoke(lambda:setattr(self.col,'collider','box'),delay=1)
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			if self.col.active:
 				self.col.active=False
 				self.do_act()

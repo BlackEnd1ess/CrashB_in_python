@@ -13,8 +13,8 @@ def pos_info(c):
 	#print(f"o.TreeScene(pos=({sx},{sy},{sz}),s=.0175)")
 	#print(f"c.place_crate(ID=5,p=({sx},{sy},{sz}))")
 	#print(f"mt.crate_wall(ID=2,POS=({sx},{sy},{sz}),CNT=[2,2])")
-	print(f"mt.crate_block(ID=1,POS=({sx},{sy},{sz}),CNT=[2,2,2])")
-	#print(f"mt.wumpa_row(POS=({sx},{sy},{sz}),CNT=5,WAY=1)")
+	#print(f"mt.crate_block(ID=1,POS=({sx},{sy},{sz}),CNT=[2,2,2])")
+	print(f"mt.wumpa_plane(POS=({sx},{sy},{sz}),CNT=5,WAY=1)")
 #add air with list and mark!
 ## multible crate spawn
 def bounce_twin(POS,CNT):
@@ -78,18 +78,18 @@ def wumpa_double_row(POS,CNT):
 		I.place_wumpa((POS[0]+wr/3,POS[1],POS[2]),cnt=1)
 		I.place_wumpa((POS[0]+wr/3,POS[1]+.3,POS[2]),cnt=1)
 
-def wumpa_wall(POS,CNT):
-	for wx in range(CNT):
-		for wy in range(CNT):
+def wumpa_wall(POS,CNT):#[x,y]
+	for wx in range(CNT[0]):
+		for wy in range(CNT[1]):
 			I.place_wumpa((POS[0]+wx/3,POS[1]+wy/3,POS[2]),cnt=1)
 
-def wumpa_plane(POS,CNT):
-	for wx in range(CNT):
-		for wz in range(CNT):
+def wumpa_plane(POS,CNT):#[x,z]
+	for wx in range(CNT[0]):
+		for wz in range(CNT[1]):
 			I.place_wumpa((POS[0]+wx/3,POS[1],POS[2]+wz/3),cnt=1)
 
-def wumpa_block(POS,CNT):
-	for wx in range(CNT):
-		for wy in range(CNT):
-			for wz in range(CNT):
+def wumpa_block(POS,CNT):#[x,y,z]
+	for wx in range(CNT[0]):
+		for wy in range(CNT[1]):
+			for wz in range(CNT[2]):
 				I.place_wumpa((POS[0]+wx/3,POS[1]+wy/3,POS[2]+wz/3),cnt=1)

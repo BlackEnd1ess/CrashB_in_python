@@ -177,18 +177,18 @@ def level1():##wood
 	N.spawn(mID=1,pos=(0,1.1,-15),mDirec=0,mTurn=0)
 	#wumpa fruits
 	wu_h=1.3
-	mt.wumpa_plane(POS=(-.5,wu_h,-56.1),CNT=4)
-	mt.wumpa_plane(POS=(-.4,wu_h,-50),CNT=4)
+	mt.wumpa_plane(POS=(-.5,wu_h,-56.1),CNT=[4,4])
+	mt.wumpa_plane(POS=(-.4,wu_h,-50),CNT=[4,4])
 	mt.wumpa_row(POS=(0,wu_h,-44),CNT=4,WAY=2)
 	mt.wumpa_row(POS=(0,wu_h,-40),CNT=4,WAY=2)
-	mt.wumpa_plane(POS=(-.5,wu_h,-36.5),CNT=4)
+	mt.wumpa_plane(POS=(-.5,wu_h,-36.5),CNT=[4,4])
 	mt.wumpa_row(POS=(0,wu_h,-33),CNT=14,WAY=1)
 	mt.wumpa_row(POS=(-2,wu_h,-27),CNT=8,WAY=1)
 	mt.wumpa_row(POS=(.6,wu_h,-22),CNT=8,WAY=1)
-	mt.wumpa_plane(POS=(-.3,wu_h,-9),CNT=3)
-	mt.wumpa_plane(POS=(-.3,wu_h,-6),CNT=3)
-	mt.wumpa_plane(POS=(1.3,wu_h,-1.5),CNT=3)
-	mt.wumpa_plane(POS=(0,wu_h,16.3),CNT=4)
+	mt.wumpa_plane(POS=(-.3,wu_h,-9),CNT=[3,3])
+	mt.wumpa_plane(POS=(-.3,wu_h,-6),CNT=[3,3])
+	mt.wumpa_plane(POS=(1.3,wu_h,-1.5),CNT=[3,3])
+	mt.wumpa_plane(POS=(0,wu_h,16.3),CNT=[3,3])
 	#crates
 	CRP=1.16
 	if not 4 in status.COLOR_GEM:
@@ -396,19 +396,19 @@ def level2():##snow
 	c.place_crate(ID=6,p=(24.4,h3,27))
 	#wumpa fruits
 	whl=1.2
-	mt.wumpa_plane(POS=(-.5,whl,-58.4),CNT=3)
-	mt.wumpa_plane(POS=(-.3,1.1,-46),CNT=3)
-	mt.wumpa_plane(POS=(-.3,1.1,-37),CNT=3)
-	mt.wumpa_plane(POS=(-.3,1.1,-29.5),CNT=3)
-	mt.wumpa_plane(POS=(-.3,1.1,-27.8),CNT=2)
-	mt.wumpa_plane(POS=(-.3,1.1,-24),CNT=2)
-	mt.wumpa_plane(POS=(-.3,1.1,-19.8),CNT=3)
+	mt.wumpa_plane(POS=(-.5,whl,-58.4),CNT=[3,3])
+	mt.wumpa_plane(POS=(-.3,1.1,-46),CNT=[3,3])
+	mt.wumpa_plane(POS=(-.3,1.1,-37),CNT=[3,3])
+	mt.wumpa_plane(POS=(-.3,1.1,-29.5),CNT=[3,3])
+	mt.wumpa_plane(POS=(-.3,1.1,-27.8),CNT=[2,2])
+	mt.wumpa_plane(POS=(-.3,1.1,-24),CNT=[2,2])
+	mt.wumpa_plane(POS=(-.3,1.1,-19.8),CNT=[3,3])
 	mt.wumpa_double_row(POS=(-.5,1.5,2.25),CNT=8)
 	mt.wumpa_double_row(POS=(5.7,1.8,2.25),CNT=3)
 	mt.wumpa_double_row(POS=(13,2.85,2.25),CNT=12)
-	mt.wumpa_plane(POS=(22.7,5.6,5),CNT=3)
-	mt.wumpa_plane(POS=(22.7,5.6,8.4),CNT=3)
-	mt.wumpa_plane(POS=(22.7,5.7,22),CNT=3)
+	mt.wumpa_plane(POS=(22.7,5.6,5),CNT=[3,3])
+	mt.wumpa_plane(POS=(22.7,5.6,8.4),CNT=[3,3])
+	mt.wumpa_plane(POS=(22.7,5.7,22),CNT=[3,3])
 	mt.wumpa_double_row(POS=(25,5.6,27),CNT=16)
 	#collecable
 	if not st.level_index in st.CRYSTAL:

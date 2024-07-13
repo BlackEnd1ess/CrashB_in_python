@@ -307,12 +307,12 @@ def plant_bite(m):
 	m.texture=nf+str(m)+'/attack/plant.tga'
 	m.model=nf+str(m)+'/attack/'+str(int(m.atk_frame))+'.ply'
 def plant_eat(m):
-	if status.pause:
-		return
 	m.eat_frame+=time.dt*t
 	if m.eat_frame > 30.9:
 		m.eat_frame=0
-	m.model=nf+str(m)+'/eat/'+str(int(m.anim_frame))+'.ply'
+		m.eat=False
+		return
+	m.model=nf+str(m)+'/eat/'+str(int(m.eat_frame))+'.ply'
 
 def hedge_defend(m):
 	m.def_frame+=time.dt*t
