@@ -4,6 +4,7 @@ import _core,ui
 
 w=window
 def load():
+	#w.windowed_size=(800,600)
 	w.windowed_size=(1600,900)
 	w.render_mode='default'
 	w.exit_button.visible=False
@@ -18,7 +19,7 @@ def cam():
 	camera.fov=60
 	print('settings loaded')
 
-MUSIC_VOLUME=0
+MUSIC_VOLUME=1
 SFX_VOLUME=1
 #----------------------------
 #camera_contrast_shader

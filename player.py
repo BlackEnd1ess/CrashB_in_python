@@ -72,9 +72,10 @@ class CrashB(Entity):
 			st.pause=False
 		##dev input
 		if key == 'b':
-			print('Entities: '+str(len(scene.entities)))
-			print('CRATE reset: '+str(len(st.C_RESET)))
-			print(scene.entities[-1])
+			#map_tools.pos_info(self)
+			#print('Entities: '+str(len(scene.entities)))
+			#print('CRATE reset: '+str(len(st.C_RESET)))
+			#print(scene.entities[-1])
 			print(self.position)
 		if key == 'e':
 			EditorCamera()
@@ -82,9 +83,10 @@ class CrashB(Entity):
 			scene.fog_color=color.random_color()
 			print(scene.fog_color)
 		if key == 'u':
-			#self.position=(0,1,0)
-			#self.position=(5,4,29)
-			self.position=(0,2,2)
+			#self.position=(0,-35,-3)
+			#self.position=(0,2,3)
+			#self.position=(14.5,5,48.5)
+			self.position=(5,3,30)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD
@@ -95,6 +97,8 @@ class CrashB(Entity):
 			mc=raycast(self.world_position+(0,.1,0),self.direc,distance=.2,ignore=[self,LC.shdw],debug=False)
 			if not mc or (mc and str(mc.entity) in LC.item_lst):
 				self.position+=self.direc*time.dt*self.move_speed
+			if (str(mc.entity) == 'sewer_pipe' and mc.entity.danger):
+				cc.get_damage(self,rsn=3)
 			self.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
 			self.walk_event()
 			return
@@ -115,15 +119,15 @@ class CrashB(Entity):
 			if self.is_slippery:
 				self.walk_snd=.5
 				sn.pc_audio(ID=8,pit=1.5)
+				return
+			if self.in_water > 0:
+				sn.pc_audio(ID=11,pit=random.uniform(.9,1))
 			else:
-				self.walk_snd=.35
-				if self.in_water:
-					sn.pc_audio(ID=11,pit=random.uniform(.9,1))
+				if st.level_index == 4:
+					sn.pc_audio(ID=12)
 				else:
-					if st.level_index == 4:
-						sn.pc_audio(ID=12)
-					else:
-						sn.pc_audio(ID=0)
+					sn.pc_audio(ID=0)
+			self.walk_snd=.35
 	def fall(self):
 		s=self
 		if s.landed or s.jumping:
@@ -131,7 +135,7 @@ class CrashB(Entity):
 			return
 		self.y-=time.dt*self.fall_speed[self.jmp_typ]
 		self.fall_time+=time.dt
-		if s.fall_time > 2 and not (s.is_attack or s.freezed):
+		if s.fall_time > .4 and not (s.is_attack or s.freezed):
 			s.is_flip=False
 			an.fall(s)
 		if self.y < -5 and not status.bonus_round:
@@ -150,7 +154,16 @@ class CrashB(Entity):
 		if not status.death_event:
 			cc.cam_rotate(self)
 			cc.cam_follow(self)
-			camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
+			#camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
+	def hurt_blink(self):
+		self.visible=False
+		invoke(lambda:setattr(self,'visible',True),delay=.1)
+		invoke(lambda:setattr(self,'visible',False),delay=.2)
+		invoke(lambda:setattr(self,'visible',True),delay=.3)
+		invoke(lambda:setattr(self,'visible',False),delay=.4)
+		invoke(lambda:setattr(self,'visible',True),delay=.5)
+		invoke(lambda:setattr(self,'visible',False),delay=.6)
+		invoke(lambda:setattr(self,'visible',True),delay=.7)
 	def death_action(self,rsn):
 		if rsn > 0:
 			dca={1:lambda:an.angel_fly(self),
@@ -159,6 +172,8 @@ class CrashB(Entity):
 				4:lambda:an.electric(self),
 				5:lambda:an.eat_by_plant(self)}
 			dca[rsn]()
+			return
+		invoke(lambda:cc.reset_state(self),delay=2)
 	def basic_animation(self):
 		if not st.LV_CLEAR_PROCESS:
 			if self.is_attack:
@@ -174,14 +189,6 @@ class CrashB(Entity):
 					an.slide_stop(self)
 				else:
 					an.idle(self)
-	def hurt_blink(self):
-		self.blink_time=max(self.blink_time-time.dt,0)
-		if self.blink_time <= 0:
-			self.blink_time=.1
-			if self.alpha == 1:
-				self.alpha=0
-				return
-			self.alpha=1
 	def update(self):
 		if not status.gproc():
 			cc.obj_grnd(self)

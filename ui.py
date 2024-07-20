@@ -205,8 +205,9 @@ class LiveBonus(Entity):
 ## Game Over Screen
 class GameOverScreen(Entity):## call event?
 	def __init__(self):
-		super().__init__(model='quad',parent=camera.ui,scale=(16,10),color=color.black,z=-.1)
-		self.game_o_text=Text(text='GAME OVER!',font=_fnt,color=color.orange,scale=4,parent=camera.ui,position=(.5,.5,-.1))
+		super().__init__(model='quad',texture='res/ui/background/game_over.jpg',parent=camera.ui,scale=(1,1),z=-.3)
+		self.game_o_text=Text(text='GAME OVER!',font=_fnt,color=color.orange,scale=4,parent=camera.ui,position=(-.1,0,-.3))
+		sn.GameOverMusic()
 
 ## Loading Screen
 class LoadingScreen(Entity):

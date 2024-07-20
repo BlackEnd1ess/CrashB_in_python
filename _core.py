@@ -11,10 +11,9 @@ N=npc
 
 ## player
 def set_val(c):
-	for _a in ['run_anim','jmp_typ','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','fall_time',
-			'blink_time','death_anim','slide_fwd']:
+	for _a in ['run_anim','jmp_typ','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','fall_time','death_anim','slide_fwd','in_water']:
 		setattr(c,_a,0)
-	for _v in ['w_stop','aq_bonus','in_water','walking','jumping','landed','tcr','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
+	for _v in ['aq_bonus','walking','jumping','landed','tcr','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
 		setattr(c,_v,False)
 	c.move_speed=2.4
 	c.direc=(0,0,0)
@@ -32,6 +31,7 @@ def get_damage(c,rsn):
 		if st.aku_hit > 0:
 			status.aku_hit-=1
 			c.injured=True
+			c.hurt_blink()
 			sn.pc_audio(ID=6,pit=.8)
 			invoke(lambda:setattr(c,'injured',False),delay=2)
 			invoke(lambda:setattr(c,'alpha',1),delay=2)
@@ -62,6 +62,9 @@ def reset_state(c):
 		status.fails+=1
 		if st.level_index == 2:
 			status.gem_death=True
+	if st.extra_lives <= 0:
+		game_over()
+		return
 	if st.fails < 3:
 		status.aku_hit=0
 	else:
@@ -73,15 +76,18 @@ def reset_state(c):
 	rmv_wumpas()
 	reset_npc()
 	check_cstack()
-	c.position=st.checkpoint
+	c.position=status.checkpoint
 	camera.position=c.position
 	camera.rotation=(15,0,0)
 	status.death_event=False
 	c.visible=True
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
+def game_over():
+	clear_level(passed=False)
+	invoke(lambda:ui.GameOverScreen(),delay=1)
 def various_val(c):
 	c.indoor=max(c.indoor-time.dt,0)
-	if c.injured:c.hurt_blink()
+	c.in_water=max(c.in_water-time.dt,0)
 	if not c.is_slippery:c.move_speed=2.4
 	if st.bonus_solved and not st.wait_screen:
 		c.aq_bonus=(st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0)
@@ -92,7 +98,8 @@ def c_attack(c):
 				if e.vnum in [3,11]:
 					e.empty_destroy()
 				else:
-					e.destroy()
+					if not e.falling and not e.vnum == 13:
+						e.destroy()
 			if is_enemie(e) and not e.is_hitten:
 				if (e.vnum in [1,9]) or (e.vnum == 5 and e.def_mode):
 					get_damage(c,rsn=1)
@@ -180,8 +187,11 @@ def reset_npc():
 def clear_level(passed):
 	st.LV_CLEAR_PROCESS=True
 	scene.clear()
-	if passed:collect_rewards()
-	ui.WhiteScreen()
+	if passed:
+		collect_rewards()
+		ui.WhiteScreen()
+		return
+	ui.BlackScreen()
 def collect_rewards():
 	if st.level_crystal:
 		status.CRYSTAL.append(status.level_index)
@@ -239,11 +249,12 @@ def obj_walls(c):
 		return
 	hT=c.intersects(ignore=[c,LC.shdw])
 	jV=hT.entity
+	xa=str(jV)
 	if hT and hT.normal != Vec3(0,1,0):
 		if isinstance(jV,crate.Nitro) and jV.collider != None:
 			jV.destroy()
 			return
-		if str(jV) in LC.item_lst:
+		if xa in LC.item_lst:
 			jV.collect()
 			return
 		if (is_enemie(jV) and not c.is_attack):
@@ -258,6 +269,7 @@ def obj_act(e):
 	e.catch_p=(u in ['bonus_platform','gem_platform'])
 	e.active=(u == 'HPP')
 	if (u == 'plank' and e.typ == 1):e.pl_touch()
+	if u == 'falling_zone':dth_event(c=LC.ACTOR,rsn=0)
 def landing(c,e,o):
 	c.landed=True
 	if c.y < e and not c.jumping:
@@ -268,7 +280,7 @@ def landing(c,e,o):
 		c.land_anim=0
 		if str(o) == 'sewer_platform':
 			sn.pc_audio(ID=13)
-		elif c.in_water:
+		elif c.in_water > 0:
 			sn.pc_audio(ID=10)
 		else:
 			sn.pc_audio(ID=2)
@@ -330,6 +342,7 @@ def crate_set_val(cR,Cpos,Cpse):
 	cR.org_tex=cR.texture
 	cR.fall_down=False
 	cR.is_stack=False
+	cR.falling=False
 	cR.spawn_pos=Cpos
 	cR.position=Cpos
 	cR.collider='box'
@@ -364,14 +377,17 @@ def check_cstack():
 						if dsta == 0:
 							cST.is_stack=True
 							cSD.is_stack=True
+def crate_fall_state(co):
+	invoke(lambda:setattr(co,'falling',False),delay=.2)
 def check_crates_over(c):
 	if c.vnum in [3,7,8]:
 		return
 	for co in scene.entities[:]:
-		if is_crate(co) and co.is_stack:
-			if (c.x == co.x and co.z == c.z) and c.y < co.y:
-				if co.y > co.y-.32:
-					co.animate_y(co.y-.32,duration=.1,unscaled=True)
+		if is_crate(co) and (co.x == c.x and co.z == c.z) and co.is_stack:
+			if co.y > c.y:
+				co.falling=True
+				co.animate_y(co.y-(co.scale_y*2),duration=.2)
+				crate_fall_state(co)
 
 ## bonus level
 def load_b_ui():
@@ -380,7 +396,7 @@ def load_b_ui():
 	ui.LiveBonus()
 def load_bonus(c):
 	status.loading=True
-	status.checkpoint=_loc.bonus_checkpoint[st.level_index]
+	status.checkpoint=LC.bonus_checkpoint[st.level_index]
 	collect_reset()
 	if st.bonus_round:
 		invoke(lambda:back_to_level(c),delay=.5)
@@ -407,7 +423,7 @@ def back_to_level(c):
 		status.bonus_solved=True
 	dMN=_loc.day_m
 	st.day_mode=dMN[st.level_index]
-	c.position=status.checkpoint
+	c.position=st.checkpoint
 	c.freezed=False
 	camera.y=c.y+.5
 	status.loading=False
@@ -450,10 +466,12 @@ def npc_action(m):
 		npc_purge(m)
 		return
 	if not m.is_hitten:
-		if m.vnum == 10 and m.ro_mode:
-			npc_circle_move(m)
+		if m.vnum in [10,11] and m.ro_mode > 0:
+			ro_di={1:lambda:npc_circle_move_xz(m),2:lambda:npc_circle_move_y(m)}
+			ro_di[m.ro_mode]()
 		else:
-			npc_walk(m)
+			if m.vnum != 12:
+				npc_walk(m)
 		return
 	fly_away(m)
 def npc_purge(m):
@@ -493,11 +511,19 @@ def npc_walk(m):
 				if m.z <= m.spawn_pos[2]-1:
 					m.rotation_y=180
 					m.turn=0
-def npc_circle_move(m):
-	m.angle+=time.dt*4
+def npc_circle_move_xz(m):
+	m.angle-=time.dt*2
 	m.angle%=(2*math.pi)
-	new_x=m.spawn_pos[0]+1*math.cos(m.angle)
-	new_y=m.spawn_pos[1]+1*math.sin(m.angle)
+	new_x=m.spawn_pos[0]-1*math.cos(m.angle)
+	new_z=m.spawn_pos[2]-1*math.sin(m.angle)
+	m.position=Vec3(new_x,m.y,new_z)
+	rot=math.degrees(math.atan2(new_z-m.spawn_pos[2],new_x-m.spawn_pos[0]))
+	m.rotation_y=-rot
+def npc_circle_move_y(m):
+	m.angle+=time.dt*2
+	m.angle%=(2*math.pi)
+	new_x=m.spawn_pos[0]+1.7*math.cos(m.angle)
+	new_y=m.spawn_pos[1]+1.7*math.sin(m.angle)
 	m.position=Vec3(new_x,new_y,m.z)
 	rot=math.degrees(math.atan2(new_y-m.spawn_pos[1],new_x-m.spawn_pos[0]))
 	m.rotation_x=rot
@@ -534,7 +560,8 @@ def is_enemie(n):
 	nnk=[N.Amadillo,N.Turtle,N.SawTurtle,
 		N.Penguin,N.Hedgehog,N.Seal,
 		N.EatingPlant,N.Rat,N.Lizard,
-		N.Scrubber,N.Mouse,N.Vulture,N.Hippo]
+		N.Eel,N.Scrubber,N.Mouse,N.SewerMine,
+		N.Vulture,N.Hippo]
 	if any(isinstance(n,npc_class) for npc_class in nnk):
 		return True
 	return False

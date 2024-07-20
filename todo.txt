@@ -1,15 +1,17 @@
-- lv3 wumpas
-- fixx crate fall
-- game over event
-
-- level 2 walls 
-- map_tools crate air support with mark und L_ID
-- finish levels 4,5
-
-- level shader, decoration
-- warp room
 - game options
 - save game
-- time trial: no live subtract, no bonus or platforms, relic times
-- ui: relic time (blue,gold,platinum), pause menu
+- warp room
 - orginal crate counter/life counter font
+- level shader,decoration
+- crate fall
+- aku invic.
+- damage invisible bug
+
+
+#level 2
+- walls
+- wumpa position, row len
+
+# level 3
+- water foam
+- wumpa

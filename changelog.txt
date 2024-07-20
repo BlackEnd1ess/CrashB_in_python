@@ -72,6 +72,11 @@
 - level 4 prototyp
 - landing/walking on metal,sand,water has different sound
 
-#14.07.2024
+#13.07.2024
 - Eating Plant Animation - eat crash
 - fixxed level 2 wood log/stone role collision
+- map tools.py - crate air row spawn
+
+#17.07.2024
+- NPC sewer Mine
+- Sewer Swim Platform

@@ -422,18 +422,50 @@ class SewerPlatform(Entity):
 	def __init__(self,pos):
 		pPF=omf+'l4/scn/'
 		super().__init__(model='cube',scale=(.5,.2,.5),collider=b,position=pos,alpha=.7,visible=False)
-		self.vis=Entity(model=pPF+'ptf.ply',texture=pPF+'swr_ptf.tga',position=(self.x,self.y+.05,self.z),scale=.02,rotation_x=-90)
+		self.vis=Entity(model=pPF+'ptf.ply',texture=pPF+'swr_ptf.tga',name='swp2',position=(self.x,self.y+.05,self.z),scale=.02,rotation_x=-90)
 		unlit_obj(self.vis)
 
 class SewerWall(Entity):
 	def __init__(self,pos):
-		mo=omf+'l4/scn/sewer_wall'
-		super().__init__(model=mo+'.ply',texture=mo+'.tga',position=pos,scale=.03,rotation=(-90,-90,0))
-		self.color=color.rgb32(180,200,180)
+		mo=omf+'l4/scn/sewer_wall_b'
+		super().__init__(model=mo+'.ply',texture=mo+'.tga',position=pos,scale=.0175,rotation=(-90,90,0),double_sided=True)
+		self.bgw=Entity(model='cube',color=color.black,scale=(5,8,.1),position=(self.x,self.y,self.z+1))
+		self.color=color.rgb(.6,.5,.4)
 		#self.color=color.rgb32(0,120,150)
 
+class SewerEntrance(Entity):
+	def __init__(self,pos):
+		swn=omf+'l4/swr_entrance/swr_entrance'
+		super().__init__(model=swn+'.ply',texture=swn+'.jpg',position=pos,rotation_y=90,scale=2)
+
+class SewerPipe(Entity):##danger
+	def __init__(self,pos,typ):
+		swrp=omf+'l4/pipe/pipe_'
+		swu=str(typ)
+		ro_y={0:-90,1:-90,2:90,3:90}
+		super().__init__(model=swrp+swu+'.ply',texture=swrp+swu+'.png',position=pos,scale=.75,rotation=(-90,ro_y[typ],0))
+		self.danger=(typ == 3)
+		self.typ=typ
+		if typ == 0:
+			Entity(model=Circle(16,thickness=1,radius=.6),color=color.black,position=(self.x,self.y,self.z+.2))
+			has_drips=random.randint(0,1)
+			if has_drips == 1:
+				DrippingWater(pos=(self.x,self.y-.75,self.z-.25),sca=(.9,.4))
+		if typ == 2:
+			Entity(model=Circle(16,thickness=1,radius=.5),color=color.black,position=(self.x,self.y+.8,self.z-.7),rotation_x=-30)
+			DrippingWater(pos=(self.x,self.y-.2,self.z-.5),sca=(.9,.4))
+		if typ == 3:
+			self.collider=BoxCollider(self,size=Vec3(.5,.5,5))
+			self.rotation_x=0
+			self.color=color.red
+			self.shader=unlit_shader
+	def update(self):
+		if not st.gproc() and self.typ == 3:
+			if self.intersects(LC.ACTOR):
+				cc.get_damage(LC.ACTOR,rsn=3)
+
 class EletricWater(Entity):
-	def __init__(self,pos,sca):
+	def __init__(self,pos,sca,ID):
 		self.wtt=omf+'l4/wtr/'
 		super().__init__(model='cube',texture=self.wtt+'0.png',name='elwt',position=pos,scale=(sca[0],.1,sca[1]),texture_scale=(sca[0],sca[1]),collider=b)
 		self.color=color.rgb32(0,180,180)
@@ -442,12 +474,13 @@ class EletricWater(Entity):
 		self.ta=LC.ACTOR
 		self.tx=(sca[0],sca[1])
 		self.can_splash=0
+		self.vnum=ID
 		self.frm=0
 		self.tme=10
 		self.switch_water()
 	def anim(self):
 		self.frm+=time.dt*8
-		if self.frm > 29.9:
+		if self.frm > 31.9:
 			self.frm=0
 		self.texture=self.wtt+str(int(self.frm))+'.png'
 	def switch_water(self):
@@ -455,16 +488,19 @@ class EletricWater(Entity):
 		self.shader=unlit_shader
 		self.alpha=.9
 		self.texture_scale=self.tx
-		sn.obj_audio(ID=7)
 		self.electric=True
-		invoke(self.harmless,delay=3)
+		if (self.ta.warped and not st.bonus_round):
+			if (self.vnum == 0 and self.ta.z < 3 and self.ta.z > -60) or (self.vnum == 1 and self.ta.z > 50 and self.ta.z < 80):
+				sn.obj_audio(ID=7)
+		invoke(self.harmless,delay=1.5)
 	def harmless(self):
 		self.color=color.rgb32(0,180,180)
 		self.shader=None
-		self.alpha=.9
+		self.alpha=.95
 		self.texture_scale=self.tx
 		self.electric=False
 	def collect(self):
+		self.ta.in_water=.3
 		if self.can_splash <= 0:
 			sn.pc_audio(ID=10)
 			self.can_splash=.5
@@ -472,14 +508,24 @@ class EletricWater(Entity):
 			cc.get_damage(self.ta,rsn=4)
 	def update(self):
 		if not st.gproc():
-			self.anim()
-			self.ta.in_water=(self.intersects(self.ta).hit)
-			self.tme=max(self.tme-time.dt,0)
 			self.can_splash=max(self.tme-time.dt,0)
+			self.tme=max(self.tme-time.dt,0)
+			self.anim()
 			if self.tme <= 0:
-				self.tme=10
+				self.tme=8
 				self.switch_water()
 
+class DrippingWater(Entity):
+	def __init__(self,pos,sca):
+		self.dpw=omf+'l4/drips/'
+		super().__init__(model='quad',texture=self.dpw+'0.png',position=pos,scale=sca,rotation_z=90)
+		self.frm=0
+	def update(self):
+		if not st.gproc():
+			self.frm+=time.dt*10
+			if self.frm > 7.9:
+				self.frm=0
+			self.texture=self.dpw+str(int(self.frm))+'.png'
 
 ###################
 ##################
@@ -668,12 +714,18 @@ class LevelFinish(Entity):## finish level
 	def collect(self):
 		cc.jmp_lv_fin()
 
-class LODProcess(Entity):
+class LODProcess(Entity):## Level of Detail
 	def __init__(self):
 		super().__init__()
 		self.rt=.5
-		CLW={1:LC.LV1_LOD,2:LC.LV2_LOD,3:LC.LV3_LOD,4:LC.LV3_LOD,5:LC.LV3_LOD}
+		CLW={1:LC.LV1_LOD,2:LC.LV2_LOD,3:LC.LV3_LOD,4:LC.LV4_LOD,5:LC.LV3_LOD}
 		self.MAIN_LOD=CLW[st.level_index]
+		if st.level_index != 4:
+			self.dst_a=2
+			self.dst_b=28
+			return
+		self.dst_a=3
+		self.dst_b=26
 	def wmp_lod(self,w,p):
 		w.enabled=distance(w,p) < 8
 	def crt_lod(self,c,p):
@@ -681,7 +733,7 @@ class LODProcess(Entity):
 	def enm_lod(self,e,p):
 		e.enabled=distance(e,p) < 20
 	def vwi_lod(self,v,p):
-		v.enabled=(p.z < v.z+2 and v.z < p.z+28)
+		v.enabled=(p.z < v.z+self.dst_a and v.z < p.z+self.dst_b)
 	def refr(self):
 		for b in scene.entities[:]:
 			A=LC.ACTOR
@@ -696,6 +748,7 @@ class LODProcess(Entity):
 			if self.rt <= 0:
 				self.rt=.5
 				self.refr()
+
 
 ###################
 ## global objects #

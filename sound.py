@@ -118,7 +118,6 @@ MC='res/snd/music/'
 class LevelMusic(Audio):
 	def __init__(self,T):
 		lM=MC+'lv'+str(T)+'/0.mp3'
-		VOL=settings.MUSIC_VOLUME
 		super().__init__(lM,volume=se.MUSIC_VOLUME,loop=True)
 	def update(self):
 		if (status.bonus_round or status.is_death_route):
@@ -163,3 +162,11 @@ class AkuMusic(Audio):
 				pc_audio(ID=6,pit=.8)
 				self.fade_out()
 				cc.purge_instance(self)
+
+class GameOverMusic(Audio):
+	def __init__(self):
+		super().__init__(MC+'ev/game_over.mp3',volume=se.MUSIC_VOLUME)
+	def update(self):
+		if not self.playing:
+			self.fade_out()
+			cc.purge_instance(self)

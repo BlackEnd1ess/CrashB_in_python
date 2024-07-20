@@ -7,14 +7,13 @@ I=item
 
 ## pos info
 def pos_info(c):
-	sx=f"{c.x:.2f}"
-	sy=f"{c.y+.16:.2f}"
-	sz=f"{c.z:.2f}"
-	#print(f"o.TreeScene(pos=({sx},{sy},{sz}),s=.0175)")
-	#print(f"c.place_crate(ID=5,p=({sx},{sy},{sz}))")
+	sx=f"{c.x:.3f}"
+	sy=f"{c.y+.16:.3f}"
+	sz=f"{c.z:.3f}"
+	#print(f"c.place_crate(ID=12,p=({sx},{sy},{sz}))")
 	#print(f"mt.crate_wall(ID=2,POS=({sx},{sy},{sz}),CNT=[2,2])")
 	#print(f"mt.crate_block(ID=1,POS=({sx},{sy},{sz}),CNT=[2,2,2])")
-	print(f"mt.wumpa_plane(POS=({sx},{sy},{sz}),CNT=5,WAY=1)")
+	print(f"mt.wumpa_row(POS=({sx},{sy},{sz}),CNT=4,WAY=2)")
 #add air with list and mark!
 ## multible crate spawn
 def bounce_twin(POS,CNT):
@@ -31,11 +30,20 @@ def crate_row(ID,POS,CNT,WAY,l=None,m=None):# WAY: 0=right,1=front,2=up
 	for cro in range(CNT):
 		pO=.32*cro
 		if WAY == 0:
-			c.place_crate(ID=ID,p=(POS[0]+pO,POS[1],POS[2]))
+			if ID == 13:
+				c.place_crate(ID=ID,p=(POS[0]+pO,POS[1],POS[2]),m=m,l=l)
+			else:
+				c.place_crate(ID=ID,p=(POS[0]+pO,POS[1],POS[2]))
 		elif WAY == 1:
-			c.place_crate(ID=ID,p=(POS[0],POS[1],POS[2]+pO))
+			if ID == 13:
+				c.place_crate(ID=ID,p=(POS[0],POS[1],POS[2]+pO),m=m,l=l)
+			else:
+				c.place_crate(ID=ID,p=(POS[0],POS[1],POS[2]+pO))
 		else:
-			c.place_crate(ID=ID,p=(POS[0],POS[1]+pO,POS[2]))
+			if ID == 13:
+				c.place_crate(ID=ID,p=(POS[0],POS[1]+pO,POS[2]),m=m,l=l)
+			else:
+				c.place_crate(ID=ID,p=(POS[0],POS[1]+pO,POS[2]))
 
 def crate_wall(ID,POS,CNT):#[x,y]
 	for cwX in range(CNT[0]):

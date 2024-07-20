@@ -10,7 +10,7 @@ cc=_core
 LC=_loc
 st=status
 
-def spawn(pos,mID,mDirec,mTurn):
+def spawn(pos,mID,mDirec,mTurn,ro_mode=0):
 	npc_={0:lambda:Amadillo(p=pos,d=mDirec,t=mTurn),
 		1:lambda:Turtle(p=pos,d=mDirec,t=mTurn),
 		2:lambda:SawTurtle(p=pos,d=mDirec,t=mTurn),
@@ -21,9 +21,10 @@ def spawn(pos,mID,mDirec,mTurn):
 		7:lambda:EatingPlant(p=pos,d=mDirec,t=mTurn),
 		8:lambda:Rat(p=pos,d=mDirec,t=mTurn),
 		9:lambda:Lizard(p=pos,d=mDirec,t=mTurn),
-		10:lambda:Scrubber(p=pos,d=mDirec,t=mTurn),
-		11:lambda:Mouse(p=pos,d=mDirec,t=mTurn),
-		12:lambda:Eel(p=pos,d=mDirec,t=mTurn)}
+		10:lambda:Scrubber(p=pos,d=mDirec,t=mTurn,ro=ro_mode),
+		11:lambda:Mouse(p=pos,d=mDirec,t=mTurn,ro=ro_mode),
+		12:lambda:Eel(p=pos,d=mDirec,t=mTurn),
+		13:lambda:SewerMine(p=pos,d=mDirec,t=mTurn)}
 	npc_[mID]()
 
 ## Enemies
@@ -215,60 +216,84 @@ class Lizard(Entity):
 		if not st.gproc():cc.npc_action(self)
 
 class Scrubber(Entity):
-	def __init__(self,p,d,t):
+	def __init__(self,p,d,t,ro):
 		nN='scrubber'
 		self.vnum=10
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
-		self.n_snd=Audio(sn.SND_NPC[1],volume=0,loop=True)
 		cc.set_val_npc(self,tu=t,di=d)
-		self.ro_mode=True
 		self.move_speed=1.2
+		self.n_snd=False
+		self.ro_mode=ro
 		self.angle=0
 	def update(self):
 		if not st.gproc() and self.visible:
+			an.npc_walking(self)
 			cc.npc_action(self)
-			if (self.is_hitten or self.is_purge):
-				self.n_snd.fade_out()
-				return
-			if distance(self,LC.ACTOR) < 2:
-				self.n_snd.volume=settings.SFX_VOLUME
-				return
-			self.n_snd.volume=0
+			if not self.n_snd and distance(self,LC.ACTOR) < 3:
+				self.n_snd=True
+				if not (self.is_hitten or self.is_purge):
+					sn.npc_audio(ID=1)
+				invoke(lambda:setattr(self,'n_snd',False),delay=.7)
 
 class Mouse(Entity):
-	def __init__(self,p,d,t):
+	def __init__(self,p,d,t,ro):
 		nN='mouse'
 		self.vnum=11
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
-		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
-		self.n_snd=Audio(sound.snd_mouse,volume=0,loop=True)
+		self.collider=BoxCollider(self,size=Vec3(500,700,500))
 		cc.set_val_npc(self,tu=t,di=d)
 		self.move_speed=1.2
 		self.snd_time=.5
+		self.n_snd=False
+		self.ro_mode=ro
+		self.angle=0
 	def update(self):
 		if not st.gproc() and self.visible:
+			an.npc_walking(self)
 			cc.npc_action(self)
-			if (self.is_hitten or self.is_purge):
-				self.n_snd.fade_out()
-				cc.purge_instance(self.n_snd)
-				return
-			if distance(self,LC.ACTOR) < 2:
-				self.n_snd.volume=1
-				return
-			self.n_snd.volume=0
+			if not self.n_snd and distance(self,LC.ACTOR) < 3:
+				self.n_snd=True
+				if not (self.is_hitten or self.is_purge):
+					sn.npc_audio(ID=2)
+				invoke(lambda:setattr(self,'n_snd',False),delay=1)
 
 class Eel(Entity):
 	def __init__(self,p,d,t):
 		nN='eel'
 		self.vnum=12
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/0.tga',rotation_x=-90,scale=m_SC,position=p)
+		self.collider=BoxCollider(self,size=Vec3(500,700,500))
 		cc.set_val_npc(self,tu=t,di=d)
 	def update(self):
 		if not st.gproc():
+			cc.npc_action(self)
 			an.npc_walking(self)
 			if distance(self,LC.ACTOR) < 2:
 				self.x=lerp(self.x,LC.ACTOR.x,time.dt*2)
+
+class SewerMine(Entity):
+	def __init__(self,p,d,t):
+		nN='sewer_mine'
+		self.vnum=13
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
+		self.collider=BoxCollider(self,size=Vec3(500,700,500))
+		cc.set_val_npc(self,tu=t,di=d)
+		self.move_speed=1.2
+		print(p)
+	def floating(self):
+		if self.turn == 0:
+			self.y-=time.dt/2
+			if self.y <= self.spawn_pos[1]-.8:
+				self.turn=1
+			return
+		self.y+=time.dt/2
+		if self.y > self.spawn_pos[1]+.8:
+			self.turn=0
+	def update(self):
+		if not st.gproc() and self.visible:
+			an.npc_walking(self)
+			self.floating()
 
 ## passive NPC
 class AkuAkuMask(Entity):

@@ -13,7 +13,8 @@ npc_anim={0:7,#amadillo
 		9:11,#lizard
 		10:3,#scrubber
 		11:8,#mouse
-		12:12}#eel
+		12:12,#eel
+		13:16}#sewer mine
 
 cf='res/crate/anim/'
 nf='res/npc/'

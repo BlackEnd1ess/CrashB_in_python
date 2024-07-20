@@ -324,12 +324,11 @@ class Nitro(Entity):
 class Air(Entity):
 	def __init__(self,pos,m,l,pse):
 		self.vnum=13
-		super().__init__(model=cr1)
+		super().__init__(model=cr1,double_sided=True)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		self.collider=None
 		self.mark=m
 		self.c_ID=l
-		self.double_sided=True
 	def destroy(self):
 		status.C_RESET.append(self)
 		place_crate(p=self.position,ID=self.c_ID,pse=1)

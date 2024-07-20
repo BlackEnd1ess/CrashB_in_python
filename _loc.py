@@ -23,15 +23,14 @@ d_zone=['water_hit','falling_zone']
 dangers=['wood_log','role']
 
 # checkpoint - bonus
-bonus_checkpoint=[None,(0,2,-6),(.3,2,2.3),(0,1.5,.85*8),(0,5,0),(0,5,0)]
+bonus_checkpoint=[None,(0,2,-6),(.3,2,2.3),(0,1.5,.85*8),(0,2,3),(0,5,0)]
 
 #LOD
 LOD_VAR=['rmd1','rmd2','ctsc']
 LV1_LOD=LOD_VAR+['bush','tree2_d','tree_scene','t2b1','t2b2','mptf']
 LV2_LOD=LOD_VAR+['plank','ice_chunk','wdlg','pillar','icec']
 LV3_LOD=LOD_VAR+['wtfa','stone_tile','mptf','bush','tree2_d','stL']
-###############
-#LV4_LOD=LOD_VAR+['water_fall']
+LV4_LOD=LOD_VAR+['sewer_platform','swp2','sewer_pipe','dripping_water']
 #LV5_LOD=LOD_VAR+['water_fall']
 
 #day mode
@@ -40,7 +39,7 @@ day_m={0:'default',
 	2:'snow',
 	3:'evening',
 	4:'pipe',
-	5:'day'}
+	5:'pipe'}
 
 #ui wumpa position
 uiW=None
