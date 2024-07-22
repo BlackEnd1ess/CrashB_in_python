@@ -63,7 +63,7 @@ def test():
 	#o.EndRoom(pos=(1,2,-15),c=color.rgb32(200,210,200))
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
 	#npc.spawn(pos=(0,.5,-30),mID=13,mDirec=0,mTurn=0)
-	o.SewerPipe(pos=(0,.6,-25),typ=2)
+	o.SwimPlatform(pos=(0,.5,-25))
 	free_level()
 
 def level1():##wood
@@ -572,6 +572,7 @@ def level3():##water
 def level4():## sewer
 	o.BonusPlatform(pos=(1.4,.9,4.8))
 	o.GemPlatform(pos=(4.2,2,31.7),t=5)
+	bn.gem_route4()
 	o.EndRoom(pos=(15.65,5.5,78.5),c=color.rgb32(180,180,180))
 	o.EletricWater(pos=(0,.2,-48),sca=(8,96),ID=0)
 	o.EletricWater(pos=(14.5,3.5,83),sca=(8,64),ID=1)
@@ -613,7 +614,6 @@ def level4():## sewer
 	o.SewerPipe(pos=(0,-.3,8.7),typ=0)
 	o.SewerPipe(pos=(2,-.3,8.7),typ=0)
 	Entity(model='quad',texture='res/terrain/l4/sewer_tiles.jpg',scale=(20,20),texture_scale=(20,20),position=(3,1,49.7),color=color.rgb32(160,150,150))
-
 	o.SewerPipe(pos=(4,3,49),typ=2)
 	o.SewerPipe(pos=(6,3,49),typ=2)
 	o.SewerPipe(pos=(8,3,49),typ=2)
@@ -622,8 +622,6 @@ def level4():## sewer
 	o.SewerPipe(pos=(6,1.5,49.4),typ=0)
 	o.SewerPipe(pos=(8,1.5,49.4),typ=0)
 	o.SewerPipe(pos=(10,1.5,49.4),typ=0)
-
-
 	#platforms
 	ph=.3
 	pg=.65
@@ -746,5 +744,5 @@ def level4():## sewer
 	o.CamSwitch(pos=(13.5,3.65,48.5),sca=(1,.5,.4))
 	o.CamSwitch(pos=(14.5,4.1,48.5),sca=(1,.5,.4))
 	if not st.level_index in st.CRYSTAL:
-		item.EnergyCrystal(pos=(14,4.25,65.9))
+		item.EnergyCrystal(pos=(14,4.25,66))
 	invoke(free_level,delay=3)

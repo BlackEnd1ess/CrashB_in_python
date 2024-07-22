@@ -149,11 +149,12 @@ def bonus4():
 ## gem route
 def gem_route1():
 	o.FallingZone(pos=(200,-4,0),s=(40,1,32))
-	Entity(model='quad',texture='res/objects/l1/bush/bush1.png',scale=12,color=color.rgb32(0,50,0),position=(175,0,128.1))
-	Entity(model='quad',texture='res/objects/l1/bush/bush1.png',scale=12,color=color.rgb32(0,50,0),position=(175,-6,128.2))
-	Entity(model='quad',texture='res/objects/l1/bush/bush1.png',scale=12,color=color.rgb32(0,50,0),position=(175,-12,128.3))
-	Entity(model='quad',texture='res/objects/l1/bush/bush1.png',scale=12,color=color.rgb32(0,50,0),position=(175,-18,128.4))
-	Entity(model='quad',texture='res/objects/l1/bush/bush1.png',scale=12,color=color.rgb32(0,50,0),position=(175,-24,128.5))
+	wtw='res/objects/l1/bush/bush1.png'
+	Entity(model='quad',texture=wtw,scale=12,color=color.rgb32(0,50,0),position=(175,0,128.1))
+	Entity(model='quad',texture=wtw,scale=12,color=color.rgb32(0,50,0),position=(175,-6,128.2))
+	Entity(model='quad',texture=wtw,scale=12,color=color.rgb32(0,50,0),position=(175,-12,128.3))
+	Entity(model='quad',texture=wtw,scale=12,color=color.rgb32(0,50,0),position=(175,-18,128.4))
+	Entity(model='quad',texture=wtw,scale=12,color=color.rgb32(0,50,0),position=(175,-24,128.5))
 	Entity(model='quad',texture='res/background/bg_woods.png',scale=(90,20,1),position=(210,-15,25),texture_scale=(4,1),unlit=False)
 	Entity(model='quad',texture='res/background/bg_woods.png',color=color.rgb32(50,120,50),scale=(90,20,1),position=(210,-6,27),texture_scale=(4,1),unlit=False)
 	MT.crate_row(ID=0,POS=(200,-2,U),WAY=0,CNT=7)
@@ -169,3 +170,11 @@ def gem_route1():
 	MT.crate_row(ID=1,POS=(209,4.8,U),WAY=0,CNT=4)
 	MT.crate_wall(ID=1,POS=(203.8,-.68,U),CNT=[2,2])
 	o.GemPlatform(pos=(212.2,3.1,U),t=4)
+
+def gem_route4():
+	o.swr_multi_ptf(p=(199.5,0,-4),cnt=[3,4])
+	o.EletricWater(pos=(200,-.5,22),sca=(8,64),ID=3)
+	o.SewerTunnel(pos=(200,0,5))
+	o.SewerTunnel(pos=(200,0,15))
+	o.SewerTunnel(pos=(200,0,25))
+	o.SewerEntrance(pos=(200,1,-3))

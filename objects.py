@@ -433,12 +433,18 @@ class SewerWall(Entity):
 		self.color=color.rgb(.6,.5,.4)
 		#self.color=color.rgb32(0,120,150)
 
+class SwimPlatform(Entity):
+	def __init__(self,pos):
+		swmi=omf+'l4/swr_swim/swr_swim'
+		super().__init__(model='cube',color=color.white,collider=b,position=pos,scale=(.5,.3,.5),alpha=.3)
+		self.opt=Entity(model=swmi+'.ply',texture=swmi+'.tga',scale=.1/200,rotation_x=-90,position=(self.x,self.y+.06,self.z))
+
 class SewerEntrance(Entity):
 	def __init__(self,pos):
 		swn=omf+'l4/swr_entrance/swr_entrance'
 		super().__init__(model=swn+'.ply',texture=swn+'.jpg',position=pos,rotation_y=90,scale=2)
 
-class SewerPipe(Entity):##danger
+class SewerPipe(Entity):## danger
 	def __init__(self,pos,typ):
 		swrp=omf+'l4/pipe/pipe_'
 		swu=str(typ)
@@ -476,7 +482,10 @@ class EletricWater(Entity):
 		self.can_splash=0
 		self.vnum=ID
 		self.frm=0
-		self.tme=10
+		if ID == 3:
+			self.tme=random.uniform(.1,.2)
+		else:
+			self.tme=8
 		self.switch_water()
 	def anim(self):
 		self.frm+=time.dt*8
@@ -512,7 +521,10 @@ class EletricWater(Entity):
 			self.tme=max(self.tme-time.dt,0)
 			self.anim()
 			if self.tme <= 0:
-				self.tme=8
+				if self.vnum == 3:
+					self.tme=random.uniform(.1,.2)
+				else:
+					self.tme=8
 				self.switch_water()
 
 class DrippingWater(Entity):
