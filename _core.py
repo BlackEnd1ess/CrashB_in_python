@@ -104,8 +104,7 @@ def c_attack(c):
 				if (e.vnum in [1,9]) or (e.vnum == 5 and e.def_mode):
 					get_damage(c,rsn=1)
 				e.is_hitten=True
-				a=Vec3(e.x-c.x,0,e.z-c.z)
-				e.fly_direc=a
+				e.fly_direc=Vec3(e.x-c.x,0,e.z-c.z)
 				sn.obj_audio(ID=8)
 def c_slide(c):
 	if not c.walking:
@@ -182,7 +181,10 @@ def rmv_wumpas():
 			wu.destroy()
 def reset_npc():
 	for NP in st.NPC_RESET[:]:
-		npc.spawn(mID=NP.vnum,pos=NP.spawn_pos,mDirec=NP.m_direction,mTurn=0)
+		if NP.vnum in [10,11]:
+			npc.spawn(mID=NP.vnum,pos=NP.spawn_pos,mDirec=NP.m_direction,mTurn=0,ro_mode=NP.ro_mode)
+		else:
+			npc.spawn(mID=NP.vnum,pos=NP.spawn_pos,mDirec=NP.m_direction,mTurn=0)
 	status.NPC_RESET.clear()
 def clear_level(passed):
 	st.LV_CLEAR_PROCESS=True

@@ -6,7 +6,7 @@ o=objects
 c=crate
 U=-3
 def load_bonus_level(idx):
-	lv_lst={1:bonus1,2:bonus2,3:bonus3,4:bonus4,5:bonus1}
+	lv_lst={1:bonus1,2:bonus2,3:bonus3,4:bonus4,5:bonus1,6:bonus1}
 	lv_lst[idx]()
 
 def bonus1():

@@ -28,12 +28,12 @@ def main_instance(idx):
 	st.loading=True
 	st.level_index=idx
 	day_m=_loc.day_m
-	s_rm={0:(0,0,0),1:(-.3,1,-66.5),2:(0,1,-64.2),3:(0,0,-32.2),4:(0,.3,-64.2),5:(0,0,-32.2)}
+	s_rm={0:(0,0,0),1:(-.3,1,-66.5),2:(0,1,-64.2),3:(0,0,-32.2),4:(0,.3,-64.2),5:(0,0,-64.2),6:(0,0,-32.2)}
 	st.day_mode=day_m[idx]
 	o.StartRoom(pos=s_rm[idx],lvID=idx)
 	bn.load_bonus_level(idx)
-	WEATHER={0:0,1:1,2:2,3:0,4:0,5:0}
-	if idx == 5:
+	WEATHER={0:0,1:1,2:2,3:0,4:0,5:0,6:0}
+	if idx == 9:
 		TDHR=1
 	else:
 		TDHR=0
@@ -62,8 +62,9 @@ def developer_level():
 def test():
 	#o.EndRoom(pos=(1,2,-15),c=color.rgb32(200,210,200))
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
-	#npc.spawn(pos=(0,.5,-30),mID=13,mDirec=0,mTurn=0)
-	o.SwimPlatform(pos=(0,.5,-25))
+	#npc.spawn(pos=(0,0,-24),mID=8,mDirec=0,mTurn=0)
+	o.RuinsBlock(pos=(0,.6,-24))
+	#o.SwimPlatform(pos=(0,.5,-25))
 	free_level()
 
 def level1():##wood
@@ -746,3 +747,15 @@ def level4():## sewer
 	if not st.level_index in st.CRYSTAL:
 		item.EnergyCrystal(pos=(14,4.25,66))
 	invoke(free_level,delay=3)
+
+def level5():
+	o.LevelScene(pos=(0,-30,120),sca=(350,100,1))
+	o.RuinsPlatform(pos=(0,-.3,-56),m=True)
+	o.RuinsPlatform(pos=(5.4,-.3,-56),m=False)
+	o.spw_ruin_ptf(p=(0,-.3,-61),cnt=6,way=1)
+	o.spw_ruin_ptf(p=(1.2,-.3,-56),cnt=5,way=0)
+	o.spw_ruin_ptf(p=(1.2+.75*2,-.3,-55.25),cnt=5,way=1)
+	o.spw_ruin_ptf(p=(1.2+.75*2,-.3,-50.5),cnt=1,way=1)
+	o.RuinsCorridor(pos=(2.7,-.3,-47))
+	o.spw_ruin_ptf(p=(1.2+.75*2,-.3,-44),cnt=7,way=1)
+	free_level()

@@ -91,6 +91,7 @@ def explosion(cr):
 					exR.destroy()
 			if cc.is_enemie(exR):
 				exR.is_hitten=True
+				exR.fly_direc=Vec3(exR.x-cr.x,0,exR.z-cr.z)
 			if exR == LC.ACTOR:
 				cc.get_damage(exR,rsn=3)
 

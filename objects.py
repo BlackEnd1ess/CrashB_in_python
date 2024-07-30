@@ -95,6 +95,14 @@ def swr_multi_ptf(p,cnt):
 		for swZ in range(cnt[1]):
 			SewerPlatform(pos=(p[0]+.501*swX,p[1],p[2]+.501*swZ))
 
+#lv 5
+def spw_ruin_ptf(p,cnt,way):
+	for rpv in range(cnt):
+		if way == 0:
+			RuinsBlock(pos=(p[0]+rpv*.75,p[1],p[2]))
+		else:
+			RuinsBlock(pos=(p[0],p[1],p[2]+rpv*.75))
+
 ####################
 ## level 1 objects #
 class Tree2D(Entity):
@@ -403,6 +411,7 @@ class Foam(Entity):
 				self.frm=0
 			self.texture=self.t+str(int(self.frm))+'.png'
 
+
 ####################
 ## level 4 objects #
 class SewerTunnel(Entity):
@@ -539,6 +548,34 @@ class DrippingWater(Entity):
 				self.frm=0
 			self.texture=self.dpw+str(int(self.frm))+'.png'
 
+
+####################
+## level 5 objects #
+class RuinsPlatform(Entity):##big platform
+	def __init__(self,pos,m):
+		rnp=omf+'l5/ruins_scn/'
+		msc={True:-.03,False:.03}
+		msv={True:-.9,False:.9}
+		super().__init__(model='cube',collider=b,scale=(1.7,1,1.5),position=pos,visible=False)
+		self.opt_model=Entity(model=rnp+'ruins_ptf1.ply',texture=rnp+'ruins_scn.tga',position=(self.x,self.y+.5,self.z),scale=(.03,msc[m],.03),rotation=(-90,90,0),double_sided=True)
+		self.rail0=Entity(model='cube',scale=(1.7,.5,.3),collider=b,position=(self.x,self.y+.8,self.z+.9),visible=False)
+		self.rail0=Entity(model='cube',scale=(.3,.5,1.7),collider=b,position=(self.x+msv[m],self.y+.8,self.z),visible=False)
+		unlit_obj(self.opt_model)
+
+class RuinsBlock(Entity):## small platform
+	def __init__(self,pos):
+		rnb=omf+'l5/ruins_scn/'
+		super().__init__(model='cube',collider=b,scale=(.75,1,.75),position=pos,visible=False)
+		self.opt_model=Entity(model=rnb+'ruins_ptf2.ply',texture=rnb+'ruins_scn.tga',position=(self.x,self.y+.5,self.z-.025),scale=.03,rotation=(-90,90,0),double_sided=False)
+		unlit_obj(self.opt_model)
+
+class RuinsCorridor(Entity):## corridor
+	def __init__(self,pos):
+		rco=omf+'l5/ruins_scn/'
+		super().__init__(model='cube',position=pos,scale=(3,1,3),collider=b,visible=False)
+		self.opt_model=Entity(model=rco+'ruins_cor.ply',texture=rco+'ruins_scn.tga',position=(self.x,self.y+.5,self.z),scale=.03,rotation=(-90,90,0),double_sided=True)
+		unlit_obj(self.opt_model)
+
 ###################
 ##################
 ## logic objects #
@@ -605,7 +642,8 @@ class StartRoom(Entity):## game spawn point
 					2:lambda:level.level2(),
 					3:lambda:level.level3(),
 					4:lambda:level.level4(),
-					5:lambda:level.test()}
+					5:lambda:level.level5(),
+					6:lambda:level.test()}
 			m_info[lvID]()
 
 class EndRoom(Entity):## finish level
@@ -708,8 +746,14 @@ class GemPlatform(Entity):## gem platform
 
 class LevelScene(Entity):
 	def __init__(self,pos,sca):
-		bg={0:'0.png',1:'res/background/bg_woods.png',2:''}
-		super().__init__(model='quad',texture=bg[status.level_index],scale=sca,position=pos,texture_scale=(sca[0]/50,1),unlit=False)
+		vpa='res/background/'
+		super().__init__(model='quad',texture=None,scale=sca,position=pos,texture_scale=(sca[0]/50,1),unlit=False)
+		if st.level_index == 1:
+			self.texture=vpa+'bg_woods.png'
+		if st.level_index == 5:
+			self.texture=vpa+'bg_ruins.png'
+			self.unlit=True
+			self.shader=unlit_shader
 
 
 ## Switches
@@ -730,7 +774,7 @@ class LODProcess(Entity):## Level of Detail
 	def __init__(self):
 		super().__init__()
 		self.rt=.5
-		CLW={1:LC.LV1_LOD,2:LC.LV2_LOD,3:LC.LV3_LOD,4:LC.LV4_LOD,5:LC.LV3_LOD}
+		CLW={1:LC.LV1_LOD,2:LC.LV2_LOD,3:LC.LV3_LOD,4:LC.LV4_LOD,5:LC.LV3_LOD,6:LC.LV3_LOD}
 		self.MAIN_LOD=CLW[st.level_index]
 		if st.level_index != 4:
 			self.dst_a=2

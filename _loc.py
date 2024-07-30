@@ -39,7 +39,8 @@ day_m={0:'default',
 	2:'snow',
 	3:'evening',
 	4:'pipe',
-	5:'pipe'}
+	5:'pipe',
+	6:'day'}
 
 #ui wumpa position
 uiW=None
