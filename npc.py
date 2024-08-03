@@ -189,13 +189,14 @@ class Rat(Entity):
 		nN='rat'
 		self.vnum=8
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=-90,scale=m_SC,position=p)
-		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,300,400))
+		self.collider=BoxCollider(self,size=Vec3(500,500,300))
 		cc.set_val_npc(self,tu=t,di=d)
 		self.move_speed=.25
 		self.snd_time=1
 	def update(self):
 		if not st.gproc():
 			cc.npc_action(self)
+			an.npc_walking(self)
 			if distance(self,LC.ACTOR) < 2:
 				cc.rotate_to_crash(self)
 				self.snd_time=max(self.snd_time-time.dt,0)

@@ -80,3 +80,9 @@
 #17.07.2024
 - NPC sewer Mine
 - Sewer Swim Platform
+
+#03.08.2024
+- Level 5 Prototype
+- Level 5 Ruin Platforms/Corridor
+- Fixxed Rat collider/animation/rotation
+- collapsed platform

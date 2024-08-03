@@ -576,6 +576,44 @@ class RuinsCorridor(Entity):## corridor
 		self.opt_model=Entity(model=rco+'ruins_cor.ply',texture=rco+'ruins_scn.tga',position=(self.x,self.y+.5,self.z),scale=.03,rotation=(-90,90,0),double_sided=True)
 		unlit_obj(self.opt_model)
 
+class MonkeySculpture(Entity):
+	def __init__(self,pos,r,d):
+		rmsc=omf+'l5/m_sculpt/m_sculpt'
+		super().__init__(model=rmsc+'.ply',texture=rmsc+'.tga',position=pos,scale=.003,rotation=(-90,0,0),double_sided=True)
+		self.posdium=Entity(model='cube',texture='res/terrain/l5/moss.png',scale=(.5,1,.5),texture_scale=(1,2),position=(self.x,self.y-.5,self.z))
+		self.danger=d
+		self.rot=r
+		unlit_obj(self)
+	def update(self):
+		if not st.gproc():
+			if self.rot:
+				if distance(self,LC.ACTOR) < 2:
+					cc.rotate_to_crash(self)
+
+class LoosePlatform(Entity):
+	def __init__(self,pos):
+		self.lpp=omf+'l5/loose_ptf/'
+		super().__init__(model='cube',position=pos,scale=(.7,.5,.6),collider=b,visible=False)
+		self.opt_model=Entity(model=self.lpp+'loose_ptf.ply',texture=self.lpp+'loose_ptf.tga',scale=.01/15,position=(self.x,self.y+.25,self.z),rotation=(-90,-90,0),double_sided=True)
+		self.active=False
+		self.frm=0
+	def respawn(self):
+		self.collider=b
+		self.frm=0
+		self.opt_model.model=self.lpp+'0.ply'
+	def update(self):
+		if not st.gproc():
+			if self.active:
+				self.frm+=time.dt*14
+				if self.frm > 26:
+					self.collider=None
+					if self.frm > 32.9:
+						sn.obj_audio(ID=9,pit=1)
+						self.active=False
+						invoke(self.respawn,delay=7)
+						return
+				self.opt_model.model=self.lpp+str(int(self.frm))+'.ply'
+
 ###################
 ##################
 ## logic objects #

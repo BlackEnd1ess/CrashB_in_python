@@ -272,6 +272,7 @@ def obj_act(e):
 	e.active=(u == 'HPP')
 	if (u == 'plank' and e.typ == 1):e.pl_touch()
 	if u == 'falling_zone':dth_event(c=LC.ACTOR,rsn=0)
+	if u == 'loose_platform':e.active=True
 def landing(c,e,o):
 	c.landed=True
 	if c.y < e and not c.jumping:
