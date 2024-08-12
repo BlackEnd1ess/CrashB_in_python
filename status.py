@@ -5,7 +5,7 @@ checkpoint=None
 day_mode=''
 
 ## game progress items
-COLOR_GEM=[0,2]
+COLOR_GEM=[5]
 CLEAR_GEM=[]
 CRYSTAL=[]
 

@@ -172,9 +172,11 @@ def gem_route1():
 	o.GemPlatform(pos=(212.2,3.1,U),t=4)
 
 def gem_route4():
-	o.swr_multi_ptf(p=(199.5,0,-4),cnt=[3,4])
+	o.swr_multi_ptf(p=(199.5,-.5,-4),cnt=[3,4])
 	o.EletricWater(pos=(200,-.5,22),sca=(8,64),ID=3)
 	o.SewerTunnel(pos=(200,0,5))
 	o.SewerTunnel(pos=(200,0,15))
 	o.SewerTunnel(pos=(200,0,25))
 	o.SewerEntrance(pos=(200,1,-3))
+	o.SwimPlatform(pos=(200.3,-.5,-.5))
+	o.SwimPlatform(pos=(200,-.5,0))

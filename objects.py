@@ -417,12 +417,14 @@ class Foam(Entity):
 class SewerTunnel(Entity):
 	def __init__(self,pos):
 		_sPA=omf+'l4/scn/'
-		super().__init__(model=_sPA+'tunnel.ply',texture=_sPA+'sewer2.tga',position=pos,scale=(.032,.034,.03),rotation=(-90,90,0),double_sided=True)
+		super().__init__(model=_sPA+'tunnel.ply',texture=_sPA+'sewer2.tga',position=pos,scale=(.032,.034,.03),rotation=(-90,90,0),double_sided=True,collider='mesh')
 
 class SewerEscape(Entity):
 	def __init__(self,pos,typ=None):
 		_SE=omf+'l4/scn/'
 		super().__init__(model=_SE+'pipe_1.ply',texture=_SE+'sewers.tga',position=pos,scale=.048,rotation=(-90,90,0),double_sided=True)
+		Entity(model='cube',scale=(.3,8,11),position=(self.x-1.5,self.y+3,self.z+2),collider=b)
+		Entity(model='cube',scale=(.3,8,11),position=(self.x+1.8,self.y+3,self.z+2),collider=b)
 		if typ == 1:
 			self.color=color.rgb32(255,50,0)
 			self.shader=unlit_shader
@@ -447,6 +449,25 @@ class SwimPlatform(Entity):
 		swmi=omf+'l4/swr_swim/swr_swim'
 		super().__init__(model='cube',color=color.white,collider=b,position=pos,scale=(.5,.3,.5),alpha=.3)
 		self.opt=Entity(model=swmi+'.ply',texture=swmi+'.tga',scale=.1/200,rotation_x=-90,position=(self.x,self.y+.06,self.z))
+		self.active=False
+		self.spawn_y=self.y
+		self.f_time=0
+	def sink(self):
+		self.y-=time.dt
+		self.opt.y-=time.dt
+		if self.y <= self.spawn_y-.3:
+			self.collider=None
+			self.active=False
+			self.f_time=0
+			invoke(lambda:setattr(self,'y',self.spawn_y),delay=5)
+			invoke(lambda:setattr(self,'collider',b),delay=5)
+			invoke(lambda:setattr(self.opt,'y',self.spawn_y),delay=5)
+	def update(self):
+		if not st.gproc():
+			if self.active:
+				self.f_time+=time.dt
+				if self.f_time >= .5:
+					self.sink()
 
 class SewerEntrance(Entity):
 	def __init__(self,pos):
@@ -591,28 +612,52 @@ class MonkeySculpture(Entity):
 					cc.rotate_to_crash(self)
 
 class LoosePlatform(Entity):
-	def __init__(self,pos):
-		self.lpp=omf+'l5/loose_ptf/'
+	def __init__(self,pos,t):
+		self.lpp=omf+'l5/loose_ptf'+str(t)+'/'
 		super().__init__(model='cube',position=pos,scale=(.7,.5,.6),collider=b,visible=False)
-		self.opt_model=Entity(model=self.lpp+'loose_ptf.ply',texture=self.lpp+'loose_ptf.tga',scale=.01/15,position=(self.x,self.y+.25,self.z),rotation=(-90,-90,0),double_sided=True)
+		self.opt_model=Entity(model=self.lpp+'loose_ptf'+str(t)+'.ply',texture=self.lpp+'loose_ptf'+str(t)+'.tga',scale=.01/15,position=(self.x,self.y+.25,self.z),rotation=(-90,-90,0),double_sided=True)
 		self.active=False
-		self.frm=0
+		self.typ=t
+		if self.typ != 2:
+			self.frm=0
+		else:
+			self.f_time=0
+			self.scale=(.55,.2,.55)
+			self.opt_model.position=(self.x-.275,self.y+.1,self.z+.25)
+			self.spawn_h=self.y
 	def respawn(self):
 		self.collider=b
 		self.frm=0
 		self.opt_model.model=self.lpp+'0.ply'
+	def fall(self):
+		self.y-=time.dt*3
+		self.opt_model.y-=time.dt*3
+		if self.y <= self.spawn_h-1:
+			self.active=False
+			self.collider=None
+			self.f_time=0
+			invoke(lambda:setattr(self,'y',self.spawn_h),delay=5)
+			invoke(lambda:setattr(self.opt_model,'y',self.spawn_h),delay=5)
+			invoke(lambda:setattr(self,'collider',b),delay=5)
+	def collapse(self):
+		self.frm+=time.dt*14
+		if self.frm > 26:
+			self.collider=None
+			if self.frm > 32.9:
+				sn.obj_audio(ID=9,pit=1)
+				self.active=False
+				invoke(self.respawn,delay=7)
+				return
+		self.opt_model.model=self.lpp+str(int(self.frm))+'.ply'
 	def update(self):
 		if not st.gproc():
 			if self.active:
-				self.frm+=time.dt*14
-				if self.frm > 26:
-					self.collider=None
-					if self.frm > 32.9:
-						sn.obj_audio(ID=9,pit=1)
-						self.active=False
-						invoke(self.respawn,delay=7)
-						return
-				self.opt_model.model=self.lpp+str(int(self.frm))+'.ply'
+				if self.typ != 2:
+					self.collapse()
+				else:
+					self.f_time+=time.dt
+					if self.f_time >= .5:
+						self.fall()
 
 ###################
 ##################
