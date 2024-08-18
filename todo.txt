@@ -5,6 +5,8 @@
 - level shader,decoration
 - crate fall
 - aku invic.
+- aku inv music stop after death
+- aku inv doesnt work on enemies
 - damage invisible bug
 
 

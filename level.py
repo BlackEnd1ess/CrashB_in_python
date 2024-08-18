@@ -669,7 +669,6 @@ def level4():## sewer
 	o.swr_multi_ptf(p=(13.5,pg+3,72.5),cnt=[5,3])
 	#dangers
 	o.SewerPipe(pos=(0,.9,.8),typ=3)
-	#o.SewerPipe(pos=(5,2,11),typ=3)
 	#crates
 	mt.crate_wall(ID=1,POS=(.25,.56,-60.54),CNT=[2,1])
 	mt.crate_wall(ID=1,POS=(.62,.16,-54.53),CNT=[1,3])
@@ -734,7 +733,7 @@ def level4():## sewer
 	npc.spawn(pos=(14.5,3.75,52),mID=10,mDirec=0,mTurn=0,ro_mode=1)
 	npc.spawn(pos=(4.9,1.75,36),mID=11,mDirec=0,mTurn=0,ro_mode=0)
 	npc.spawn(pos=(4.9,1.75,40),mID=11,mDirec=0,mTurn=0,ro_mode=1)
-	npc.spawn(pos=(5,2,12.5),mID=13,mDirec=0,mTurn=0,ro_mode=1)
+	npc.spawn(pos=(5,2,12.5),mID=13,mDirec=0,mTurn=0)
 	npc.spawn(pos=(5.5,2,12.5),mID=13,mDirec=0,mTurn=0)
 	#cam trigger
 	o.CamSwitch(pos=(-.5,1.2,3),sca=(3,.5,8))
@@ -789,7 +788,6 @@ def level5():
 	o.LoosePlatform(pos=(20.5,0,-1),t=0)
 	o.spw_ruin_ptf(p=(22,-.3,-7+.75*8),cnt=4,way=0)
 	o.spw_ruin_ptf(p=(22+.75*4,-.3,-7+.75*8),cnt=7,way=1)
-	
 	o.spw_ruin_ptf(p=(22+.75*6,-.3,-7+.75*8),cnt=4,way=0)
 	o.RuinsPlatform(pos=(29.95,-.3,-7+.75*8),m=False)
 	o.LoosePlatform(pos=(22+.75*4,0,4.5),t=1)
@@ -801,4 +799,6 @@ def level5():
 	N.spawn(mID=8,pos=(13.1,.2, -1),mDirec=0,mTurn=0)
 	#sculpts
 	o.MonkeySculpture(pos=(3.8,.2,-55),r=True,d=False)
+	mt.crate_row(ID=1,POS=(5.3,.2+.16,-56),CNT=4,WAY=2)
+	mt.crate_row(ID=2,POS=(5.3+.32,.2+.16,-56),CNT=3,WAY=2)
 	free_level()

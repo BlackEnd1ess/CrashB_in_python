@@ -415,16 +415,16 @@ class Foam(Entity):
 ####################
 ## level 4 objects #
 class SewerTunnel(Entity):
-	def __init__(self,pos):
+	def __init__(self,pos,c=color.white):
 		_sPA=omf+'l4/scn/'
-		super().__init__(model=_sPA+'tunnel.ply',texture=_sPA+'sewer2.tga',position=pos,scale=(.032,.034,.03),rotation=(-90,90,0),double_sided=True,collider='mesh')
+		super().__init__(model=_sPA+'tunnel.ply',texture=_sPA+'sewer2.tga',position=pos,color=c,scale=(.032,.034,.03),rotation=(-90,90,0),double_sided=True,collider='mesh')
 
 class SewerEscape(Entity):
-	def __init__(self,pos,typ=None):
+	def __init__(self,pos,typ=None,c=color.white):
 		_SE=omf+'l4/scn/'
-		super().__init__(model=_SE+'pipe_1.ply',texture=_SE+'sewers.tga',position=pos,scale=.048,rotation=(-90,90,0),double_sided=True)
-		Entity(model='cube',scale=(.3,8,11),position=(self.x-1.5,self.y+3,self.z+2),collider=b)
-		Entity(model='cube',scale=(.3,8,11),position=(self.x+1.8,self.y+3,self.z+2),collider=b)
+		super().__init__(model=_SE+'pipe_1.ply',texture=_SE+'sewers.tga',position=pos,scale=.048,color=c,rotation=(-90,90,0),double_sided=True)
+		Entity(model='cube',scale=(.3,8,11),position=(self.x-1.5,self.y+3,self.z+2),collider=b,visible=False)
+		Entity(model='cube',scale=(.3,8,11),position=(self.x+1.8,self.y+3,self.z+2),collider=b,visible=False)
 		if typ == 1:
 			self.color=color.rgb32(255,50,0)
 			self.shader=unlit_shader
@@ -447,7 +447,7 @@ class SewerWall(Entity):
 class SwimPlatform(Entity):
 	def __init__(self,pos):
 		swmi=omf+'l4/swr_swim/swr_swim'
-		super().__init__(model='cube',color=color.white,collider=b,position=pos,scale=(.5,.3,.5),alpha=.3)
+		super().__init__(model='cube',color=color.white,collider=b,position=pos,scale=(.5,.3,.5),visible=False)
 		self.opt=Entity(model=swmi+'.ply',texture=swmi+'.tga',scale=.1/200,rotation_x=-90,position=(self.x,self.y+.06,self.z))
 		self.active=False
 		self.spawn_y=self.y
@@ -456,6 +456,7 @@ class SwimPlatform(Entity):
 		self.y-=time.dt
 		self.opt.y-=time.dt
 		if self.y <= self.spawn_y-.3:
+			sn.pc_audio(ID=10)
 			self.collider=None
 			self.active=False
 			self.f_time=0

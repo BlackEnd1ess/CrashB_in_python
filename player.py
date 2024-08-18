@@ -155,7 +155,7 @@ class CrashB(Entity):
 		if not status.death_event:
 			cc.cam_rotate(self)
 			cc.cam_follow(self)
-			camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
+			#camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
 	def hurt_blink(self):
 		self.visible=False
 		invoke(lambda:setattr(self,'visible',True),delay=.1)

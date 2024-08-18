@@ -399,7 +399,12 @@ class CollectedGem(Animation):
 			cGLI='gem2.gif'
 		else:
 			cGLI='gem.gif'
-		cGLO={1:color.rgb32(0,0,O),2:color.rgb32(O,0,0),5:color.rgb32(O,0,O),4:color.rgb32(O,0,0),3:color.rgb32(O,O,0),6:color.rgb32(O,0,0)}
+		cGLO={1:color.rgb32(0,0,O),
+			2:color.rgb32(O,0,0),
+			5:color.rgb32(O,0,O),
+			4:color.rgb32(0,O,0),
+			3:color.rgb32(O,O,0),
+			6:color.rgb32(O,0,0)}
 		self.colored_gem=Animation(_icn+cGLI,parent=camera.ui,position=(self.x-.1,self.y,self.z),scale=self.scale,color=cGLO[st.level_index],visible=False)
 		self.clear_gem=Animation(_icn+'gem.gif',parent=camera.ui,position=(self.x+.1,self.y,self.z),scale=self.scale,color=color.rgb32(100,100,170),visible=False)
 		if st.level_index == 3:

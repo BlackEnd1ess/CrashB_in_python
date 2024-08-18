@@ -1,9 +1,10 @@
-import crate,item,status,_core,objects,environment,map_tools
+import crate,item,status,_core,objects,environment,map_tools,npc
 from ursina import *
 
 MT=map_tools
 o=objects
 c=crate
+N=npc
 U=-3
 def load_bonus_level(idx):
 	lv_lst={1:bonus1,2:bonus2,3:bonus3,4:bonus4,5:bonus1,6:bonus1}
@@ -172,11 +173,43 @@ def gem_route1():
 	o.GemPlatform(pos=(212.2,3.1,U),t=4)
 
 def gem_route4():
-	o.swr_multi_ptf(p=(199.5,-.5,-4),cnt=[3,4])
+	Entity(model='cube',scale=(16,1,96),position=(200,-1.2,-16),collider='box',color=color.black)
+	o.swr_multi_ptf(p=(199.75,-.4,-3.25),cnt=[2,2])
 	o.EletricWater(pos=(200,-.5,22),sca=(8,64),ID=3)
-	o.SewerTunnel(pos=(200,0,5))
-	o.SewerTunnel(pos=(200,0,15))
-	o.SewerTunnel(pos=(200,0,25))
+	o.SewerTunnel(pos=(200,-.3,5),c=color.rgb32(0,200,180))
+	o.SewerTunnel(pos=(200,-.3,15),c=color.rgb32(0,200,180))
+	o.SewerTunnel(pos=(200,-.3,25),c=color.rgb32(0,200,180))
 	o.SewerEntrance(pos=(200,1,-3))
-	o.SwimPlatform(pos=(200.3,-.5,-.5))
-	o.SwimPlatform(pos=(200,-.5,0))
+	o.SwimPlatform(pos=(200,-.45,-.7))
+	o.SwimPlatform(pos=(200-.3,-.45,.7))
+	c.place_crate(ID=0,p=(200,-.5,-2))
+	c.place_crate(ID=0,p=(200,-.5,2))
+	c.place_crate(ID=9,p=(200,-.5,3),m=101)
+	c.place_crate(ID=13,p=(200,-.5,4),l=8,m=101)
+	c.place_crate(ID=9,p=(200,-.5,6),m=102)
+	MT.crate_row(ID=13,POS=(200,-.5,6.32),CNT=8,WAY=1,l=0,m=102)
+	MT.crate_row(ID=13,POS=(200,-.5,6+.32*9),CNT=3,WAY=0,l=0,m=102)
+	MT.crate_row(ID=13,POS=(200+.32*2,-.5,6+.32*10),CNT=5,WAY=1,l=0,m=102)
+	o.SwimPlatform(pos=(200+.3,-.45,11.8))
+	o.SwimPlatform(pos=(200,-.45,12.8))
+	o.SwimPlatform(pos=(200-.3,-.45,13.8))
+	MT.crate_row(ID=13,POS=(200-.32*2,-.5,14.5),CNT=5,WAY=1,l=0,m=102)
+	MT.crate_row(ID=13,POS=(200-.32*2,-.5,14.5+.32*5),CNT=4,WAY=0,l=0,m=102)
+	MT.crate_row(ID=13,POS=(200+.32*2,-.5,14.5+.32*5),CNT=7,WAY=1,l=0,m=102)
+	o.SwimPlatform(pos=(200+.3,-.45,18.7))
+	o.SwimPlatform(pos=(200,-.45,19.7))
+	o.SwimPlatform(pos=(200-.3,-.45,20.7))
+	MT.crate_row(ID=13,POS=(200-.32,-.5,21.5),CNT=7,WAY=1,l=0,m=102)
+	MT.crate_row(ID=13,POS=(200-.32,-.5,21.5+.32*7),CNT=4,WAY=0,l=0,m=102)
+	MT.crate_row(ID=13,POS=(200-.32+.32*3,-.5,21.5+.32*8),CNT=8,WAY=1,l=0,m=102)
+	N.spawn(pos=(200,0,5),mID=13,mDirec=1,mTurn=0)
+	N.spawn(pos=(200,0,16),mID=13,mDirec=1,mTurn=0)
+	N.spawn(pos=(200,0,19.7),mID=13,mDirec=1,mTurn=0)
+	N.spawn(pos=(200,0,23.7),mID=13,mDirec=1,mTurn=0)
+	o.SewerEscape(pos=(200,-1,30),c=color.rgb32(0,200,180))
+	o.SewerEntrance(pos=(200,1,27))
+	Entity(model='cube',scale=(4,.5,7),position=(200,-.5,31),texture_scale=(4,5),collider='box',texture='res/terrain/l4/metal_01.jpg')
+	N.spawn(pos=(200,-.25,29),mID=11,mDirec=0,mTurn=0,ro_mode=1)
+	o.SewerWall(pos=(200,-1.7,33))
+	item.GemStone(c=2,pos=(200,0,28.9))
+	o.GemPlatform(pos=(200,0,31.9),t=5)

@@ -281,8 +281,7 @@ class SewerMine(Entity):
 		self.collider=BoxCollider(self,size=Vec3(500,700,500))
 		cc.set_val_npc(self,tu=t,di=d)
 		self.move_speed=1.2
-		print(p)
-	def floating(self):
+	def floating_y(self):
 		if self.turn == 0:
 			self.y-=time.dt/2
 			if self.y <= self.spawn_pos[1]-.8:
@@ -291,10 +290,22 @@ class SewerMine(Entity):
 		self.y+=time.dt/2
 		if self.y > self.spawn_pos[1]+.8:
 			self.turn=0
+	def floating_x(self):
+		if self.turn == 0:
+			self.x-=time.dt/2
+			if self.x <= self.spawn_pos[0]-.8:
+				self.turn=1
+			return
+		self.x+=time.dt/2
+		if self.x > self.spawn_pos[0]+.8:
+			self.turn=0
 	def update(self):
 		if not st.gproc() and self.visible:
 			an.npc_walking(self)
-			self.floating()
+			if self.m_direction == 0:
+				self.floating_y()
+				return
+			self.floating_x()
 
 ## passive NPC
 class AkuAkuMask(Entity):

@@ -282,7 +282,7 @@ def landing(c,e,o):
 		c.first_land=False
 		c.is_landing=True
 		c.land_anim=0
-		if str(o) == 'sewer_platform':
+		if str(o) in ['sewer_platform','swim_platform']:
 			sn.pc_audio(ID=13)
 		elif c.in_water > 0:
 			sn.pc_audio(ID=10)
