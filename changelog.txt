@@ -86,3 +86,8 @@
 - Level 5 Ruin Platforms/Corridor
 - Fixxed Rat collider/animation/rotation
 - collapsed platforms
+
+#21.08.2024
+- Monkey Sculpt Fire Effect
+- Sound Effect Fire Throw
+- Function Monkey Sculpt Danger

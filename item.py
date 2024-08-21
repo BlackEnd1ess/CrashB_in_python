@@ -72,7 +72,7 @@ class GemStone(Entity):
 			ge_=i_path+'gemstone/gem'
 		R=120
 		ge_c={0:color.rgb32(R,R,R+10),1:color.rgb32(R,0,0),2:color.rgb32(0,R,0),3:color.rgb32(R,0,R),4:color.rgb32(0,0,R),5:color.rgb32(R,R,0)}
-		super().__init__(model=ge_+'.ply',texture=ge_+'.tga',color=ge_c[c],scale=.0011,position=pos,rotation_x=-90,collider=b,unlit=False)
+		super().__init__(model=ge_+'.ply',texture=ge_+'.tga',color=ge_c[c],scale=.0011,position=pos,rotation_x=-90,collider=b)
 		gSCA={4:self.scale_z/2,5:self.scale_z*1.5}
 		self.gemID=c
 		if c in gSCA:

@@ -32,8 +32,8 @@ def main_instance(idx):
 	st.day_mode=day_m[idx]
 	o.StartRoom(pos=s_rm[idx],lvID=idx)
 	bn.load_bonus_level(idx)
-	WEATHER={0:0,1:1,2:2,3:0,4:0,5:0,6:0}
-	if idx == 9:
+	WEATHER={0:0,1:1,2:2,3:0,4:0,5:1,6:0}
+	if idx == 5:
 		TDHR=1
 	else:
 		TDHR=0
@@ -64,8 +64,8 @@ def test():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
 	#npc.spawn(pos=(0,0,-24),mID=8,mDirec=0,mTurn=0)
 	#o.LoosePlatform(pos=(0,.5,-25),t=2)
-	#o.MonkeySculpture(pos=(0,.5,-24),r=True,d=False)
-	o.SwimPlatform(pos=(0,.5,-25))
+	o.MonkeySculpture(pos=(0,.5,-24),r=False,d=True,ro_y=0)
+	#o.SwimPlatform(pos=(0,.5,-25))
 	free_level()
 
 def level1():##wood

@@ -87,7 +87,8 @@ SND_OBJ={0:'spawn',
 		6:'bubble',
 		7:'electric',
 		8:'npc_beat',
-		9:'collapse_floor'}
+		9:'collapse_floor',
+		10:'fire_throw'}
 def obj_audio(ID,pit=1):
 	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
 	cc.purge_instance(ob)

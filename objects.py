@@ -1,4 +1,4 @@
-import _core,status,item,sound,animation,level,player,_loc,settings
+import _core,status,item,sound,animation,level,player,_loc,settings,effect
 from ursina.shaders import *
 from ursina import *
 
@@ -588,7 +588,7 @@ class RuinsBlock(Entity):## small platform
 	def __init__(self,pos):
 		rnb=omf+'l5/ruins_scn/'
 		super().__init__(model='cube',collider=b,scale=(.75,1,.75),position=pos,visible=False)
-		self.opt_model=Entity(model=rnb+'ruins_ptf2.ply',texture=rnb+'ruins_scn.tga',position=(self.x,self.y+.5,self.z-.025),scale=.03,rotation=(-90,90,0),double_sided=False)
+		self.opt_model=Entity(model=rnb+'ruins_ptf02.ply',texture=rnb+'ruins_scn.tga',position=(self.x,self.y+.5,self.z-.025),scale=.03,rotation=(-90,90,0),double_sided=False)
 		unlit_obj(self.opt_model)
 
 class RuinsCorridor(Entity):## corridor
@@ -599,15 +599,39 @@ class RuinsCorridor(Entity):## corridor
 		unlit_obj(self.opt_model)
 
 class MonkeySculpture(Entity):
-	def __init__(self,pos,r,d):
+	def __init__(self,pos,r,d,ro_y=90):
 		rmsc=omf+'l5/m_sculpt/m_sculpt'
-		super().__init__(model=rmsc+'.ply',texture=rmsc+'.tga',position=pos,scale=.003,rotation=(-90,0,0),double_sided=True)
-		self.posdium=Entity(model='cube',texture='res/terrain/l5/moss.png',scale=(.5,1,.5),texture_scale=(1,2),position=(self.x,self.y-.5,self.z))
+		super().__init__(model=rmsc+'.ply',texture=rmsc+'.tga',position=pos,scale=.003,rotation=(-90,ro_y,0),double_sided=True)
+		self.podium=Entity(model='cube',texture='res/terrain/l5/moss.png',scale=(.5,1,.5),texture_scale=(1,2),position=(self.x,self.y-.5,self.z))
+		self.f_pause=False
+		self.s_audio=False
+		self.f_throw=3
+		self.f_cnt=0
 		self.danger=d
 		self.rot=r
 		unlit_obj(self)
+	def f_reset(self):
+		self.f_pause=False
+		self.f_cnt=0
+	def fire_throw(self):
+		effect.FireThrow(pos=self.position,ro_y=self.rotation_y)
 	def update(self):
 		if not st.gproc():
+			if self.danger:
+				if self.f_cnt >= 100:
+					if not self.f_pause:
+							self.f_pause=True
+							invoke(self.f_reset,delay=5)
+					return
+				self.f_throw=max(self.f_throw-time.dt,0)
+				if self.f_throw <= 0:
+					self.throw=3
+					self.f_cnt+=1
+					self.fire_throw()
+					if not self.s_audio:
+						self.s_audio=True
+						sn.obj_audio(ID=10,pit=1)
+						invoke(lambda:setattr(self,'s_audio',False),delay=3)
 			if self.rot:
 				if distance(self,LC.ACTOR) < 2:
 					cc.rotate_to_crash(self)
