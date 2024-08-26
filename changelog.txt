@@ -91,3 +91,9 @@
 - Monkey Sculpt Fire Effect
 - Sound Effect Fire Throw
 - Function Monkey Sculpt Danger
+
+#26.08.2024
+- Sky / Background Thunder
+- Teleporter Warp Effect
+- Level 5 - Bonuslevel prototyp
+- Fixxed Rain indoor

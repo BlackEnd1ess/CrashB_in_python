@@ -219,7 +219,7 @@ def obj_ceiling(c):
 	vc=c.intersects(ignore=[c,LC.shdw])
 	if vc and vc.normal == Vec3(0,-1,0):
 		e=vc.entity
-		if not str(e) in LC.item_lst:
+		if not (str(e) in LC.item_lst or str(e) in LC.trigger_lst):
 			if is_crate(e) and not c.tcr:
 				c.tcr=True
 				e.destroy()
@@ -229,7 +229,7 @@ def obj_ceiling(c):
 def obj_grnd(c):
 	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=[c,LC.shdw],debug=False)
 	vp=vj.entity
-	if vj.normal and not (str(vp) in LC.item_lst or str(vp) in LC.dangers):
+	if vj.normal and not (str(vp) in LC.item_lst or str(vp) in LC.dangers or str(vp) in LC.trigger_lst):
 		if (is_crate(vp) and not vp.vnum == 0) and not (is_crate(vp) and vp.vnum in [9,10,11] and vp.activ) and c.fall_time > .1:
 			crate_action(e=vp)
 			return
@@ -255,6 +255,9 @@ def obj_walls(c):
 	if hT and hT.normal != Vec3(0,1,0):
 		if isinstance(jV,crate.Nitro) and jV.collider != None:
 			jV.destroy()
+			return
+		if xa in LC.trigger_lst:
+			jV.do_act()
 			return
 		if xa in LC.item_lst:
 			jV.collect()

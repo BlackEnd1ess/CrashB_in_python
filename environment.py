@@ -1,10 +1,10 @@
-import status,settings,_loc,sound
+import status,settings,_loc,sound,effect
 from ursina import *
 
 st=status
 c=color
 SKY_COL={'day':c.rgb32(200,230,255),
-		'pipe':c.black,
+		'empty':c.black,
 		'evening':c.rgb32(255,110,90),
 		'night':c.rgb32(0,0,85),
 		'dark':c.black,
@@ -13,7 +13,7 @@ SKY_COL={'day':c.rgb32(200,230,255),
 		'woods':c.rgb32(70,120,110)}
 
 FOG_COL={'day':c.rgb32(120,140,140),
-		'pipe':c.black,
+		'empty':c.black,
 		'evening':c.rgb32(10,40,10),
 		'night':c.rgb32(0,0,0),
 		'dark':c.rgb32(0,0,0),
@@ -22,7 +22,7 @@ FOG_COL={'day':c.rgb32(120,140,140),
 		'woods':c.rgb32(30,80,60)}
 
 AMB_COL={'day':c.rgb32(180,180,180),
-		'pipe':c.rgb32(180,180,180),
+		'empty':c.rgb32(180,180,180),
 		'evening':c.rgb32(220,180,150),
 		'night':c.rgb32(0,0,0),
 		'dark':c.rgb32(0,0,0),
@@ -31,7 +31,7 @@ AMB_COL={'day':c.rgb32(180,180,180),
 		'woods':c.rgb32(120,130,120)}
 
 LGT_COL={'day':c.rgb32(0,0,0),
-		'pipe':c.rgb32(100,180,100),
+		'empty':c.rgb32(100,180,100),
 		'evening':c.rgb32(255,100,0),
 		'night':c.rgb32(0,0,0),
 		'dark':c.rgb32(0,0,0),
@@ -39,44 +39,42 @@ LGT_COL={'day':c.rgb32(0,0,0),
 		'snow':c.rgb32(0,230,255),
 		'woods':c.rgb32(50,150,100)}
 
-def env_switch(env,wth,tdr):
+def env_switch(env,wth):
 	st.day_mode=env
-	SkyBox(t=tdr)
+	SkyBox()
 	LightAmbience()
 	Fog()
 	if wth == 1:
 		RainFall()
 
-#class ShadowMap(DirectionalLight):
-#	def __init__(self):
-#		RS=1024
-#		super().__init__(shadows=True,shadow_map_resolution=(RS,RS),color=LGT_COL[status.day_mode],rotation_x=-260,position=(0,10,0))
-#		invoke(lambda:setattr(window,'render_mode','default'),delay=.5)
-
 class SkyBox(Sky):
-	def __init__(self,t):
-		super().__init__(texture='res/env/sky.jpg',color=SKY_COL[status.day_mode],unlit=False)
+	def __init__(self):
+		super().__init__(texture='res/env/sky.jpg',color=SKY_COL[st.day_mode],unlit=False)
 		self.setting=SKY_COL[st.day_mode]
-		self.thunder=t
-		if self.thunder == 1:
-			self.thunder_time=3
-	def reset(self):
-		self.color=self.setting
-		self.thunder_time=random.randint(4,10)
+		self.thunder_time=3
 	def thunder_bolt(self):
-		self.color=c.white
-		#Audio(sound.snd_thu1,pitch=random.uniform(.1,.5))
-		#invoke(lambda:Audio(random.choice(sound.snd_thu2),pitch=random.uniform(.1,.5)),delay=.5)
-		invoke(self.reset,delay=random.uniform(.1,.4))
+		self.color=color.white
+		_loc.bgT.texture='res/background/bg_ruins_th.jpg'
+		_loc.bgT.texture_scale=_loc.bgT.orginal_tsc
+		sound.thu_audio(ID=0,pit=random.uniform(.1,.5))
+		invoke(lambda:sound.thu_audio(ID=random.randint(1,2),pit=random.uniform(.1,.5)),delay=.5)
+		invoke(self.reset_sky,delay=random.uniform(.1,.4))
+	def reset_sky(self):
+		self.color=self.setting
+		_loc.bgT.texture='res/background/bg_ruins.jpg'
+		_loc.bgT.texture_scale=_loc.bgT.orginal_tsc
+		self.thunder_time=random.randint(4,10)
 	def update(self):
-		if status.bonus_round:
-			self.color=c.black
-		else:
+		if not st.gproc():
+			if st.weather_thunder:
+				self.thunder_time=max(self.thunder_time-time.dt,0)
+				if self.thunder_time <= 0:
+					self.thunder_bolt()
+				return
+			if st.bonus_round:
+				self.color=c.black
+				return
 			self.color=self.setting
-		if self.thunder == 1:
-			self.thunder_time-=time.dt
-			if self.thunder_time <= 0:
-				self.thunder_bolt()
 
 class LightAmbience(AmbientLight):
 	def __init__(self):
@@ -98,35 +96,21 @@ class Fog(Entity):
 			return
 		scene.fog_density=self.L_DST[st.level_index]
 
-#class RainFall(Animation):
-#	def __init__(self):
-#		anP='res/env/rain.gif'
-#		_f=30
-#		super().__init__(anP,parent=camera.ui,position=(-.49,0),scale=(1,1.5),fps=_f)
-#		self.r_pt=Animation(anP,parent=camera.ui,position=(.49,0),scale=self.scale,fps=_f)
-#	def update(self):
-#		if not status.gproc():
-#			self.position=(-.49,0)
-#			self.r_pt.position=(.49,0)
-#	def update(self):
-#		print(self)
-
 class RainFall(FrameAnimation3d):
 	def __init__(self):
 		j=.004
-		super().__init__('res/objects/ev/rain/rain',scale=(j,j/2,j),color=color.rgb32(180,180,200),fps=60,loop=True,alpha=0,rotation=(0,10,10),visible=False)
-		self.soundR=Audio(sound.snd_rain,loop=True,volume=0)
+		super().__init__('res/objects/ev/rain/rain',scale=(j,j/1.5,j),color=color.rgb32(180,180,200),fps=80,loop=True,alpha=0,rotation=(0,10,10),visible=False)
+		sound.Rainfall()
 		self.ta=_loc.ACTOR
 		self.ta.indoor=.5
 	def rain_start(self):
-		self.fps=60
+		self.fps=80
+		self.resume()
 		self.visible=True
-		self.soundR.pitch=random.uniform(.9,1)
-		self.soundR.volume=settings.SFX_VOLUME
 		self.alpha=lerp(self.alpha,.7,time.dt*2)
 	def rain_stop(self):
 		self.fps=0
-		self.soundR.volume=0
+		self.pause()
 		self.alpha=lerp(self.alpha,0,time.dt*2)
 	def follow_p(self):
 		s=self
@@ -137,11 +121,11 @@ class RainFall(FrameAnimation3d):
 		s.position=lerp(s.position,(s.ta.x,camera.y-1.2,s.ta.z+-.1),time.dt*4)
 	def update(self):
 		if not st.gproc() and self.ta.warped:
-			if self.ta.indoor <= 0:
-				self.rain_start()
-				self.follow_p()
+			if self.ta.indoor > 0:
+				self.rain_stop()
 				return
-			self.rain_stop()
+			self.rain_start()
+			self.follow_p()
 
 class SnowFall(Entity):
 	def __init__(self):

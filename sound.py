@@ -1,4 +1,4 @@
-import status,settings,_core
+import status,settings,_core,_loc
 from ursina import *
 
 VS='res/snd/ambience/'
@@ -9,9 +9,13 @@ se=settings
 cc=_core
 
 ## ambience sound
-snd_thu2=[VS+'thunder0.wav',VS+'thunder1.wav']
-snd_thu1=VS+'thunder_start.wav'
 snd_rain=VS+'rain.wav'
+SND_THU={0:'thunder_start',
+		1:'thunder0',
+		2:'thunder1'}
+def thu_audio(ID,pit=1):
+	pth=Audio(VS+SND_THU[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
+	cc.purge_instance(pth)
 
 ## INTERFACE SFX
 SND_UI={0:'select',
@@ -114,6 +118,15 @@ class AmbienceSound(Entity):
 				self.rpt=1
 				fb=Audio(VS+'jungle.wav',pitch=random.uniform(1,1.1),volume=se.SFX_VOLUME)
 				cc.purge_instance(fb)
+
+class Rainfall(Audio):
+	def __init__(self):
+		super().__init__(snd_rain,loop=True,volume=0)
+	def update(self):
+		if _loc.ACTOR.indoor > 0 or status.gproc() or not _loc.ACTOR.warped:
+			self.volume=0
+		else:
+			self.volume=settings.SFX_VOLUME
 
 ## Background Music
 MC='res/snd/music/'

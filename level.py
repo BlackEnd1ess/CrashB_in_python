@@ -34,10 +34,10 @@ def main_instance(idx):
 	bn.load_bonus_level(idx)
 	WEATHER={0:0,1:1,2:2,3:0,4:0,5:1,6:0}
 	if idx == 5:
-		TDHR=1
+		st.weather_thunder=True
 	else:
-		TDHR=0
-	env.env_switch(env=day_m[idx],wth=WEATHER[idx],tdr=TDHR)
+		st.weather_thunder=False
+	env.env_switch(env=day_m[idx],wth=WEATHER[idx])
 
 ##levels
 def developer_level():
@@ -64,8 +64,10 @@ def test():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
 	#npc.spawn(pos=(0,0,-24),mID=8,mDirec=0,mTurn=0)
 	#o.LoosePlatform(pos=(0,.5,-25),t=2)
-	o.MonkeySculpture(pos=(0,.5,-24),r=False,d=True,ro_y=0)
+	#o.MonkeySculpture(pos=(0,.5,-24),r=False,d=True,ro_y=0)
 	#o.SwimPlatform(pos=(0,.5,-25))
+	o.LevelFinish(p=(0,.5,-25))
+	#o.WaterFlow(pos=(0,.6,-16),sca=(5,16))
 	free_level()
 
 def level1():##wood
@@ -748,10 +750,11 @@ def level4():## sewer
 		item.EnergyCrystal(pos=(14,4.25,66))
 	invoke(free_level,delay=3)
 
-def level5():
+def level5():## ruins
 	o.BonusPlatform(pos=(9+.75*6,.5,-22))
 	o.GemPlatform(pos=(16.9,.4,-.1),t=2)
-	o.LevelScene(pos=(0,-30,120),sca=(350,100,1))
+	o.FallingZone(pos=(0,-2,0),s=(128,.3,128))
+	o.LevelScene(pos=(0,-20,120),sca=(350,100,1))
 	o.RuinsPlatform(pos=(0,-.3,-56),m=True)
 	o.RuinsPlatform(pos=(5.4,-.3,-56),m=False)
 	o.spw_ruin_ptf(p=(0,-.3,-61),cnt=6,way=1)
@@ -790,15 +793,26 @@ def level5():
 	o.spw_ruin_ptf(p=(22+.75*4,-.3,-7+.75*8),cnt=7,way=1)
 	o.spw_ruin_ptf(p=(22+.75*6,-.3,-7+.75*8),cnt=4,way=0)
 	o.RuinsPlatform(pos=(29.95,-.3,-7+.75*8),m=False)
-	o.LoosePlatform(pos=(22+.75*4,0,4.5),t=1)
-	o.LoosePlatform(pos=(22+.75*4,0,5),t=2)
+	o.RuinsPlatform(pos=(25,-.3,4.65),m=True)
+	for lp0 in range(3):
+		o.LoosePlatform(pos=(26.6+lp0,.1+lp0/3,4.7),t=2)
+	o.spw_ruin_ptf(p=(30,.6,4.7),cnt=6,way=0)
 	#npc
-	N.spawn(mID=8,pos=(2.7,.2, -50.5),mDirec=0,mTurn=0)
-	N.spawn(mID=8,pos=(2.7,.2, -35.7),mDirec=0,mTurn=0)
-	N.spawn(mID=8,pos=(11.9,.2, -23.5),mDirec=0,mTurn=0)
-	N.spawn(mID=8,pos=(13.1,.2, -1),mDirec=0,mTurn=0)
+	N.spawn(mID=8,pos=(2.7,.2,-50.5),mDirec=0,mTurn=0)
+	N.spawn(mID=8,pos=(2.7,.2,-35.7),mDirec=0,mTurn=0)
+	N.spawn(mID=8,pos=(11.9,.2,-23.5),mDirec=0,mTurn=0)
+	N.spawn(mID=8,pos=(13.1,.2,-1),mDirec=0,mTurn=0)
 	#sculpts
 	o.MonkeySculpture(pos=(3.8,.2,-55),r=True,d=False)
+	o.MonkeySculpture(pos=(1.7,.3,-42.4),r=False,d=True,ro_y=-90)
+	o.MonkeySculpture(pos=(4,.3,-41.4),r=False,d=True,ro_y=90)
+	o.MonkeySculpture(pos=(9.7,.3,-32),r=False,d=True,ro_y=0)
+	o.MonkeySculpture(pos=(11,.3,-25),r=False,d=True,ro_y=-90)
+	o.MonkeySculpture(pos=(26.5,.3,0),r=False,d=True,ro_y=0)
+	o.MonkeySculpture(pos=(28,.3,0),r=False,d=True,ro_y=0)
+	
+	
+	#crates
 	mt.crate_row(ID=1,POS=(5.3,.2+.16,-56),CNT=4,WAY=2)
 	mt.crate_row(ID=2,POS=(5.3+.32,.2+.16,-56),CNT=3,WAY=2)
 	free_level()

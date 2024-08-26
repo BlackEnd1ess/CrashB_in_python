@@ -5,7 +5,7 @@ checkpoint=None
 day_mode=''
 
 ## game progress items
-COLOR_GEM=[5]
+COLOR_GEM=[]
 CLEAR_GEM=[]
 CRYSTAL=[]
 
@@ -57,6 +57,7 @@ level_solved=False
 bonus_solved=False
 bonus_round=False
 
+weather_thunder=False
 gem_path_solved=False
 is_death_route=False
 preload_phase=False

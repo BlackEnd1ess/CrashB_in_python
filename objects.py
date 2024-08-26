@@ -330,12 +330,26 @@ class Role(Entity):
 ## level 3 objects #
 class WaterFlow(Animation):
 	def __init__(self,pos,sca):
-		super().__init__('l3/water_flow/water_flow.gif',scale=sca,texture_scale=(1,sca[1]/4),position=pos,rotation_x=90,fps=50,color=color.rgb32(240,255,240),alpha=.8)
+		super().__init__('l3/water_flow/water_flow.gif',scale=sca,texture_scale=(1,sca[1]/4),position=pos,rotation_x=90,fps=100,color=color.rgb32(240,255,240),alpha=1)
 		self.cbst=Entity(model='cube',name='CBst',texture='res/terrain/l3/cobble_stone.png',position=(pos[0],pos[1]-.7,pos[2]+.05),scale=(10,.1,sca[1]),texture_scale=(10,sca[1]))
 		WaterHit(p=pos,sc=sca)
 	def update(self):
 		pt={True:self.pause,False:self.resume}
 		pt[st.gproc()]()
+
+#class WaterFlow(Entity):
+#	def __init__(self,pos,sca):
+#		self.wtr_t=omf+'l3/water_flow/wtr_part/'
+#		super().__init__(model='quad',texture=self.wtr_t+'water_flow0.png',scale=sca,texture_scale=(1,8),position=pos,rotation_x=90,color=color.rgb32(100,100,100),alpha=1)
+#		Entity(model='quad',color=color.black,scale=sca,position=(self.x,self.y-.05,self.z),rotation_x=90,alpha=.6)
+#		self.frm=0
+#	def update(self):
+#		if not st.gproc():
+#			self.frm+=time.dt*15
+#			if self.frm > 3.9:
+#				self.frm=0
+#				return
+#			self.texture=self.wtr_t+'water_flow'+str(int(self.frm))+'.png'
 
 class WaterFall(Entity):
 	def __init__(self,pos):
@@ -539,7 +553,7 @@ class EletricWater(Entity):
 		self.alpha=.95
 		self.texture_scale=self.tx
 		self.electric=False
-	def collect(self):
+	def do_act(self):
 		self.ta.in_water=.3
 		if self.can_splash <= 0:
 			sn.pc_audio(ID=10)
@@ -582,21 +596,18 @@ class RuinsPlatform(Entity):##big platform
 		self.opt_model=Entity(model=rnp+'ruins_ptf1.ply',texture=rnp+'ruins_scn.tga',position=(self.x,self.y+.5,self.z),scale=(.03,msc[m],.03),rotation=(-90,90,0),double_sided=True)
 		self.rail0=Entity(model='cube',scale=(1.7,.5,.3),collider=b,position=(self.x,self.y+.8,self.z+.9),visible=False)
 		self.rail0=Entity(model='cube',scale=(.3,.5,1.7),collider=b,position=(self.x+msv[m],self.y+.8,self.z),visible=False)
-		unlit_obj(self.opt_model)
 
 class RuinsBlock(Entity):## small platform
 	def __init__(self,pos):
 		rnb=omf+'l5/ruins_scn/'
 		super().__init__(model='cube',collider=b,scale=(.75,1,.75),position=pos,visible=False)
 		self.opt_model=Entity(model=rnb+'ruins_ptf02.ply',texture=rnb+'ruins_scn.tga',position=(self.x,self.y+.5,self.z-.025),scale=.03,rotation=(-90,90,0),double_sided=False)
-		unlit_obj(self.opt_model)
 
 class RuinsCorridor(Entity):## corridor
 	def __init__(self,pos):
 		rco=omf+'l5/ruins_scn/'
 		super().__init__(model='cube',position=pos,scale=(3,1,3),collider=b,visible=False)
 		self.opt_model=Entity(model=rco+'ruins_cor.ply',texture=rco+'ruins_scn.tga',position=(self.x,self.y+.5,self.z),scale=.03,rotation=(-90,90,0),double_sided=True)
-		unlit_obj(self.opt_model)
 
 class MonkeySculpture(Entity):
 	def __init__(self,pos,r,d,ro_y=90):
@@ -690,12 +701,14 @@ class LoosePlatform(Entity):
 class IndoorZone(Entity):## disable rain
 	def __init__(self,pos,sca):
 		super().__init__(model='cube',scale=sca,position=pos,collider=b,visible=False)
-	def collect(self):
+	def do_act(self):
 		LC.ACTOR.indoor=.3
 
 class FallingZone(Entity):## falling
 	def __init__(self,pos,s):
-		super().__init__(model='cube',collider=b,scale=s,position=pos,visible=False)
+		super().__init__(model='cube',collider=b,scale=s,position=pos,color=color.rgb32(0,0,0))
+	def do_act(self):
+		cc.dth_event(LC.ACTOR,rsn=0)
 
 class WaterHit(Entity):## collider for water
 	def __init__(self,p,sc):
@@ -854,35 +867,59 @@ class GemPlatform(Entity):## gem platform
 
 class LevelScene(Entity):
 	def __init__(self,pos,sca):
-		vpa='res/background/'
+		self.vpa='res/background/'
 		super().__init__(model='quad',texture=None,scale=sca,position=pos,texture_scale=(sca[0]/50,1),unlit=False)
 		if st.level_index == 1:
-			self.texture=vpa+'bg_woods.png'
+			self.texture=self.vpa+'bg_woods.png'
 		if st.level_index == 5:
-			self.texture=vpa+'bg_ruins.png'
+			self.texture=self.vpa+'bg_ruins.jpg'
+			self.color=color.rgb32(200,200,200)
+			self.orginal_tsc=self.texture_scale
+			self.orginal_y=self.y
+			self.bonus_y=-70
 			self.unlit=True
 			self.shader=unlit_shader
+			_loc.bgT=self
+	def update(self):
+		if not st.bonus_round:
+			self.y=self.orginal_y
+			return
+		self.y=self.bonus_y
 
 
 ## Switches
 class CamSwitch(Entity):## allow cam move y if player collide with them
 	def __init__(self,pos,sca):
 		super().__init__(model='cube',position=pos,scale=sca,collider=b,visible=False,alpha=.5)
-	def collect(self):#avoid pyhsics with them
+	def do_act(self):#avoid pyhsics with them
 		if not st.gproc() and LC.ACTOR != None:
 			camera.y=lerp(camera.y,LC.ACTOR.y+1.2,time.dt*2)
 
 class LevelFinish(Entity):## finish level
 	def __init__(self,p):
+		trpv=omf+'ev/teleport/warp_effect'
 		super().__init__(model='sphere',collider=b,scale=1,position=p,visible=False)
-	def collect(self):
+		self.eff_w0=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(self.x,self.y,self.z),scale=.6,alpha=.5,shader=unlit_shader)
+		self.eff_w1=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.orange,rotation_x=90,position=(self.x,self.y+.2,self.z),scale=.7,alpha=.5,shader=unlit_shader)
+		self.eff_w2=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(self.x,self.y+.4,self.z),scale=.8,alpha=.5,shader=unlit_shader)
+		self.eff_w3=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.orange,rotation_x=90,position=(self.x,self.y+.6,self.z),scale=.7,alpha=.5,shader=unlit_shader)
+		self.eff_w4=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(self.x,self.y+.8,self.z),scale=.6,alpha=.5,shader=unlit_shader)
+	def do_act(self):
 		cc.jmp_lv_fin()
+	def update(self):
+		if not st.gproc():
+			vrs=time.dt*400
+			self.eff_w0.rotation_y+=vrs
+			self.eff_w1.rotation_y-=vrs
+			self.eff_w2.rotation_y+=vrs
+			self.eff_w3.rotation_y-=vrs
+			self.eff_w4.rotation_y+=vrs
 
 class LODProcess(Entity):## Level of Detail
 	def __init__(self):
 		super().__init__()
 		self.rt=.5
-		CLW={1:LC.LV1_LOD,2:LC.LV2_LOD,3:LC.LV3_LOD,4:LC.LV4_LOD,5:LC.LV3_LOD,6:LC.LV3_LOD}
+		CLW={1:LC.LV1_LOD,2:LC.LV2_LOD,3:LC.LV3_LOD,4:LC.LV4_LOD,5:LC.LV5_LOD,6:LC.LV3_LOD}
 		self.MAIN_LOD=CLW[st.level_index]
 		if st.level_index != 4:
 			self.dst_a=2

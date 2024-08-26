@@ -246,7 +246,7 @@ class BlackScreen(Entity):
 		status.wait_screen=True
 	def update(self):
 		if not st.gproc():
-			self.timer=max(self.timer-time.dt/1.5,0)
+			self.timer=max(self.timer-time.dt/3,0)
 			if self.timer <= 1:
 				status.wait_screen=False
 				self.alpha=self.timer
@@ -260,7 +260,7 @@ class BonusText(Entity):
 	def __init__(self):
 		super().__init__()
 		self.bn_text=Text(text='',font=_fnt,position=(-.2,.4),scale=5,color=color.azure,parent=camera.ui)
-		self.letters='BONUS!'
+		self.letters='BONUS!  '
 		self.ch_seq=0
 		self.t_delay=.5
 	def display(self):
@@ -268,7 +268,7 @@ class BonusText(Entity):
 		self.bn_text.visible=True
 	def text_ch(self):
 		self.bn_text.visible=False
-		if self.ch_seq == 6:
+		if self.ch_seq == 8:
 			self.ch_seq=0
 		self.ch_seq+=1
 	def update(self):

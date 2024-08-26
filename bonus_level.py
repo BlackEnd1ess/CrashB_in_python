@@ -7,7 +7,7 @@ c=crate
 N=npc
 U=-3
 def load_bonus_level(idx):
-	lv_lst={1:bonus1,2:bonus2,3:bonus3,4:bonus4,5:bonus1,6:bonus1}
+	lv_lst={1:bonus1,2:bonus2,3:bonus3,4:bonus4,5:bonus5,6:bonus1}
 	lv_lst[idx]()
 
 def bonus1():
@@ -147,6 +147,9 @@ def bonus4():
 	MT.wumpa_row(POS=(8.48,-35.3,U),CNT=8,WAY=2)
 	o.BonusPlatform(pos=(22.3,-34.2,U))
 
+def bonus5():
+	o.spw_ruin_ptf(p=(-1,-37,U),cnt=4,way=0)
+	o.spw_ruin_ptf(p=(2,-36.5,U),cnt=4,way=0)
 ## gem route
 def gem_route1():
 	o.FallingZone(pos=(200,-4,0),s=(40,1,32))

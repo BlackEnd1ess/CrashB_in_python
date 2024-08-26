@@ -85,9 +85,8 @@ class CrashB(Entity):
 		if key == 'u':
 			#self.position=(0,-35,-3)
 			#self.position=(0,2,3)
-			camera.position=(200,self.y+1.2,self.z)
-			self.position=(200,2,-3)
 			#self.position=(17.7,.6,-.9)
+			self.position=(12.4,1,-21.97)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD
@@ -96,9 +95,9 @@ class CrashB(Entity):
 		if mvD.length() > 0:
 			st.p_last_direc=mvD
 			mc=raycast(self.world_position+(0,.1,0),self.direc,distance=.2,ignore=[self,LC.shdw],debug=False)
-			if not mc or (mc and str(mc.entity) in LC.item_lst):
+			if not mc or (mc and str(mc.entity) in LC.item_lst or mc and str(mc.entity) in LC.trigger_lst):
 				self.position+=self.direc*time.dt*self.move_speed
-			if (str(mc.entity) == 'sewer_pipe' and mc.entity.danger):
+			if (str(mc.entity) == 'sewer_pipe' and mc.entity.danger) or (str(mc.entity) == 'fire_throw'):
 				cc.get_damage(self,rsn=3)
 			self.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
 			self.walk_event()
@@ -139,8 +138,6 @@ class CrashB(Entity):
 		if s.fall_time > .4 and not (s.is_attack or s.freezed):
 			s.is_flip=False
 			an.fall(s)
-		if self.y < -5 and not status.bonus_round:
-			cc.dth_event(self,rsn=0)
 	def jump(self):
 		self.first_land=True
 		self.y+=time.dt*self.jump_speed[self.jmp_typ]
