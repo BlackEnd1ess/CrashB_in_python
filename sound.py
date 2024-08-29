@@ -68,7 +68,7 @@ SND_CRT={0:'steel',
 		13:'air',
 		14:'aku'}
 def crate_audio(ID,pit=1):
-	ca=Audio(SN+SND_CRT[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
+	ca=Audio(SN+SND_CRT[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME*2)
 	cc.purge_instance(ca)
 
 ## NPC SFX

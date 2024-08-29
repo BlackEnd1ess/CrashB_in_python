@@ -137,6 +137,7 @@ class EnergyCrystal(Entity):
 		cc.purge_instance(self)
 	def update(self):
 		if not status.gproc():
+			self.visible=(distance(self,_loc.ACTOR) < 12)
 			self.rotation_y-=time.dt*70
 
 class TrialClock(Entity):

@@ -10,11 +10,11 @@ def pos_info(c):
 	sx=f"{c.x:.3f}"
 	sy=f"{c.y+.16:.3f}"
 	sz=f"{c.z:.3f}"
-	#print(f"c.place_crate(ID=12,p=({sx},{sy},{sz}))")
-	#print(f"mt.crate_wall(ID=2,POS=({sx},{sy},{sz}),CNT=[2,2])")
+	print(f"c.place_crate(ID=5,p=({sx},{sy},{sz}))")
+	#print(f"mt.crate_wall(ID=1,POS=({sx},{sy},{sz}),CNT=[2,2])")
 	#print(f"mt.crate_block(ID=1,POS=({sx},{sy},{sz}),CNT=[2,2,2])")
-	print(f"mt.wumpa_row(POS=({sx},{sy},{sz}),CNT=4,WAY=2)")
-#add air with list and mark!
+	#print(f"mt.wumpa_row(POS=({sx},{sy},{sz}),CNT=4,WAY=2)")
+
 ## multible crate spawn
 def bounce_twin(POS,CNT):
 	for cbt in range(CNT):

@@ -635,15 +635,16 @@ class MonkeySculpture(Entity):
 							self.f_pause=True
 							invoke(self.f_reset,delay=5)
 					return
-				self.f_throw=max(self.f_throw-time.dt,0)
-				if self.f_throw <= 0:
-					self.throw=3
-					self.f_cnt+=1
-					self.fire_throw()
-					if not self.s_audio:
-						self.s_audio=True
-						sn.obj_audio(ID=10,pit=1)
-						invoke(lambda:setattr(self,'s_audio',False),delay=3)
+				if distance(self,LC.ACTOR) < 12:
+					self.f_throw=max(self.f_throw-time.dt,0)
+					if self.f_throw <= 0:
+						self.throw=3
+						self.f_cnt+=1
+						self.fire_throw()
+						if not self.s_audio:
+							self.s_audio=True
+							sn.obj_audio(ID=10,pit=1)
+							invoke(lambda:setattr(self,'s_audio',False),delay=3)
 			if self.rot:
 				if distance(self,LC.ACTOR) < 2:
 					cc.rotate_to_crash(self)
@@ -781,7 +782,8 @@ class EndRoom(Entity):## finish level
 		self.pod1=Entity(model='cube',scale=(6,1,2.5),position=(self.x-1,self.y-1.85,self.z+.45),collider=b,visible=False)
 		self.pod2=Entity(model='cube',scale=(.85,1,.85),position=(self.x-1.1,self.y-1.6,self.z+.3),collider=b,visible=False)
 		self.pod3=Entity(model='cube',scale=(1.6,1,1),position=(self.x-1.1,self.y-1.51,self.z+6.5),collider=b,visible=False)
-		Entity(model='cube',scale=(20,10,.1),position=(self.x,self.y-5,self.z+16),color=color.black)
+		if st.level_index != 5:
+			Entity(model='cube',scale=(20,10,.1),position=(self.x,self.y-5,self.z+16),color=color.black)
 		LevelFinish(p=(self.x-1.1,self.y-1.1,self.z+7))
 		RoomDoor(pos=(self.x-1.1,self.y+.25,self.z-4.78),typ=1)
 		CrateScore(pos=(self.x-1.1,self.y-.7,self.z))
@@ -891,7 +893,7 @@ class LevelScene(Entity):
 ## Switches
 class CamSwitch(Entity):## allow cam move y if player collide with them
 	def __init__(self,pos,sca):
-		super().__init__(model='cube',position=pos,scale=sca,collider=b,visible=True,alpha=.5)
+		super().__init__(model='cube',position=pos,scale=sca,collider=b,visible=False)
 	def do_act(self):#avoid pyhsics with them
 		if not st.gproc() and LC.ACTOR != None:
 			camera.y=lerp(camera.y,LC.ACTOR.y+1.2,time.dt*2)
@@ -909,12 +911,18 @@ class LevelFinish(Entity):## finish level
 		cc.jmp_lv_fin()
 	def update(self):
 		if not st.gproc():
-			vrs=time.dt*400
+			cnnb=(distance(self,LC.ACTOR) < 12)
+			vrs=time.dt*500
 			self.eff_w0.rotation_y+=vrs
 			self.eff_w1.rotation_y-=vrs
 			self.eff_w2.rotation_y+=vrs
 			self.eff_w3.rotation_y-=vrs
 			self.eff_w4.rotation_y+=vrs
+			self.eff_w0.visible=cnnb
+			self.eff_w1.visible=cnnb
+			self.eff_w2.visible=cnnb
+			self.eff_w3.visible=cnnb
+			self.eff_w4.visible=cnnb
 
 class LODProcess(Entity):## Level of Detail
 	def __init__(self):

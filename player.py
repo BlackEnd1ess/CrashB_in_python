@@ -72,11 +72,11 @@ class CrashB(Entity):
 			st.pause=False
 		##dev input
 		if key == 'b':
-			#map_tools.pos_info(self)
+			map_tools.pos_info(self)
 			#print('Entities: '+str(len(scene.entities)))
 			#print('CRATE reset: '+str(len(st.C_RESET)))
 			#print(scene.entities[-1])
-			print(self.position)
+			#print(self.position)
 		if key == 'e':
 			EditorCamera()
 		if key == 'j':

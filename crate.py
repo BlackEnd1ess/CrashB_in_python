@@ -80,7 +80,7 @@ def explosion(cr):
 		sn.crate_audio(ID=10)
 	if cr.vnum == 12 and not st.n_audio:
 		st.n_audio=True
-		invoke(lambda:sn.crate_audio(ID=11,pit=1.4),delay=.1)
+		invoke(lambda:sn.crate_audio(ID=11,pit=1.45),delay=.1)
 	invoke(cc.reset_audio,delay=.2)
 	for exR in scene.entities[:]:
 		if distance(cr,exR) < 1 and exR.collider != None:
