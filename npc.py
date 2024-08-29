@@ -214,7 +214,9 @@ class Lizard(Entity):
 		self.move_speed=1.3
 		self.spawn_pos=p
 	def update(self):
-		if not st.gproc():cc.npc_action(self)
+		if not st.gproc():
+			an.npc_walking(self)
+			cc.npc_action(self)
 
 class Scrubber(Entity):
 	def __init__(self,p,d,t,ro):

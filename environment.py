@@ -98,19 +98,17 @@ class Fog(Entity):
 
 class RainFall(FrameAnimation3d):
 	def __init__(self):
-		j=.004
+		j=.0042
 		super().__init__('res/objects/ev/rain/rain',scale=(j,j/1.5,j),color=color.rgb32(180,180,200),fps=80,loop=True,alpha=0,rotation=(0,10,10),visible=False)
 		sound.Rainfall()
 		self.ta=_loc.ACTOR
 		self.ta.indoor=.5
 	def rain_start(self):
-		self.fps=80
-		self.resume()
+		self.fps=60
 		self.visible=True
 		self.alpha=lerp(self.alpha,.7,time.dt*2)
 	def rain_stop(self):
 		self.fps=0
-		self.pause()
 		self.alpha=lerp(self.alpha,0,time.dt*2)
 	def follow_p(self):
 		s=self

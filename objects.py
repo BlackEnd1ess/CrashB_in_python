@@ -608,6 +608,7 @@ class RuinsCorridor(Entity):## corridor
 		rco=omf+'l5/ruins_scn/'
 		super().__init__(model='cube',position=pos,scale=(3,1,3),collider=b,visible=False)
 		self.opt_model=Entity(model=rco+'ruins_cor.ply',texture=rco+'ruins_scn.tga',position=(self.x,self.y+.5,self.z),scale=.03,rotation=(-90,90,0),double_sided=True)
+		IndoorZone(pos=(self.x,self.y+2.3,self.z),sca=3)
 
 class MonkeySculpture(Entity):
 	def __init__(self,pos,r,d,ro_y=90):
@@ -676,7 +677,7 @@ class LoosePlatform(Entity):
 			invoke(lambda:setattr(self.opt_model,'y',self.spawn_h),delay=5)
 			invoke(lambda:setattr(self,'collider',b),delay=5)
 	def collapse(self):
-		self.frm+=time.dt*14
+		self.frm+=time.dt*18
 		if self.frm > 26:
 			self.collider=None
 			if self.frm > 32.9:
@@ -873,7 +874,7 @@ class LevelScene(Entity):
 			self.texture=self.vpa+'bg_woods.png'
 		if st.level_index == 5:
 			self.texture=self.vpa+'bg_ruins.jpg'
-			self.color=color.rgb32(200,200,200)
+			self.color=color.rgb32(170,170,170)
 			self.orginal_tsc=self.texture_scale
 			self.orginal_y=self.y
 			self.bonus_y=-70
@@ -890,7 +891,7 @@ class LevelScene(Entity):
 ## Switches
 class CamSwitch(Entity):## allow cam move y if player collide with them
 	def __init__(self,pos,sca):
-		super().__init__(model='cube',position=pos,scale=sca,collider=b,visible=False,alpha=.5)
+		super().__init__(model='cube',position=pos,scale=sca,collider=b,visible=True,alpha=.5)
 	def do_act(self):#avoid pyhsics with them
 		if not st.gproc() and LC.ACTOR != None:
 			camera.y=lerp(camera.y,LC.ACTOR.y+1.2,time.dt*2)

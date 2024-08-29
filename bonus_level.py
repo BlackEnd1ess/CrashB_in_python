@@ -148,8 +148,26 @@ def bonus4():
 	o.BonusPlatform(pos=(22.3,-34.2,U))
 
 def bonus5():
+	o.FallingZone(pos=(0,-42,0),s=(128,.3,32))
 	o.spw_ruin_ptf(p=(-1,-37,U),cnt=4,way=0)
-	o.spw_ruin_ptf(p=(2,-36.5,U),cnt=4,way=0)
+	o.spw_ruin_ptf(p=(2,-36.5,U),cnt=2,way=0)
+	o.spw_ruin_ptf(p=(4.5,-36.5,U),cnt=3,way=0)
+	o.spw_ruin_ptf(p=(6.75,-36,U),cnt=4,way=0)
+	o.LoosePlatform(pos=(10,-35.8,U),t=1)
+	o.LoosePlatform(pos=(11.5,-36,U),t=1)
+	o.LoosePlatform(pos=(13,-36.5,U),t=1)
+	o.spw_ruin_ptf(p=(14,-36.7,U),cnt=8,way=0)
+	o.spw_ruin_ptf(p=(21,-36.7,U),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(21.75,-36.2,U),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(24,-36.2,U),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(24.75,-36.7,U),cnt=3,way=0)
+	o.spw_ruin_ptf(p=(32.15,-36.7,U),cnt=5,way=0)
+	#crate
+	MT.crate_stair(ID=1,POS=(26.8,-36.3,U),CNT=4,WAY=0)
+	MT.crate_row(ID=1,POS=(26.8+.32*4,-36.3+.32*3,U),CNT=8,WAY=0)
+	MT.crate_stair(ID=1,POS=(26.8+.32*12,-36.3+.32*3,U),CNT=4,WAY=1)
+	MT.bounce_twin(POS=(26.8+.32*4,-36.3+.32*4,U),CNT=7)
+	o.BonusPlatform(pos=(36,-36,U))
 ## gem route
 def gem_route1():
 	o.FallingZone(pos=(200,-4,0),s=(40,1,32))

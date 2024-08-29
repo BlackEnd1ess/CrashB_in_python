@@ -218,7 +218,7 @@ def level1():##wood
 	c.place_crate(ID=6,p=(.6,CRP,-17.8))
 	c.place_crate(ID=6,p=(0,CRP,11.1))
 	#collectable
-	if not status.level_index in status.CRYSTAL:
+	if not st.level_index in st.CRYSTAL:
 		item.EnergyCrystal(pos=(0,1.5,-13))
 	#M_objects
 	o.Corridor(pos=(0,.975,-13))
@@ -797,10 +797,37 @@ def level5():## ruins
 	for lp0 in range(3):
 		o.LoosePlatform(pos=(26.6+lp0,.1+lp0/3,4.7),t=2)
 	o.spw_ruin_ptf(p=(30,.6,4.7),cnt=6,way=0)
+	o.spw_ruin_ptf(p=(30+.75*6,.6,4.7),cnt=6,way=1)
+	o.spw_ruin_ptf(p=(30+.75*7,.6,4.7+.75*5),cnt=6,way=0)
+	o.spw_ruin_ptf(p=(30+.75*12,.6,4.7),cnt=6,way=1)
+	o.spw_ruin_ptf(p=(30+.75*13,.2,4.7),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(30+.75*14,-.2,4.7),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(30+.75*15,-.6,4.7),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(30+.75*16,-1,4.7),cnt=8,way=0)
+	o.spw_ruin_ptf(p=(30+.75*24,-.6,4.7),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(30+.75*25,-.2,4.7),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(30+.75*25,.2,4.7+.75),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(30+.75*26,.6,4.7+.75),cnt=5,way=0)
+	o.RuinsPlatform(pos=(35.5,.6,9.6),m=True)
+	o.RuinsPlatform(pos=(37.175,.6,9.6),m=False)
+	o.spw_ruin_ptf(p=(30+.75*31,.6,4.7+.75),cnt=5,way=1)
+	o.LoosePlatform(pos=(53.2,.8,9.6),t=0)
+	o.LoosePlatform(pos=(53.2,.8,11.1),t=0)
+	o.LoosePlatform(pos=(53.2,.8,12.6),t=0)
+	o.LoosePlatform(pos=(53.2,.8,14.1),t=0)
+	for rn_x in range(4):
+		for rn_z in range(3):
+			o.spw_ruin_ptf(p=(51.7+.75*rn_x,.6,15+.75*rn_z),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(53.2-.75,.6,15+.75*3),cnt=5,way=1)
+	o.spw_ruin_ptf(p=(53.2-.75,.6,15+.75*8),cnt=4,way=0)
+	o.spw_ruin_ptf(p=(53.2+.75*3,.6,15+.75*8),cnt=8,way=1)
+	o.spw_ruin_ptf(p=(53.2+.75*4,.6,15+.75*13),cnt=1,way=0)
 	#npc
 	N.spawn(mID=8,pos=(2.7,.2,-50.5),mDirec=0,mTurn=0)
 	N.spawn(mID=8,pos=(2.7,.2,-35.7),mDirec=0,mTurn=0)
 	N.spawn(mID=8,pos=(11.9,.2,-23.5),mDirec=0,mTurn=0)
+	N.spawn(mID=9,pos=(2.7,.2,-38.8),mDirec=0,mTurn=0)
+	N.spawn(mID=9,pos=(24.2,.2,-1),mDirec=0,mTurn=0)
 	N.spawn(mID=8,pos=(13.1,.2,-1),mDirec=0,mTurn=0)
 	#sculpts
 	o.MonkeySculpture(pos=(3.8,.2,-55),r=True,d=False)
@@ -810,9 +837,19 @@ def level5():## ruins
 	o.MonkeySculpture(pos=(11,.3,-25),r=False,d=True,ro_y=-90)
 	o.MonkeySculpture(pos=(26.5,.3,0),r=False,d=True,ro_y=0)
 	o.MonkeySculpture(pos=(28,.3,0),r=False,d=True,ro_y=0)
-	
-	
+	#cam trigger
+	o.CamSwitch(pos=(25,.6,4.6),sca=(1.5,.3,1.5))
+	o.CamSwitch(pos=(30.5,1.5,4.5),sca=(2,.3,1))
+	o.CamSwitch(pos=(39,1.5,4.7),sca=(.5,.3,.5))
+	o.CamSwitch(pos=(40.4,.7,4.7),sca=(.5,.3,.75))
+	o.CamSwitch(pos=(43,-.1,4.7),sca=(2,.3,.75))
+	o.CamSwitch(pos=(48.7,.6,4.7),sca=(.75,.3,.75))
+	o.CamSwitch(pos=(50,1.4,5.4),sca=(2,.3,.75))
+	#crystal
+	if not st.level_index in st.CRYSTAL:
+		item.EnergyCrystal(pos=(12,.8,-7))
 	#crates
 	mt.crate_row(ID=1,POS=(5.3,.2+.16,-56),CNT=4,WAY=2)
 	mt.crate_row(ID=2,POS=(5.3+.32,.2+.16,-56),CNT=3,WAY=2)
+	o.EndRoom(pos=(56.5,2.5,31.6),c=color.rgb32(180,180,180))
 	free_level()

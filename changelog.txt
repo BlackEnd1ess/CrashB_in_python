@@ -97,3 +97,4 @@
 - Teleporter Warp Effect
 - Level 5 - Bonuslevel prototyp
 - Fixxed Rain indoor
+- Changed blinking Bonustext to 8x (3x full text)
