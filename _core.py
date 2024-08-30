@@ -486,7 +486,7 @@ def npc_purge(m):
 	m.can_move=False
 	m.fly_time=0
 	m.scale_z=max(m.scale_z-time.dt/100,0)
-	if m.scale_z <= 0:
+	if m.scale_z <= 0 or m.is_hitten:
 		status.NPC_RESET.append(m)
 		purge_instance(m)
 def npc_walk(m):

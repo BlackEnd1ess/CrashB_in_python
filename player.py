@@ -72,6 +72,7 @@ class CrashB(Entity):
 			st.pause=False
 		##dev input
 		if key == 'b':
+			#print(len(scene.entities))
 			map_tools.pos_info(self)
 			#print('Entities: '+str(len(scene.entities)))
 			#print('CRATE reset: '+str(len(st.C_RESET)))

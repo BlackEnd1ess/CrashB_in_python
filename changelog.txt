@@ -97,4 +97,18 @@
 - Teleporter Warp Effect
 - Level 5 - Bonuslevel prototyp
 - Fixxed Rain indoor
-- Changed blinking Bonustext to 8x (3x full text)
+- Changed blinking Bonustext to 8x (3 times full text)
+
+####
+Hallo Youtube, i have new Project Progresses in the last Level for this Game.
+- Platforms will collapse faster
+- Thunder in Background and Sky
+- Teleport Effect
+- Blinking Bonus Text (3x if full)
+- Fire Monkey Sculpture, will damage the Player
+- Indoor Zones will not freeze the Rain anymore
+- Ruins Platforms are closed now on the left and right side. 
+
+Whats planned as next?
+- Green Gem Path
+- Ruins Decorations

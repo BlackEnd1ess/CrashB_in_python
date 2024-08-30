@@ -57,7 +57,7 @@ def bonus2():
 	o.BonusPlatform(pos=(16,-37.1,U))
 
 def bonus3():
-	Entity(model='plane',texture='res/ui/background/bonus_1.jpg',scale=(60,1,30),position=(10,-40,15),rotation_x=-90,unlit=False)
+	Entity(model='plane',texture='res/background/bonus_1.jpg',scale=(60,1,30),position=(10,-40,15),rotation_x=-90,unlit=False)
 	MT.wumpa_double_row(POS=(12.8,-35,U),CNT=6)
 	MT.wumpa_double_row(POS=(-.5,-36.5,U),CNT=4)
 	MT.wumpa_row(POS=(1.5,-36.35,U),CNT=3,WAY=0)

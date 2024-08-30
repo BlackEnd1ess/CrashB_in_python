@@ -8,8 +8,9 @@
 - aku inv music stop after death
 - aku idle animation if not actor walking
 - aku inv doesnt work on enemies
-- damage invisible bug
 
+##MODULE
+imageio
 
 #level 2
 - walls

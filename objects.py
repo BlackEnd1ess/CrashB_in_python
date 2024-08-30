@@ -328,28 +328,19 @@ class Role(Entity):
 
 ####################
 ## level 3 objects #
-class WaterFlow(Animation):
+class WaterFlow(Entity):
 	def __init__(self,pos,sca):
-		super().__init__('l3/water_flow/water_flow.gif',scale=sca,texture_scale=(1,sca[1]/4),position=pos,rotation_x=90,fps=100,color=color.rgb32(240,255,240),alpha=1)
+		self.wtr_t=omf+'l3/water_flow/'
+		super().__init__(model='plane',texture=self.wtr_t+'water_flow0.tga',scale=(sca[0],.1,sca[1]),texture_scale=(1,11),position=pos,color=color.rgb32(170,170,170),alpha=.8)
 		self.cbst=Entity(model='cube',name='CBst',texture='res/terrain/l3/cobble_stone.png',position=(pos[0],pos[1]-.7,pos[2]+.05),scale=(10,.1,sca[1]),texture_scale=(10,sca[1]))
-		WaterHit(p=pos,sc=sca)
+		WaterHit(p=(pos[0],pos[1]-.1,pos[2]),sc=sca)
+		self.frm=0
 	def update(self):
-		pt={True:self.pause,False:self.resume}
-		pt[st.gproc()]()
-
-#class WaterFlow(Entity):
-#	def __init__(self,pos,sca):
-#		self.wtr_t=omf+'l3/water_flow/wtr_part/'
-#		super().__init__(model='quad',texture=self.wtr_t+'water_flow0.png',scale=sca,texture_scale=(1,8),position=pos,rotation_x=90,color=color.rgb32(100,100,100),alpha=1)
-#		Entity(model='quad',color=color.black,scale=sca,position=(self.x,self.y-.05,self.z),rotation_x=90,alpha=.6)
-#		self.frm=0
-#	def update(self):
-#		if not st.gproc():
-#			self.frm+=time.dt*15
-#			if self.frm > 3.9:
-#				self.frm=0
-#				return
-#			self.texture=self.wtr_t+'water_flow'+str(int(self.frm))+'.png'
+		if not st.gproc():
+			self.frm+=time.dt*9
+			if self.frm > 3.9:
+				self.frm=0
+			self.texture=self.wtr_t+'water_flow'+str(int(self.frm))+'.tga'
 
 class WaterFall(Entity):
 	def __init__(self,pos):
@@ -456,7 +447,6 @@ class SewerWall(Entity):
 		super().__init__(model=mo+'.ply',texture=mo+'.tga',position=pos,scale=.0175,rotation=(-90,90,0),double_sided=True)
 		self.bgw=Entity(model='cube',color=color.black,scale=(5,8,.1),position=(self.x,self.y,self.z+1))
 		self.color=color.rgb(.6,.5,.4)
-		#self.color=color.rgb32(0,120,150)
 
 class SwimPlatform(Entity):
 	def __init__(self,pos):
@@ -884,10 +874,11 @@ class LevelScene(Entity):
 			self.shader=unlit_shader
 			_loc.bgT=self
 	def update(self):
-		if not st.bonus_round:
-			self.y=self.orginal_y
-			return
-		self.y=self.bonus_y
+		if st.level_index == 5:
+			if not st.bonus_round:
+				self.y=self.orginal_y
+				return
+			self.y=self.bonus_y
 
 
 ## Switches
@@ -907,12 +898,14 @@ class LevelFinish(Entity):## finish level
 		self.eff_w2=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(self.x,self.y+.4,self.z),scale=.8,alpha=.5,shader=unlit_shader)
 		self.eff_w3=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.orange,rotation_x=90,position=(self.x,self.y+.6,self.z),scale=.7,alpha=.5,shader=unlit_shader)
 		self.eff_w4=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(self.x,self.y+.8,self.z),scale=.6,alpha=.5,shader=unlit_shader)
+		self.w_audio=Audio('res/snd/misc/portal.wav',volume=0,loop=True)
 	def do_act(self):
 		cc.jmp_lv_fin()
 	def update(self):
 		if not st.gproc():
 			cnnb=(distance(self,LC.ACTOR) < 12)
-			vrs=time.dt*500
+			csnd=(distance(self,LC.ACTOR) < 6)
+			vrs=time.dt*600
 			self.eff_w0.rotation_y+=vrs
 			self.eff_w1.rotation_y-=vrs
 			self.eff_w2.rotation_y+=vrs
@@ -923,6 +916,10 @@ class LevelFinish(Entity):## finish level
 			self.eff_w2.visible=cnnb
 			self.eff_w3.visible=cnnb
 			self.eff_w4.visible=cnnb
+			if csnd:
+				self.w_audio.volume=SFX
+				return
+			self.w_audio.volume=0
 
 class LODProcess(Entity):## Level of Detail
 	def __init__(self):
@@ -972,17 +969,20 @@ class SingleBlock(Entity):
 		super().__init__(model=sBL+'.obj',texture=sBL+'.png',scale=(.8,.5,.8),collider=b,position=pos)
 		unlit_obj(self)
 
-class Water(Animation):
+class Water(Entity):
 	def __init__(self,pos,s,c,a):
-		super().__init__(omf+'ev/water/water.gif',position=pos,scale=(s[0],s[1]),rotation_x=90,fps=20,color=c,alpha=a)
+		self.wtfc=omf+'ev/water/wtr_srfc/water_'
+		super().__init__(model='plane',texture=self.wtfc+'0.tga',position=pos,scale=(s[0],.1,s[1]),color=c,alpha=a)
 		WaterHit(p=(pos[0],pos[1]-.1,pos[2]),sc=s)
 		self.texture_scale=(s[0]/4,s[1]/4)
+		self.frm=0
 	def update(self):
 		if not st.gproc():
 			if st.level_index != 2:
-				self.resume()
-				return
-			self.pause()
+				self.frm+=time.dt*15
+				if self.frm > 57.9:
+					self.frm=0
+				self.texture=self.wtfc+str(int(self.frm))+'.tga'
 
 class mTerrain(Entity):
 	def __init__(self,pos,sca,typ):

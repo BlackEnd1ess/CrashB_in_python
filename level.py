@@ -63,11 +63,6 @@ def test():
 	#o.EndRoom(pos=(1,2,-15),c=color.rgb32(200,210,200))
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
 	#npc.spawn(pos=(0,0,-24),mID=8,mDirec=0,mTurn=0)
-	#o.LoosePlatform(pos=(0,.5,-25),t=2)
-	#o.MonkeySculpture(pos=(0,.5,-24),r=False,d=True,ro_y=0)
-	#o.SwimPlatform(pos=(0,.5,-25))
-	o.LevelFinish(p=(0,.5,-25))
-	#o.WaterFlow(pos=(0,.6,-16),sca=(5,16))
 	free_level()
 
 def level1():##wood

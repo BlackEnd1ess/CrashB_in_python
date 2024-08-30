@@ -49,23 +49,24 @@ def env_switch(env,wth):
 
 class SkyBox(Sky):
 	def __init__(self):
-		super().__init__(texture='res/env/sky.jpg',color=SKY_COL[st.day_mode],unlit=False)
+		self.bgr='res/background/'
+		super().__init__(texture=self.bgr+'sky.jpg',color=SKY_COL[st.day_mode],unlit=False)
 		self.setting=SKY_COL[st.day_mode]
 		self.thunder_time=3
 	def thunder_bolt(self):
 		self.color=color.white
-		_loc.bgT.texture='res/background/bg_ruins_th.jpg'
+		_loc.bgT.texture=self.bgr+'bg_ruins_th.jpg'
 		_loc.bgT.texture_scale=_loc.bgT.orginal_tsc
 		sound.thu_audio(ID=0,pit=random.uniform(.1,.5))
 		invoke(lambda:sound.thu_audio(ID=random.randint(1,2),pit=random.uniform(.1,.5)),delay=.5)
 		invoke(self.reset_sky,delay=random.uniform(.1,.4))
 	def reset_sky(self):
 		self.color=self.setting
-		_loc.bgT.texture='res/background/bg_ruins.jpg'
+		_loc.bgT.texture=self.bgr+'bg_ruins.jpg'
 		_loc.bgT.texture_scale=_loc.bgT.orginal_tsc
 		self.thunder_time=random.randint(4,10)
 	def update(self):
-		if not st.gproc():
+		if not st.gproc() and st.level_index == 5:
 			if st.weather_thunder:
 				self.thunder_time=max(self.thunder_time-time.dt,0)
 				if self.thunder_time <= 0:

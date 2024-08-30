@@ -18,24 +18,6 @@ def place_wumpa(pos,cnt):
 			vpu=pos
 		WumpaFruit(p=vpu)
 
-class WumpaFruitHD(Entity):##3D Model
-	def __init__(self,pos):
-		w_model='wumpa/WumpaFruitGameplay.obj'
-		w_tex='wumpa/images/Crash_WumpaFruit_C.png'
-		super().__init__(model=w_model,texture=w_tex,position=(pos[0],pos[1]+.3,pos[2]),scale=.005,collider=b,visible=False)
-		self.org_tex=w_tex
-		if _core.level_ready:
-			status.W_RESET.append(self)
-	def destroy(self):
-		cc.purge_instance(self)
-	def collect(self):
-		cc.wumpa_count(1)
-		destroy()
-	def update(self):
-		if not status.gproc():
-			if self.visible:
-				self.rotation_y-=time.dt*180
-
 class WumpaFruit(Entity):##2D Animation
 	def __init__(self,p):
 		self.w_pa='res/ui/icon/wumpa_fruit/'

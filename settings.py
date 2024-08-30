@@ -2,13 +2,18 @@ from ursina.shaders import *
 from ursina import *
 import _core,ui
 
+debg=True
 w=window
 def load():
-	#w.windowed_size=(800,600)
 	w.windowed_size=(1600,900)
 	w.render_mode='default'
 	w.exit_button.visible=False
-	w.fps_counter.enabled=True
+	##debug infos
+	w.collider_counter.enabled=debg
+	w.entity_counter.enabled=debg
+	w.fps_counter.enabled=debg
+	w.cog_button.enabled=debg
+	##
 	w.fullscreen=False
 	w.borderless=False
 	ui.LoadingScreen()
