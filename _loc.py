@@ -26,7 +26,7 @@ d_zone=['water_hit']
 dangers=['wood_log','role','falling_zone']
 
 # checkpoint - bonus
-bonus_checkpoint=[None,(0,2,-6),(.3,2,2.3),(0,1.5,.85*8),(0,2,3),(12,1,-22)]
+bonus_checkpoint=[None,(0,2,-6),(.3,2,2.3),(0,1.5,.85*8),(0,2,3),(12,1,-22),(0,1,-25)]
 
 #LOD
 LOD_VAR=['rmd1','rmd2','ctsc']

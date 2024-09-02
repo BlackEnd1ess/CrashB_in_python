@@ -598,7 +598,7 @@ class RuinsCorridor(Entity):## corridor
 		rco=omf+'l5/ruins_scn/'
 		super().__init__(model='cube',position=pos,scale=(3,1,3),collider=b,visible=False)
 		self.opt_model=Entity(model=rco+'ruins_cor.ply',texture=rco+'ruins_scn.tga',position=(self.x,self.y+.5,self.z),scale=.03,rotation=(-90,90,0),double_sided=True)
-		IndoorZone(pos=(self.x,self.y+2.3,self.z),sca=3)
+		IndoorZone(pos=(self.x,self.y+2.55,self.z),sca=3)
 
 class MonkeySculpture(Entity):
 	def __init__(self,pos,r,d,ro_y=90):
@@ -690,12 +690,6 @@ class LoosePlatform(Entity):
 ###################
 ##################
 ## logic objects #
-class IndoorZone(Entity):## disable rain
-	def __init__(self,pos,sca):
-		super().__init__(model='cube',scale=sca,position=pos,collider=b,visible=False)
-	def do_act(self):
-		LC.ACTOR.indoor=.3
-
 class FallingZone(Entity):## falling
 	def __init__(self,pos,s):
 		super().__init__(model='cube',collider=b,scale=s,position=pos,color=color.rgb32(0,0,0))
@@ -920,6 +914,12 @@ class LevelFinish(Entity):## finish level
 				self.w_audio.volume=SFX
 				return
 			self.w_audio.volume=0
+
+class IndoorZone(Entity):## disable rain
+	def __init__(self,pos,sca):
+		super().__init__(model='cube',scale=sca,position=pos,collider=b,visible=False)
+	def do_act(self):
+		LC.ACTOR.indoor=.3
 
 class LODProcess(Entity):## Level of Detail
 	def __init__(self):

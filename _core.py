@@ -101,7 +101,7 @@ def c_attack(c):
 					if not e.falling and not e.vnum == 13:
 						e.destroy()
 			if is_enemie(e) and not e.is_hitten:
-				if (e.vnum in [1,9]) or (e.vnum == 5 and e.def_mode):
+				if (e.vnum == 1) or (e.vnum == 5 and e.def_mode):
 					get_damage(c,rsn=1)
 				e.is_hitten=True
 				e.fly_direc=Vec3(e.x-c.x,0,e.z-c.z)
@@ -323,11 +323,11 @@ def wumpa_count(n):
 	invoke(lambda:sn.ui_audio(ID=1),delay=.5)
 	if st.bonus_round:
 		st.wumpa_bonus+=n
-		return
-	st.wumpa_fruits+=n
-	st.show_wumpas=5
+	else:
+		st.wumpa_fruits+=n
+		st.show_wumpas=5
 	sc_ps=LC.ACTOR.screen_position
-	if st.wumpa_bonus <= 0 and not LC.ACTOR.aq_bonus:
+	if not LC.ACTOR.aq_bonus:
 		if n > 1:
 			ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]))
 		ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]+.1))
@@ -376,7 +376,7 @@ def crate_action(e):
 		e.destroy()
 def check_cstack():
 	for cSD in scene.entities[:]:
-		if is_crate(cSD) and not cSD.vnum ==3:
+		if is_crate(cSD) and not cSD.vnum == 3:
 			for cST in scene.entities[:]:
 				if is_crate(cST) and not cST.vnum == 3:
 					if cST.x == cSD.x and cST.z == cSD.z:
@@ -393,7 +393,7 @@ def check_crates_over(c):
 		if is_crate(co) and (co.x == c.x and co.z == c.z) and co.is_stack:
 			if co.y > c.y:
 				co.falling=True
-				co.animate_y(co.y-(co.scale_y*2),duration=.2)
+				co.animate_y(co.y-.32,duration=.2)
 				crate_fall_state(co)
 
 ## bonus level

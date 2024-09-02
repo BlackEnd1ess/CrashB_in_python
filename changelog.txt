@@ -99,6 +99,14 @@
 - Fixxed Rain indoor
 - Changed blinking Bonustext to 8x (3 times full text)
 
+#31.08.2024
+- Orginal Bonus Text
+
+#02.09.2024
+- bonus level finish
+- wumpa collect animation in bonus round
+- wumpa_counter-10,wumpa+10 if wumpa_bonus > 50 to reduce lagg and spam
+
 ####
 Hallo Youtube, i have new Project Progresses in the last Level for this Game.
 - Platforms will collapse faster
@@ -107,7 +115,7 @@ Hallo Youtube, i have new Project Progresses in the last Level for this Game.
 - Blinking Bonus Text (3x if full)
 - Fire Monkey Sculpture, will damage the Player
 - Indoor Zones will not freeze the Rain anymore
-- Ruins Platforms are closed now on the left and right side. 
+- Ruins Platforms are closed now on the left and right side.
 
 Whats planned as next?
 - Green Gem Path

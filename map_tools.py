@@ -7,20 +7,23 @@ I=item
 
 ## pos info
 def pos_info(c):
-	sx=f"{c.x:.3f}"
-	sy=f"{c.y+.16:.3f}"
-	sz=f"{c.z:.3f}"
-	print(f"c.place_crate(ID=5,p=({sx},{sy},{sz}))")
-	#print(f"mt.crate_wall(ID=1,POS=({sx},{sy},{sz}),CNT=[2,2])")
+	sx=f"{c.x:.1f}"
+	sy=f"{c.y+.16:.2f}"#c
+	#sy=f"{c.y+.3:.2f}"#w
+	sz=f"{c.z:.1f}"
+	print(f"c.place_crate(ID=3,p=({sx},{sy},{sz}))")
+	#print(f"mt.crate_wall(ID=1,POS=({sx},{sy},{sz}),CNT=[1,3])")
 	#print(f"mt.crate_block(ID=1,POS=({sx},{sy},{sz}),CNT=[2,2,2])")
-	#print(f"mt.wumpa_row(POS=({sx},{sy},{sz}),CNT=4,WAY=2)")
+	#print(f"mt.wumpa_row(POS=({sx},{sy},{sz}),CNT=5,WAY=2)")
+	#print(f"mt.wumpa_double_row(POS=({sx},{sy},{sz}),CNT=4)")
+	#print(f"mt.bounce_twin(POS=({sx},{sy},{sz}),CNT=1)")
 
 ## multible crate spawn
 def bounce_twin(POS,CNT):
 	for cbt in range(CNT):
 		pO=.32*cbt
 		c.place_crate(ID=3,p=(POS[0]+pO,POS[1],POS[2]))
-		c.place_crate(ID=3,p=(POS[0]+pO,POS[1]+1.6,POS[2]))
+		c.place_crate(ID=3,p=(POS[0]+pO,POS[1]+1.5,POS[2]))
 
 def steel_bridge(POS,CNT):
 	for cst in range(CNT):
@@ -72,8 +75,8 @@ def crate_plane(ID,POS,CNT):#[x,z]
 
 
 ## multible wumpa spawn
-def wumpa_row(POS,CNT,WAY):
-	for wr in range(CNT):#WAY: 0=right,1=front,2=up
+def wumpa_row(POS,CNT,WAY):#WAY: 0=right,1=front,2=up
+	for wr in range(CNT):
 		if WAY == 0:
 			I.place_wumpa((POS[0]+wr/3,POS[1],POS[2]),cnt=1)
 		elif WAY == 1:

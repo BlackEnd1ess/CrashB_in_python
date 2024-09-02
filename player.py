@@ -86,8 +86,8 @@ class CrashB(Entity):
 		if key == 'u':
 			#self.position=(0,-35,-3)
 			#self.position=(0,2,3)
-			self.position=(43.4,.5,4.7)
-			#self.position=(12.4,1,-21.97)
+			#self.position=(43.4,.5,4.7)
+			self.position=(12.4,1,-21.97)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD

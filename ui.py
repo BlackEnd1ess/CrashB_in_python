@@ -1,6 +1,7 @@
 import status,_core,_loc,sound
 from ursina import *
 
+btxt='res/ui/bonus/'
 w_pa='res/ui/icon/wumpa_fruit/w'
 _icn='res/ui/icon/'
 _fnt='res/ui/font.ttf'
@@ -32,12 +33,18 @@ def live_get_anim():
 
 class WumpaCollectAnim(Entity):
 	def __init__(self,pos):
-		super().__init__(model='quad',texture=w_pa+'0.png',scale=.075,parent=camera.ui,position=pos)
+		wsca={False:.075,True:.06}
+		super().__init__(model='quad',texture=w_pa+'0.png',scale=wsca[st.bonus_round],parent=camera.ui,position=pos)
 	def update(self):
 		if not st.gproc():
-			dta_x=-.75-self.x
-			dta_y=.43-self.y
-			anp=time.dt*8
+			if st.bonus_round:
+				dta_x=-.25-self.x
+				dta_y=-.5-self.y
+				anp=time.dt*4
+			else:
+				dta_x=-.75-self.x
+				dta_y=.43-self.y
+				anp=time.dt*8
 			if abs(dta_x) > .05 and abs(dta_y) > .05:
 				self.x+=dta_x*anp
 				self.y+=dta_y*anp
@@ -128,10 +135,14 @@ class WumpaBonus(Entity):
 		if self.check_w() and not st.wait_screen:
 			self.w_time=max(self.w_time-time.dt,0)
 			if self.w_time <= 0:
-				self.w_time=.075
-				status.wumpa_bonus-=1
+				self.w_time=.1
+				if st.wumpa_bonus > 50:
+					st.wumpa_bonus-=10
+					cc.wumpa_count(10)
+				else:
+					st.wumpa_bonus-=1
+					cc.wumpa_count(1)
 				WumpaCollectAnim(pos=(-.2,-.4))
-				cc.wumpa_count(1)
 	def update(self):
 		if not st.gproc():
 			if st.bonus_round or self.check_w():
@@ -258,32 +269,32 @@ class BlackScreen(Entity):
 ## Bonusround Text
 class BonusText(Entity):
 	def __init__(self):
-		super().__init__()
-		self.bn_text=Text(text='',font=_fnt,position=(-.2,.4),scale=5,color=color.azure,parent=camera.ui)
-		self.letters='BONUS!  '
+		self.bntx=btxt+'bonus_'
+		super().__init__(model='quad',texture=None,parent=camera.ui,scale=(.3,.1),position=(0,.35),visible=False)
 		self.ch_seq=0
 		self.t_delay=.5
 	def display(self):
-		self.bn_text.text=self.letters[:self.ch_seq]
-		self.bn_text.visible=True
+		self.texture=self.bntx+str(self.ch_seq)+'.tga'
+		self.visible=True
 	def text_ch(self):
-		self.bn_text.visible=False
-		if self.ch_seq == 8:
+		self.visible=False
+		if self.ch_seq == 7:
 			self.ch_seq=0
+			return
 		self.ch_seq+=1
 	def update(self):
 		if not status.gproc() and not status.wait_screen:
 			if not st.bonus_round:
-				cc.purge_instance(self.bn_text)
 				cc.purge_instance(self)
 				return
 			self.t_delay=max(self.t_delay-time.dt,0)
 			if self.t_delay <= 0:
 				self.t_delay=.5
-				if not self.bn_text.visible:
+				if not self.visible:
 					self.display()
 					return
 				self.text_ch()
+
 
 K=40
 O=130
