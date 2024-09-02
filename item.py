@@ -18,7 +18,7 @@ def place_wumpa(pos,cnt):
 			vpu=pos
 		WumpaFruit(p=vpu)
 
-class WumpaFruit(Entity):##2D Animation
+class WumpaFruit(Entity):
 	def __init__(self,p):
 		self.w_pa='res/ui/icon/wumpa_fruit/'
 		super().__init__(model='quad',texture=self.w_pa+'w0.png',position=(p[0],p[1],p[2]),scale=.22)
@@ -32,6 +32,7 @@ class WumpaFruit(Entity):##2D Animation
 		cc.purge_instance(self)
 	def collect(self):
 		cc.wumpa_count(1)
+		status.W_RESET.append(self.position)
 		self.destroy()
 	def update(self):
 		if not status.gproc():

@@ -11,7 +11,7 @@ def pos_info(c):
 	sy=f"{c.y+.16:.2f}"#c
 	#sy=f"{c.y+.3:.2f}"#w
 	sz=f"{c.z:.1f}"
-	print(f"c.place_crate(ID=3,p=({sx},{sy},{sz}))")
+	#print(f"c.place_crate(ID=3,p=({sx},{sy},{sz}))")
 	#print(f"mt.crate_wall(ID=1,POS=({sx},{sy},{sz}),CNT=[1,3])")
 	#print(f"mt.crate_block(ID=1,POS=({sx},{sy},{sz}),CNT=[2,2,2])")
 	#print(f"mt.wumpa_row(POS=({sx},{sy},{sz}),CNT=5,WAY=2)")
@@ -23,7 +23,7 @@ def bounce_twin(POS,CNT):
 	for cbt in range(CNT):
 		pO=.32*cbt
 		c.place_crate(ID=3,p=(POS[0]+pO,POS[1],POS[2]))
-		c.place_crate(ID=3,p=(POS[0]+pO,POS[1]+1.5,POS[2]))
+		c.place_crate(ID=3,p=(POS[0]+pO,POS[1]+1.55,POS[2]))
 
 def steel_bridge(POS,CNT):
 	for cst in range(CNT):

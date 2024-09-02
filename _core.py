@@ -74,6 +74,7 @@ def reset_state(c):
 			npc.AkuAkuMask(pos=(c.x,c.y,c.z))
 	reset_crates()
 	rmv_wumpas()
+	reset_wumpas()
 	reset_npc()
 	check_cstack()
 	c.position=status.checkpoint
@@ -148,9 +149,11 @@ def cam_follow(c):
 ## world, misc
 def collect_reset():
 	status.C_RESET.clear()
+	status.W_RESET.clear()
 	status.crate_to_sv=0
 	status.fails=0
-	if level_ready:status.NPC_RESET.clear()
+	if level_ready:
+		status.NPC_RESET.clear()
 def c_subtract(cY):
 	if cY < -20:
 		status.crates_in_bonus-=1
@@ -175,6 +178,10 @@ def reset_crates():
 			C.place_crate(p=cv.spawn_pos,ID=cv.vnum)
 	status.C_RESET.clear()
 	status.crate_to_sv=0
+def reset_wumpas():
+	for wres in status.W_RESET[:]:
+		item.WumpaFruit(p=wres)
+	status.W_RESET.clear()
 def rmv_wumpas():
 	for wu in scene.entities[:]:
 		if isinstance(wu,item.WumpaFruit) and wu.auto_purge:

@@ -591,7 +591,7 @@ class RuinsBlock(Entity):## small platform
 	def __init__(self,pos):
 		rnb=omf+'l5/ruins_scn/'
 		super().__init__(model='cube',collider=b,scale=(.75,1,.75),position=pos,visible=False)
-		self.opt_model=Entity(model=rnb+'ruins_ptf02.ply',texture=rnb+'ruins_scn.tga',position=(self.x,self.y+.5,self.z-.025),scale=.03,rotation=(-90,90,0),double_sided=False)
+		self.opt_model=Entity(model=rnb+'ruins_ptf02.ply',name='rubl',texture=rnb+'ruins_scn.tga',position=(self.x,self.y+.5,self.z-.025),scale=.03,rotation=(-90,90,0),double_sided=False)
 
 class RuinsCorridor(Entity):## corridor
 	def __init__(self,pos):
@@ -686,6 +686,12 @@ class LoosePlatform(Entity):
 					self.f_time+=time.dt
 					if self.f_time >= .5:
 						self.fall()
+
+class RuinRuins(Entity):
+	def __init__(self,pos,typ,ro_y):
+		rrn=omf+'l5/ruins_bgo/'
+		super().__init__(model=rrn+'ruin_bg'+str(typ)+'.ply',texture=rrn+'ruin.tga',position=pos,scale=.03,rotation=(-90,ro_y,0),double_sided=True)
+		unlit_obj(self)
 
 ###################
 ##################
@@ -830,12 +836,11 @@ class GemPlatform(Entity):## gem platform
 			self.is_enabled=False
 		L=180
 		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
-		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=0.001,position=pos,collider=b,double_sided=True)
+		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=0.001,position=pos,collider=b,color=GMC[t],double_sided=True)
 		self.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),position=(self.x,self.y-.011,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
 		self.start_y=self.y
 		self.catch_p=False
 		self.ta=LC.ACTOR
-		self.color=GMC[t]
 		if not self.is_enabled:
 			self.collider=None
 			self.bg_darkness.hide()
@@ -874,6 +879,23 @@ class LevelScene(Entity):
 				return
 			self.y=self.bonus_y
 
+class PseudoGemPlatform(Entity):
+	def __init__(self,pos,t):
+		if t in st.COLOR_GEM:
+			ne='gem_ptf'
+			self.is_enabled=True
+		else:
+			ne='gem_ptf_e'
+			self.is_enabled=False
+		L=180
+		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
+		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=GMC[t],double_sided=True,shader=unlit_shader)
+		self.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),position=(self.x,self.y-.01,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
+		self.hitbox=Entity(model='cube',position=(self.x,self.y-.15,self.z),scale=(.6,.4,.6),collider=b,visible=False)
+		if not self.is_enabled:
+			self.collider=None
+			self.bg_darkness.hide()
+		unlit_obj(self)
 
 ## Switches
 class CamSwitch(Entity):## allow cam move y if player collide with them
@@ -927,12 +949,20 @@ class LODProcess(Entity):## Level of Detail
 		self.rt=.5
 		CLW={1:LC.LV1_LOD,2:LC.LV2_LOD,3:LC.LV3_LOD,4:LC.LV4_LOD,5:LC.LV5_LOD,6:LC.LV3_LOD}
 		self.MAIN_LOD=CLW[st.level_index]
-		if st.level_index != 4:
-			self.dst_a=2
-			self.dst_b=28
+		if st.level_index == 4:
+			self.dst_a=3
+			self.dst_b=26
 			return
-		self.dst_a=3
-		self.dst_b=26
+		if st.level_index == 5:
+			self.dst_a=3
+			self.dst_b=25
+			return
+		else:
+			self.dst_a=2
+			self.dst_b=20
+			return
+
+
 	def wmp_lod(self,w,p):
 		w.enabled=distance(w,p) < 8
 	def crt_lod(self,c,p):

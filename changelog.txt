@@ -26,7 +26,6 @@
 - better quality rain sfx
 - slipperness walk effect, works now in any direction and stops by own acceleration
 
-
 #15.05.2024 10:00
 - level 2 better platform collision
 - icewall collider
@@ -105,18 +104,7 @@
 #02.09.2024
 - bonus level finish
 - wumpa collect animation in bonus round
-- wumpa_counter-10,wumpa+10 if wumpa_bonus > 50 to reduce lagg and spam
-
-####
-Hallo Youtube, i have new Project Progresses in the last Level for this Game.
-- Platforms will collapse faster
-- Thunder in Background and Sky
-- Teleport Effect
-- Blinking Bonus Text (3x if full)
-- Fire Monkey Sculpture, will damage the Player
-- Indoor Zones will not freeze the Rain anymore
-- Ruins Platforms are closed now on the left and right side.
-
-Whats planned as next?
-- Green Gem Path
-- Ruins Decorations
+- wumpa_counter-10,wumpa+10 if wumpa_bonus > 50 to reduce lagg and entity spam
+- fixxed changed fly direction after enemie explosions hit
+- ruin background assets
+- fixxed wumpa position reset

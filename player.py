@@ -73,11 +73,11 @@ class CrashB(Entity):
 		##dev input
 		if key == 'b':
 			#print(len(scene.entities))
-			map_tools.pos_info(self)
+			#map_tools.pos_info(self)
 			#print('Entities: '+str(len(scene.entities)))
 			#print('CRATE reset: '+str(len(st.C_RESET)))
 			#print(scene.entities[-1])
-			#print(self.position)
+			print(self.position)
 		if key == 'e':
 			EditorCamera()
 		if key == 'j':
@@ -87,7 +87,7 @@ class CrashB(Entity):
 			#self.position=(0,-35,-3)
 			#self.position=(0,2,3)
 			#self.position=(43.4,.5,4.7)
-			self.position=(12.4,1,-21.97)
+			self.position=(12.4,1.2,-22)
 	def move(self):
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		self.direc=mvD

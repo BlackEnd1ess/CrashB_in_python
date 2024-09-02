@@ -10,6 +10,7 @@ def load_bonus_level(idx):
 	lv_lst={1:bonus1,2:bonus2,3:bonus3,4:bonus4,5:bonus5,6:bonus1}
 	lv_lst[idx]()
 
+##bonus level
 def bonus1():
 	o.BonusPlatform(pos=(11.5,-37,U))
 	o.Water(pos=(0,-39,0),s=(60,60),c=color.rgb32(100,110,110),a=.9)
@@ -161,27 +162,27 @@ def bonus5():
 	o.spw_ruin_ptf(p=(21.75,-36.2,U),cnt=1,way=0)
 	o.spw_ruin_ptf(p=(24,-36.2,U),cnt=1,way=0)
 	o.spw_ruin_ptf(p=(24.75,-36.7,U),cnt=3,way=0)
-	o.spw_ruin_ptf(p=(32.15,-36.7,U),cnt=5,way=0)
+	o.spw_ruin_ptf(p=(31.17,-36.7,U),cnt=6,way=0)
 	#crate
 	MT.crate_stair(ID=1,POS=(26.8,-36.3,U),CNT=4,WAY=0)
-	MT.crate_row(ID=1,POS=(26.8+.32*4,-36.3+.32*3,U),CNT=8,WAY=0)
-	MT.crate_stair(ID=1,POS=(26.8+.32*12,-36.3+.32*3,U),CNT=4,WAY=1)
-	MT.bounce_twin(POS=(26.8+.32*4,-36.3+.32*4,U),CNT=8)
+	MT.crate_row(ID=1,POS=(26.8+.32*4,-36.3+.32*3,U),CNT=5,WAY=0)
+	MT.crate_stair(ID=1,POS=(26.8+.32*9,-36.3+.32*3,U),CNT=4,WAY=1)
+	MT.bounce_twin(POS=(26.8+.32*4,-36.3+.32*4,U),CNT=5)
 	#
-	MT.crate_wall(ID=2,POS=(-1.1,-36.34,U),CNT=[3,2])
-	MT.crate_wall(ID=1,POS=(8.2,-35.34,U),CNT=[2,2])
+	MT.crate_wall(ID=2,POS=(-1.1,-36.34,U),CNT=[2,2])
+	MT.crate_wall(ID=1,POS=(8.2,-35.34,U),CNT=[1,2])
 	MT.crate_wall(ID=2,POS=(14.7,-36,U),CNT=[1,2])
-	MT.crate_wall(ID=1,POS=(25.5,-36,U),CNT=[2,2])
+	MT.crate_wall(ID=1,POS=(25.5,-36,U),CNT=[1,2])
 	MT.crate_wall(ID=2,POS=(34.4,-36,U),CNT=[1,2])
 	c.place_crate(ID=12,p=(4.4,-35.84,U))
 	c.place_crate(ID=12,p=(16.3,-36,U))
 	c.place_crate(ID=12,p=(17.7,-36,U))
 	c.place_crate(ID=12,p=(32.9,-36,U))
-	c.place_crate(ID=9,p=(35.1,-36,U),m=103)
+	c.place_crate(ID=9,p=(35,-36,U),m=103)
 	MT.crate_row(ID=13,POS=(22.42,-35.86,U),CNT=4,m=103,l=1,WAY=0)
 	MT.crate_row(ID=13,POS=(22.42,-35.86-.32,U),CNT=4,m=103,l=2,WAY=0)
 	MT.crate_row(ID=13,POS=(22.42,-35.86-.64,U),CNT=4,m=103,l=3,WAY=0)
-	MT.crate_row(ID=13,POS=(22.42,-35.86-.96,U),CNT=4,m=103,l=8,WAY=0)
+	MT.crate_row(ID=13,POS=(22.42,-35.86-.96,U),CNT=4,m=103,l=11,WAY=0)
 	c.place_crate(ID=4,p=(21.7,-35.54,U))
 	#wumpa
 	MT.wumpa_double_row(POS=(.5,-36.2,U),CNT=3)
@@ -204,12 +205,13 @@ def bonus5():
 	MT.wumpa_row(POS=(26.8+.32*2,-35.9+.32*2,U),CNT=3,WAY=2)
 	MT.wumpa_row(POS=(26.8+.32*3,-35.9+.32*3,U),CNT=3,WAY=2)
 	#stair right
-	MT.wumpa_row(POS=(26.8+.32*12,-35.9+.32*3,U),CNT=3,WAY=2)
-	MT.wumpa_row(POS=(26.8+.32*13,-35.9+.32*2,U),CNT=3,WAY=2)
-	MT.wumpa_row(POS=(26.8+.32*14,-35.9+.32,U),CNT=3,WAY=2)
-	MT.wumpa_row(POS=(26.8+.32*15,-35.9,U),CNT=3,WAY=2)
+	MT.wumpa_row(POS=(26.8+.32*9,-35.9+.32*3,U),CNT=3,WAY=2)
+	MT.wumpa_row(POS=(26.8+.32*10,-35.9+.32*2,U),CNT=3,WAY=2)
+	MT.wumpa_row(POS=(26.8+.32*11,-35.9+.32,U),CNT=3,WAY=2)
+	MT.wumpa_row(POS=(26.8+.32*12,-35.9,U),CNT=3,WAY=2)
 	
 	o.BonusPlatform(pos=(36,-36,U))
+
 ## gem route
 def gem_route1():
 	o.FallingZone(pos=(200,-4,0),s=(40,1,32))
@@ -276,3 +278,8 @@ def gem_route4():
 	o.SewerWall(pos=(200,-1.7,33))
 	item.GemStone(c=2,pos=(200,0,28.9))
 	o.GemPlatform(pos=(200,0,31.9),t=5)
+
+def gem_route5():
+	o.FallingZone(pos=(200,-5,0),s=(40,1,32))
+	o.spw_ruin_ptf(p=(200,-3,U),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(200+.75,-3,U-.75),cnt=5,way=1)

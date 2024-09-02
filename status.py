@@ -5,12 +5,13 @@ checkpoint=None
 day_mode=''
 
 ## game progress items
-COLOR_GEM=[]
+COLOR_GEM=[1,2,3]
 CLEAR_GEM=[]
 CRYSTAL=[]
 
 ## reset instances
 NPC_RESET=[]
+W_RESET=[]
 C_RESET=[]
 
 ## player rule

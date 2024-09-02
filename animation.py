@@ -104,7 +104,7 @@ def flip(d):
 	d.texture=af+'flp/crash.tga'
 	d.model=af+'flp/'+str(int(d.flip_anim))+'.ply'
 
-# crash death animationsa
+## crash death animationsa
 def angel_fly(c):
 	DTH=13
 	ATF=af+'death/angel/'
@@ -262,12 +262,7 @@ class CrateBreak(Entity):
 				return
 			self.model=cf+'brk/'+str(int(self.frame_break))+'.ply'
 
-
-## Effects
-class WarpVortex(FrameAnimation3d):
-	def __init__(self,pos):
-		super().__init__('res/objects/warp_vortex/vortex.obj',color=color.yellow,scale=.1,position=pos,fps=30,loop=True)
-
+##warp rings 
 class WarpRingEffect(Entity): ## spawn animation
 	def __init__(self,pos):
 		self.omf='res/objects/ev/'
