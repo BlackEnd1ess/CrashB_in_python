@@ -172,7 +172,7 @@ class AkuMusic(Audio):
 		super().__init__(MC+'ev/invinc.mp3',volume=se.MUSIC_VOLUME)
 	def update(self):
 		if not status.gproc():
-			if not self.playing:
+			if not self.playing or status.death_event:
 				status.aku_hit=2
 				pc_audio(ID=6,pit=.8)
 				self.fade_out()

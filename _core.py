@@ -22,22 +22,28 @@ def set_val(c):
 	c.CMS=4
 	_loc.ACTOR=c
 def set_jump_type(c,typ):
+	c.fall_time=0
 	c.jmp_typ=typ
 	jmp_h={0:c.y+1.3,1:c.y+1,2:c.y+1.7,3:c.y+1.1}
 	c.vpos=jmp_h[typ]
 	c.jumping=True
 def get_damage(c,rsn):
+	if st.aku_hit > 2:
+		return
 	if not (c.injured or st.death_event):
 		if st.aku_hit > 0:
 			status.aku_hit-=1
 			c.injured=True
-			c.hurt_blink()
+			c.hurt_visual()
 			sn.pc_audio(ID=6,pit=.8)
 			invoke(lambda:setattr(c,'injured',False),delay=2)
 			invoke(lambda:setattr(c,'alpha',1),delay=2)
 			del rsn
 			return
 		dth_event(c,rsn=rsn)
+def hurt_blink(c):
+	c.visible=False
+	invoke(lambda:setattr(c,'visible',True),delay=.2)
 def dth_event(c,rsn):
 	if not st.death_event:
 		if rsn == 0:
@@ -104,9 +110,7 @@ def c_attack(c):
 			if is_enemie(e) and not e.is_hitten:
 				if (e.vnum == 1) or (e.vnum == 5 and e.def_mode):
 					get_damage(c,rsn=1)
-				e.is_hitten=True
-				e.fly_direc=Vec3(e.x-c.x,0,e.z-c.z)
-				sn.obj_audio(ID=8)
+				bash_enemie(e,h=c)
 def c_slide(c):
 	if not c.walking:
 		if c.slide_fwd > 0 and status.p_last_direc != None:
@@ -122,6 +126,18 @@ def c_slide(c):
 		c.move_speed+=time.dt
 		if c.move_speed > 0:
 			c.slide_fwd=c.move_speed
+def c_invincible(c):
+	for inv in scene.entities[:]:
+		if distance(c,inv) < 1 and inv.collider != None:
+			if is_crate(inv):
+				if inv.vnum == 11:
+					inv.empty_destroy()
+				else:
+					inv.destroy()
+			if is_enemie(inv):
+				bash_enemie(e=inv,h=c)
+			if isinstance(inv,item.WumpaFruit):
+				inv.collect()
 
 ## camera actor
 def cam_rotate(c):
@@ -132,9 +148,6 @@ def cam_rotate(c):
 	if camera.rotation_x < 15:
 		camera.rotation_x+=ftt
 def cam_follow(c):
-	if st.LV_CLEAR_PROCESS:
-		c=None
-		return
 	ftr=time.dt*3
 	camera.z=lerp(camera.z,c.z-c.CMS,ftr)
 	camera.x=lerp(camera.x,c.x,ftr)
@@ -147,6 +160,10 @@ def cam_follow(c):
 		camera.y=lerp(camera.y,c.y+1,time.dt)
 
 ## world, misc
+def spawn_level_crystal(idx):
+	cry_pos={1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7),6:(0,.3,-15)}
+	if not idx in st.CRYSTAL:
+		item.EnergyCrystal(pos=cry_pos[idx])
 def collect_reset():
 	status.C_RESET.clear()
 	status.W_RESET.clear()
@@ -193,6 +210,11 @@ def reset_npc():
 		else:
 			npc.spawn(mID=NP.vnum,pos=NP.spawn_pos,mDirec=NP.m_direction,mTurn=0)
 	status.NPC_RESET.clear()
+def jmp_lv_fin():
+	if not st.LEVEL_CLEAN:
+		purge_instance(LC.ACTOR)
+		status.LEVEL_CLEAN=True
+		clear_level(passed=True)
 def clear_level(passed):
 	st.LV_CLEAR_PROCESS=True
 	scene.clear()
@@ -253,9 +275,8 @@ def obj_grnd(c):
 		return
 	c.landed=False
 def obj_walls(c):
-	if st.LV_CLEAR_PROCESS:
-		del c
-		return
+	if st.aku_hit > 2:
+		c_invincible(c)
 	hT=c.intersects(ignore=[c,LC.shdw])
 	jV=hT.entity
 	xa=str(jV)
@@ -292,6 +313,7 @@ def landing(c,e,o):
 		c.first_land=False
 		c.is_landing=True
 		c.land_anim=0
+		c.fall_time=0
 		if str(o) in ['sewer_platform','swim_platform']:
 			sn.pc_audio(ID=13)
 		elif c.in_water > 0:
@@ -319,10 +341,6 @@ def jump_enemy(c,e):
 		get_damage(c,rsn=1)
 		return
 	kill_by_jump(m=e,c=c)
-def jmp_lv_fin():
-	if not st.LEVEL_CLEAN:
-		status.LEVEL_CLEAN=True
-		clear_level(passed=True)
 
 ## interface,collectables
 def wumpa_count(n):
@@ -579,3 +597,7 @@ def is_enemie(n):
 	if any(isinstance(n,npc_class) for npc_class in nnk):
 		return True
 	return False
+def bash_enemie(e,h):
+	e.is_hitten=True
+	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)
+	sn.obj_audio(ID=8)

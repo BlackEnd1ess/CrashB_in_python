@@ -22,7 +22,7 @@ FOG_COL={'day':c.rgb32(120,140,140),
 		'woods':c.rgb32(30,80,60)}
 
 AMB_COL={'day':c.rgb32(180,180,180),
-		'empty':c.rgb32(180,180,180),
+		'empty':c.rgb32(140,140,140),#c.rgb32(180,180,180),
 		'evening':c.rgb32(220,180,150),
 		'night':c.rgb32(0,0,0),
 		'dark':c.rgb32(0,0,0),
@@ -39,12 +39,12 @@ LGT_COL={'day':c.rgb32(0,0,0),
 		'snow':c.rgb32(0,230,255),
 		'woods':c.rgb32(50,150,100)}
 
-def env_switch(env,wth):
-	st.day_mode=env
+def env_switch(idx):
+	st.day_mode=_loc.day_m[idx]
 	SkyBox()
 	LightAmbience()
 	Fog()
-	if wth == 1:
+	if idx in [1,5]:
 		RainFall()
 
 class SkyBox(Sky):

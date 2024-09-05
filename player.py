@@ -1,4 +1,4 @@
-import _core,ui,status,animation,sound,_loc,map_tools
+import _core,ui,status,animation,sound,_loc,map_tools,npc
 from ursina.shaders import *
 from math import atan2
 from ursina import *
@@ -41,6 +41,8 @@ class CrashB(Entity):
 		ui.CollectedGem()
 		an.WarpRingEffect(pos=self.position)
 		pShadow()
+		if st.aku_hit > 0:
+			npc.AkuAkuMask(pos=(self.x-.3,self.y+.3,self.z))
 	def input(self,key):
 		if st.p_rst(self):
 			return
@@ -72,56 +74,51 @@ class CrashB(Entity):
 			st.pause=False
 		##dev input
 		if key == 'b':
-			#print(len(scene.entities))
-			#map_tools.pos_info(self)
-			#print('Entities: '+str(len(scene.entities)))
-			#print('CRATE reset: '+str(len(st.C_RESET)))
-			#print(scene.entities[-1])
 			print(self.position)
 		if key == 'e':
+			self.freezed=True
 			EditorCamera()
-		if key == 'j':
-			scene.fog_color=color.random_color()
-			print(scene.fog_color)
 		if key == 'u':
 			#self.position=(0,-35,-3)
 			#self.position=(0,2,3)
 			#self.position=(43.4,.5,4.7)
-			self.position=(12.4,1.2,-22)
+			self.position=(0,4,82)
 	def move(self):
+		s=self
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
-		self.direc=mvD
-		if self.is_slippery:
-			cc.c_slide(self)
+		s.direc=mvD
+		if s.is_slippery:
+			cc.c_slide(s)
 		if mvD.length() > 0:
 			st.p_last_direc=mvD
-			mc=raycast(self.world_position+(0,.1,0),self.direc,distance=.2,ignore=[self,LC.shdw],debug=False)
+			mc=raycast(s.world_position+(0,.1,0),s.direc,distance=.2,ignore=[s,LC.shdw],debug=False)
 			if not mc or (mc and str(mc.entity) in LC.item_lst or mc and str(mc.entity) in LC.trigger_lst):
-				self.position+=self.direc*time.dt*self.move_speed
+				s.position+=s.direc*time.dt*s.move_speed
 			if (str(mc.entity) == 'sewer_pipe' and mc.entity.danger) or (str(mc.entity) == 'fire_throw'):
-				cc.get_damage(self,rsn=3)
-			self.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
-			self.walk_event()
+				cc.get_damage(s,rsn=3)
+			s.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
+			s.walk_event()
 			return
-		self.walk_snd=0
-		self.walking=False
+		s.walk_snd=0
+		s.walking=False
 	def walk_event(self):
+		s=self
 		if st.death_event:
 			return
-		self.walking=True
-		self.is_landing=False#stop the remaining landing frames after run
-		if self.landed:
-			if self.is_slippery:
-				an.run_s(self)
+		s.walking=True
+		s.is_landing=False#stop the remaining landing frames after run
+		if s.landed:
+			if s.is_slippery:
+				an.run_s(s)
 			else:
-				an.run(self)
-		self.walk_snd=max(self.walk_snd-time.dt,0)
-		if self.walk_snd <= 0 and self.landed:
-			if self.is_slippery:
-				self.walk_snd=.5
+				an.run(s)
+		s.walk_snd=max(s.walk_snd-time.dt,0)
+		if s.walk_snd <= 0 and s.landed:
+			if s.is_slippery:
+				s.walk_snd=.5
 				sn.pc_audio(ID=8,pit=1.5)
 				return
-			if self.in_water > 0:
+			if s.in_water > 0:
 				sn.pc_audio(ID=11,pit=random.uniform(.9,1))
 			else:
 				if st.level_index == 4:
@@ -131,77 +128,73 @@ class CrashB(Entity):
 			self.walk_snd=.35
 	def fall(self):
 		s=self
-		if s.landed or s.jumping:
-			self.fall_time=0
-			return
-		self.y-=time.dt*self.fall_speed[self.jmp_typ]
-		self.fall_time+=time.dt
-		if s.fall_time > .4 and not (s.is_attack or s.freezed):
+		s.y-=time.dt*s.fall_speed[s.jmp_typ]
+		s.fall_time+=time.dt
+		if s.fall_time > .8 and not (s.is_attack or s.freezed):
 			s.is_flip=False
 			an.fall(s)
 	def jump(self):
-		self.first_land=True
-		self.y+=time.dt*self.jump_speed[self.jmp_typ]
-		if self.y >= self.vpos:
-			self.jumping=False
+		s=self
+		s.first_land=True
+		s.y+=time.dt*s.jump_speed[s.jmp_typ]
+		if s.y >= s.vpos:
+			s.jumping=False
 			return
-		if self.walking:
-			self.is_flip=True
-		if not self.is_flip:
-			an.jup(self)
+		if s.walking:
+			s.is_flip=True
+		if not s.is_flip:
+			an.jup(s)
 	def c_camera(self):
-		if not status.death_event:
+		if not st.death_event:
 			cc.cam_rotate(self)
 			cc.cam_follow(self)
 			#camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
-	def hurt_blink(self):
-		self.visible=False
-		invoke(lambda:setattr(self,'visible',True),delay=.1)
-		invoke(lambda:setattr(self,'visible',False),delay=.2)
-		invoke(lambda:setattr(self,'visible',True),delay=.3)
-		invoke(lambda:setattr(self,'visible',False),delay=.4)
-		invoke(lambda:setattr(self,'visible',True),delay=.5)
-		invoke(lambda:setattr(self,'visible',False),delay=.6)
-		invoke(lambda:setattr(self,'visible',True),delay=.7)
 	def death_action(self,rsn):
+		s=self
 		if rsn > 0:
-			dca={1:lambda:an.angel_fly(self),
-				2:lambda:an.water_swim(self),
-				3:lambda:an.fire_ash(self),
-				4:lambda:an.electric(self),
-				5:lambda:an.eat_by_plant(self)}
+			dca={1:lambda:an.angel_fly(s),
+				2:lambda:an.water_swim(s),
+				3:lambda:an.fire_ash(s),
+				4:lambda:an.electric(s),
+				5:lambda:an.eat_by_plant(s)}
 			dca[rsn]()
 			return
-		invoke(lambda:cc.reset_state(self),delay=2)
+		invoke(lambda:cc.reset_state(s),delay=2)
 	def basic_animation(self):
+		s=self
 		if not st.LV_CLEAR_PROCESS:
-			if self.is_attack:
-				an.spin(self)
+			if s.is_attack:
+				an.spin(s)
 				return
-			if self.is_flip and not self.landed:
-				an.flip(self)
-			if (self.landed and self.is_landing) and not self.walking:
-				an.land(self)
+			if s.is_flip and not s.landed:
+				an.flip(s)
+			if (s.landed and s.is_landing) and not s.walking:
+				an.land(s)
 				return
-			if status.p_idle(self) or self.freezed:
-				if self.is_slippery:
-					an.slide_stop(self)
+			if status.p_idle(s) or s.freezed:
+				if s.is_slippery:
+					an.slide_stop(s)
 				else:
-					an.idle(self)
+					an.idle(s)
+	def hurt_visual(self):
+		for vkh in range(7):
+			invoke(lambda:cc.hurt_blink(self),delay=vkh/3)
 	def update(self):
-		if not status.gproc():
-			cc.obj_grnd(self)
-			if not status.p_rst(self):
-				self.move()
-				self.fall()
-				self.c_camera()
-				cc.obj_walls(self)
-				if self.is_attack:
-					cc.c_attack(self)
-				if self.jumping:
-					self.jump()
-			if not status.death_event:
-				self.basic_animation()
-			cc.various_val(self)
-			if not self.landed:
-				cc.obj_ceiling(self)
+		if not st.gproc():
+			s=self
+			cc.obj_grnd(s)
+			cc.obj_walls(s)
+			if not s.landed:
+				cc.obj_ceiling(s)
+			cc.various_val(s)
+			if not st.p_rst(s):
+				s.move()
+				if not (s.landed or s.jumping):
+					s.fall()
+				s.c_camera()
+				if s.is_attack:
+					cc.c_attack(s)
+				if s.jumping:
+					s.jump()
+			if not st.death_event:
+				s.basic_animation()

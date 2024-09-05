@@ -26,9 +26,6 @@ t=20
 
 ## player animation
 def idle(d):
-	if status.LV_CLEAR_PROCESS:
-		d=None
-		return
 	d.idle_anim+=time.dt*15
 	if d.idle_anim > 10.75:
 		d.idle_anim=0
@@ -36,9 +33,6 @@ def idle(d):
 	d.model=af+'idle/'+str(int(d.idle_anim))+'.ply'
 
 def run(d):
-	if status.LV_CLEAR_PROCESS:
-		d=None
-		return
 	d.run_anim+=time.dt*t
 	if d.run_anim > 10.9:
 		d.run_anim=0

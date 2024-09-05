@@ -7,7 +7,7 @@ c=crate
 N=npc
 U=-3
 def load_bonus_level(idx):
-	lv_lst={1:bonus1,2:bonus2,3:bonus3,4:bonus4,5:bonus5,6:bonus1}
+	lv_lst={1:bonus1,2:bonus2,3:bonus3,4:bonus4,5:bonus5,6:dev_bonus}
 	lv_lst[idx]()
 
 ##bonus level
@@ -211,6 +211,9 @@ def bonus5():
 	MT.wumpa_row(POS=(26.8+.32*12,-35.9,U),CNT=3,WAY=2)
 	
 	o.BonusPlatform(pos=(36,-36,U))
+
+def dev_bonus():
+	return
 
 ## gem route
 def gem_route1():

@@ -108,3 +108,16 @@
 - fixxed changed fly direction after enemie explosions hit
 - ruin background assets
 - fixxed wumpa position reset
+
+#04.09.2024
+- Gem Shining noob edition
+
+#05.09.2024
+- fixxed AkuAku invincible in danger zones and hit by enemies
+- AkuAku invincible destroys enemie,crates and collect wumpas in range < .5
+- AkuAku floats while player is idle
+- AkuAku Mask glows on typ 2
+- Level 4 Fixxed Falling Zone
+- GemPlatforms gloss effect
+- LoadingScreen Displays Level Name below main text
+- orginal crate counter font

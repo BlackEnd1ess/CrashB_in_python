@@ -1,5 +1,6 @@
 import settings,_core,math,animation,status,sound,_loc,effect
 from math import radians,cos,sin
+from ursina.shaders import *
 from ursina import *
 
 npf='res/npc/'
@@ -167,7 +168,7 @@ class EatingPlant(Entity):
 				if not (self.ta.is_attack or self.ta.jumping):
 					if status.aku_hit < 1:
 						self.eat=True
-					_core.get_damage(LC.ACTOR,rsn=5)
+					cc.get_damage(LC.ACTOR,rsn=5)
 				invoke(lambda:setattr(self,'atk',False),delay=1)
 	def update(self):
 		if not st.gproc():
@@ -314,16 +315,20 @@ class AkuAkuMask(Entity):
 	def __init__(self,pos):
 		self.tpa='res/npc/akuaku/'
 		super().__init__(model=None,texture=None,scale=.00075,rotation_x=-90,position=pos,unlit=False)
-		self.ta=LC.ACTOR
+		self.last_y=self.y
 		st.aku_exist=True
-		self.change_skin()
+		self.ta=LC.ACTOR
+		self.flt_di=0
 		self.spt=.5
+		self.change_skin()
 	def change_skin(self):
 		if st.aku_hit > 1:
 			self.model=self.tpa+'aku2.ply'
 			self.texture=self.tpa+'aku2.tga'
+			self.shader=unlit_shader
 			self.spark()
 			return
+		self.shader=None
 		self.model=self.tpa+'aku.ply'
 		self.texture=self.tpa+'aku.tga'
 	def spark(self):
@@ -333,24 +338,38 @@ class AkuAkuMask(Entity):
 			effect.Sparkle((self.x+random.uniform(-.1,.1),self.y+random.uniform(-.1,.1),self.z+random.uniform(-.1,.1)))
 	def follow_player(self):
 		TG=self.ta
-		aSP=time.dt*4
+		aSP=time.dt*8
 		self.rotation_y=lerp(self.rotation_y,TG.rotation_y,aSP)
 		if st.aku_hit < 3:
-			self.position=lerp(self.position,(TG.x-.25,TG.y+.6,TG.z-.4),aSP)
+			if not self.ta.walking and self.ta.landed:
+				self.floating()
+			else:
+				self.position=lerp(self.position,(TG.x-.25,TG.y+.6,TG.z-.4),aSP)
+				self.last_y=self.y
 			return
 		fwd=Vec3(-sin(radians(TG.rotation_y)),0,-cos(radians(TG.rotation_y)))
 		mask_pos=TG.position+fwd*.25
 		self.position=(mask_pos.x,TG.y+.6,mask_pos.z)
 	def check_dist_player(self):
-		if distance(self,self.ta) > 3:self.position=self.ta.position
+		if distance(self,self.ta) > 2:
+			self.position=self.ta.position
+	def floating(self):
+		if self.flt_di == 0:
+			self.y+=time.dt/10
+			if self.y >= self.last_y+.2:
+				self.flt_di=1
+			return
+		self.y-=time.dt/10
+		if self.y <= self.last_y-.2:
+			self.flt_di=0
 	def update(self):
 		if not st.gproc() and LC.ACTOR != None:
 			self.check_dist_player()
-			self.follow_player()
 			self.change_skin()
+			self.follow_player()
 			if st.aku_hit < 1:
-				st.aku_exist=False
 				cc.purge_instance(self)
+				st.aku_exist=False
 
 class Hippo(Entity):
 	def __init__(self,pos):

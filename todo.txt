@@ -2,15 +2,11 @@
 - save game
 - warp room
 - orginal crate counter/life counter font
-- level shader,decoration
-- crate fall
-- aku invic.
-- aku inv music stop after death
-- aku idle animation if not actor walking
-- aku inv doesnt work on enemies
 
 ##MODULE
 imageio
+
+- level shader,decoration
 
 #level 2
 - walls
@@ -19,3 +15,5 @@ imageio
 # level 3
 - water foam
 - wumpa
+
+# level 4 wumpa fruits

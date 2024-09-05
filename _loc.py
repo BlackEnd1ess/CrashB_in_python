@@ -3,8 +3,8 @@
 #player
 ACTOR=None
 
-# display the name in pause menu
-lv_name=['Warp Room',
+# display the name in pause menu and loading screen
+lv_name=['Central - Warp Room',
 		'LEVEL 1 - TURTLE WOODS',
 		'LEVEL 2 - WAY TO NOWHERE',
 		'LEVEL 3 - UPSTREAM',
@@ -43,7 +43,7 @@ day_m={0:'default',
 	3:'evening',
 	4:'empty',
 	5:'empty',
-	6:'day'}
+	6:'empty'}
 
 #LevelScene for Thunderbolts
 bgT=None

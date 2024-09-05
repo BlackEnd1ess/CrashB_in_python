@@ -1,10 +1,15 @@
+from time import strftime,gmtime
 import status,_core,_loc,sound
 from ursina import *
 
-btxt='res/ui/bonus/'
 w_pa='res/ui/icon/wumpa_fruit/w'
-_icn='res/ui/icon/'
+wmpf='res/ui/wumpa_font/'
+crtf='res/ui/crate_font/'
 _fnt='res/ui/font.ttf'
+btxt='res/ui/bonus/'
+_icn='res/ui/icon/'
+q='quad'
+
 st=status
 sn=sound
 cc=_core
@@ -29,12 +34,12 @@ def text_blink(M,t):
 def live_get_anim(): 
 	lvA=Entity(parent=camera.ui,model='quad',texture=_icn+'lives.png',scale=(.08,.085),position=(.5,.43,0),color=color.gold)
 	lvA.animate_x(.7,duration=.3)
-	invoke(lvA.disable,delay=3.1)
+	invoke(lambda:cc.purge_instance(lvA),delay=3.1)
 
 class WumpaCollectAnim(Entity):
 	def __init__(self,pos):
 		wsca={False:.075,True:.06}
-		super().__init__(model='quad',texture=w_pa+'0.png',scale=wsca[st.bonus_round],parent=camera.ui,position=pos)
+		super().__init__(model=q,texture=w_pa+'0.png',scale=wsca[st.bonus_round],parent=camera.ui,position=pos)
 	def update(self):
 		if not st.gproc():
 			if st.bonus_round:
@@ -54,10 +59,10 @@ class WumpaCollectAnim(Entity):
 ## Main Counter ##
 class WumpaCounter(Entity):
 	def __init__(self):
-		self.pa='res/ui/wumpa_font/'
-		super().__init__(model='quad',texture=w_pa+'0.png',parent=camera.ui,position=(-.75,.43,0),scale=(.07,.08,0),visible=False,texture_position=(0,0))
-		self.digit_0=Entity(model='quad',texture=self.pa+'0.png',parent=camera.ui,position=(self.x+.075,self.y),scale=.06,visible=False)
-		self.digit_1=Entity(model='quad',texture=self.pa+'0.png',parent=camera.ui,position=(self.digit_0.x+.06,self.digit_0.y),scale=.06,visible=False)
+		self.pa=wmpf
+		super().__init__(model=q,texture=w_pa+'0.png',parent=camera.ui,position=(-.75,.43,0),scale=(.07,.08,0),visible=False,texture_position=(0,0))
+		self.digit_0=Entity(model=q,texture=self.pa+'0.png',parent=camera.ui,position=(self.x+.075,self.y),scale=.06,visible=False)
+		self.digit_1=Entity(model=q,texture=self.pa+'0.png',parent=camera.ui,position=(self.digit_0.x+.06,self.digit_0.y),scale=.06,visible=False)
 		self.frm=0
 		_loc.uiW=self
 	def digits(self):
@@ -87,25 +92,61 @@ class WumpaCounter(Entity):
 				self.digit_0.hide()
 				self.digit_1.hide()
 
+#class CrateCounter(Animation):
+#	def __init__(self):
+#		super().__init__(_icn+'crate.gif',parent=camera.ui,scale=.1,color=color.rgb32(90,70,0),position=(-.1,.43,0),fps=4,visible=False)
+#		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.035,scale=3,color=self.color,visible=False)
+#	def update(self):
+#		if not status.gproc() and st.crates_in_level > 0:
+#			if st.show_crates > 0:
+#				status.show_crates-=time.dt
+#				if st.show_crates <= 0:
+#					self.hide()
+#					self.c_text.hide()
+#					return
+#				self.show()
+#				self.c_text.show()
+#				self.c_text.text=str(st.crate_count)+'/'+str(st.crates_in_level)
+
 class CrateCounter(Animation):
 	def __init__(self):
+		self.tpd=crtf
 		super().__init__(_icn+'crate.gif',parent=camera.ui,scale=.1,color=color.rgb32(90,70,0),position=(-.1,.43,0),fps=4,visible=False)
-		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.035,scale=3,color=self.color,visible=False)
+		self.col_digit0=Entity(model=q,texture=None,scale=.06,position=(self.x+.08,self.y,self.z),parent=camera.ui,visible=False)
+		self.col_digit1=Entity(model=q,texture=None,scale=.06,position=(self.x+.14,self.y,self.z),parent=camera.ui,visible=False)
+		self.col_digit2=Entity(model=q,texture=None,scale=.06,position=(self.x+.2,self.y,self.z),parent=camera.ui,visible=False)
+		self.seperator=Entity(model=q,texture=None,scale=.1,position=(self.x+.26,self.y,self.z),parent=camera.ui,visible=False)
+		#self.col_digit0=Entity(model=q,texture=None,scale=.1,position=(self.x+,self.y,self.z),parent=camera.ui,visible=False)
+		#self.col_digit1=Entity(model=q,texture=None,scale=.1,position=(self.x+,self.y,self.z),parent=camera.ui,visible=False)
+		#self.col_digit2=Entity(model=q,texture=None,scale=.1,position=(self.x+,self.y,self.z),parent=camera.ui,visible=False)
+	def remv_ui(self):
+		self.col_digit0.visible=False
+		self.col_digit1.visible=False
+		self.col_digit2.visible=False
+	def collected_counter(self):
+		ccv=str(st.crate_count)
+		self.col_digit0.texture=self.tpd+ccv[0]+'.png'
+		self.col_digit0.visible=True
+		self.col_digit1.visible=False
+		self.col_digit2.visible=False
+		if st.crate_count > 9:
+			self.col_digit1.texture=self.tpd+ccv[1]+'.png'
+			self.col_digit1.visible=True
+			self.col_digit2.visible=False
+			if st.crate_count > 99:
+				self.col_digit2.texture=self.tpd+ccv[2]+'.png'
+				self.col_digit2.visible=True
 	def update(self):
-		if not status.gproc() and st.crates_in_level > 0:
+		if not st.gproc() and st.crates_in_level > 0:
 			if st.show_crates > 0:
-				status.show_crates-=time.dt
-				if st.show_crates <= 0:
-					self.hide()
-					self.c_text.hide()
-					return
-				self.show()
-				self.c_text.show()
-				self.c_text.text=str(st.crate_count)+'/'+str(st.crates_in_level)
+				self.visible=True
+				self.collected_counter()
+				return
+			self.remv_ui()
 
 class LiveCounter(Entity):
 	def __init__(self):
-		super().__init__(parent=camera.ui,model='quad',texture=_icn+'lives.png',scale=(.08,.085),position=(.7,.43,0),visible=False)
+		super().__init__(parent=camera.ui,model=q,texture=_icn+'lives.png',scale=(.08,.085),position=(.7,.43,0),visible=False)
 		self.l_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.035,scale=3,color=color.rgb32(255,31,31),visible=False)
 	def update(self):
 		if not status.gproc():
@@ -123,7 +164,7 @@ class LiveCounter(Entity):
 ## Bonus Counter ##
 class WumpaBonus(Entity):
 	def __init__(self):
-		super().__init__(model='quad',texture=w_pa+'0.png',parent=camera.ui,position=(-.2,-.4,0),scale=(.05,.06,0),visible=False)
+		super().__init__(model=q,texture=w_pa+'0.png',parent=camera.ui,position=(-.2,-.4,0),scale=(.05,.06,0),visible=False)
 		self.w_text=Text(text=None,font=_fnt,x=self.x+.04,y=self.y+.025,scale=2,color=color.rgb32(175,235,30),parent=camera.ui,visible=False)
 		self.w_time=0
 		self.frm=0
@@ -185,7 +226,7 @@ class CrateBonus(Animation):
 
 class LiveBonus(Entity):
 	def __init__(self):
-		super().__init__(parent=camera.ui,model='quad',texture=_icn+'lives.png',scale=.06,position=(.225,-.4,0),visible=False)
+		super().__init__(parent=camera.ui,model=q,texture=_icn+'lives.png',scale=.06,position=(.225,-.4,0),visible=False)
 		self.l_text=Text(text=None,font=_fnt,x=self.x+.04,y=self.y+.023,scale=2,color=color.rgb32(255,31,31),visible=False)
 		self.l_time=0
 	def check_l(self):
@@ -216,26 +257,30 @@ class LiveBonus(Entity):
 ## Game Over Screen
 class GameOverScreen(Entity):## call event?
 	def __init__(self):
-		super().__init__(model='quad',texture='res/background/game_over.jpg',parent=camera.ui,scale=(1,1),z=-.3)
+		super().__init__(model=q,texture='res/background/game_over.jpg',parent=camera.ui,scale=(1,1),z=-.3)
 		self.game_o_text=Text(text='GAME OVER!',font=_fnt,color=color.orange,scale=4,parent=camera.ui,position=(-.1,0,-.3))
 		sn.GameOverMusic()
 
 ## Loading Screen
 class LoadingScreen(Entity):
 	def __init__(self):
-		super().__init__(model='quad',color=color.black,scale=(16,10),visible=False,parent=camera.ui,z=1)
+		super().__init__(model=q,color=color.black,scale=(16,10),visible=False,parent=camera.ui,z=1)
 		self.ltext=Text('Loading...',font=_fnt,scale=3.5,position=(-.15,.1),color=color.orange,visible=False,parent=camera.ui)
+		self.lname=Text('',font=_fnt,scale=2,position=(-.25,-.05),color=color.azure,visible=False,parent=camera.ui)
 	def update(self):
 		if st.loading:
+			self.lname.text=LC.lv_name[st.level_index]
 			self.ltext.visible=True
+			self.lname.visible=True
 			self.visible=True
 			return
 		self.ltext.visible=False
+		self.lname.visible=False
 		self.visible=False
 
 class WhiteScreen(Entity):
 	def __init__(self):
-		super().__init__(model='quad',parent=camera.ui,scale=5,color=color.white,alpha=1)
+		super().__init__(model=q,parent=camera.ui,scale=5,color=color.white,alpha=1)
 		self.timer=0
 	def update(self):
 		if self.timer < 2:
@@ -243,7 +288,9 @@ class WhiteScreen(Entity):
 			self.alpha=self.timer
 			if self.timer >= 1:
 				if not st.loading:
-					status.loading=True
+					st.loading=True
+					if st.level_index > 0:
+						st.level_index=0
 					LoadingScreen()
 				if self.timer >= 2:
 					self.parent=None
@@ -252,7 +299,7 @@ class WhiteScreen(Entity):
 
 class BlackScreen(Entity):
 	def __init__(self):
-		super().__init__(model='quad',parent=camera.ui,scale=5,color=color.black,alpha=1)
+		super().__init__(model=q,parent=camera.ui,scale=5,color=color.black,alpha=1)
 		self.timer=2
 		status.wait_screen=True
 	def update(self):
@@ -263,14 +310,13 @@ class BlackScreen(Entity):
 				self.alpha=self.timer
 				if self.timer <= 0:
 					self.parent=None
-					scene.entities.remove(self)
-					self.disable()
+					cc.purge_instance(self)
 
 ## Bonusround Text
 class BonusText(Entity):
 	def __init__(self):
 		self.bntx=btxt+'bonus_'
-		super().__init__(model='quad',texture=None,parent=camera.ui,scale=(.3,.1),position=(0,.35),visible=False)
+		super().__init__(model=q,texture=None,parent=camera.ui,scale=(.3,.1),position=(0,.35),visible=False)
 		self.ch_seq=0
 		self.t_delay=.5
 	def display(self):
@@ -295,15 +341,14 @@ class BonusText(Entity):
 					return
 				self.text_ch()
 
-
 K=40
-O=130
+O=140
 ## Pause Menu
 class PauseMenu(Entity):
 	def __init__(self):
 		e='res/ui/pause/'
-		super().__init__(parent=camera.ui,model='quad',texture=e+'c_pause1.png',scale=(1.05,.5),position=(-.375,-.25,.1),color=color.rgb32(130,140,130),visible=False)
-		self.ppt=Entity(parent=camera.ui,model='quad',texture=e+'c_pause2.png',scale=(.75,1),position=(.515,0,.1),color=color.rgb32(130,140,130),visible=False)
+		super().__init__(parent=camera.ui,model=q,texture=e+'c_pause1.png',scale=(1.05,.5),position=(-.375,-.25,.1),color=color.rgb32(130,140,130),visible=False)
+		self.ppt=Entity(parent=camera.ui,model=q,texture=e+'c_pause2.png',scale=(.75,1),position=(.515,0,.1),color=color.rgb32(130,140,130),visible=False)
 		##text
 		self.selection=['RESUME','OPTIONS','QUIT']
 		self.font_color=color.rgb32(230,100,0)
@@ -438,8 +483,28 @@ class CollectedGem(Animation):
 			self.hide()
 
 ## Time Trial
-class ElapsedTime(Entity):
-	def __init__(self):
-		super().__init__(model='quad',position=(-.3,-.3,.1))
-		self.tmText=Text(text=None,font=_fnt,position=self.position,scale=3,color=color.silver)
-		self.TME=0
+class TrialTimer(Entity):
+	def __init__(self,t):
+		tm_str=strftime('%M:%S',gmtime(t))
+		super().__init__()
+		self.disp=Text(tm_str,font=_fnt,scale=3,position=(.7,-.4),parent=camera.ui,color=color.rgb32(200,200,100))
+		self.fin=False
+		self.TME=t
+	def trial_fail(self):
+		if st.level_index == 3:
+			st.gem_death=True
+		self.trial_interrupt()
+	def trial_interrupt(self):
+		cc.purge_instance(self.disp)
+		cc.purge_instance(self)
+	def update(self):
+		if not st.gproc():
+			if (st.level_index == 3 and st.level_col_gem):
+				self.trial_interrupt()
+				return
+			self.disp.text=strftime("%M:%S",gmtime(self.TME))
+			self.TME=max(self.TME-time.dt,0)
+			if self.TME <= 0:
+				if not self.fin:
+					self.fin=True
+					self.trial_fail()

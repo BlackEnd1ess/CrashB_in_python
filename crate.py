@@ -91,8 +91,7 @@ def explosion(cr):
 					exR.destroy()
 			if cc.is_enemie(exR):
 				if not exR.is_hitten:
-					exR.is_hitten=True
-					exR.fly_direc=Vec3(exR.x-cr.x,0,exR.z-cr.z)
+					cc.bash_enemie(e=exR,h=cr)
 			if exR == LC.ACTOR:
 				cc.get_damage(exR,rsn=3)
 
@@ -276,7 +275,7 @@ class TNT(Entity):
 		self.tx=pp+'crate_tnt_'
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
-		self.aud=Audio('res/snd/misc/tnt.wav',name='ctn',volume=settings.SFX_VOLUME,autoplay=False)
+		self.aud=Audio('res/snd/misc/tnt.wav',name='ctn',volume=0,autoplay=False)
 		self.activ=False
 		self.countdown=0
 	def destroy(self):
@@ -294,6 +293,8 @@ class TNT(Entity):
 	def update(self):
 		if not st.gproc():
 			if self.activ:
+				if self.aud.playing:
+					self.aud.volume=settings.SFX_VOLUME
 				self.countdown=max(self.countdown-time.dt/1.15,0)
 				self.texture=self.tx+str(int(self.countdown))+'.png'
 				if self.countdown <= 0:

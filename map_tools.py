@@ -11,6 +11,11 @@ def pos_info(c):
 	sy=f"{c.y+.16:.2f}"#c
 	#sy=f"{c.y+.3:.2f}"#w
 	sz=f"{c.z:.1f}"
+	#print(len(scene.entities))
+	#map_tools.pos_info(self)
+	#print('Entities: '+str(len(scene.entities)))
+	#print('CRATE reset: '+str(len(st.C_RESET)))
+	#print(scene.entities[-1])
 	#print(f"c.place_crate(ID=3,p=({sx},{sy},{sz}))")
 	#print(f"mt.crate_wall(ID=1,POS=({sx},{sy},{sz}),CNT=[1,3])")
 	#print(f"mt.crate_block(ID=1,POS=({sx},{sy},{sz}),CNT=[2,2,2])")

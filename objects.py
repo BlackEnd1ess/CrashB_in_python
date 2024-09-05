@@ -749,15 +749,8 @@ class StartRoom(Entity):## game spawn point
 		status.checkpoint=(self.x,self.y+2,self.z)
 		camera.position=(self.x,self.y+2,self.z-3)
 		IndoorZone(pos=(self.x,self.y+1.5,self.z),sca=(3,2,7))
+		LODProcess()
 		unlit_obj(self)
-		if lvID > 0:
-			m_info={1:lambda:level.level1(),
-					2:lambda:level.level2(),
-					3:lambda:level.level3(),
-					4:lambda:level.level4(),
-					5:lambda:level.level5(),
-					6:lambda:level.test()}
-			m_info[lvID]()
 
 class EndRoom(Entity):## finish level
 	def __init__(self,pos,c):
@@ -835,16 +828,23 @@ class GemPlatform(Entity):## gem platform
 			ne='gem_ptf_e'
 			self.is_enabled=False
 		L=180
-		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
-		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=0.001,position=pos,collider=b,color=GMC[t],double_sided=True)
+		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L+20,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
+		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,collider=b,color=GMC[t])
 		self.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),position=(self.x,self.y-.011,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
 		self.start_y=self.y
 		self.catch_p=False
 		self.ta=LC.ACTOR
-		if not self.is_enabled:
-			self.collider=None
-			self.bg_darkness.hide()
+		self.typ=t
+		if self.is_enabled:
+			self.platform_visual()
+			return
+		self.collider=None
+		self.bg_darkness.hide()
 		unlit_obj(self)
+	def platform_visual(self):
+		ld=.14
+		self.shine=SpotLight(position=(self.x-ld,self.y+.6,self.z-ld),color=self.color)
+		Entity(model='quad',scale=.01,position=self.shine.position,alpha=.7)
 	def update(self):
 		if not st.gproc():
 			if st.gem_path_solved:
@@ -961,8 +961,6 @@ class LODProcess(Entity):## Level of Detail
 			self.dst_a=2
 			self.dst_b=20
 			return
-
-
 	def wmp_lod(self,w,p):
 		w.enabled=distance(w,p) < 8
 	def crt_lod(self,c,p):
@@ -989,6 +987,14 @@ class LODProcess(Entity):## Level of Detail
 
 ###################
 ## global objects #
+class LightArea(SpotLight):
+	def __init__(self,pos):
+		super().__init__(position=pos,color=color.white)
+		self.ta=LC.ACTOR
+	def update(self):
+		if not st.gproc():
+			self.position=(self.ta.x+.5,self.ta.y+1.5,self.ta.z+1)
+
 class InvWall(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model='cube',position=pos,scale=sca,visible=False,collider=b,color=color.red)

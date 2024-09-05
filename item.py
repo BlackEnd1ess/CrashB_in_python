@@ -1,14 +1,15 @@
 import _core,status,sound,ui,_loc
-from time import strftime,gmtime
 from ursina.shaders import *
 from ursina import *
 
 i_path='res/item/'
 b='box'
 
-r=random
+st=status
 cc=_core
 sn=sound
+r=random
+
 ##place wumpa fruits
 def place_wumpa(pos,cnt):
 	for wpo in range(cnt):
@@ -35,7 +36,7 @@ class WumpaFruit(Entity):
 		status.W_RESET.append(self.position)
 		self.destroy()
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			ui.wmp_anim(self)
 
 class ExtraLive(Entity):
@@ -48,63 +49,82 @@ class ExtraLive(Entity):
 
 class GemStone(Entity):
 	def __init__(self,pos,c):
-		gPA={2:i_path+'gemstone/gem1',3:i_path+'gemstone/gem2'}
-		if c in gPA:
-			ge_=gPA[c]
+		if c == 3:
+			ge=i_path+'gemstone/gem2'
+		elif c == 2:
+			ge=i_path+'gemstone/gem1'
 		else:
-			ge_=i_path+'gemstone/gem'
-		R=120
-		ge_c={0:color.rgb32(R,R,R+10),1:color.rgb32(R,0,0),2:color.rgb32(0,R,0),3:color.rgb32(R,0,R),4:color.rgb32(0,0,R),5:color.rgb32(R,R,0)}
-		super().__init__(model=ge_+'.ply',texture=ge_+'.tga',color=ge_c[c],scale=.0011,position=pos,rotation_x=-90,collider=b)
-		gSCA={4:self.scale_z/2,5:self.scale_z*1.5}
+			ge=i_path+'gemstone/gem'
+		super().__init__(model=ge+'.ply',texture=ge+'.tga',color=color.gray,scale=.0011,position=pos,rotation_x=-90,collider=b)
 		self.gemID=c
-		if c in gSCA:
-			if c == 5:
-				self.purge_time=90
-				self.ptext=Text(text=str(self.purge_time),parent=camera.ui,scale=3,position=(.7,-.4),font='res/ui/font.ttf',color=color.rgb32(200,200,100))
-			self.scale_z=gSCA[c]
+		self.gem_visual()
 		if c != 0:
 			_loc.C_GEM=self
+			if (c == 5 and st.level_index == 3):
+				ui.TrialTimer(t=90)
+				return
+		self.purge_time=1
+	def gem_visual(self):
+		##color
+		R=220
+		ge_c={0:color.rgb32(R-10,R-10,R),#clear gem
+			1:color.rgb32(R,0,0),#red gem
+			2:color.rgb32(0,R,0),#green gem
+			3:color.rgb32(R,0,R),#purple gem
+			4:color.rgb32(0,0,R),#blue gem
+			5:color.rgb32(R-20,R-20,0)}#yellow gem
+		self.color=ge_c[self.gemID]
+		##scale - info: blue gem and yellow gem are Y scaled
+		if self.gemID in [4,5]:
+			gSC={4:self.scale_z/2,5:self.scale_z*1.5}
+			self.scale_z=gSC[self.gemID]
+		##light reflection
+		lgx=0
+		lgy=.32
+		lgz=.18
+		s_pos={0:(self.x-lgx,self.y+lgy,self.z-lgz),
+			1:(self.x-lgx,self.y+lgy,self.z-lgz),
+			2:(self.x-lgx,self.y+lgy,self.z-lgz),
+			3:(self.x-lgx,self.y+lgy,self.z-lgz),
+			4:(self.x-lgx,self.y+lgy,self.z-lgz),
+			5:(self.x-lgx,self.y+lgy,self.z-lgz)}
+		self.shine=SpotLight(position=s_pos[self.gemID],color=color.gray)
+		Entity(model='quad',scale=.01,position=self.shine.position,alpha=.7)
 	def gem_fail(self):
-		sli=status.level_index
-		gID=self.gemID
-		if gID == 4 and (sli == 1 and status.crate_count > 0):
+		gi=self.gemID
+		if gi == 4 and (st.level_index == 1 and st.crate_count > 0):#blue gem
 			return True
-		if gID == 1 and (sli == 2 and status.gem_death):
+		if gi == 1 and (st.level_index == 2 and st.gem_death):#red gem
 			return True
-		if gID == 5 and self.purge_time <= 0:
+		if gi == 5 and (st.level_index == 3 and st.gem_death):#yellow gem
 			return True
 		return False
 	def purge(self):
-		if self.gemID == 5:
-			cc.purge_instance(self.ptext)
 		self.collider=None
-		cc.purge_instance(self)
 		_loc.C_GEM=None
+		self.shine.color=color.black
+		cc.purge_instance(self.shine)
+		cc.purge_instance(self)
 	def collect(self):
 		if self.gemID == 0:
-			status.level_cle_gem=True
+			st.level_cle_gem=True
 		else:
-			status.level_col_gem=True
+			st.level_col_gem=True
 		sn.ui_audio(ID=5)
-		status.show_gems=5
+		st.show_gems=5
 		self.purge()
 	def push_gem(self):
-		kr=self.intersects()
-		if _loc.C_GEM:
-			if self.y < _loc.C_GEM.y+.2:
+		if not _loc.C_GEM:
+			return
+		if abs(self.x-_loc.C_GEM.x) < .5:
+			if (self.y < _loc.C_GEM.y+.2):
 				self.y+=time.dt
-		elif kr and isinstance(kr.entity,GemStone):
-			self.y=lerp(self.y,self.y+.3,time.dt)
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			self.rotation_y-=time.dt*60
 			if self.gem_fail():
 				self.purge()
 				return
-			if self.gemID == 5 and self.purge_time > 0:
-				self.ptext.text=strftime("%M:%S",gmtime(self.purge_time))
-				self.purge_time-=time.dt
 			if self.gemID == 0:
 				self.push_gem()
 
@@ -114,12 +134,12 @@ class EnergyCrystal(Entity):
 		super().__init__(model=i_path+CRY+'.ply',texture=i_path+CRY+'.tga',scale=.0013,rotation_x=-90,position=pos,double_sided=True,color=color.magenta,shader=unlit_shader,unlit=False)
 		self.collider=b
 	def collect(self):
-		status.level_crystal=True
+		st.level_crystal=True
 		sn.ui_audio(ID=5)
 		status.show_gems=5
 		cc.purge_instance(self)
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			self.visible=(distance(self,_loc.ACTOR) < 12)
 			self.rotation_y-=time.dt*70
 
@@ -138,5 +158,5 @@ class TimeRelic(Entity):
 		tc={0:color.azure,1:color.gold,2:color.rgb32(150,150,180)}
 		super().__init__(model=i_path+'relic/relic.ply',texture=i_path+'relic/relic.tga',scale=0.004,position=pos,rotation_x=-90,color=tc[t],unlit=False,shader=unlit_shader)
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			self.rotation_y-=time.dt*70
