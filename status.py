@@ -17,7 +17,7 @@ C_RESET=[]
 ## player rule
 p_last_direc=None
 level_index=0
-aku_hit=2
+aku_hit=0
 fails=0
 
 ## wumpa count

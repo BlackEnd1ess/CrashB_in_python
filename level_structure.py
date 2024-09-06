@@ -9,20 +9,32 @@ n=npc
 
 #### DEV-LV STUCT ####
 def dev_object():
+	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
 	o.StartRoom(pos=(0,0,-32.2),lvID=st.level_index)
 	#o.LightArea(pos=(0,.5,-15))
-	#for gv in range(0,6):
-	#	item.GemStone(pos=(0+gv/2,.3,-23),c=gv)
-		#if gv > 0:
-		#	o.GemPlatform(pos=(-1+gv,.3,-24),t=gv)
-	#item.GemStone(pos=(0,.3,-25),c=0)
+	for gv in range(0,6):
+		item.GemStone(pos=(-6+gv/2,.3,-23),c=gv)
+		if gv > 0:
+			o.GemPlatform(pos=(-7+gv,.3,-24),t=gv)
 def dev_crate():
-	mt.crate_block(ID=2,POS=(0,.16,-20),CNT=[20,10,5])
-	c.place_crate(ID=5,m=1,l=0,p=(-.32,.16,-21))
+	mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,3,3])
+	mt.crate_block(ID=1,POS=(-6.5,.16,-18),CNT=[3,3,3])
+	mt.crate_block(ID=2,POS=(-5.5,.16,-18),CNT=[3,3,2])
+	mt.crate_block(ID=3,POS=(-4.5,.16,-18),CNT=[3,3,1])
+	mt.crate_block(ID=4,POS=(-3.5,.16,-18),CNT=[3,1,1])
+	mt.crate_block(ID=5,POS=(-2.5,.16,-18),CNT=[3,1,1])
+	mt.crate_block(ID=6,POS=(-1.5+.32,.16,-18),CNT=[1,1,1])
+	mt.crate_block(ID=7,POS=(-.5,.16,-18),CNT=[3,3,1])
+	mt.crate_block(ID=8,POS=(.5,.16,-18),CNT=[3,3,1])
+	mt.crate_block(ID=9,POS=(1.5+.32,.16,-18),CNT=[1,1,1])
+	mt.crate_block(ID=10,POS=(2.5+.32,.16,-18),CNT=[1,1,1])
+	mt.crate_block(ID=11,POS=(3.5+.32,.16,-18),CNT=[1,1,1])
+	mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,1])
+	mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,1])
 def dev_wumpa():
-	return
+	mt.wumpa_row(POS=(0,.3,-16),CNT=20,WAY=0)
 def dev_npc():
-	return
+	n.spawn(mID=14,pos=(0,0,-23),mDirec=3)
 
 #### LEVEL1 STUCT ####
 def lv1_object():
@@ -170,9 +182,9 @@ def lv1_wumpa():
 	mt.wumpa_plane(POS=(1.3,wu_h,-1.5),CNT=[3,3])
 	mt.wumpa_plane(POS=(0,wu_h,16.3),CNT=[3,3])
 def lv1_npc():
-	n.spawn(mID=0,pos=(0,1.1,-52),mDirec=0,mTurn=0)
-	n.spawn(mID=0,pos=(0,1.1,-38),mDirec=0,mTurn=0)
-	n.spawn(mID=1,pos=(0,1.1,-15),mDirec=0,mTurn=0)
+	n.spawn(mID=0,pos=(0,1.1,-52),mDirec=0)
+	n.spawn(mID=0,pos=(0,1.1,-38),mDirec=0)
+	n.spawn(mID=1,pos=(0,1.1,-15),mDirec=0)
 
 #### LEVEL2 STUCT ####
 def lv2_object():
@@ -358,9 +370,9 @@ def lv2_wumpa():
 	mt.wumpa_plane(POS=(22.7,5.7,22),CNT=[3,3])
 	mt.wumpa_double_row(POS=(25,5.6,27),CNT=16)
 def lv2_npc():
-	n.spawn(pos=(3,1.4,2.5),mID=4,mDirec=0,mTurn=0)
-	n.spawn(pos=(0,.9,1),mID=4,mDirec=0,mTurn=0)
-	n.spawn(pos=(14.5,2.7,2.5),mID=6,mDirec=0,mTurn=0)
+	n.spawn(pos=(3,1.4,2.5),mID=4,mDirec=0)
+	n.spawn(pos=(0,.9,1),mID=4,mDirec=0)
+	n.spawn(pos=(14.5,2.7,2.5),mID=6,mDirec=0)
 
 #### LEVEL3 STUCT ####
 def lv3_object():
@@ -507,12 +519,12 @@ def lv3_wumpa():
 def lv3_npc():
 	n.Hippo(pos=(0,1.8,64.7))
 	n.Hippo(pos=(0,1.8,63))
-	n.spawn(mID=7,pos=(-.85,1.05,29),mDirec=0,mTurn=0)
-	n.spawn(mID=7,pos=(.85,1.05,25.8),mDirec=0,mTurn=0)
-	n.spawn(mID=7,pos=(-.85,1.05,23),mDirec=0,mTurn=0)
-	n.spawn(mID=7,pos=(0,1.05,41.4),mDirec=0,mTurn=0)
-	n.spawn(mID=7,pos=(0,1.95,74.1),mDirec=0,mTurn=0)
-	n.spawn(mID=2,pos=(0,1.05,4.2),mDirec=0,mTurn=0)
+	n.spawn(mID=7,pos=(-.85,1.05,29),mDirec=0)
+	n.spawn(mID=7,pos=(.85,1.05,25.8),mDirec=0)
+	n.spawn(mID=7,pos=(-.85,1.05,23),mDirec=0)
+	n.spawn(mID=7,pos=(0,1.05,41.4),mDirec=0)
+	n.spawn(mID=7,pos=(0,1.95,74.1),mDirec=0)
+	n.spawn(mID=2,pos=(0,1.05,4.2),mDirec=0)
 
 #### LEVEL4 STUCT ####
 def lv4_object():
@@ -674,21 +686,23 @@ def lv4_crate():
 	c.place_crate(ID=5,p=(.63,.6,-47.6))
 	c.place_crate(ID=5,p=(.04,.9,6.4))
 	c.place_crate(ID=5,p=(5,1.9,39.9))
+	if not 2 in status.COLOR_GEM:
+		c.place_crate(ID=16,p=(-.4,.16,-55))
 def lv4_wumpa():
 	return
 def lv4_npc():
-	n.spawn(pos=(0,.4,-53.5),mID=12,mDirec=0,mTurn=0)
-	n.spawn(pos=(0,.4,-35.5),mID=12,mDirec=0,mTurn=0)
-	n.spawn(pos=(0,.4,-16),mID=12,mDirec=0,mTurn=0)
-	n.spawn(pos=(.75,.75,8),mID=11,mDirec=0,mTurn=0,ro_mode=0)
-	n.spawn(pos=(5.2,2.6,17),mID=10,mDirec=0,mTurn=0,ro_mode=2)
-	n.spawn(pos=(5.3,1.75,10.1),mID=11,mDirec=1,mTurn=0,ro_mode=0)
-	n.spawn(pos=(14.5,3.7,61.5),mID=12,mDirec=0,mTurn=0)
-	n.spawn(pos=(14.5,3.75,52),mID=10,mDirec=0,mTurn=0,ro_mode=1)
-	n.spawn(pos=(4.9,1.75,36),mID=11,mDirec=0,mTurn=0,ro_mode=0)
-	n.spawn(pos=(4.9,1.75,40),mID=11,mDirec=0,mTurn=0,ro_mode=1)
-	n.spawn(pos=(5,2,12.5),mID=13,mDirec=0,mTurn=0)
-	n.spawn(pos=(5.5,2,12.5),mID=13,mDirec=0,mTurn=0)
+	n.spawn(pos=(0,.4,-53.5),mID=12,mDirec=0)
+	n.spawn(pos=(0,.4,-35.5),mID=12,mDirec=0)
+	n.spawn(pos=(0,.4,-16),mID=12,mDirec=0)
+	n.spawn(pos=(.75,.75,8),mID=11,mDirec=0,ro_mode=0)
+	n.spawn(pos=(5.2,2.6,17),mID=10,mDirec=0,ro_mode=2)
+	n.spawn(pos=(5.3,1.75,10.1),mID=11,mDirec=1,ro_mode=0)
+	n.spawn(pos=(14.5,3.7,61.5),mID=12,mDirec=0)
+	n.spawn(pos=(14.5,3.75,52),mID=10,mDirec=0,ro_mode=1)
+	n.spawn(pos=(4.9,1.75,36),mID=11,mDirec=0,ro_mode=0)
+	n.spawn(pos=(4.9,1.75,40),mID=11,mDirec=0,ro_mode=1)
+	n.spawn(pos=(5,2,12.5),mID=13,mDirec=0)
+	n.spawn(pos=(5.5,2,12.5),mID=13,mDirec=0)
 
 #### LEVEL5 STUCT ####
 def lv5_object():
@@ -805,28 +819,24 @@ def lv5_object():
 	o.PseudoGemPlatform(pos=(59.6,1.1,15.7),t=3)
 	o.PseudoGemPlatform(pos=(61.1,1.1,15.7),t=3)
 	# background objects
-	o.RuinRuins(pos=(-4,-1,-54),ro_y=90,typ=0)
 	o.RuinRuins(pos=(-3,-1,-58),ro_y=30,typ=0)
 	o.RuinRuins(pos=(5,-1,-52),ro_y=40,typ=0)
 	o.RuinRuins(pos=(0,-1,-52),ro_y=0,typ=0)
 	o.RuinRuins(pos=(0,-1,-50),ro_y=90,typ=0)
 	o.RuinRuins(pos=(.5,-.8,-43),ro_y=90,typ=0)
-	o.RuinRuins(pos=(0,-1,-41),ro_y=0,typ=0)
-	o.RuinRuins(pos=(0,-1,-38),ro_y=0,typ=0)
+	#o.RuinRuins(pos=(0,-1,-41),ro_y=0,typ=0)
+	#o.RuinRuins(pos=(0,-1,-38),ro_y=0,typ=0)
 	o.RuinRuins(pos=(4.7,-.8,-42),ro_y=90,typ=0)
-	o.RuinRuins(pos=(4.5,-1,-40),ro_y=180,typ=0)
+	#o.RuinRuins(pos=(4.5,-1,-40),ro_y=180,typ=0)
 	o.RuinRuins(pos=(4,-1,-38),ro_y=90,typ=0)
-	o.RuinRuins(pos=(5,-1,-35),ro_y=180,typ=0)
+	#o.RuinRuins(pos=(5,-1,-35),ro_y=180,typ=0)
 	o.RuinRuins(pos=(.5,-.8,-35),ro_y=90,typ=0)
-	o.RuinRuins(pos=(0,-1,-32),ro_y=0,typ=0)
-	o.RuinRuins(pos=(0,-1,-29),ro_y=0,typ=0)
+	#o.RuinRuins(pos=(0,-1,-32),ro_y=0,typ=0)
+	#o.RuinRuins(pos=(0,-1,-29),ro_y=0,typ=0)
 	o.RuinRuins(pos=(2,-.8,-29),ro_y=90,typ=0)
 	o.RuinRuins(pos=(5,-.7,-31),ro_y=90,typ=0)
 	o.RuinRuins(pos=(8,-.8,-29),ro_y=90,typ=0)
 	o.RuinRuins(pos=(11,-1,-31),ro_y=90,typ=0)
-	o.RuinRuins(pos=(8,-.8,-26),ro_y=0,typ=0)
-	o.RuinRuins(pos=(10,-.8,-21),ro_y=0,typ=0)
-	o.RuinRuins(pos=(9,-.8,-16),ro_y=0,typ=0)
 	o.RuinRuins(pos=(10,-.8,-12),ro_y=0,typ=0)
 	o.RuinRuins(pos=(9.5,-.8,-6),ro_y=0,typ=0)
 	o.RuinRuins(pos=(11,-.8,0),ro_y=0,typ=0)
@@ -862,6 +872,13 @@ def lv5_object():
 	o.RuinRuins(pos=(50,0,27),ro_y=0,typ=0)
 	o.RuinRuins(pos=(52,0,24),ro_y=90,typ=0)
 	o.RuinRuins(pos=(53.5,.4,26),ro_y=90,typ=0)
+	
+	
+	o.RuinRuins(pos=(-3.5,-1,-56),ro_y=90,typ=3)
+	o.RuinRuins(pos=(-1,-1,-40),ro_y=90,typ=3)
+	o.RuinRuins(pos=(9,-1,-24),ro_y=90,typ=3)
+	o.RuinRuins(pos=(9,-1,-9),ro_y=90,typ=3)
+	
 	o.EndRoom(pos=(56.5,2.8,31.6),c=color.rgb32(180,180,180))
 def lv5_crate():
 	mt.crate_row(ID=2,POS=(5.3,.36,-56),CNT=2,WAY=2)
@@ -919,6 +936,8 @@ def lv5_crate():
 	c.place_crate(ID=6,p=(11.9,.36,-28.6))
 	c.place_crate(ID=6,p=(25.4,.36,4.5))
 	c.place_crate(ID=6,p=(41.2,.06,4.6))
+	if not 3 in status.COLOR_GEM:
+		c.place_crate(ID=16,p=(-.4,.36,-56.4))
 def lv5_wumpa():
 	mt.wumpa_row(POS=(0,.5,-60.3),CNT=7,WAY=1)
 	mt.wumpa_row(POS=(2.7,.5,-55.3),CNT=7,WAY=1)
@@ -940,14 +959,14 @@ def lv5_wumpa():
 	mt.wumpa_row(POS=(49.4,1.4,5.5),CNT=8,WAY=0)
 	mt.wumpa_row(POS=(52.4,1.4,21),CNT=8,WAY=0)
 def lv5_npc():
-	n.spawn(mID=8,pos=(2.7,.2,-50.5),mDirec=0,mTurn=0)
-	n.spawn(mID=8,pos=(2.7,.2,-35.7),mDirec=0,mTurn=0)
-	n.spawn(mID=8,pos=(6.5,.25,-32.9),mDirec=0,mTurn=0)
-	n.spawn(mID=8,pos=(11.9,.2,-23.5),mDirec=0,mTurn=0)
-	n.spawn(mID=9,pos=(2.7,.2,-38.8),mDirec=0,mTurn=0)
-	n.spawn(mID=9,pos=(24.2,.2,-1),mDirec=0,mTurn=0)
-	n.spawn(mID=8,pos=(13.1,.2,-1),mDirec=0,mTurn=0)
-	n.spawn(mID=9,pos=(34.5,1.1,6.5),mDirec=1,mTurn=0)
-	n.spawn(mID=9,pos=(39,1.1,6.5),mDirec=1,mTurn=0)
-	n.spawn(mID=8,pos=(53.2,1.1,8.3),mDirec=0,mTurn=0)
-	n.spawn(mID=8,pos=(55.4,1.1,24),mDirec=0,mTurn=0)
+	n.spawn(mID=8,pos=(2.7,.2,-50.5),mDirec=0)
+	n.spawn(mID=8,pos=(2.7,.2,-35.7),mDirec=0)
+	n.spawn(mID=8,pos=(6.5,.25,-32.9),mDirec=0)
+	n.spawn(mID=8,pos=(11.9,.2,-23.5),mDirec=0)
+	n.spawn(mID=9,pos=(2.7,.2,-38.8),mDirec=0)
+	n.spawn(mID=9,pos=(24.2,.2,-1),mDirec=0)
+	n.spawn(mID=8,pos=(13.1,.2,-1),mDirec=0)
+	n.spawn(mID=9,pos=(34.5,1.1,6.5),mDirec=1)
+	n.spawn(mID=9,pos=(39,1.1,6.5),mDirec=1)
+	n.spawn(mID=8,pos=(53.2,1.1,8.3),mDirec=0)
+	n.spawn(mID=8,pos=(55.4,1.1,24),mDirec=0)

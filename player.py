@@ -1,4 +1,4 @@
-import _core,ui,status,animation,sound,_loc,map_tools,npc
+import _core,status,animation,sound,_loc,map_tools,npc
 from ursina.shaders import *
 from math import atan2
 from ursina import *
@@ -33,56 +33,33 @@ class CrashB(Entity):
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(200,200,600))
 		self.fall_speed={0:2.9,1:2.9,2:3,3:2.8}
 		self.jump_speed={0:2.7,1:2.7,2:3,3:3}
+		self.KEY_ACT={'escape':lambda:cc.game_pause(),
+				'tab':lambda:cc.show_status_ui(),
+				'alt':lambda:self.spin_attack(),
+				'w':lambda:setattr(self,'CMS',3),
+				's':lambda:setattr(self,'CMS',4),
+				#dev inp
+				'u':lambda:setattr(self,'position',(0,4,82)),
+				'b':lambda:print(self.position),
+				'e':lambda:EditorCamera()}
 		cc.set_val(self)
-		ui.PauseMenu()
-		ui.WumpaCounter()
-		ui.CrateCounter()
-		ui.LiveCounter()
-		ui.CollectedGem()
 		an.WarpRingEffect(pos=self.position)
 		pShadow()
 		if st.aku_hit > 0:
-			npc.AkuAkuMask(pos=(self.x-.3,self.y+.3,self.z))
+			npc.AkuAkuMask(pos=(self.x-.3,self.y+.3,self.z+.5))
 	def input(self,key):
 		if st.p_rst(self):
 			return
-		if key == 'space' and self.landed:
-			sn.pc_audio(ID=1)
-			if self.landed:
-				cc.set_jump_type(self,typ=0)
-		if key == 'alt':
-			if not self.is_attack:
-				self.is_landing=False
-				self.is_attack=True
-				sn.pc_audio(ID=3)
-				invoke(lambda:setattr(self,'is_attack',False),delay=.6)
-			else:
-				sn.pc_audio(ID=0)
-		if key == 'tab':
-			st.show_wumpas=5
-			st.show_crates=5
-			st.show_lives=5
-			st.show_gems=5
-		if key == 'w':
-			self.CMS=3
-		if key == 's':
-			self.CMS=4
-		if key in ['p','escape']:
-			if not st.pause:
-				st.pause=True
-				return
-			st.pause=False
-		##dev input
-		if key == 'b':
-			print(self.position)
-		if key == 'e':
-			self.freezed=True
-			EditorCamera()
-		if key == 'u':
-			#self.position=(0,-35,-3)
-			#self.position=(0,2,3)
-			#self.position=(43.4,.5,4.7)
-			self.position=(0,4,82)
+		if key in self.KEY_ACT:
+			self.KEY_ACT[key]()
+	def spin_attack(self):
+		if not self.is_attack:
+			self.is_landing=False
+			self.is_attack=True
+			sn.pc_audio(ID=3)
+			invoke(lambda:setattr(self,'is_attack',False),delay=.6)
+			return
+		sn.pc_audio(ID=0)
 	def move(self):
 		s=self
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
@@ -144,6 +121,11 @@ class CrashB(Entity):
 			s.is_flip=True
 		if not s.is_flip:
 			an.jup(s)
+	def check_jump(self):
+		if held_keys['space'] and self.landed:
+			sn.pc_audio(ID=1)
+			if self.landed:
+				cc.set_jump_type(self,typ=0)
 	def c_camera(self):
 		if not st.death_event:
 			cc.cam_rotate(self)
@@ -188,6 +170,7 @@ class CrashB(Entity):
 				cc.obj_ceiling(s)
 			cc.various_val(s)
 			if not st.p_rst(s):
+				s.check_jump()
 				s.move()
 				if not (s.landed or s.jumping):
 					s.fall()

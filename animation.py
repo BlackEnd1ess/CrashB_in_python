@@ -290,6 +290,7 @@ def npc_walking(m):
 		m.anim_frame=0
 	m.model=nf+str(m)+'/'+str(int(m.anim_frame))+'.ply'
 
+#plant
 def plant_bite(m):
 	m.atk_frame+=time.dt*t
 	if m.atk_frame > 18.9:
@@ -304,6 +305,7 @@ def plant_eat(m):
 		return
 	m.model=nf+str(m)+'/eat/'+str(int(m.eat_frame))+'.ply'
 
+#hedge
 def hedge_defend(m):
 	m.def_frame+=time.dt*t
 	if m.def_frame > 6.9:
@@ -311,6 +313,7 @@ def hedge_defend(m):
 	m.texture=nf+str(m)+'/attack/attack.tga'
 	m.model=nf+str(m)+'/attack/'+str(int(m.def_frame))+'.ply'
 
+#hippo
 def hippo_wait(m):
 	m.a_frame+=time.dt*18
 	if m.a_frame > 23.9:
@@ -324,6 +327,21 @@ def hippo_dive(m):
 		return
 	m.model=nf+'hippo/'+str(int(m.a_frame))+'.ply'
 
+#gorilla
+gsp=30
+def gorilla_take(m):
+	m.anim_frame+=time.dt*25
+	if m.anim_frame > 32.9:
+		m.anim_frame=0
+		m.t_mode=1
+	m.model=nf+str(m)+'/'+str(int(m.anim_frame))+'.ply'
+def gorilla_throw(m):
+	m.anim_frame+=time.dt*20
+	if m.anim_frame > 10.9:
+		m.anim_frame=0
+		m.t_mode=0
+		return
+	m.model=nf+str(m)+'/act/'+str(int(m.anim_frame))+'.ply'
 
 ## object animations
 def door_open(d):

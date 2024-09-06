@@ -43,7 +43,7 @@ day_m={0:'default',
 	3:'evening',
 	4:'empty',
 	5:'empty',
-	6:'empty'}
+	6:'day'}
 
 #LevelScene for Thunderbolts
 bgT=None

@@ -11,24 +11,21 @@ sn=sound
 r=random
 
 ##place wumpa fruits
-def place_wumpa(pos,cnt):
+def place_wumpa(pos,cnt,c_prg=False):
 	for wpo in range(cnt):
 		if cnt > 1:
 			vpu=pos+(r.uniform(-.1,.1),r.uniform(0,.1),r.uniform(-.1,.1))
 		else:
 			vpu=pos
-		WumpaFruit(p=vpu)
+		WumpaFruit(p=vpu,c_prg=c_prg)
 
 class WumpaFruit(Entity):
-	def __init__(self,p):
+	def __init__(self,p,c_prg):
 		self.w_pa='res/ui/icon/wumpa_fruit/'
 		super().__init__(model='quad',texture=self.w_pa+'w0.png',position=(p[0],p[1],p[2]),scale=.22)
 		self.collider=BoxCollider(self,size=Vec3(1,1,1))
+		self.c_purge=c_prg
 		self.frm=0
-		if cc.level_ready and _loc.ACTOR.warped:
-			self.auto_purge=True
-			return
-		self.auto_purge=False
 	def destroy(self):
 		cc.purge_instance(self)
 	def collect(self):
@@ -41,10 +38,10 @@ class WumpaFruit(Entity):
 
 class ExtraLive(Entity):
 	def __init__(self,pos):
-		super().__init__(model='quad',texture=i_path+'/extra_live/live.png',position=pos,scale=.25,collider=b)
+		super().__init__(model='quad',texture='res/ui/icon/crash_live.tga',position=pos,scale=.3,collider=b)
 		self.collider=BoxCollider(self,size=Vec3(1,1,1))
 	def collect(self):
-		_core.give_extra_live()
+		cc.give_extra_live()
 		cc.purge_instance(self)
 
 class GemStone(Entity):

@@ -12,7 +12,7 @@ cr1=pp+'cr_t0.ply'# single texture
 cr2=pp+'cr_t1.ply'# double texture
 
 ##spawn, destroy event
-def place_crate(p,ID,m=None,l=None,pse=None,tm=None):
+def place_crate(p,ID,m=0,l=1,pse=None,tm=None):
 	CRATES={0:lambda:Iron(pos=p,pse=pse),
 			1:lambda:Normal(pos=p,pse=pse),
 			2:lambda:QuestionMark(pos=p,pse=pse),
@@ -37,6 +37,7 @@ def place_crate(p,ID,m=None,l=None,pse=None,tm=None):
 			st.crates_in_bonus+=1
 		if ID == 13 and l in [0,8]:
 			st.crates_in_level-=1
+	del p,ID,m,l,pse,tm
 
 def destroy_event(c):
 	c.collider=None
@@ -112,7 +113,7 @@ class Normal(Entity):
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
 		wuPo=self.position
-		item.place_wumpa(self.position,cnt=1)
+		item.place_wumpa(self.position,cnt=1,c_prg=True)
 		destroy_event(self)
 
 class QuestionMark(Entity):
@@ -121,7 +122,7 @@ class QuestionMark(Entity):
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
-		item.place_wumpa(self.position,cnt=5)
+		item.place_wumpa(self.position,cnt=5,c_prg=True)
 		destroy_event(self)
 
 class Bounce(Entity):
@@ -351,7 +352,7 @@ class Protected(Entity):
 			animation.prtc_anim(self)
 		block_destroy(self)
 	def c_destroy(self):
-		item.place_wumpa(self.position,cnt=random.randint(5,10))
+		item.place_wumpa(self.position,cnt=random.randint(5,10),c_prg=True)
 		destroy_event(self)
 
 class cTime(Entity):
@@ -375,8 +376,8 @@ class LvInfo(Entity):
 				1:'blue gem - reach the end of this level without breaking boxes',
 				2:'red gem - solve this level without loosing extra lifes.',
 				3:'yellow gem - reach the end of level before time up',
-				4:'green gem - solve the hard sewer path',
-				5:'purple gem - good luck, you will need it'}
+				4:'green gem - unlock the yellow gem path',
+				5:'purple gem - unlock the green gem path'}
 		mText=Text(text=l_inf[status.level_index],parent=camera.ui,font='res/ui/font.ttf',color=color.orange,scale=2.2,position=(-.6,-.3,.1))
 		invoke(mText.disable,delay=5)
 		destroy_event(self)

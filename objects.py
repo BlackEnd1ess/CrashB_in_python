@@ -620,15 +620,15 @@ class MonkeySculpture(Entity):
 	def update(self):
 		if not st.gproc():
 			if self.danger:
-				if self.f_cnt >= 100:
+				if self.f_cnt >= 30:
 					if not self.f_pause:
-							self.f_pause=True
-							invoke(self.f_reset,delay=5)
+						self.f_pause=True
+						invoke(self.f_reset,delay=5)
 					return
 				if distance(self,LC.ACTOR) < 12:
 					self.f_throw=max(self.f_throw-time.dt,0)
 					if self.f_throw <= 0:
-						self.throw=3
+						self.f_throw=.075
 						self.f_cnt+=1
 						self.fire_throw()
 						if not self.s_audio:
@@ -690,7 +690,10 @@ class LoosePlatform(Entity):
 class RuinRuins(Entity):
 	def __init__(self,pos,typ,ro_y):
 		rrn=omf+'l5/ruins_bgo/'
-		super().__init__(model=rrn+'ruin_bg'+str(typ)+'.ply',texture=rrn+'ruin.tga',position=pos,scale=.03,rotation=(-90,ro_y,0),double_sided=True)
+		if typ != 3:
+			super().__init__(model=rrn+'ruin_bg'+str(typ)+'.ply',texture=rrn+'ruin.tga',position=pos,scale=.03,rotation=(-90,ro_y,0),double_sided=True)
+		else:
+			super().__init__(model=rrn+'ruin_bg'+str(typ)+'.ply',texture=rrn+'ruin_scene.tga',position=pos,scale=.08,rotation=(-90,ro_y,0),double_sided=True)
 		unlit_obj(self)
 
 ###################

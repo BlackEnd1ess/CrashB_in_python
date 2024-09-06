@@ -118,6 +118,12 @@
 - AkuAku floats while player is idle
 - AkuAku Mask glows on typ 2
 - Level 4 Fixxed Falling Zone
-- GemPlatforms gloss effect
+- GemPlatforms reflect light effect
 - LoadingScreen Displays Level Name below main text
 - orginal crate counter font
+
+#06.09.2024
+- orginal live counter font
+- orginal extra live icon
+- Gorilla NPC
+- Level 5 - New Background Objects

@@ -1,10 +1,12 @@
 from ursina.shaders import *
 import status,_core,_loc
 from ursina import *
+
 st=status
 cc=_core
 LC=_loc
 ef='res/effects/'
+
 class Sparkle(Entity):
 	def __init__(self,pos):
 		super().__init__(model='quad',texture=ef+'sparkle.tga',position=pos,scale=.05,shader=unlit_shader)

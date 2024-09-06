@@ -55,26 +55,26 @@ def dth_event(c,rsn):
 		c.death_action(rsn=rsn)
 def reset_state(c):
 	ui.BlackScreen()
-	status.crate_count-=st.crate_to_sv
+	st.crate_count-=st.crate_to_sv
 	if st.is_death_route:
-		status.is_death_route=False
+		st.is_death_route=False
 	if st.bonus_round:
-		status.wumpa_bonus=0
-		status.crate_bonus=0
-		status.lives_bonus=0
-		status.bonus_round=False
+		st.wumpa_bonus=0
+		st.crate_bonus=0
+		st.lives_bonus=0
+		st.bonus_round=False
 	else:
-		status.extra_lives-=1
-		status.fails+=1
+		st.extra_lives-=1
+		st.fails+=1
 		if st.level_index == 2:
-			status.gem_death=True
+			st.gem_death=True
 	if st.extra_lives <= 0:
 		game_over()
 		return
 	if st.fails < 3:
-		status.aku_hit=0
+		st.aku_hit=0
 	else:
-		status.aku_hit=1
+		st.aku_hit=1
 		if not st.aku_exist:
 			sn.crate_audio(ID=14,pit=1.2)
 			npc.AkuAkuMask(pos=(c.x,c.y,c.z))
@@ -95,7 +95,8 @@ def game_over():
 def various_val(c):
 	c.indoor=max(c.indoor-time.dt,0)
 	c.in_water=max(c.in_water-time.dt,0)
-	if not c.is_slippery:c.move_speed=2.4
+	if not c.is_slippery:
+		c.move_speed=2.4
 	if st.bonus_solved and not st.wait_screen:
 		c.aq_bonus=(st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0)
 def c_attack(c):
@@ -161,20 +162,20 @@ def cam_follow(c):
 
 ## world, misc
 def spawn_level_crystal(idx):
-	cry_pos={1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7),6:(0,.3,-15)}
+	cry_pos={1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7),6:(0,.3,-19)}
 	if not idx in st.CRYSTAL:
 		item.EnergyCrystal(pos=cry_pos[idx])
 def collect_reset():
-	status.C_RESET.clear()
-	status.W_RESET.clear()
-	status.crate_to_sv=0
-	status.fails=0
+	st.C_RESET.clear()
+	st.W_RESET.clear()
+	st.crate_to_sv=0
+	st.fails=0
 	if level_ready:
-		status.NPC_RESET.clear()
+		st.NPC_RESET.clear()
 def c_subtract(cY):
 	if cY < -20:
-		status.crates_in_bonus-=1
-	status.crates_in_level-=1
+		st.crates_in_bonus-=1
+	st.crates_in_level-=1
 def reset_crates():
 	for ca in scene.entities[:]:
 		if is_crate(ca):
@@ -193,22 +194,22 @@ def reset_crates():
 				cv.countdown=0
 			c_subtract(cY=cv.y)
 			C.place_crate(p=cv.spawn_pos,ID=cv.vnum)
-	status.C_RESET.clear()
-	status.crate_to_sv=0
+	st.C_RESET.clear()
+	st.crate_to_sv=0
 def reset_wumpas():
 	for wres in status.W_RESET[:]:
-		item.WumpaFruit(p=wres)
-	status.W_RESET.clear()
+		item.WumpaFruit(p=wres,c_prg=False)
+	st.W_RESET.clear()
 def rmv_wumpas():
 	for wu in scene.entities[:]:
-		if isinstance(wu,item.WumpaFruit) and wu.auto_purge:
+		if isinstance(wu,item.WumpaFruit) and wu.c_purge:
 			wu.destroy()
 def reset_npc():
 	for NP in st.NPC_RESET[:]:
 		if NP.vnum in [10,11]:
-			npc.spawn(mID=NP.vnum,pos=NP.spawn_pos,mDirec=NP.m_direction,mTurn=0,ro_mode=NP.ro_mode)
+			npc.spawn(mID=NP.vnum,pos=NP.spawn_pos,mDirec=NP.m_direction,ro_mode=NP.ro_mode)
 		else:
-			npc.spawn(mID=NP.vnum,pos=NP.spawn_pos,mDirec=NP.m_direction,mTurn=0)
+			npc.spawn(mID=NP.vnum,pos=NP.spawn_pos,mDirec=NP.m_direction)
 	status.NPC_RESET.clear()
 def jmp_lv_fin():
 	if not st.LEVEL_CLEAN:
@@ -242,6 +243,11 @@ def purge_instance(v):
 	scene.entities.remove(v)
 	v.disable()
 	del v
+def game_pause():
+	if not st.pause:
+		st.pause=True
+		return
+	st.pause=False
 
 ## collisions
 def obj_ceiling(c):
@@ -361,9 +367,15 @@ def give_extra_live():
 	sn.ui_audio(ID=3)
 	if st.bonus_round:
 		st.lives_bonus+=1
-	else:
+		return
+	if st.extra_lives < 99:
 		st.extra_lives+=1
-		st.show_lives=5
+	st.show_lives=5
+def show_status_ui():
+	st.show_wumpas=5
+	st.show_crates=5
+	st.show_lives=5
+	st.show_gems=5
 
 ## crate actions
 def crate_set_val(cR,Cpos,Cpse):
@@ -480,8 +492,8 @@ def load_droute(c):
 	sn.SpecialMusic(T=st.level_index)
 
 ## npc
-def set_val_npc(m,tu,di,cm=True):
-	if m.vnum in [3,7,8]:
+def set_val_npc(m,di,cm=True):
+	if m.vnum in [3,7,8,14]:
 		cm=False
 	m.can_move=cm
 	m.spawn_pos=m.position
@@ -492,7 +504,7 @@ def set_val_npc(m,tu,di,cm=True):
 	m.anim_frame=0
 	m.unlit=False
 	m.fly_time=0
-	m.turn=tu
+	m.turn=0
 def npc_action(m):
 	if m.is_purge:
 		npc_purge(m)
@@ -593,7 +605,7 @@ def is_enemie(n):
 		N.Penguin,N.Hedgehog,N.Seal,
 		N.EatingPlant,N.Rat,N.Lizard,
 		N.Eel,N.Scrubber,N.Mouse,N.SewerMine,
-		N.Vulture,N.Hippo]
+		N.Vulture,N.Hippo,N.Gorilla]
 	if any(isinstance(n,npc_class) for npc_class in nnk):
 		return True
 	return False

@@ -1,4 +1,4 @@
-import _core,status,environment,bonus_level,_loc,sound,level_structure
+import ui,_core,status,environment,bonus_level,_loc,sound,level_structure
 from ursina import *
 
 lvs=level_structure
@@ -19,6 +19,7 @@ def free_level():
 		sn.AmbienceSound()
 		sn.WaterRiver()
 	cc.level_ready=True
+	ui.load_interface()
 
 ## level settings
 def main_instance(idx):
@@ -37,9 +38,10 @@ def main_instance(idx):
 
 ## levels to load
 def test():
-	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
 	lvs.dev_object()
 	lvs.dev_crate()
+	lvs.dev_wumpa()
+	lvs.dev_npc()
 	free_level()
 
 def level1():## turtle woods

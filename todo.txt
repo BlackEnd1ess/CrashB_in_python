@@ -1,12 +1,11 @@
 - game options
 - save game
 - warp room
-- orginal crate counter/life counter font
 
 ##MODULE
 imageio
 
-- level shader,decoration
+- level decoration
 
 #level 2
 - walls
