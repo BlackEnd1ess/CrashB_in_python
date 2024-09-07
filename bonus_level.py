@@ -209,7 +209,22 @@ def bonus5():
 	MT.wumpa_row(POS=(26.8+.32*10,-35.9+.32*2,U),CNT=3,WAY=2)
 	MT.wumpa_row(POS=(26.8+.32*11,-35.9+.32,U),CNT=3,WAY=2)
 	MT.wumpa_row(POS=(26.8+.32*12,-35.9,U),CNT=3,WAY=2)
-	
+	#background
+	o.RuinRuins(pos=(-2.5,-37,U+1),ro_y=45,typ=0)
+	o.RuinRuins(pos=(0,-37,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(3,-36.8,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(6,-36.6,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(9,-36.8,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(12,-36.6,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(15,-36.8,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(18,-36.6,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(21,-36.8,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(24,-36.6,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(27,-36.8,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(30,-36.6,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(33,-36.8,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(36,-36.6,U+2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(39,-36.8,U+2),ro_y=90,typ=0)
 	o.BonusPlatform(pos=(36,-36,U))
 
 def dev_bonus():

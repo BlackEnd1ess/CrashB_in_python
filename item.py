@@ -30,7 +30,8 @@ class WumpaFruit(Entity):
 		cc.purge_instance(self)
 	def collect(self):
 		cc.wumpa_count(1)
-		status.W_RESET.append(self.position)
+		if not self.c_purge:
+			st.W_RESET.append(self.position)
 		self.destroy()
 	def update(self):
 		if not st.gproc():

@@ -333,6 +333,10 @@ class AkuAkuMask(Entity):
 	def __init__(self,pos):
 		self.tpa='res/npc/akuaku/'
 		super().__init__(model=None,texture=None,scale=.00075,rotation_x=ro,position=pos,unlit=False)
+		self.skin_0=self.tpa+'aku.ply'
+		self.tex_0=self.tpa+'aku.tga'
+		self.skin_1=self.tpa+'aku2.ply'
+		self.tex_1=self.tpa+'aku2.tga'
 		self.last_y=self.y
 		st.aku_exist=True
 		self.ta=LC.ACTOR
@@ -341,14 +345,12 @@ class AkuAkuMask(Entity):
 		self.change_skin()
 	def change_skin(self):
 		if st.aku_hit > 1:
-			self.model=self.tpa+'aku2.ply'
-			self.texture=self.tpa+'aku2.tga'
-			self.shader=unlit_shader
+			self.model=self.skin_1
+			self.texture=self.tex_1
 			self.spark()
 			return
-		self.shader=None
-		self.model=self.tpa+'aku.ply'
-		self.texture=self.tpa+'aku.tga'
+		self.model=self.skin_0
+		self.texture=self.tex_0
 	def spark(self):
 		self.spt=max(self.spt-time.dt,0)
 		if self.spt <= 0:
@@ -384,8 +386,8 @@ class AkuAkuMask(Entity):
 	def update(self):
 		if not st.gproc() and LC.ACTOR != None:
 			self.check_dist_player()
-			self.change_skin()
 			self.follow_player()
+			self.change_skin()
 			if st.aku_hit < 1:
 				cc.purge_instance(self)
 				st.aku_exist=False

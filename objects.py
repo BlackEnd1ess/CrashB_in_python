@@ -957,8 +957,8 @@ class LODProcess(Entity):## Level of Detail
 			self.dst_b=26
 			return
 		if st.level_index == 5:
-			self.dst_a=3
-			self.dst_b=25
+			self.dst_a=4
+			self.dst_b=32
 			return
 		else:
 			self.dst_a=2

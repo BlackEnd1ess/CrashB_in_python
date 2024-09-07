@@ -19,7 +19,9 @@ class pShadow(Entity):## shadow point
 		self.x=self.ta.x
 		self.z=self.ta.z
 		vSH=raycast(self.ta.world_position,-Vec3(0,1,0),distance=2,ignore=[self,self.ta],debug=False)
-		if vSH.hit and not str(vSH.entity) in LC.item_lst:
+		if vSH.hit:
+			if str(vSH.entity) in LC.item_lst:
+				pass
 			self.y=vSH.world_point.y
 	def update(self):
 		if not st.gproc():
@@ -39,7 +41,7 @@ class CrashB(Entity):
 				'w':lambda:setattr(self,'CMS',3),
 				's':lambda:setattr(self,'CMS',4),
 				#dev inp
-				'u':lambda:setattr(self,'position',(0,4,82)),
+				'u':lambda:setattr(self,'position',(9+.75*6,1.5,-22)),
 				'b':lambda:print(self.position),
 				'e':lambda:EditorCamera()}
 		cc.set_val(self)

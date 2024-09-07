@@ -5,7 +5,7 @@ checkpoint=None
 day_mode=''
 
 ## game progress items
-COLOR_GEM=[]
+COLOR_GEM=[1]
 CLEAR_GEM=[]
 CRYSTAL=[]
 
@@ -17,7 +17,7 @@ C_RESET=[]
 ## player rule
 p_last_direc=None
 level_index=0
-aku_hit=0
+aku_hit=1
 fails=0
 
 ## wumpa count
