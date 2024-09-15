@@ -4,7 +4,7 @@
 ACTOR=None
 
 # display the name in pause menu and loading screen
-lv_name=['Central - Warp Room',
+lv_name=['CENTRAL - WARP ROOM',
 		'LEVEL 1 - TURTLE WOODS',
 		'LEVEL 2 - WAY TO NOWHERE',
 		'LEVEL 3 - UPSTREAM',
@@ -26,7 +26,7 @@ d_zone=['water_hit']
 dangers=['wood_log','role','falling_zone']
 
 # checkpoint - bonus
-bonus_checkpoint=[None,(0,2,-6),(.3,2,2.3),(0,1.5,.85*8),(0,2,3),(12,1,-22),(0,1,-25)]
+bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,1.5,.85*8),(0,2,3),(12,1,-22),(0,1,-25)]
 
 #LOD
 LOD_VAR=['rmd1','rmd2','ctsc']
@@ -37,13 +37,13 @@ LV4_LOD=LOD_VAR+['sewer_platform','swp2','sewer_pipe','dripping_water']
 LV5_LOD=LOD_VAR+['monkey_sculpture','loose_platform','ruins_block','rubl']
 
 #day mode
-day_m={0:'default',
+day_m={0:'empty',
 	1:'woods',
 	2:'snow',
 	3:'evening',
 	4:'empty',
 	5:'empty',
-	6:'day'}
+	6:'empty'}
 
 #LevelScene for Thunderbolts
 bgT=None

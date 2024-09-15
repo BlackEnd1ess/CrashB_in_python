@@ -2,12 +2,13 @@ import item,status,_core,animation,sound,npc,settings,_loc
 from ursina.shaders import *
 from ursina import *
 
-pp='res/crate/'
 ic=(.15,.2)
 cc=_core
 sn=sound
 st=status
 LC=_loc
+
+pp='res/crate/'
 cr1=pp+'cr_t0.ply'# single texture
 cr2=pp+'cr_t1.ply'# double texture
 
@@ -81,7 +82,7 @@ def explosion(cr):
 		sn.crate_audio(ID=10)
 	if cr.vnum == 12 and not st.n_audio:
 		st.n_audio=True
-		invoke(lambda:sn.crate_audio(ID=11,pit=1.45),delay=.1)
+		invoke(lambda:sn.crate_audio(ID=11,pit=1.9),delay=.1)
 	invoke(cc.reset_audio,delay=.2)
 	for exR in scene.entities[:]:
 		if distance(cr,exR) < 1 and exR.collider != None:
@@ -320,7 +321,7 @@ class Nitro(Entity):
 				rh=random.uniform(.1,.2)
 				self.snd_time=random.randint(2,3)
 				if distance(LC.ACTOR.position,self.position) <= 2:
-					sn.crate_audio(ID=9)
+					sn.crate_audio(ID=9,pit=random.uniform(.7,1.1))
 				elif not self.is_stack:
 					self.animate_position((self.x,self.y+rh,self.z),duration=.02)
 					invoke(lambda:self.animate_position((self.x,self.start_y,self.z),duration=.2),delay=.15)

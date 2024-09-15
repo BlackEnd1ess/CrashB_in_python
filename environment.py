@@ -84,8 +84,8 @@ class LightAmbience(AmbientLight):
 class Fog(Entity):
 	def __init__(self):
 		super().__init__()
-		self.L_DST={0:(3,30),1:(2,20),2:(3,15),3:(10,30),4:(5,30),5:(5,20),6:(5,10)}
-		self.B_DST={0:(0,0),1:(-5,20),2:(0,10),3:(4,27),4:(8,15),5:(10,20),6:(5,10)}
+		self.L_DST={0:(3,30),1:(2,20),2:(3,15),3:(10,30),4:(5,30),5:(5,20),6:(15,30)}
+		self.B_DST={0:(0,0),1:(-5,20),2:(0,10),3:(4,27),4:(8,15),5:(10,20),6:(15,30)}
 		scene.fog_color=FOG_COL[st.day_mode]
 		scene.fog_density=self.L_DST[st.level_index]
 	def update(self):
@@ -93,7 +93,10 @@ class Fog(Entity):
 			scene.fog_density=self.B_DST[st.level_index]
 			return
 		if st.is_death_route:
-			scene.fog_density=(10,40)
+			if st.level_index == 1:
+				scene.fog_density=(10,40)
+			else:
+				scene.fog_density=(5,15)
 			return
 		scene.fog_density=self.L_DST[st.level_index]
 

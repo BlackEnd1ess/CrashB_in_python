@@ -2,7 +2,6 @@ import _core,status,item,sound,animation,level,player,_loc,settings,effect
 from ursina.shaders import *
 from ursina import *
 
-SFX=settings.SFX_VOLUME
 st=status
 sn=sound
 cc=_core
@@ -437,7 +436,7 @@ class SewerEscape(Entity):
 class SewerPlatform(Entity):
 	def __init__(self,pos):
 		pPF=omf+'l4/scn/'
-		super().__init__(model='cube',scale=(.5,.2,.5),collider=b,position=pos,alpha=.7,visible=False)
+		super().__init__(model='cube',name='swpl',scale=(.5,.2,.5),collider=b,position=pos,alpha=.7,visible=False)
 		self.vis=Entity(model=pPF+'ptf.ply',texture=pPF+'swr_ptf.tga',name='swp2',position=(self.x,self.y+.05,self.z),scale=.02,rotation_x=-90)
 		unlit_obj(self.vis)
 
@@ -451,7 +450,7 @@ class SewerWall(Entity):
 class SwimPlatform(Entity):
 	def __init__(self,pos):
 		swmi=omf+'l4/swr_swim/swr_swim'
-		super().__init__(model='cube',color=color.white,collider=b,position=pos,scale=(.5,.3,.5),visible=False)
+		super().__init__(model='cube',name='swpt',color=color.white,collider=b,position=pos,scale=(.5,.3,.5),visible=False)
 		self.opt=Entity(model=swmi+'.ply',texture=swmi+'.tga',scale=.1/200,rotation_x=-90,position=(self.x,self.y+.06,self.z))
 		self.active=False
 		self.spawn_y=self.y
@@ -484,7 +483,7 @@ class SewerPipe(Entity):## danger
 		swrp=omf+'l4/pipe/pipe_'
 		swu=str(typ)
 		ro_y={0:-90,1:-90,2:90,3:90}
-		super().__init__(model=swrp+swu+'.ply',texture=swrp+swu+'.png',position=pos,scale=.75,rotation=(-90,ro_y[typ],0))
+		super().__init__(model=swrp+swu+'.ply',texture=swrp+swu+'.png',name='swpi',position=pos,scale=.75,rotation=(-90,ro_y[typ],0))
 		self.danger=(typ == 3)
 		self.typ=typ
 		if typ == 0:
@@ -696,6 +695,49 @@ class RuinRuins(Entity):
 			super().__init__(model=rrn+'ruin_bg'+str(typ)+'.ply',texture=rrn+'ruin_scene.tga',position=pos,scale=.08,rotation=(-90,ro_y,0),double_sided=True)
 		unlit_obj(self)
 
+class LogDanger(Entity):
+	def __init__(self,pos,ro_y):
+		ldg=omf+'l5/log_danger/log_danger'
+		super().__init__(model=ldg+'.ply',texture=ldg+'.tga',position=pos,scale=.001,rotation=(-90,ro_y,0),collider=b,unlit=False)
+		self.spawn_pos=self.position
+		self.start_delay=.3
+		self.life_time=3
+		self.direc_y=0
+	def fly(self):
+		fsp=3.2
+		fdi={0:lambda:setattr(self,'z',self.z-time.dt*fsp),
+			90:lambda:setattr(self,'x',self.x-time.dt*fsp),
+			180:lambda:setattr(self,'z',self.z+time.dt*fsp),
+			-90:lambda:setattr(self,'x',self.x+time.dt*fsp)}
+		fdi[self.rotation_y]()
+		self.rotation_x-=time.dt*100
+	def hit_ground(self):
+		if self.direc_y == 0:
+			self.y-=time.dt*3
+			if self.y <= self.spawn_pos[1]-.4:
+				self.direc_y=1
+				if distance(self,LC.ACTOR) < 5:
+					sn.obj_audio(ID=11)
+			return
+		self.y+=time.dt*3
+		if self.y >= self.spawn_pos[1]+.3:
+			self.direc_y=0
+	def update(self):
+		if not st.gproc():
+			self.life_time=max(self.life_time-time.dt,0)
+			if self.life_time <= 0:
+				cc.purge_instance(self)
+				return
+			self.start_delay=max(self.start_delay-time.dt,0)
+			self.fly()
+			if self.start_delay <= 0:
+				self.hit_ground()
+				if self.intersects(LC.ACTOR):
+					if LC.ACTOR.is_attack:
+						cc.purge_instance(self)
+						return
+					cc.get_damage(LC.ACTOR,rsn=1)
+
 ###################
 ##################
 ## logic objects #
@@ -716,7 +758,7 @@ class CrateScore(Entity):## level reward
 		self.cc_text=Text(parent=scene,position=(self.x-.2,self.y,self.z),text=None,font='res/ui/font.ttf',color=color.rgb32(255,255,100),scale=10)
 	def update(self):
 		if not st.gproc():
-			tk=not(st.crates_in_level <= 0 or (LC.C_GEM and distance(self,LC.C_GEM) < .5))
+			tk=not(st.crates_in_level <= 0 or (LC.C_GEM and distance(self,LC.C_GEM) < .5) or (st.level_index == 5 and st.is_death_route))
 			self.cc_text.visible=tk
 			self.visible=tk
 			if tk:
@@ -738,7 +780,7 @@ class Corridor(Entity):
 		unlit_obj(self)
 
 class StartRoom(Entity):## game spawn point
-	def __init__(self,pos,lvID):
+	def __init__(self,pos):
 		super().__init__(model=omf+'ev/s_room/room1.ply',texture=omf+'ev/s_room/room.tga',position=pos,scale=(.07,.07,.08),rotation=(270,90))
 		self.floor0=Entity(model='cube',collider=b,position=(self.x,self.y+.6,self.z-.2),scale=(1.7,.5,1.7),visible=False)
 		self.floor1=Entity(model='cube',collider=b,position=(self.x,self.y+.2,self.z+1.7),scale=(2,.5,2),visible=False)
@@ -834,20 +876,17 @@ class GemPlatform(Entity):## gem platform
 		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L+20,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
 		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,collider=b,color=GMC[t])
 		self.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),position=(self.x,self.y-.011,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
+		self.org_color=self.color
 		self.start_y=self.y
 		self.catch_p=False
 		self.ta=LC.ACTOR
 		self.typ=t
 		if self.is_enabled:
-			self.platform_visual()
+			self.shader=unlit_shader
 			return
 		self.collider=None
 		self.bg_darkness.hide()
 		unlit_obj(self)
-	def platform_visual(self):
-		ld=.14
-		self.shine=SpotLight(position=(self.x-ld,self.y+.6,self.z-ld),color=self.color)
-		Entity(model='quad',scale=.01,position=self.shine.position,alpha=.7)
 	def update(self):
 		if not st.gproc():
 			if st.gem_path_solved:
@@ -868,19 +907,21 @@ class LevelScene(Entity):
 			self.texture=self.vpa+'bg_woods.png'
 		if st.level_index == 5:
 			self.texture=self.vpa+'bg_ruins.jpg'
-			self.color=color.rgb32(170,170,170)
+			self.color=color.rgb32(160,160,170)
 			self.orginal_tsc=self.texture_scale
+			self.orginal_x=self.x
 			self.orginal_y=self.y
 			self.bonus_y=-70
+			self.bonus_x=170
 			self.unlit=True
 			self.shader=unlit_shader
 			_loc.bgT=self
 	def update(self):
 		if st.level_index == 5:
-			if not st.bonus_round:
-				self.y=self.orginal_y
-				return
-			self.y=self.bonus_y
+			xp={True:lambda:setattr(self,'x',self.bonus_x),False:lambda:setattr(self,'x',self.orginal_x)}
+			yp={True:lambda:setattr(self,'y',self.bonus_y),False:lambda:setattr(self,'y',self.orginal_y)}
+			xp[st.is_death_route]()
+			yp[st.bonus_round]()
 
 class PseudoGemPlatform(Entity):
 	def __init__(self,pos,t):
@@ -936,7 +977,7 @@ class LevelFinish(Entity):## finish level
 			self.eff_w3.visible=cnnb
 			self.eff_w4.visible=cnnb
 			if csnd:
-				self.w_audio.volume=SFX
+				self.w_audio.volume=settings.SFX_VOLUME
 				return
 			self.w_audio.volume=0
 

@@ -6,8 +6,8 @@ npc_anim={0:7,#amadillo
 		2:12,#saw turtle
 		3:13,#vulture
 		4:15,#penguin
-		5:14,#seal
-		6:12,#hedgehog
+		5:12,#hedgehog
+		6:14,#seal
 		7:13,#eating plant
 		8:10,#rat
 		9:11,#lizard
@@ -22,81 +22,82 @@ af='res/pc/'
 mo='model'
 sn=sound
 cc=_core
-t=20
+t=18
 
 ## player animation
-def idle(d):
-	d.idle_anim+=time.dt*15
-	if d.idle_anim > 10.75:
-		d.idle_anim=0
+def idle(d,sp):
+	d.idfr+=time.dt*sp
+	if d.idfr > 10.75:
+		d.idfr=0
 	d.texture=af+'idle/crash.tga'
-	d.model=af+'idle/'+str(int(d.idle_anim))+'.ply'
+	d.model=af+'idle/'+str(int(d.idfr))+'.ply'
 
-def run(d):
-	d.run_anim+=time.dt*t
-	if d.run_anim > 10.9:
-		d.run_anim=0
+def run(d,sp):
+	d.rnfr+=time.dt*sp
+	if d.rnfr > 10.9:
+		d.rnfr=0
 	d.texture=af+'run/crash.tga'
-	d.model=af+'run/'+str(int(d.run_anim))+'.ply'
+	d.model=af+'run/'+str(int(d.rnfr))+'.ply'
 
-def run_s(d):
-	d.run_s_anim+=time.dt*t
-	if d.run_s_anim > 6.75:
-		d.run_s_anim=0
+def run_s(d,sp):
+	d.srfr+=time.dt*sp
+	if d.srfr > 6.75:
+		d.srfr=0
 	d.texture=af+'slide_start/crash.tga'
-	d.model=af+'slide_start/'+str(int(d.run_s_anim))+'.ply'
+	d.model=af+'slide_start/'+str(int(d.srfr))+'.ply'
 
-def slide_stop(d):
-	d.anim_slide_stop+=time.dt*t
-	if d.anim_slide_stop > 3.75:
-		d.anim_slide_stop=3
+def slide_stop(d,sp):
+	d.ssfr+=time.dt*sp
+	if d.ssfr > 3.9:
+		d.ssfr=3
 	d.texture=af+'slide_stop/crash.tga'
-	d.model=af+'slide_stop/'+str(int(d.anim_slide_stop))+'.ply'
+	d.model=af+'slide_stop/'+str(int(d.ssfr))+'.ply'
 
-def jup(d):
-	d.jump_anim+=time.dt*t
-	if d.jump_anim > 2.9:
-		d.jump_anim=2
+def jup(d,sp):
+	d.jmfr+=time.dt*sp
+	if d.jmfr > 2.9:
+		return
 	d.texture=af+'jmup/crash.tga'
-	d.model=af+'jmup/'+str(int(d.jump_anim))+'.ply'
+	d.model=af+'jmup/'+str(int(d.jmfr))+'.ply'
 
-def spin(d):
-	d.spin_anim+=time.dt*25
-	if d.spin_anim > 11.9:
-		d.spin_anim=0
+def spin(d,sp):
+	d.spfr+=time.dt*sp
+	if d.spfr > 11.9:
+		d.spfr=0
 	d.texture=af+'spn/crash.tga'
-	d.model=af+'spn/'+str(int(d.spin_anim))+'.ply'
+	d.model=af+'spn/'+str(int(d.spfr))+'.ply'
 
-def land(d):
-	d.land_anim+=time.dt*t
-	if d.land_anim > 12.9:
+def land(d,sp):
+	d.ldfr+=time.dt*sp
+	if d.ldfr > 12.9:
 		d.is_landing=False
-		d.land_anim=0
+		d.ldfr=0
 		return
 	d.texture=af+'lnd/crash.tga'
-	d.model=af+'lnd/'+str(int(d.land_anim))+'.ply'
+	d.model=af+'lnd/'+str(int(d.ldfr))+'.ply'
 
-def land_s(d):
-	d.land_s_anim+=time.dt*t
+def land_s(d,sp):
+	d.land_s_anim+=time.dt*sp
 	if d.land_s_anim > 7.9:
 		d.land_s_anim=0
 	d.texture=af+'slide_land/crash.tga'
 	d.model=af+'slide_land/'+str(int(d.land_anim))+'.ply'
 
-def fall(d):
-	d.fall_anim+=time.dt*t
-	if d.fall_anim > 7.9:
-		d.fall_anim=7
+def fall(d,sp):
+	if d.fafr < 7.99:
+		d.fafr=1
+	d.fafr+=time.dt*sp
 	d.texture=af+'fall/crash.tga'
-	d.model=af+'fall/'+str(int(d.fall_anim))+'.ply'
+	d.model=af+'fall/'+str(int(d.fafr))+'.ply'
 
-def flip(d):
-	d.flip_anim+=time.dt*t
-	if d.flip_anim > 16.9:
-		d.flip_anim=0
+def flip(d,sp):
+	d.flfr+=time.dt*sp
+	if d.flfr > 16.9:
 		d.is_flip=False
+		d.flfr=0
+		return
 	d.texture=af+'flp/crash.tga'
-	d.model=af+'flp/'+str(int(d.flip_anim))+'.ply'
+	d.model=af+'flp/'+str(int(d.flfr))+'.ply'
 
 ## crash death animationsa
 def angel_fly(c):
@@ -330,18 +331,27 @@ def hippo_dive(m):
 #gorilla
 gsp=30
 def gorilla_take(m):
-	m.anim_frame+=time.dt*25
+	m.anim_frame+=time.dt*20
 	if m.anim_frame > 32.9:
 		m.anim_frame=0
 		m.t_mode=1
+		m.throw_log()
+		return
 	m.model=nf+str(m)+'/'+str(int(m.anim_frame))+'.ply'
 def gorilla_throw(m):
-	m.anim_frame+=time.dt*20
-	if m.anim_frame > 10.9:
-		m.anim_frame=0
+	m.t_frame+=time.dt*20
+	if m.t_frame > 10.9:
+		m.t_frame=0
 		m.t_mode=0
 		return
-	m.model=nf+str(m)+'/act/'+str(int(m.anim_frame))+'.ply'
+	m.model=nf+str(m)+'/act/'+str(int(m.t_frame))+'.ply'
+def gorilla_fall(m):
+	m.f_frame+=time.dt*20
+	if m.f_frame > 10.9:
+		m.f_frame=0
+		cc.purge_instance(m)
+		return
+	m.model=nf+str(m)+'/fall/'+str(int(m.f_frame))+'.ply'
 
 ## object animations
 def door_open(d):

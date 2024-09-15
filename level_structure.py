@@ -9,36 +9,43 @@ n=npc
 
 #### DEV-LV STUCT ####
 def dev_object():
-	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(16,64),collider='box',texture='grass')
-	o.StartRoom(pos=(0,0,-32.2),lvID=st.level_index)
+	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass')
+	o.StartRoom(pos=(0,0,-32.2))
 	#o.LightArea(pos=(0,.5,-15))
-	for gv in range(0,6):
-		item.GemStone(pos=(-6+gv/2,.3,-23),c=gv)
-		if gv > 0:
-			o.GemPlatform(pos=(-7+gv,.3,-24),t=gv)
+	#for gv in range(0,6):
+	#	item.GemStone(pos=(-6+gv/2,.3,-23),c=gv)
+	#	if gv > 0:
+	#		o.GemPlatform(pos=(-7+gv,.3,-24),t=gv)
 def dev_crate():
-	mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,3,3])
-	mt.crate_block(ID=1,POS=(-6.5,.16,-18),CNT=[3,3,3])
-	mt.crate_block(ID=2,POS=(-5.5,.16,-18),CNT=[3,3,2])
-	mt.crate_block(ID=3,POS=(-4.5,.16,-18),CNT=[3,3,1])
-	mt.crate_block(ID=4,POS=(-3.5,.16,-18),CNT=[3,1,1])
-	mt.crate_block(ID=5,POS=(-2.5,.16,-18),CNT=[3,1,1])
-	mt.crate_block(ID=6,POS=(-1.5+.32,.16,-18),CNT=[1,1,1])
-	mt.crate_block(ID=7,POS=(-.5,.16,-18),CNT=[3,3,1])
-	mt.crate_block(ID=8,POS=(.5,.16,-18),CNT=[3,3,1])
-	mt.crate_block(ID=9,POS=(1.5+.32,.16,-18),CNT=[1,1,1])
-	mt.crate_block(ID=10,POS=(2.5+.32,.16,-18),CNT=[1,1,1])
-	mt.crate_block(ID=11,POS=(3.5+.32,.16,-18),CNT=[1,1,1])
-	mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,1])
-	mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,1])
+	#mt.crate_row(ID=1,POS=(0,.16,-22),CNT=20,WAY=0)
+	mt.crate_row(ID=7,POS=(0,.16,-20),CNT=12,WAY=0)
+	#mt.crate_row(ID=3,POS=(0,.16,-25),CNT=12,WAY=0)
+	#mt.bounce_twin(POS=(0,.16,-24),CNT=12,trs=1.6)
+	#mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,3,3])
+	#mt.crate_block(ID=1,POS=(-6.5,.16,-18),CNT=[3,3,3])
+	#mt.crate_block(ID=2,POS=(-5.5,.16,-18),CNT=[3,3,2])
+	#mt.crate_block(ID=3,POS=(-4.5,.16,-18),CNT=[3,3,1])
+	#mt.crate_block(ID=4,POS=(-3.5,.16,-18),CNT=[3,1,1])
+	#mt.crate_block(ID=5,POS=(-2.5,.16,-18),CNT=[3,1,1])
+	#mt.crate_block(ID=6,POS=(-1.5+.32,.16,-18),CNT=[1,1,1])
+	#mt.crate_block(ID=7,POS=(-.5,.16,-18),CNT=[3,3,1])
+	#mt.crate_block(ID=8,POS=(.5,.16,-18),CNT=[3,3,1])
+	#mt.crate_block(ID=9,POS=(1.5+.32,.16,-18),CNT=[1,1,1])
+	#mt.crate_block(ID=10,POS=(2.5+.32,.16,-18),CNT=[1,1,1])
+	#mt.crate_block(ID=11,POS=(3.5+.32,.16,-18),CNT=[1,1,1])
+	#mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[3,3,3])
+	#mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,1])
 def dev_wumpa():
-	mt.wumpa_row(POS=(0,.3,-16),CNT=20,WAY=0)
+	return#mt.wumpa_row(POS=(0,.3,-16),CNT=20,WAY=0)
 def dev_npc():
-	n.spawn(mID=14,pos=(0,0,-23),mDirec=3)
+	#n.spawn(mID=0,pos=(-1,0,-22),mDirec=1)
+	return
+	#for np in range(15):
+	#	n.spawn(mID=np,pos=(-7+np,0,-22),mDirec=1)
 
 #### LEVEL1 STUCT ####
 def lv1_object():
-	o.StartRoom(pos=(-.3,1,-66.5),lvID=st.level_index)
+	o.StartRoom(pos=(-.3,1,-66.5))
 	TS=16
 	cG=color.green
 	o.Water(pos=(0,.6,0),s=(10,128),c=color.rgb32(80,80,120),a=1)
@@ -188,7 +195,8 @@ def lv1_npc():
 
 #### LEVEL2 STUCT ####
 def lv2_object():
-	o.StartRoom(pos=(0,1,-64.2),lvID=st.level_index)
+	o.StartRoom(pos=(0,1,-64.2))
+	o.BonusPlatform(pos=(21.4,5.6,7.7))
 	o.spawn_ice_wall(pos=(-2.3,-.5,-58.6),cnt=8,d=0)
 	o.spawn_ice_wall(pos=(2.3,-.5,-58.6),cnt=7,d=1)
 	o.spawn_ice_wall(pos=(20,4,8),cnt=4,d=0)
@@ -197,7 +205,6 @@ def lv2_object():
 	o.Water(pos=(12,-.5,-32),s=(32,128),c=color.cyan,a=1)
 	o.Water(pos=(51,4.5,23.5),s=(64,40),c=color.cyan,a=1)
 	Entity(model='quad',scale=(512,512,1),color=color.white,z=64)
-	o.BonusPlatform(pos=(5,1.1,2.1))
 	#invisible walls
 	o.InvWall(pos=(16.5,9,1.75),sca=(30,15,.5))
 	#cam trigger
@@ -376,7 +383,7 @@ def lv2_npc():
 
 #### LEVEL3 STUCT ####
 def lv3_object():
-	o.StartRoom(pos=(0,0,-32.2),lvID=st.level_index)
+	o.StartRoom(pos=(0,0,-32.2))
 	o.BonusPlatform(pos=(.85,1.3,.85*8))
 	#temple
 	o.TempleWall(pos=(-2.55,-.3,-1.7),side=2)
@@ -528,7 +535,7 @@ def lv3_npc():
 
 #### LEVEL4 STUCT ####
 def lv4_object():
-	o.StartRoom(pos=(0,.3,-64.2),lvID=st.level_index)
+	o.StartRoom(pos=(0,.3,-64.2))
 	o.FallingZone(pos=(0,-1,0),s=(128,.3,128))
 	o.BonusPlatform(pos=(1.4,.9,4.8))
 	o.GemPlatform(pos=(4.2,2,31.7),t=5)
@@ -691,9 +698,9 @@ def lv4_crate():
 def lv4_wumpa():
 	return
 def lv4_npc():
-	n.spawn(pos=(0,.4,-53.5),mID=12,mDirec=0)
-	n.spawn(pos=(0,.4,-35.5),mID=12,mDirec=0)
-	n.spawn(pos=(0,.4,-16),mID=12,mDirec=0)
+	n.spawn(pos=(0,.25,-53.5),mID=12,mDirec=0)
+	n.spawn(pos=(0,.25,-35.5),mID=12,mDirec=0)
+	n.spawn(pos=(0,.25,-16),mID=12,mDirec=0)
 	n.spawn(pos=(.75,.75,8),mID=11,mDirec=0,ro_mode=0)
 	n.spawn(pos=(5.2,2.6,17),mID=10,mDirec=0,ro_mode=2)
 	n.spawn(pos=(5.3,1.75,10.1),mID=11,mDirec=1,ro_mode=0)
@@ -706,7 +713,7 @@ def lv4_npc():
 
 #### LEVEL5 STUCT ####
 def lv5_object():
-	o.StartRoom(pos=(0,0,-64.2),lvID=st.level_index)
+	o.StartRoom(pos=(0,0,-64.2))
 	o.BonusPlatform(pos=(9+.75*6,.5,-22))
 	o.GemPlatform(pos=(16.9,.4,-.1),t=2)
 	o.FallingZone(pos=(0,-2,0),s=(128,.3,128))

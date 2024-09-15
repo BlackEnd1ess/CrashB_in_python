@@ -1,7 +1,8 @@
-import crate,item,status,_core,objects,environment,map_tools,npc
+import crate,item,status,objects,map_tools,npc
 from ursina import *
 
 MT=map_tools
+st=status
 o=objects
 c=crate
 N=npc
@@ -294,10 +295,67 @@ def gem_route4():
 	Entity(model='cube',scale=(4,.5,7),position=(200,-.5,31),texture_scale=(4,5),collider='box',texture='res/terrain/l4/metal_01.jpg')
 	N.spawn(pos=(200,-.25,29),mID=11,mDirec=0,ro_mode=1)
 	o.SewerWall(pos=(200,-1.7,33))
-	item.GemStone(c=2,pos=(200,0,28.9))
+	if not 2 in st.COLOR_GEM:
+		item.GemStone(c=2,pos=(200,0,28.9))
 	o.GemPlatform(pos=(200,0,31.9),t=5)
 
 def gem_route5():
 	o.FallingZone(pos=(200,-5,0),s=(40,1,32))
 	o.spw_ruin_ptf(p=(200,-3,U),cnt=1,way=0)
-	o.spw_ruin_ptf(p=(200+.75,-3,U-.75),cnt=5,way=1)
+	o.spw_ruin_ptf(p=(200-.75,-3,U+1.5),cnt=3,way=0)
+	for rn_a in range(3):
+		o.spw_ruin_ptf(p=(200+(.75*3+rn_a*1.5),-3,U+1.5),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(206.5,-3,U+1.5),cnt=2,way=0)
+	for rn_b in range(5):
+		o.spw_ruin_ptf(p=(200.5+.75*8,-3,U+(.75*3+rn_b*1.5)),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(206.4-.75,-3,6.8),cnt=3,way=0)
+	for rn_c in range(7):
+		o.spw_ruin_ptf(p=(202+(.75*3-rn_c*1.5),-3,U+.75*13),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(194,-3,U+.75*13),cnt=3,way=1)
+	o.spw_ruin_ptf(p=(193.25,-3,U+.75*13),cnt=3,way=1)
+	for rn_dx in range(6):
+		for rn_dz in range(4):
+			o.spw_ruin_ptf(p=(189.5+(rn_dx*1.5),-3,U+(.75*17)+(rn_dz*1.3)),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(194,-3,15.5),cnt=5,way=1)
+	for llpf in range(7):
+		o.LoosePlatform(pos=(194,-2.8,19.5+llpf*1.5),t=0)
+	for fnp_x in range(4):
+		for fnp_z in range(4):
+			o.spw_ruin_ptf(p=(193.25+.75*fnp_x,-3,30+.75*fnp_z),cnt=1,way=0)
+	o.MonkeySculpture(pos=(194-1,-2.6,21),r=False,d=True,ro_y=-90)
+	o.MonkeySculpture(pos=(194+1,-2.6,24),r=False,d=True,ro_y=90)
+	o.MonkeySculpture(pos=(194-1,-2.6,27),r=False,d=True,ro_y=-90)
+	# npc
+	N.spawn(mID=14,pos=(206.4,-2.5,7.1),mDirec=0)
+	N.spawn(mID=14,pos=(195.2,-2.5,6.75),mDirec=3)
+	N.spawn(mID=14,pos=(206.75,-2.5,-1.5),mDirec=1)
+	N.spawn(mID=14,pos=(197.3,-2.5,9.7),mDirec=1)
+	N.spawn(mID=14,pos=(197.3,-2.5,12.3),mDirec=1)
+	N.spawn(mID=14,pos=(189.2,-2.5,11),mDirec=3)
+	N.spawn(mID=14,pos=(189.2,-2.5,13.6),mDirec=3)
+	#background
+	o.RuinRuins(pos=(198,-4,0),ro_y=-90,typ=3)
+	o.RuinRuins(pos=(193,-4,1),ro_y=-90,typ=3)
+	o.RuinRuins(pos=(209,-4,2),ro_y=90,typ=3)
+	o.RuinRuins(pos=(200,-3,1),ro_y=60,typ=0)
+	o.RuinRuins(pos=(202,-3,4),ro_y=90,typ=0)
+	o.RuinRuins(pos=(203.5,-3,1),ro_y=70,typ=0)
+	o.RuinRuins(pos=(203.7,-3,3.3),ro_y=0,typ=0)
+	o.RuinRuins(pos=(205,-3.2,3.3),ro_y=0,typ=0)
+	o.RuinRuins(pos=(199,-3,5),ro_y=90,typ=0)
+	o.RuinRuins(pos=(196.5,-2.4,8.2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(199,-2.5,9.2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(201.5,-2.6,8.2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(204,-2.3,9.2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(206.5,-2.4,8.2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(209,-2.6,9.2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(211.5,-2.5,8.2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(190,-3,8.2),ro_y=90,typ=0)
+	o.RuinRuins(pos=(192,-2.9,7.3),ro_y=0,typ=0)
+	o.RuinRuins(pos=(197,-4,22),ro_y=90,typ=3)
+	o.RuinRuins(pos=(191,-4,22),ro_y=-90,typ=3)
+	o.RuinRuins(pos=(198,-4,35),ro_y=90,typ=3)
+	o.RuinRuins(pos=(191,-4,35),ro_y=-90,typ=3)
+	if not 3 in st.COLOR_GEM:
+		item.GemStone(c=3,pos=(194.4,-2,37.7))
+	o.EndRoom(pos=(195.5,-1.01,37.7),c=color.rgb32(220,100,220))

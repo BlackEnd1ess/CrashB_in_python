@@ -5,10 +5,12 @@ from ursina import *
 w_pa='res/ui/icon/wumpa_fruit/w'
 wmpf='res/ui/digit_wumpa/'
 crtf='res/ui/digit_crate/'
+crti='res/ui/crate_icon/'
 lvtf='res/ui/digit_live/'
 _fnt='res/ui/font.ttf'
 btxt='res/ui/bonus/'
 _icn='res/ui/icon/'
+
 q='quad'
 
 CU=camera.ui
@@ -40,7 +42,7 @@ def text_blink(M,t):
 			t.color=M.font_color
 		M.blink_time=.3
 
-def live_get_anim(): 
+def live_get_anim():
 	lvA=Entity(parent=CU,model='quad',texture=_icn+'crash_live.tga',scale=(.1,.09),position=(.5,.43,0),color=color.gold)
 	lvA.animate_x(.65,duration=.3)
 	invoke(lambda:cc.purge_instance(lvA),delay=3.1)
@@ -101,11 +103,11 @@ class WumpaCounter(Entity):
 				self.digit_0.hide()
 				self.digit_1.hide()
 
-class CrateCounter(Animation):
+class CrateCounter(Entity):
 	def __init__(self):
 		s=self
 		s.tpd=crtf
-		super().__init__(_icn+'crate.gif',parent=CU,scale=.1,color=color.rgb32(90,70,0),position=(-.2,.43,0),fps=4,visible=False)
+		super().__init__(model=q,texture=None,parent=CU,scale=.1,position=(-.2,.43,0),fps=4,visible=False)
 		s.col_digit0=Entity(model=q,texture=None,scale=.06,position=(s.x+.08,s.y,s.z),parent=CU,visible=False)
 		s.col_digit1=Entity(model=q,texture=None,scale=.06,position=(s.x+.14,s.y,s.z),parent=CU,visible=False)
 		s.col_digit2=Entity(model=q,texture=None,scale=.06,position=(s.x+.2,s.y,self.z),parent=CU,visible=False)
@@ -113,6 +115,12 @@ class CrateCounter(Animation):
 		s.req_digit0=Entity(model=q,texture=None,scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
 		s.req_digit1=Entity(model=q,texture=None,scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
 		s.req_digit2=Entity(model=q,texture=None,scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
+		self.icf=0
+	def crate_refr_ico(self):
+		self.icf+=time.dt*30
+		if self.icf > 63.9:
+			self.icf=0
+		self.texture=crti+'anim_crt_'+str(int(self.icf))+'.png'
 	def remv_ui(self):
 		s=self
 		s.visible=False
@@ -162,6 +170,7 @@ class CrateCounter(Animation):
 				if st.show_crates <= 0:
 					self.remv_ui()
 					return
+				self.crate_refr_ico()
 				self.col_count_refr()
 				self.req_count_refr()
 
@@ -299,7 +308,7 @@ class GameOverScreen(Entity):## call event?
 class LoadingScreen(Entity):
 	def __init__(self):
 		super().__init__(model=q,color=color.black,scale=(16,10),visible=False,parent=CU,z=1)
-		self.ltext=Text('Loading...',font=_fnt,scale=3.5,position=(-.15,.1),color=color.orange,visible=False,parent=CU)
+		self.ltext=Text('LOADING...',font=_fnt,scale=3.5,position=(-.15,.1),color=color.orange,visible=False,parent=CU)
 		self.lname=Text('',font=_fnt,scale=2,position=(-.25,-.05),color=color.azure,visible=False,parent=CU)
 	def update(self):
 		if st.loading:
@@ -397,7 +406,7 @@ class PauseMenu(Entity):
 		self.select_1=Text(self.selection[1],font='res/ui/font.ttf',scale=3,tag=1,position=(vF-.5,vF-.275,self.z-1),color=self.font_color,parent=CU,visible=False)
 		self.select_2=Text(self.selection[2],font='res/ui/font.ttf',scale=3,tag=2,position=(vF-.5,vF-.35,self.z-1),color=self.font_color,parent=CU,visible=False)
 		self.crystal_counter=Text('0/5',font='res/ui/font.ttf',scale=6,position=(vF+.325,vF+.325,self.z-1),color=color.rgb32(160,0,160),parent=CU,visible=False)
-		self.gem_counter=Text('0/15 GEMS',font='res/ui/font.ttf',scale=5,position=(vF+.3,vF-.1,self.z-1),color=color.rgb32(170,170,190),parent=CU,visible=False)
+		self.gem_counter=Text('0/10 GEMS',font='res/ui/font.ttf',scale=5,position=(vF+.3,vF-.1,self.z-1),color=color.rgb32(170,170,190),parent=CU,visible=False)
 		self.add_text=Text('+ 0',font='res/ui/font.ttf',scale=4,position=(vF+.325,vF+.025,vF-1),color=self.font_color,parent=CU,visible=False)
 		self.game_progress=Text('Progress 0%',font='res/ui/font.ttf',scale=3,position=(vF+.325,vF-.35,self.z-1),color=color.gold,parent=CU,visible=False)
 		##animation
@@ -427,9 +436,9 @@ class PauseMenu(Entity):
 						cc.clear_level(passed=False)
 	def check_collected(self):
 		gems_total=st.color_gems+st.clear_gems
-		self.gem_counter.text=str(gems_total)+'/15 GEMS'
+		self.gem_counter.text=str(gems_total)+'/10 GEMS'
 		self.crystal_counter.text=str(st.collected_crystals)+'/5'
-		self.game_progress.text='Progress '+str(st.color_gems*6+st.clear_gems*7+st.collected_crystals*7)+'%'
+		self.game_progress.text='Progress '+str(st.color_gems*5+st.clear_gems*5+st.collected_crystals*10)+'%'
 		self.add_text.text='+ '+str(st.clear_gems)
 		if self.need_loop:
 			for gC in st.COLOR_GEM:

@@ -24,11 +24,11 @@ def pos_info(c):
 	#print(f"mt.bounce_twin(POS=({sx},{sy},{sz}),CNT=1)")
 
 ## multible crate spawn
-def bounce_twin(POS,CNT):
+def bounce_twin(POS,CNT,trs=1.55):
 	for cbt in range(CNT):
 		pO=.32*cbt
 		c.place_crate(ID=3,p=(POS[0]+pO,POS[1],POS[2]))
-		c.place_crate(ID=3,p=(POS[0]+pO,POS[1]+1.55,POS[2]))
+		c.place_crate(ID=3,p=(POS[0]+pO,POS[1]+trs,POS[2]))
 
 def steel_bridge(POS,CNT):
 	for cst in range(CNT):

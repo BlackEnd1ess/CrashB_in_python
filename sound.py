@@ -8,6 +8,17 @@ SA='res/snd/npc/'
 se=settings
 cc=_core
 
+##landing sound material
+def foot_step(c,o):
+	if cc.is_crate(o) and o.vnum != 0:
+		return
+	if o.name in ['swpt','swpl']:
+		pc_audio(ID=13)
+	elif c.in_water > 0:
+		pc_audio(ID=10)
+	else:
+		pc_audio(ID=2)
+
 ## ambience sound
 snd_rain=VS+'rain.wav'
 SND_THU={0:'thunder_start',
@@ -92,7 +103,8 @@ SND_OBJ={0:'spawn',
 		7:'electric',
 		8:'npc_beat',
 		9:'collapse_floor',
-		10:'fire_throw'}
+		10:'fire_throw',
+		11:'log_hit'}
 def obj_audio(ID,pit=1):
 	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
 	cc.purge_instance(ob)

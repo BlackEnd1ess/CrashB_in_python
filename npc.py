@@ -1,11 +1,11 @@
-import settings,_core,math,animation,status,sound,_loc,effect
+import settings,_core,math,animation,status,sound,_loc,effect,objects
 from math import radians,cos,sin
 from ursina.shaders import *
 from ursina import *
 
 npf='res/npc/'
-m_SC=.8/1000
-ro=-90
+m_SC=.8/1200
+rx=-90
 an=animation
 sn=sound
 cc=_core
@@ -36,7 +36,7 @@ class Amadillo(Entity):
 	def __init__(self,p,d):
 		nN='amadillo'
 		self.vnum=0
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC,position=p)
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(500,700,300))
 		cc.set_val_npc(self,di=d)
 		self.move_speed=1
@@ -49,7 +49,7 @@ class Turtle(Entity):
 	def __init__(self,p,d):
 		nN='turtle'
 		self.vnum=1
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC,position=p)
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
 		cc.set_val_npc(self,di=d)
 		self.move_speed=.7
@@ -62,7 +62,7 @@ class SawTurtle(Entity):
 	def __init__(self,p,d):
 		nN='saw_turtle'
 		self.vnum=2
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC,position=p)
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
 		cc.set_val_npc(self,di=d)
 		self.def_mode=True
@@ -76,17 +76,15 @@ class Vulture(Entity):
 	def __init__(self,p,d):
 		nN='vulture'
 		self.vnum=3
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC,position=p)
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(300,600,300))
 		cc.set_val_npc(self,di=d)
 		self.target=LC.ACTOR
 		self.move_speed=1.2
 	def wait_on_player(self):
-		pv=abs(self.target.y-self.y)
-		pd=distance_xz(self.target,self)
-		if pv < 2 and pd < 2:
+		an.npc_walking(self)
+		if distance_xz(self.target,self) < 2:
 			self.x=self.target.x
-			self.y=self.target.y
 	def update(self):
 		if not st.gproc():
 			if not self.is_hitten:
@@ -97,8 +95,8 @@ class Penguin(Entity):
 	def __init__(self,p,d):
 		nN='penguin'
 		self.vnum=4
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC,position=p)
-		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,300,800))
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
+		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(300,300,600))
 		cc.set_val_npc(self,di=d)
 		self.move_speed=1.1
 	def update(self):
@@ -110,8 +108,8 @@ class Hedgehog(Entity):
 	def __init__(self,p,d):
 		nN='hedgehog'
 		self.vnum=5
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC/1.5,position=p)
-		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,300,300))
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC/1.5,position=p)
+		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+250),size=Vec3(400,400,400))
 		cc.set_val_npc(self,di=d)
 		self.def_mode=False
 		self.move_speed=1.1
@@ -132,7 +130,7 @@ class Seal(Entity):
 	def __init__(self,p,d):
 		nN='seal'
 		self.vnum=6
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC,position=p)
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,800,300))
 		cc.set_val_npc(self,di=d)
 		self.move_speed=1.1
@@ -150,8 +148,8 @@ class EatingPlant(Entity):
 	def __init__(self,p,d):
 		nN='eating_plant'
 		self.vnum=7
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC,position=p)
-		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(400,400,1200))
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
+		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+500),size=Vec3(400,400,700))
 		cc.set_val_npc(self,di=d)
 		self.m_direction=0
 		self.ta=LC.ACTOR
@@ -171,12 +169,16 @@ class EatingPlant(Entity):
 				if not (self.ta.is_attack or self.ta.jumping):
 					if status.aku_hit < 1:
 						self.eat=True
-					cc.get_damage(LC.ACTOR,rsn=5)
+					if self.ta.y <= self.y+.2:
+						cc.get_damage(LC.ACTOR,rsn=5)
 				invoke(lambda:setattr(self,'atk',False),delay=1)
 	def update(self):
 		if not st.gproc():
 			if self.is_hitten:
 				cc.fly_away(self)
+				return
+			if self.is_purge:
+				cc.npc_purge(self)
 				return
 			if not self.eat:
 				if self.atk:
@@ -192,8 +194,8 @@ class Rat(Entity):
 	def __init__(self,p,d):
 		nN='rat'
 		self.vnum=8
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC,position=p)
-		self.collider=BoxCollider(self,size=Vec3(500,500,300))
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
+		self.collider=BoxCollider(self,center=(self.x,self.y,self.z+200),size=Vec3(500,600,300))
 		cc.set_val_npc(self,di=d)
 		self.move_speed=.25
 		self.snd_time=1
@@ -212,8 +214,8 @@ class Lizard(Entity):
 	def __init__(self,p,d):
 		nN='lizard'
 		self.vnum=9
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC,position=p)
-		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(500,500,1100))
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
+		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(500,500,700))
 		cc.set_val_npc(self,di=d)
 		self.move_speed=1.3
 		self.spawn_pos=p
@@ -226,8 +228,8 @@ class Scrubber(Entity):
 	def __init__(self,p,d,ro):
 		nN='scrubber'
 		self.vnum=10
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC,position=p)
-		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
+		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+350),size=Vec3(400,600,500))
 		cc.set_val_npc(self,di=d)
 		self.move_speed=1.2
 		self.n_snd=False
@@ -247,9 +249,9 @@ class Mouse(Entity):
 	def __init__(self,p,d,ro):
 		nN='mouse'
 		self.vnum=11
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC,position=p)
-		self.collider=BoxCollider(self,size=Vec3(500,700,500))
-		cc.set_val_npc(self,tu=t,di=d)
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
+		self.collider=BoxCollider(self,center=(self.x,self.y,self.z+150),size=Vec3(500,700,200))
+		cc.set_val_npc(self,di=d)
 		self.move_speed=1.2
 		self.snd_time=.5
 		self.n_snd=False
@@ -269,8 +271,8 @@ class Eel(Entity):
 	def __init__(self,p,d):
 		nN='eel'
 		self.vnum=12
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/0.tga',rotation_x=ro,scale=m_SC,position=p)
-		self.collider=BoxCollider(self,size=Vec3(500,700,500))
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/0.tga',rotation_x=rx,scale=m_SC,position=p)
+		self.collider=BoxCollider(self,center=(self.x,self.y,self.z+100),size=Vec3(500,700,200))
 		cc.set_val_npc(self,di=d)
 	def update(self):
 		if not st.gproc():
@@ -283,7 +285,7 @@ class SewerMine(Entity):
 	def __init__(self,p,d):
 		nN='sewer_mine'
 		self.vnum=13
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=ro,scale=m_SC,position=p)
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
 		self.collider=BoxCollider(self,size=Vec3(500,700,500))
 		cc.set_val_npc(self,di=d)
 		self.move_speed=1.2
@@ -318,21 +320,30 @@ class Gorilla(Entity):
 		nN='gorilla'
 		self.vnum=14
 		rmo={0:0,1:90,2:180,3:-90}
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation=(ro,rmo[d],0),position=p,scale=m_SC)
-		#self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+200),size=Vec3(300,600,300))
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation=(rx,rmo[d],0),position=p,scale=m_SC)
+		self.collider=BoxCollider(self,center=Vec3(self.x,self.y,self.z+450),size=Vec3(400,400,800))
 		self.throw_act={0:lambda:an.gorilla_take(self),1:lambda:an.gorilla_throw(self)}
 		cc.set_val_npc(self,di=d)
 		self.t_sleep=.5
 		self.t_mode=0
+		self.f_frame=0
+		self.t_frame=0
+	def throw_log(self):
+		invoke(lambda:objects.LogDanger(pos=(self.x,self.y+.6,self.z),ro_y=self.rotation_y),delay=.1)
 	def update(self):
 		if not st.gproc():
-			self.throw_act[self.t_mode]()
+			if self.is_hitten or self.is_purge:
+				an.gorilla_fall(self)
+				return
+			self.t_sleep=max(self.t_sleep-time.dt,0)
+			if self.t_sleep <= 0:
+				self.throw_act[self.t_mode]()
 
 ## passive NPC
 class AkuAkuMask(Entity):
 	def __init__(self,pos):
 		self.tpa='res/npc/akuaku/'
-		super().__init__(model=None,texture=None,scale=.00075,rotation_x=ro,position=pos,unlit=False)
+		super().__init__(model=None,texture=None,scale=.00075,rotation_x=rx,position=pos,unlit=False)
 		self.skin_0=self.tpa+'aku.ply'
 		self.tex_0=self.tpa+'aku.tga'
 		self.skin_1=self.tpa+'aku2.ply'
@@ -395,7 +406,7 @@ class AkuAkuMask(Entity):
 class Hippo(Entity):
 	def __init__(self,pos):
 		hPO=npf+'hippo/'
-		super().__init__(model=hPO+'0.ply',texture=hPO+'hpo.tga',position=pos,rotation_x=ro,scale=.0005,double_sided=True,unlit=False)
+		super().__init__(model=hPO+'0.ply',texture=hPO+'hpo.tga',position=pos,rotation_x=rx,scale=.0005,double_sided=True,unlit=False)
 		self.col=Entity(model='cube',name='HPP',position=(self.x,self.y-.15,self.z-.2),scale=(.6,.5,1),visible=False,collider='box')
 		self.col.active=False
 		self.active=False

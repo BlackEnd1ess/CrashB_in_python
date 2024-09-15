@@ -28,7 +28,7 @@ class TeslaStroke(Entity):
 
 class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
-		super().__init__(model='quad',texture=ef+'fire_ball.png',position=(pos[0],pos[1]+.25,pos[2]),scale=.2,collider='box',shader=unlit_shader,color=random.choice([color.orange,color.red]))
+		super().__init__(model='quad',name='fthr',texture=ef+'fire_ball.png',position=(pos[0],pos[1]+.25,pos[2]),scale=.2,collider='box',shader=unlit_shader,color=random.choice([color.orange,color.red]))
 		self.life_time=.5
 		self.direc=ro_y
 		self.mvs=4

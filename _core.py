@@ -11,22 +11,17 @@ N=npc
 
 ## player
 def set_val(c):
-	for _a in ['run_anim','jmp_typ','jump_anim','idle_anim','spin_anim','land_anim','fall_anim','flip_anim','anim_slide_stop','run_s_anim','attack_time','walk_snd','fall_time','death_anim','slide_fwd','in_water']:
-		setattr(c,_a,0)
-	for _v in ['aq_bonus','walking','jumping','landed','tcr','first_land','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
-		setattr(c,_v,False)
+	for _a in ['rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','srfr','walk_snd','fall_time','slide_fwd','in_water']:
+		setattr(c,_a,0)#animation frames
+	for _v in ['aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
+		setattr(c,_v,False)#flags
 	c.move_speed=2.4
+	c.gravity=2.5
 	c.direc=(0,0,0)
-	c.vpos=None
+	c.vpos=c.y
 	c.indoor=.5
 	c.CMS=4
 	_loc.ACTOR=c
-def set_jump_type(c,typ):
-	c.fall_time=0
-	c.jmp_typ=typ
-	jmp_h={0:c.y+1.3,1:c.y+1,2:c.y+1.7,3:c.y+1.1}
-	c.vpos=jmp_h[typ]
-	c.jumping=True
 def get_damage(c,rsn):
 	if st.aku_hit > 2:
 		return
@@ -102,7 +97,7 @@ def various_val(c):
 def c_attack(c):
 	for e in scene.entities[:]:
 		if distance(c,e) < .5:
-			if is_crate(e):
+			if is_crate(e) and e.collider != None:
 				if e.vnum in [3,11]:
 					e.empty_destroy()
 				else:
@@ -250,46 +245,24 @@ def game_pause():
 	st.pause=False
 
 ## collisions
-def obj_ceiling(c):
+def check_ceiling(c):
 	vc=c.intersects(ignore=[c,LC.shdw])
 	if vc and vc.normal == Vec3(0,-1,0):
 		e=vc.entity
-		if not (str(e) in LC.item_lst or str(e) in LC.trigger_lst):
+		if not (str(e) in LC.item_lst+LC.trigger_lst):
 			if is_crate(e) and not c.tcr:
 				c.tcr=True
 				e.destroy()
 				invoke(lambda:setattr(c,'tcr',False),delay=.1)
 			c.y=c.y
 			c.jumping=False
-def obj_grnd(c):
-	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=[c,LC.shdw],debug=False)
-	vp=vj.entity
-	if vj.normal and not (str(vp) in LC.item_lst or str(vp) in LC.dangers or str(vp) in LC.trigger_lst):
-		if (is_crate(vp) and not vp.vnum == 0) and not (is_crate(vp) and vp.vnum in [9,10,11] and vp.activ) and c.fall_time > .1:
-			crate_action(e=vp)
-			return
-		if is_enemie(vp) and not vp.is_hitten:
-			jump_enemy(c=c,e=vp)
-			return
-		landing(c,e=vj.world_point.y,o=vp)
-		if str(vp.name) == 'mptf':
-			vp.mv_player()
-		if str(vp) == 'water_hit':
-			dth_event(c,rsn=2)
-			return
-		c.is_slippery=(str(vp.name) == 'iceg')
-		return
-	c.landed=False
-def obj_walls(c):
+def check_wall(c):
 	if st.aku_hit > 2:
 		c_invincible(c)
 	hT=c.intersects(ignore=[c,LC.shdw])
 	jV=hT.entity
 	xa=str(jV)
 	if hT and hT.normal != Vec3(0,1,0):
-		if isinstance(jV,crate.Nitro) and jV.collider != None:
-			jV.destroy()
-			return
 		if xa in LC.trigger_lst:
 			jV.do_act()
 			return
@@ -303,32 +276,59 @@ def obj_walls(c):
 			get_damage(c,rsn=1)
 			return
 		c.position-=c.direc*time.dt*c.move_speed
-def obj_act(e):
+def check_floor(c):
+	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=[c,LC.shdw],debug=False)
+	vp=vj.entity
+	if vj.normal and not (str(vp) in LC.item_lst+LC.dangers+LC.trigger_lst):
+		if not c.jumping:
+			landing(c,e=vj.world_point.y,o=vp)
+		return
+	c.landed=False
+def landing(c,e,o):
+	floor_interact(c,o)
+	if c.y < e:
+		c.y=e
+	c.landed=True
+	if c.frst_lnd:
+		c.frst_lnd=False
+		c.is_flip=False
+		c.flfr=0
+		c.ldfr=0
+		c.jmfr=0
+		c.is_landing=True
+		c.fall_time=0
+		c.gravity=2.5
+		sn.foot_step(c,o)
+def floor_interact(c,e):
 	u=str(e)
-	e.catch_p=(u in ['bonus_platform','gem_platform'])
-	e.active=(u == 'HPP')
+	if is_crate(e) and not ((e.vnum in [0,14]) or (e.vnum in [9,10,11] and e.activ)) and c.fall_time > .1:
+		if e.vnum in [7,8]:
+			c.jump_typ(t=4)
+			e.c_action()
+			return
+		if e.vnum == 3:
+			c.jump_typ(t=3)
+		else:
+			c.jump_typ(t=2)
+		e.destroy()
+		return
+	if is_enemie(e) and not e.is_hitten:
+		if (e.vnum in [2,9]) or (e.vnum == 5 and e.def_mode):
+			get_damage(c,rsn=1)
+		else:
+			e.is_purge=True
+			c.jump_typ(t=2)
+			sn.pc_audio(ID=5)
+		return
+	c.is_slippery=(u == 'iceg')
+	if u in ['bonus_platform','gem_platform']:e.catch_p=True
 	if (u == 'plank' and e.typ == 1):e.pl_touch()
 	if u == 'falling_zone':dth_event(c=LC.ACTOR,rsn=0)
 	if u == 'loose_platform':e.active=True
 	if u == 'swim_platform':e.active=True
-def landing(c,e,o):
-	c.landed=True
-	if c.y < e and not c.jumping:
-		c.y=e
-	if c.first_land:
-		c.first_land=False
-		c.is_landing=True
-		c.land_anim=0
-		c.fall_time=0
-		if str(o) in ['sewer_platform','swim_platform']:
-			sn.pc_audio(ID=13)
-		elif c.in_water > 0:
-			sn.pc_audio(ID=10)
-		else:
-			sn.pc_audio(ID=2)
-		obj_act(o)
-	c.is_flip=False
-	c.flip_anim=0
+	if u == 'water_hit':dth_event(c,rsn=2)
+	if u == 'mptf':e.mv_player()
+	if u == 'HPP':e.active=()
 def ptf_up(p,c):
 	if not c.freezed:
 		c.freezed=True
@@ -342,11 +342,6 @@ def ptf_up(p,c):
 			load_bonus(c)
 			return
 		load_gem_route(c)
-def jump_enemy(c,e):
-	if (e.vnum in [2,9]) or (e.vnum == 5 and e.def_mode):
-		get_damage(c,rsn=1)
-		return
-	kill_by_jump(m=e,c=c)
 
 ## interface,collectables
 def wumpa_count(n):
@@ -363,13 +358,13 @@ def wumpa_count(n):
 			ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]))
 		ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]+.1))
 def give_extra_live():
-	ui.live_get_anim()
 	sn.ui_audio(ID=3)
 	if st.bonus_round:
 		st.lives_bonus+=1
 		return
 	if st.extra_lives < 99:
 		st.extra_lives+=1
+	ui.live_get_anim()
 	st.show_lives=5
 def show_status_ui():
 	st.show_wumpas=5
@@ -399,18 +394,6 @@ def is_crate(e):
 	if any(isinstance(e,crate_class) for crate_class in cck):
 		return True
 	return False
-def crate_action(e):
-	A=LC.ACTOR
-	if e.vnum in [7,8]:
-		set_jump_type(A,typ=2)
-		e.c_action()
-		return
-	if e.vnum != 14:
-		if e.vnum == 3:
-			set_jump_type(A,typ=3)
-		else:
-			set_jump_type(A,typ=1)
-		e.destroy()
 def check_cstack():
 	for cSD in scene.entities[:]:
 		if is_crate(cSD) and not cSD.vnum == 3:
@@ -513,9 +496,9 @@ def npc_action(m):
 		if m.vnum in [10,11] and m.ro_mode > 0:
 			ro_di={1:lambda:npc_circle_move_xz(m),2:lambda:npc_circle_move_y(m)}
 			ro_di[m.ro_mode]()
-		else:
-			if m.vnum != 12:
-				npc_walk(m)
+			return
+		if m.vnum != 12:
+			npc_walk(m)
 		return
 	fly_away(m)
 def npc_purge(m):
@@ -596,10 +579,6 @@ def fly_away(n):
 			PNL.is_hitten=True
 			wumpa_count(1)
 			npc_purge(n)
-def kill_by_jump(m,c):
-	m.is_purge=True
-	set_jump_type(c,typ=1)
-	sn.pc_audio(ID=5)
 def is_enemie(n):
 	nnk=[N.Amadillo,N.Turtle,N.SawTurtle,
 		N.Penguin,N.Hedgehog,N.Seal,
@@ -613,3 +592,7 @@ def bash_enemie(e,h):
 	e.is_hitten=True
 	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)
 	sn.obj_audio(ID=8)
+
+## game progress
+def save_game():
+	return

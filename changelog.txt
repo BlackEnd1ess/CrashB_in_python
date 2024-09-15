@@ -116,7 +116,6 @@
 - fixxed AkuAku invincible in danger zones and hit by enemies
 - AkuAku invincible destroys enemie,crates and collect wumpas in range < .5
 - AkuAku floats while player is idle
-- AkuAku Mask glows on typ 2
 - Level 4 Fixxed Falling Zone
 - GemPlatforms reflect light effect
 - LoadingScreen Displays Level Name below main text
@@ -127,3 +126,18 @@
 - orginal extra live icon
 - Gorilla NPC
 - Level 5 - New Background Objects
+
+#10.09.2024
+- fixxed npc collider
+
+#11.09.2024
+- improved physics (gravity)
+- fixxed crashs fall animation
+- fixxed shadow-point over fruits
+
+#15.09.2024
+- improved physics and object/landing process
+- fixxed crashs jump animation
+- fixxed nitro collision
+- orginal crate counter icon
+- extra live animation dont display in bonus

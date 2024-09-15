@@ -1,6 +1,8 @@
 - game options
 - save game
 - warp room
+- rain cards
+- jump/fall speed
 
 ##MODULE
 imageio
