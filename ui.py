@@ -307,9 +307,9 @@ class GameOverScreen(Entity):## call event?
 ## Loading Screen
 class LoadingScreen(Entity):
 	def __init__(self):
-		super().__init__(model=q,color=color.black,scale=(16,10),visible=False,parent=CU,z=1)
-		self.ltext=Text('LOADING...',font=_fnt,scale=3.5,position=(-.15,.1),color=color.orange,visible=False,parent=CU)
-		self.lname=Text('',font=_fnt,scale=2,position=(-.25,-.05),color=color.azure,visible=False,parent=CU)
+		super().__init__(model=q,color=color.black,scale=(16,10),visible=False,parent=CU,z=-1,eternal=True)
+		self.ltext=Text('LOADING...',font=_fnt,scale=3.5,position=(-.15,.1,-1.1),color=color.orange,visible=False,parent=CU,eternal=True)
+		self.lname=Text('',font=_fnt,scale=2,position=(-.25,-.05,-1.1),color=color.azure,visible=False,parent=CU,eternal=True)
 	def update(self):
 		if st.loading:
 			self.lname.text=LC.lv_name[st.level_index]
@@ -326,34 +326,28 @@ class WhiteScreen(Entity):
 		super().__init__(model=q,parent=CU,scale=5,color=color.white,alpha=1)
 		self.timer=0
 	def update(self):
-		if self.timer < 2:
-			self.timer+=time.dt/2
-			self.alpha=self.timer
-			if self.timer >= 1:
-				if not st.loading:
-					st.loading=True
-					if st.level_index > 0:
-						st.level_index=0
-					LoadingScreen()
-				if self.timer >= 2:
-					self.parent=None
-					scene.entities.remove(self)
-					self.disable()
+		s=self
+		if s.timer < 2:
+			s.timer+=time.dt/2
+			s.alpha=s.timer
+			if s.timer > 2:
+				cc.purge_instance(s)
 
 class BlackScreen(Entity):
 	def __init__(self):
 		super().__init__(model=q,parent=CU,scale=5,color=color.black,alpha=1)
 		self.timer=2
-		status.wait_screen=True
+		st.wait_screen=True
 	def update(self):
 		if not st.gproc():
-			self.timer=max(self.timer-time.dt/3,0)
-			if self.timer <= 1:
-				status.wait_screen=False
-				self.alpha=self.timer
-				if self.timer <= 0:
-					self.parent=None
-					cc.purge_instance(self)
+			s=self
+			s.timer=max(s.timer-time.dt/3,0)
+			if s.timer <= 1:
+				st.wait_screen=False
+				s.alpha=s.timer
+				if s.timer <= 0:
+					s.parent=None
+					cc.purge_instance(s)
 
 
 ## Bonusround Text
@@ -373,7 +367,7 @@ class BonusText(Entity):
 			return
 		self.ch_seq+=1
 	def update(self):
-		if not status.gproc() and not status.wait_screen:
+		if not status.gproc() and not st.wait_screen:
 			if not st.bonus_round:
 				cc.purge_instance(self)
 				return
@@ -432,7 +426,6 @@ class PauseMenu(Entity):
 					print('menu options')
 				if self.choose == 2:
 					if not st.LEVEL_CLEAN:
-						status.LEVEL_CLEAN=True
 						cc.clear_level(passed=False)
 	def check_collected(self):
 		gems_total=st.color_gems+st.clear_gems

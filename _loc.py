@@ -45,6 +45,9 @@ day_m={0:'empty',
 	5:'empty',
 	6:'empty'}
 
+#Ambient Light
+AMBIENT_LIGHT=None
+
 #LevelScene for Thunderbolts
 bgT=None
 

@@ -1,4 +1,4 @@
-import status,_loc,ui
+import status,_loc,level
 from ursina import *
 st=status
 
@@ -21,11 +21,9 @@ class LevelInfo(Entity):
 		s.lv_clr_gem=Animation(icp+'gem.gif',position=(s.x+1.09,s.y,s.z),scale=sca,parent=k,color=req_col)
 		s.lv_name=Text(_loc.lv_name[idx],font=fnt,position=(s.x,s.y+.04,s.z),scale=2.5,color=color.orange,parent=k)
 		s.lv_col_gem.scale_y=gcsa[idx]
-		s.font_color=color.orange
-		s.blink_time=.3
 		s.lvID=idx
 		for iwb in range(3):
-			Entity(model=q,texture=icb,position=(s.lv_crystal.x+iwb/7,s.y,1),scale=.16,parent=k,color=color.rgb32(150,180,150))
+			Entity(model=q,texture=icb,position=(s.lv_crystal.x+iwb/7,s.y,1),scale=.16,parent=k,color=color.rgb32(120,140,120))
 		if idx in st.CRYSTAL:
 			s.lv_crystal.color=color.magenta
 		if idx in st.CLEAR_GEM:
@@ -42,11 +40,29 @@ class LevelInfo(Entity):
 			s.lv_col_gem.color=color.violet
 	def update(self):
 		if st.selected_level == self.lvID:
-			self.blink_time=max(self.blink_time-time.dt,0)
-			if self.blink_time <= 0:
-				ui.text_blink(self,t=self.lv_name)
+			self.lv_name.color=color.white
+			return
+		self.lv_name.color=color.orange
+
+class LvSelect(Entity):
+	def __init__(self):
+		super().__init__()
+	def input(self,key):
+		if key == 's' and st.selected_level < 5:
+			st.selected_level+=1
+		if key == 'w' and st.selected_level > 1:
+			st.selected_level-=1
+		if key == 'enter':
+			scene.clear()
+			st.level_index=st.selected_level
+			st.loading=True
+			level.main_instance(st.selected_level)
 
 def level_select():
+	st.LV_CLEAR_PROCESS=False
+	st.level_index=0
 	Entity(model=q,texture='res/background/wroom.png',scale=(2,1),parent=k,color=color.rgb32(140,160,140),position=(0,0,2))
+	LvSelect()
 	for lvs in range(1,6):
 		LevelInfo(idx=lvs,pos=(-.8,.5-lvs/6))
+	st.loading=False

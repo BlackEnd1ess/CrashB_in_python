@@ -5,9 +5,9 @@ checkpoint=None
 day_mode=''
 
 ## game progress items
-COLOR_GEM=[1,2,3,4,5]
-CLEAR_GEM=[1,2,3,4,5]
-CRYSTAL=[1,2,3,4,5]
+COLOR_GEM=[]
+CLEAR_GEM=[]
+CRYSTAL=[]
 
 ## reset instances
 NPC_RESET=[]
@@ -62,7 +62,6 @@ bonus_round=False
 weather_thunder=False
 gem_path_solved=False
 is_death_route=False
-preload_phase=False
 is_time_trial=False
 
 b_audio=False

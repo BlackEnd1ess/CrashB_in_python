@@ -141,3 +141,7 @@
 - fixxed nitro collision
 - orginal crate counter icon
 - extra live animation dont display in bonus
+
+#18.09.2024
+- Level Selector
+- Remember collectables

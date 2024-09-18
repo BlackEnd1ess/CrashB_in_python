@@ -1,4 +1,4 @@
-import ui,crate,item,status,sound,npc,settings,_loc,math
+import ui,crate,item,status,sound,npc,settings,_loc,math,warproom
 from math import atan2,sqrt
 from ursina import *
 
@@ -209,7 +209,7 @@ def reset_npc():
 def jmp_lv_fin():
 	if not st.LEVEL_CLEAN:
 		purge_instance(LC.ACTOR)
-		status.LEVEL_CLEAN=True
+		st.LEVEL_CLEAN=True
 		clear_level(passed=True)
 def clear_level(passed):
 	st.LV_CLEAR_PROCESS=True
@@ -218,17 +218,50 @@ def clear_level(passed):
 		collect_rewards()
 		ui.WhiteScreen()
 		return
-	ui.BlackScreen()
+	st.loading=True
+	delete_states()
+	invoke(lambda:warproom.level_select(),delay=3)
+def delete_states():
+	st.level_index=0
+	st.crates_in_bonus=0
+	st.crates_in_level=0
+	st.crate_bonus=0
+	st.crate_count=0
+	st.crate_to_sv=0
+	st.fails=0
+	st.NPC_RESET.clear()
+	st.W_RESET.clear()
+	st.C_RESET.clear()
+	st.level_crystal=False
+	st.level_col_gem=False
+	st.level_cle_gem=False
+	st.gem_path_solved=False
+	st.is_death_route=False
+	st.level_solved=False
+	st.bonus_solved=False
+	st.bonus_round=False
+	st.LEVEL_CLEAN=False
+	st.pause=False
+	st.day_mode=''
+	level_ready=False
 def collect_rewards():
+	cdx=st.level_index
 	if st.level_crystal:
-		status.CRYSTAL.append(status.level_index)
-		status.collected_crystals+=1
+		st.CRYSTAL.append(cdx)
+		st.collected_crystals+=1
+	if st.level_cle_gem:
+		st.CLEAR_GEM.append(cdx)
+		st.clear_gems+=1
 	if st.level_col_gem:
-		status.COLOR_GEM.append(status.level_index)
-		status.color_gems+=1
-	if st.level_col_gem:
-		status.CLEAR_GEM.append(status.level_index)
-		status.clear_gems+=1
+		wcg={1:4,#lv1#blue
+			2:1,#lv2#red
+			3:5,#lv3#yellow
+			4:2,#lv4#green
+			5:3}#lv5#purple
+		st.COLOR_GEM.append(wcg[cdx])
+		st.color_gems+=1
+	delete_states()
+	invoke(lambda:warproom.level_select(),delay=2)
 def reset_audio():
 	status.e_audio=False
 	status.n_audio=False

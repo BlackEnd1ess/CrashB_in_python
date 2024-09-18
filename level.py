@@ -24,15 +24,14 @@ def free_level():
 ## level settings
 def main_instance(idx):
 	st.loading=True
-	st.level_index=idx
 	st.weather_thunder=(idx == 5)
-	level_info={1:lambda:level1(),
+	lv_info={1:lambda:level1(),
 			2:lambda:level2(),
 			3:lambda:level3(),
 			4:lambda:level4(),
 			5:lambda:level5(),
 			6:lambda:test()}
-	level_info[idx]()
+	lv_info[idx]()
 	env.env_switch(idx)
 	bn.load_bonus_level(idx)
 

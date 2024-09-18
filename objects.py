@@ -1,4 +1,4 @@
-import _core,status,item,sound,animation,level,player,_loc,settings,effect
+import _core,status,item,sound,animation,level,player,_loc,settings,effect,npc
 from ursina.shaders import *
 from ursina import *
 
@@ -111,7 +111,6 @@ class Tree2D(Entity):
 
 class MossPlatform(Entity):
 	def __init__(self,p,ptm):
-		#scale=.00075
 		MVP=omf+'l1/p_moss/moss'
 		super().__init__(model='cube',name='mptf',texture=None,position=p,scale=(.6,1,.6),collider=b,visible=False)
 		self.opt_model=Entity(model=MVP+'.ply',texture=MVP+'.tga',scale=.75/1000,position=(p[0],p[1]+.475,p[2]),rotation_x=-90,double_sided=True)
@@ -744,6 +743,8 @@ class LogDanger(Entity):
 class FallingZone(Entity):## falling
 	def __init__(self,pos,s):
 		super().__init__(model='cube',collider=b,scale=s,position=pos,color=color.rgb32(0,0,0))
+		if st.level_index != 5:
+			self.visible=False
 	def do_act(self):
 		cc.dth_event(LC.ACTOR,rsn=0)
 
@@ -791,7 +792,9 @@ class StartRoom(Entity):## game spawn point
 		self.curt=Entity(model='plane',position=(self.x,self.y+0.01,self.z),color=color.black,scale=3)
 		RoomDoor(pos=(self.x,self.y+1.9,self.z+2.3),typ=0)
 		player.CrashB(pos=(self.x,self.y+.85,self.z-.1))
-		status.checkpoint=(self.x,self.y+2,self.z)
+		if st.aku_hit > 0:
+			npc.AkuAkuMask(pos=(self.x-.3,self.y+1,self.z+.5))
+		st.checkpoint=(self.x,self.y+2,self.z)
 		camera.position=(self.x,self.y+2,self.z-3)
 		IndoorZone(pos=(self.x,self.y+1.5,self.z),sca=(3,2,7))
 		LODProcess()
@@ -985,6 +988,7 @@ class IndoorZone(Entity):## disable rain
 	def __init__(self,pos,sca):
 		super().__init__(model='cube',scale=sca,position=pos,collider=b,visible=False)
 	def do_act(self):
+		LC.ACTOR.CMS=3.2
 		LC.ACTOR.indoor=.3
 
 class LODProcess(Entity):## Level of Detail

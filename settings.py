@@ -1,6 +1,6 @@
 from ursina.shaders import *
+import _core,environment
 from ursina import *
-import _core,ui
 
 debg=True
 w=window
@@ -16,13 +16,13 @@ def load():
 	##
 	w.fullscreen=False
 	w.borderless=False
-	ui.LoadingScreen()
 	cam()
 
 def cam():
+	environment.init_amb_light()
 	camera.rotation_x=15
 	camera.fov=60
-	print('settings loaded')
+	print('default settings loaded')
 
 MUSIC_VOLUME=1
 SFX_VOLUME=1

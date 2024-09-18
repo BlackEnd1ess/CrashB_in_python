@@ -1,8 +1,10 @@
-import status,settings,_loc,sound,effect
+import status,_loc,sound
 from ursina import *
 
 st=status
+LC=_loc
 c=color
+
 SKY_COL={'day':c.rgb32(200,230,255),
 		'empty':c.black,
 		'evening':c.rgb32(255,110,90),
@@ -30,22 +32,21 @@ AMB_COL={'day':c.rgb32(180,180,180),
 		'snow':c.rgb32(200,160,210),
 		'woods':c.rgb32(120,130,120)}
 
-LGT_COL={'day':c.rgb32(0,0,0),
-		'empty':c.rgb32(100,180,100),
-		'evening':c.rgb32(255,100,0),
-		'night':c.rgb32(0,0,0),
-		'dark':c.rgb32(0,0,0),
-		'rain':c.rgb32(0,0,0),
-		'snow':c.rgb32(0,230,255),
-		'woods':c.rgb32(50,150,100)}
+def init_amb_light():#called 1 time
+	LightAmbient()
 
 def env_switch(idx):
-	st.day_mode=_loc.day_m[idx]
+	st.day_mode=LC.day_m[idx]
 	SkyBox()
-	LightAmbience()
+	LC.AMBIENT_LIGHT.color=AMB_COL[st.day_mode]
 	Fog()
-	if idx in [1,5]:
+	if idx in [1,5]:#rain in level 1 and 5
 		RainFall()
+
+class LightAmbient(AmbientLight):
+	def __init__(self):
+		super().__init__(eternal=True)
+		LC.AMBIENT_LIGHT=self
 
 class SkyBox(Sky):
 	def __init__(self):
@@ -55,15 +56,15 @@ class SkyBox(Sky):
 		self.thunder_time=3
 	def thunder_bolt(self):
 		self.color=color.white
-		_loc.bgT.texture=self.bgr+'bg_ruins_th.jpg'
-		_loc.bgT.texture_scale=_loc.bgT.orginal_tsc
+		LC.bgT.texture=self.bgr+'bg_ruins_th.jpg'
+		LC.bgT.texture_scale=LC.bgT.orginal_tsc
 		sound.thu_audio(ID=0,pit=random.uniform(.1,.5))
 		invoke(lambda:sound.thu_audio(ID=random.randint(1,2),pit=random.uniform(.1,.5)),delay=.5)
 		invoke(self.reset_sky,delay=random.uniform(.1,.4))
 	def reset_sky(self):
 		self.color=self.setting
-		_loc.bgT.texture=self.bgr+'bg_ruins.jpg'
-		_loc.bgT.texture_scale=_loc.bgT.orginal_tsc
+		LC.bgT.texture=self.bgr+'bg_ruins.jpg'
+		LC.bgT.texture_scale=LC.bgT.orginal_tsc
 		self.thunder_time=random.randint(4,10)
 	def update(self):
 		if not st.gproc() and st.level_index == 5:
@@ -76,10 +77,6 @@ class SkyBox(Sky):
 				self.color=c.black
 				return
 			self.color=self.setting
-
-class LightAmbience(AmbientLight):
-	def __init__(self):
-		super().__init__(color=AMB_COL[status.day_mode])
 
 class Fog(Entity):
 	def __init__(self):
@@ -105,7 +102,7 @@ class RainFall(FrameAnimation3d):
 		j=.0042
 		super().__init__('res/objects/ev/rain/rain',scale=(j,j/1.5,j),color=color.rgb32(180,180,200),fps=80,loop=True,alpha=0,rotation=(0,10,10),visible=False)
 		sound.Rainfall()
-		self.ta=_loc.ACTOR
+		self.ta=LC.ACTOR
 		self.ta.indoor=.5
 	def rain_start(self):
 		self.fps=60
@@ -128,7 +125,3 @@ class RainFall(FrameAnimation3d):
 				return
 			self.rain_start()
 			self.follow_p()
-
-class SnowFall(Entity):
-	def __init__(self):
-		return

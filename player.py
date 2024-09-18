@@ -1,4 +1,4 @@
-import _core,status,animation,sound,_loc,map_tools,npc
+import _core,status,animation,sound,_loc,map_tools
 from ursina.shaders import *
 from math import atan2
 from ursina import *
@@ -32,21 +32,19 @@ class CrashB(Entity):
 	def __init__(self,pos):
 		super().__init__(model=cHr+'crash.ply',texture=cHr+'crash.tga',scale=.1/110,rotation_x=-90,position=pos,unlit=False)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(200,200,600))
+		cc.set_val(self)
+		an.WarpRingEffect(pos=self.position)
+		pShadow()
 		self.KEY_ACT={'escape':lambda:cc.game_pause(),
 				'space':lambda:self.check_jump(),
 				'tab':lambda:cc.show_status_ui(),
 				'alt':lambda:self.spin_attack(),
 				'w':lambda:setattr(self,'CMS',3.2),
-				's':lambda:setattr(self,'CMS',4.4),
+				's':lambda:setattr(self,'CMS',4.2),
 				#dev inp
 				'u':lambda:setattr(self,'position',(194,0,31)),
 				'b':lambda:print(self.position),
 				'e':lambda:EditorCamera()}
-		cc.set_val(self)
-		an.WarpRingEffect(pos=self.position)
-		pShadow()
-		if st.aku_hit > 0:
-			npc.AkuAkuMask(pos=(self.x-.3,self.y+.3,self.z+.5))
 	def input(self,key):
 		if st.p_rst(self):
 			return
@@ -57,7 +55,7 @@ class CrashB(Entity):
 			self.is_attack=True
 			self.is_landing=False
 			sn.pc_audio(ID=3)
-			invoke(lambda:setattr(self,'is_attack',False),delay=.6)
+			invoke(lambda:setattr(self,'is_attack',False),delay=.5)
 			return
 		sn.pc_audio(ID=0)
 	def move(self):
@@ -71,7 +69,7 @@ class CrashB(Entity):
 			mc=raycast(s.world_position+(0,.1,0),s.direc,distance=.2,ignore=[s,LC.shdw],debug=False)
 			me=mc.entity
 			mn=str(me)
-			if not mc or (mc and mn in LC.item_lst,LC.trigger_lst):
+			if not mc or (mc and mn in LC.item_lst+LC.trigger_lst):
 				s.position+=s.direc*time.dt*s.move_speed
 			if (mn == 'swpi' and me.danger) or (mn == 'fthr'):
 				cc.get_damage(s,rsn=3)
