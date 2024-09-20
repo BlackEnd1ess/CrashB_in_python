@@ -186,6 +186,7 @@ class AkuMusic(Audio):
 		if not status.gproc():
 			if not self.playing or status.death_event:
 				status.aku_hit=2
+				status.is_invincible=False
 				pc_audio(ID=6,pit=.8)
 				self.fade_out()
 				cc.purge_instance(self)

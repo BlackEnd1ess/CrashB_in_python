@@ -11,6 +11,8 @@ n=npc
 def dev_object():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass')
 	o.StartRoom(pos=(0,0,-32.2))
+	o.BonusPlatform(pos=(0,.5,-25))
+	o.SwimPlatform(pos=(0,.3,-22))
 	#o.LightArea(pos=(0,.5,-15))
 	#for gv in range(0,6):
 	#	item.GemStone(pos=(-6+gv/2,.3,-23),c=gv)
@@ -18,7 +20,7 @@ def dev_object():
 	#		o.GemPlatform(pos=(-7+gv,.3,-24),t=gv)
 def dev_crate():
 	#mt.crate_row(ID=1,POS=(0,.16,-22),CNT=20,WAY=0)
-	mt.crate_row(ID=7,POS=(0,.16,-20),CNT=12,WAY=0)
+	#mt.crate_row(ID=7,POS=(0,.16,-20),CNT=12,WAY=0)
 	#mt.crate_row(ID=3,POS=(0,.16,-25),CNT=12,WAY=0)
 	#mt.bounce_twin(POS=(0,.16,-24),CNT=12,trs=1.6)
 	#mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,3,3])
@@ -26,14 +28,14 @@ def dev_crate():
 	#mt.crate_block(ID=2,POS=(-5.5,.16,-18),CNT=[3,3,2])
 	#mt.crate_block(ID=3,POS=(-4.5,.16,-18),CNT=[3,3,1])
 	#mt.crate_block(ID=4,POS=(-3.5,.16,-18),CNT=[3,1,1])
-	#mt.crate_block(ID=5,POS=(-2.5,.16,-18),CNT=[3,1,1])
+	#mt.crate_block(ID=5,POS=(-2.5,.16,-18),CNT=[6,1,1])
 	#mt.crate_block(ID=6,POS=(-1.5+.32,.16,-18),CNT=[1,1,1])
 	#mt.crate_block(ID=7,POS=(-.5,.16,-18),CNT=[3,3,1])
 	#mt.crate_block(ID=8,POS=(.5,.16,-18),CNT=[3,3,1])
 	#mt.crate_block(ID=9,POS=(1.5+.32,.16,-18),CNT=[1,1,1])
 	#mt.crate_block(ID=10,POS=(2.5+.32,.16,-18),CNT=[1,1,1])
 	#mt.crate_block(ID=11,POS=(3.5+.32,.16,-18),CNT=[1,1,1])
-	#mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[3,3,3])
+	mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,1])
 	#mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,1])
 def dev_wumpa():
 	return#mt.wumpa_row(POS=(0,.3,-16),CNT=20,WAY=0)

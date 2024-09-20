@@ -33,7 +33,8 @@ AMB_COL={'day':c.rgb32(180,180,180),
 		'woods':c.rgb32(120,130,120)}
 
 def init_amb_light():#called 1 time
-	LightAmbient()
+	amv=AmbientLight(color=color.gray)
+	LC.AMBIENT_LIGHT=amv
 
 def env_switch(idx):
 	st.day_mode=LC.day_m[idx]
@@ -42,11 +43,6 @@ def env_switch(idx):
 	Fog()
 	if idx in [1,5]:#rain in level 1 and 5
 		RainFall()
-
-class LightAmbient(AmbientLight):
-	def __init__(self):
-		super().__init__(eternal=True)
-		LC.AMBIENT_LIGHT=self
 
 class SkyBox(Sky):
 	def __init__(self):

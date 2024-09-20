@@ -9,7 +9,7 @@ ef='res/effects/'
 
 class Sparkle(Entity):
 	def __init__(self,pos):
-		super().__init__(model='quad',texture=ef+'sparkle.tga',position=pos,scale=.05,shader=unlit_shader)
+		super().__init__(model='quad',texture=ef+'sparkle.tga',position=pos,scale=.04,shader=unlit_shader)
 		self.mode=0
 	def update(self):
 		if not st.gproc():
@@ -20,7 +20,7 @@ class Sparkle(Entity):
 				return
 			self.scale-=Vec3(time.dt/2,time.dt/2,0)
 			if self.scale_x <= 0:
-				_core.purge_instance(self)
+				cc.purge_instance(self)
 
 class TeslaStroke(Entity):
 	def __init__(self,pos):

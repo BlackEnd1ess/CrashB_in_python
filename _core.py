@@ -20,14 +20,14 @@ def set_val(c):
 	c.direc=(0,0,0)
 	c.vpos=c.y
 	c.indoor=.5
-	c.CMS=4
+	c.CMS=3
 	_loc.ACTOR=c
 def get_damage(c,rsn):
 	if st.aku_hit > 2:
 		return
 	if not (c.injured or st.death_event):
 		if st.aku_hit > 0:
-			status.aku_hit-=1
+			st.aku_hit-=1
 			c.injured=True
 			c.hurt_visual()
 			sn.pc_audio(ID=6,pit=.8)
@@ -45,7 +45,7 @@ def dth_event(c,rsn):
 			sn.pc_audio(ID=14,pit=.8)
 		else:
 			sn.pc_audio(ID=7,pit=.8)
-		status.death_event=True
+		st.death_event=True
 		c.freezed=True
 		c.death_action(rsn=rsn)
 def reset_state(c):
@@ -81,7 +81,7 @@ def reset_state(c):
 	c.position=status.checkpoint
 	camera.position=c.position
 	camera.rotation=(15,0,0)
-	status.death_event=False
+	st.death_event=False
 	c.visible=True
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def game_over():
@@ -97,13 +97,13 @@ def various_val(c):
 def c_attack(c):
 	for e in scene.entities[:]:
 		if distance(c,e) < .5:
-			if is_crate(e) and e.collider != None:
+			if (is_crate(e) and e.collider != None):
 				if e.vnum in [3,11]:
 					e.empty_destroy()
 				else:
 					if not e.falling and not e.vnum == 13:
 						e.destroy()
-			if is_enemie(e) and not e.is_hitten:
+			if is_enemie(e) and not (e.is_hitten or e.is_purge):
 				if (e.vnum == 1) or (e.vnum == 5 and e.def_mode):
 					get_damage(c,rsn=1)
 				bash_enemie(e,h=c)
@@ -116,7 +116,7 @@ def c_slide(c):
 			c.slide_fwd-=time.dt
 			if c.slide_fwd <= 0:
 				c.slide_fwd=0
-				status.p_last_direc=None
+				st.p_last_direc=None
 		return
 	if c.move_speed < 4:
 		c.move_speed+=time.dt
@@ -205,7 +205,7 @@ def reset_npc():
 			npc.spawn(mID=NP.vnum,pos=NP.spawn_pos,mDirec=NP.m_direction,ro_mode=NP.ro_mode)
 		else:
 			npc.spawn(mID=NP.vnum,pos=NP.spawn_pos,mDirec=NP.m_direction)
-	status.NPC_RESET.clear()
+	st.NPC_RESET.clear()
 def jmp_lv_fin():
 	if not st.LEVEL_CLEAN:
 		purge_instance(LC.ACTOR)
@@ -263,9 +263,9 @@ def collect_rewards():
 	delete_states()
 	invoke(lambda:warproom.level_select(),delay=2)
 def reset_audio():
-	status.e_audio=False
-	status.n_audio=False
-	status.b_audio=False
+	st.e_audio=False
+	st.n_audio=False
+	st.b_audio=False
 def purge_instance(v):
 	v.parent=None
 	scene.entities.remove(v)
@@ -355,13 +355,12 @@ def floor_interact(c,e):
 		return
 	c.is_slippery=(u == 'iceg')
 	if u in ['bonus_platform','gem_platform']:e.catch_p=True
+	if u in ['loose_platform','swpt','HPP']:e.active=True
 	if (u == 'plank' and e.typ == 1):e.pl_touch()
 	if u == 'falling_zone':dth_event(c=LC.ACTOR,rsn=0)
-	if u == 'loose_platform':e.active=True
-	if u == 'swim_platform':e.active=True
 	if u == 'water_hit':dth_event(c,rsn=2)
 	if u == 'mptf':e.mv_player()
-	if u == 'HPP':e.active=()
+
 def ptf_up(p,c):
 	if not c.freezed:
 		c.freezed=True
@@ -471,26 +470,26 @@ def enter_bonus(c):
 	ui.BonusText()
 	c.position=(0,-35,-3)
 	camera.y=-35
-	status.loading=False
+	st.loading=False
 	c.freezed=False
 def back_to_level(c):
 	ui.BlackScreen()
 	if st.is_death_route:
-		status.is_death_route=False
-		status.gem_path_solved=True
+		st.is_death_route=False
+		st.gem_path_solved=True
 	if st.bonus_round:
-		status.bonus_round=False
-		status.bonus_solved=True
+		st.bonus_round=False
+		st.bonus_solved=True
 	dMN=_loc.day_m
 	st.day_mode=dMN[st.level_index]
 	c.position=st.checkpoint
 	c.freezed=False
 	camera.y=c.y+.5
-	status.loading=False
+	st.loading=False
 
 ## gem route
 def load_gem_route(c):
-	status.loading=True
+	st.loading=True
 	if st.is_death_route:
 		invoke(lambda:back_to_level(c),delay=.5)
 		return
@@ -500,10 +499,10 @@ def load_droute(c):
 	if st.is_death_route:
 		c.back_to_level(c)
 		return
-	status.is_death_route=True
+	st.is_death_route=True
 	c.position=(200,1,-3)
 	camera.position=(200,.5,-3)
-	status.loading=False
+	st.loading=False
 	c.freezed=False
 	sn.SpecialMusic(T=st.level_index)
 

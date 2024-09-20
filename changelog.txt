@@ -145,3 +145,6 @@
 #18.09.2024
 - Level Selector
 - Remember collectables
+
+#19.09.2024
+- UI Sound Effect up/down/enter

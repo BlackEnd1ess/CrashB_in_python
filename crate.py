@@ -181,7 +181,9 @@ class AkuAku(Entity):
 		if st.aku_hit < 4:
 			st.aku_hit+=1
 			if st.aku_hit >= 3:
-				sn.AkuMusic()
+				if not st.is_invincible:
+					st.is_invincible=True
+					sn.AkuMusic()
 		if not st.aku_exist:
 			npc.AkuAkuMask(pos=(self.x,self.y,self.z))
 		destroy_event(self)
@@ -315,16 +317,17 @@ class Nitro(Entity):
 	def destroy(self):
 		destroy_event(self)
 	def update(self):
-		if not st.gproc() and self.visible:
-			self.snd_time=max(self.snd_time-time.dt,0)
-			if self.snd_time <= 0:
+		s=self
+		if not st.gproc() and s.visible:
+			s.snd_time=max(s.snd_time-time.dt,0)
+			if s.snd_time <= 0:
 				rh=random.uniform(.1,.2)
-				self.snd_time=random.randint(2,3)
-				if distance(LC.ACTOR.position,self.position) <= 2:
-					sn.crate_audio(ID=9,pit=random.uniform(.7,1.1))
-				elif not self.is_stack:
-					self.animate_position((self.x,self.y+rh,self.z),duration=.02)
-					invoke(lambda:self.animate_position((self.x,self.start_y,self.z),duration=.2),delay=.15)
+				s.snd_time=random.randint(2,3)
+				if distance(LC.ACTOR.position,s.position) <= 2:
+					sn.crate_audio(ID=9,pit=random.uniform(.8,1.1))
+				elif not s.is_stack:
+					s.animate_position((s.x,s.y+rh,s.z),duration=.02)
+					invoke(lambda:s.animate_position((s.x,s.start_y,s.z),duration=.2),delay=.15)
 
 class Air(Entity):
 	def __init__(self,pos,m,l,pse):

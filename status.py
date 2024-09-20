@@ -5,9 +5,9 @@ checkpoint=None
 day_mode=''
 
 ## game progress items
-COLOR_GEM=[]
-CLEAR_GEM=[]
-CRYSTAL=[]
+COLOR_GEM=[1,2,4,5]
+CLEAR_GEM=[1,2,3,4]
+CRYSTAL=[1,2,3,4]
 
 ## reset instances
 NPC_RESET=[]
@@ -18,7 +18,7 @@ C_RESET=[]
 p_last_direc=None
 selected_level=1
 level_index=0
-aku_hit=1
+aku_hit=2
 fails=0
 
 ## wumpa count
@@ -37,9 +37,9 @@ lives_bonus=0
 extra_lives=4
 
 ## collected gems/crystal
-collected_crystals=0
-color_gems=0
-clear_gems=0
+collected_crystals=4
+color_gems=4
+clear_gems=4
 
 ## ui timer
 show_wumpas=0
@@ -68,6 +68,7 @@ b_audio=False
 e_audio=False
 n_audio=False
 
+is_invincible=False
 wait_screen=False
 death_event=False
 aku_exist=False

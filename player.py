@@ -165,7 +165,7 @@ class CrashB(Entity):
 		if (s.landed and s.is_landing) and not (s.walking and s.jumping and s.is_attack):
 			an.land(s,sp=18)
 			return
-		if st.p_idle(s):
+		if st.p_idle(s) or self.freezed:
 			an.idle(s,sp=16)
 			return
 	def hurt_visual(self):

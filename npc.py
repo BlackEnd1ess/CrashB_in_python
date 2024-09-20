@@ -354,6 +354,7 @@ class AkuAkuMask(Entity):
 		self.flt_di=0
 		self.spt=.5
 		self.change_skin()
+		self.spkw=0
 	def change_skin(self):
 		if st.aku_hit > 1:
 			self.model=self.skin_1
@@ -363,25 +364,29 @@ class AkuAkuMask(Entity):
 		self.model=self.skin_0
 		self.texture=self.tex_0
 	def spark(self):
-		self.spt=max(self.spt-time.dt,0)
-		if self.spt <= 0:
-			self.spt=1
-			if self.ta.warped:
-				effect.Sparkle((self.x+random.uniform(-.1,.1),self.y+random.uniform(-.1,.1),self.z+random.uniform(-.1,.1)))
+		s=self
+		s.spt=max(s.spt-time.dt,0)
+		if s.spt <= 0:
+			s.spt=1
+			s.spkw+=1
+			if s.spkw > 2:
+				effect.Sparkle((s.x+random.uniform(-.1,.1),s.y+random.uniform(-.1,.1),s.z+random.uniform(-.1,.1)))
 	def follow_player(self):
 		TG=self.ta
 		aSP=time.dt*8
 		self.rotation_y=lerp(self.rotation_y,TG.rotation_y,aSP)
 		if st.aku_hit < 3:
+			self.scale=.00075
 			if not self.ta.walking and self.ta.landed:
 				self.floating()
 			else:
 				self.position=lerp(self.position,(TG.x-.25,TG.y+.6,TG.z-.4),aSP)
 				self.last_y=self.y
 			return
+		self.scale=.0012
 		fwd=Vec3(-sin(radians(TG.rotation_y)),0,-cos(radians(TG.rotation_y)))
 		mask_pos=TG.position+fwd*.25
-		self.position=(mask_pos.x,TG.y+.6,mask_pos.z)
+		self.position=(mask_pos.x,TG.y+.5,mask_pos.z)
 	def check_dist_player(self):
 		if distance(self,self.ta) > 2:
 			self.position=self.ta.position

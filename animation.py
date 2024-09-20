@@ -267,7 +267,7 @@ class WarpRingEffect(Entity): ## spawn animation
 		self.rings=0
 		self.times=0
 	def update(self):
-		if cc.level_ready:
+		if not status.gproc() and cc.level_ready:
 			s=self
 			if not s.activ:
 				s.activ=True
