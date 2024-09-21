@@ -148,3 +148,9 @@
 
 #19.09.2024
 - UI Sound Effect up/down/enter
+
+#21.09.2024
+- Game Over Screen: Restart / Quit Game
+- fixxed aku sparkle on start
+- Gorilla Logs fly away by attack
+- fixxed multible akuaku music

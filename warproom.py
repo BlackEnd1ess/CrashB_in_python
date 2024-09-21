@@ -6,7 +6,7 @@ sn=sound
 class LvSelect(Entity):
 	def __init__(self):
 		super().__init__()
-		self.bgm=Audio('res/snd/music/ev/wroom.mp3',volume=settings.MUSIC_VOLUME)
+		self.bgm=Audio('res/snd/music/ev/wroom.mp3',volume=settings.MUSIC_VOLUME,loop=True)
 	def input(self,key):
 		if key == 's' and st.selected_level < 5:
 			st.selected_level+=1
@@ -30,6 +30,6 @@ def level_select():
 	st.level_index=0
 	Entity(model='quad',texture='res/background/wroom.png',scale=(2,1),parent=camera.ui,color=color.rgb32(140,160,140),position=(0,0,2))
 	LvSelect()
-	for lvs in range(1,6):
+	for lvs in [1,2,3,4,5]:
 		ui.LevelInfo(idx=lvs,pos=(-.8,.5-lvs/6))
 	st.loading=False

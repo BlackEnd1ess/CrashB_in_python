@@ -64,6 +64,7 @@ def reset_state(c):
 		if st.level_index == 2:
 			st.gem_death=True
 	if st.extra_lives <= 0:
+		st.game_over=True
 		game_over()
 		return
 	if st.fails < 3:
@@ -84,9 +85,6 @@ def reset_state(c):
 	st.death_event=False
 	c.visible=True
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
-def game_over():
-	clear_level(passed=False)
-	invoke(lambda:ui.GameOverScreen(),delay=1)
 def various_val(c):
 	c.indoor=max(c.indoor-time.dt,0)
 	c.in_water=max(c.in_water-time.dt,0)
@@ -229,9 +227,12 @@ def delete_states():
 	st.crate_count=0
 	st.crate_to_sv=0
 	st.fails=0
+	if st.aku_hit > 2:
+		st.aku_hit=2
 	st.NPC_RESET.clear()
 	st.W_RESET.clear()
 	st.C_RESET.clear()
+	st.is_invincible=False
 	st.level_crystal=False
 	st.level_col_gem=False
 	st.level_cle_gem=False
@@ -241,6 +242,7 @@ def delete_states():
 	st.bonus_solved=False
 	st.bonus_round=False
 	st.LEVEL_CLEAN=False
+	st.death_event=False
 	st.pause=False
 	st.day_mode=''
 	level_ready=False
@@ -276,7 +278,9 @@ def game_pause():
 		st.pause=True
 		return
 	st.pause=False
-
+def game_over():
+	#ui.BlackScreen()
+	invoke(lambda:ui.GameOverScreen(),delay=2)
 ## collisions
 def check_ceiling(c):
 	vc=c.intersects(ignore=[c,LC.shdw])
@@ -539,7 +543,7 @@ def npc_purge(m):
 	m.fly_time=0
 	m.scale_z=max(m.scale_z-time.dt/100,0)
 	if m.scale_z <= 0 or m.is_hitten:
-		status.NPC_RESET.append(m)
+		st.NPC_RESET.append(m)
 		purge_instance(m)
 def npc_walk(m):
 	if status.gproc():

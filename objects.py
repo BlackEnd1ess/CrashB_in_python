@@ -596,6 +596,8 @@ class RuinsCorridor(Entity):## corridor
 		rco=omf+'l5/ruins_scn/'
 		super().__init__(model='cube',position=pos,scale=(3,1,3),collider=b,visible=False)
 		self.opt_model=Entity(model=rco+'ruins_cor.ply',texture=rco+'ruins_scn.tga',position=(self.x,self.y+.5,self.z),scale=.03,rotation=(-90,90,0),double_sided=True)
+		Entity(model='cube',position=(self.x-1.4,self.y+1.7,self.z),scale=(.5,2,3),collider=b,visible=False)
+		Entity(model='cube',position=(self.x+1.4,self.y+1.7,self.z),scale=(.5,2,3),collider=b,visible=False)
 		IndoorZone(pos=(self.x,self.y+2.55,self.z),sca=3)
 
 class MonkeySculpture(Entity):
@@ -699,6 +701,8 @@ class LogDanger(Entity):
 		ldg=omf+'l5/log_danger/log_danger'
 		super().__init__(model=ldg+'.ply',texture=ldg+'.tga',position=pos,scale=.001,rotation=(-90,ro_y,0),collider=b,unlit=False)
 		self.spawn_pos=self.position
+		self.stop_throw=False
+		self.fly_time=0
 		self.start_delay=.3
 		self.life_time=3
 		self.direc_y=0
@@ -710,6 +714,12 @@ class LogDanger(Entity):
 			-90:lambda:setattr(self,'x',self.x+time.dt*fsp)}
 		fdi[self.rotation_y]()
 		self.rotation_x-=time.dt*100
+	def fly_away(self,di):
+		self.position+=di*time.dt*40
+		self.fly_time+=time.dt
+		if self.fly_time > .5:
+			cc.purge_instance(self)
+			return
 	def hit_ground(self):
 		if self.direc_y == 0:
 			self.y-=time.dt*3
@@ -723,17 +733,23 @@ class LogDanger(Entity):
 			self.direc_y=0
 	def update(self):
 		if not st.gproc():
-			self.life_time=max(self.life_time-time.dt,0)
-			if self.life_time <= 0:
-				cc.purge_instance(self)
+			ac=LC.ACTOR
+			s=self
+			s.life_time=max(s.life_time-time.dt,0)
+			if s.life_time <= 0:
+				cc.purge_instance(s)
 				return
-			self.start_delay=max(self.start_delay-time.dt,0)
-			self.fly()
-			if self.start_delay <= 0:
-				self.hit_ground()
-				if self.intersects(LC.ACTOR):
+			if s.stop_throw:
+				s.fly_away(di=Vec3(s.x-ac.x,0,s.z-ac.z))
+				return
+			s.fly()
+			s.start_delay=max(s.start_delay-time.dt,0)
+			if s.start_delay <= 0:
+				s.hit_ground()
+				if s.intersects(ac):
 					if LC.ACTOR.is_attack:
-						cc.purge_instance(self)
+						sn.obj_audio(ID=8)
+						s.stop_throw=True
 						return
 					cc.get_damage(LC.ACTOR,rsn=1)
 

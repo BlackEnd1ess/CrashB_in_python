@@ -297,11 +297,37 @@ class LiveBonus(Entity):
 
 
 ## Game Over Screen
-class GameOverScreen(Entity):## call event?
+class GameOverScreen(Entity):
 	def __init__(self):
-		super().__init__(model=q,texture='res/background/game_over.jpg',parent=CU,scale=(1,1),z=-.3)
-		self.game_o_text=Text(text='GAME OVER!',font=_fnt,color=color.orange,scale=4,parent=CU,position=(-.1,0,-.3))
+		super().__init__(model=q,texture='res/background/game_over.jpg',parent=CU,scale=(2,1),z=-.3)
+		self.game_o_text=Text(text='GAME OVER!',font=_fnt,color=color.orange,scale=4.5,parent=CU,position=(-.25,.05,-.31))
+		self.btn_restart=Text('WARP ROOM',font=_fnt,scale=3,color=color.yellow,position=(self.x-.2,self.y-.1,-.31))
+		self.btn_quit=Text('QUIT GAME',font=_fnt,scale=3,color=color.yellow,position=(self.x-.2,self.y-.2,-.31))
+		self.rs_col={0:color.white,1:color.yellow}
+		self.qt_col={0:color.yellow,1:color.white}
+		self.opt_select=0
 		sn.GameOverMusic()
+	def p_restart(self):
+		st.wumpa_fruits=0
+		st.extra_lives=4
+		st.aku_hit=0
+		cc.clear_level(passed=False)
+		st.game_over=False
+	def input(self,key):
+		if key in ['w','s']:
+			sn.ui_audio(ID=0,pit=.125)
+			if self.opt_select == 0:
+				self.opt_select=1
+				return
+			self.opt_select=0
+		if key == 'enter':
+			sn.ui_audio(ID=1)
+			opv={0:lambda:self.p_restart(),1:lambda:application.quit()}
+			opv[self.opt_select]()
+	def update(self):
+		sbt=self.opt_select
+		self.btn_restart.color=self.rs_col[sbt]
+		self.btn_quit.color=self.qt_col[sbt]
 
 
 ## Loading Screen
@@ -312,6 +338,10 @@ class LoadingScreen(Entity):
 		self.lname=Text('',font=_fnt,scale=2,position=(-.25,-.05,-1.1),color=color.azure,visible=False,parent=CU,eternal=True)
 	def update(self):
 		if st.loading:
+			if st.level_index in [3,5]:
+				self.lname.x=-.2
+			else:
+				self.lname.x=-.25
 			self.lname.text=LC.lv_name[st.level_index]
 			self.ltext.visible=True
 			self.lname.visible=True
@@ -448,16 +478,19 @@ class PauseMenu(Entity):
 		self.col_gem4=Animation('res/ui/icon/gem.gif',position=(vF+.61,vF+.075,self.z-1),scale=(.15,.075),fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
 		self.col_gem5=Animation('res/ui/icon/gem.gif',position=(vF+.73,vF+.075,self.z-1),scale=(.15,.19),fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
 		self.cleargem=Animation('res/ui/icon/gem.gif',position=(vF+.6,vF-.03,self.z-1),scale=.2,fps=12,parent=CU,color=color.rgb32(130,130,190),visible=False)
+		self.check_collected()
 	def input(self,key):
 		if st.pause:
 			if key in ['down arrow','s']:
 				sn.ui_audio(ID=0,pit=.125)
 				if self.choose < 2:
 					self.choose+=1
+				return
 			elif key in ['up arrow','w']:
 				sn.ui_audio(ID=0,pit=.125)
 				if self.choose > 0:
 					self.choose-=1
+				return
 			if key == 'enter':
 				sn.ui_audio(ID=1)
 				if self.choose == 0:
@@ -468,25 +501,19 @@ class PauseMenu(Entity):
 					if not st.LEVEL_CLEAN:
 						cc.clear_level(passed=False)
 	def check_collected(self):
+		s=self
 		gems_total=st.color_gems+st.clear_gems
-		self.gem_counter.text=str(gems_total)+'/10 GEMS'
-		self.crystal_counter.text=str(st.collected_crystals)+'/5'
-		self.game_progress.text='Progress '+str(st.color_gems*5+st.clear_gems*5+st.collected_crystals*10)+'%'
-		self.add_text.text='+ '+str(st.clear_gems)
-		if self.need_loop:
-			for gC in st.COLOR_GEM:
-				if gC == 1:
-					self.col_gem1.color=color.rgb32(O,0,0)
-				if gC == 2:
-					self.col_gem2.color=color.rgb32(0,O,0)
-				if gC == 3:
-					self.col_gem3.color=color.rgb32(O,0,O)
-				if gC == 4:
-					self.col_gem4.color=color.rgb32(0,0,O)
-				if gC == 5:
-					self.col_gem5.color=color.rgb32(O-15,O-15,0)
-			if len(st.COLOR_GEM) >= 5:
-				self.need_loop=False
+		s.gem_counter.text=str(gems_total)+'/10 GEMS'
+		s.crystal_counter.text=str(st.collected_crystals)+'/5'
+		s.game_progress.text='Progress '+str(st.color_gems*5+st.clear_gems*5+st.collected_crystals*10)+'%'
+		s.add_text.text='+ '+str(st.clear_gems)
+		for gC in st.COLOR_GEM:
+			gfc={1:lambda:setattr(s.col_gem1,'color',color.rgb32(O,0,0)),
+				2:lambda:setattr(s.col_gem2,'color',color.rgb32(0,O,0)),
+				3:lambda:setattr(s.col_gem3,'color',color.rgb32(O,0,O)),
+				4:lambda:setattr(s.col_gem4,'color',color.rgb32(0,0,O)),
+				5:lambda:setattr(s.col_gem5,'color',color.rgb32(O-15,O-15,0))}
+			gfc[gC]()
 	def select_menu(self):
 		for mn in [self.select_0,self.select_1,self.select_2]:
 			if self.choose == mn.tag:
@@ -494,33 +521,31 @@ class PauseMenu(Entity):
 			else:
 				mn.color=self.font_color
 	def update(self):
-		self.check_collected()
-		if st.pause:
-			self.select_menu()
-			if self.blink_time > 0:
-				self.blink_time-=time.dt
-		for vis in [self.p_name,
-					self.ppt,
-					self.lvl_name,
-					self.select_0,
-					self.select_1,
-					self.select_2,
-					self.crystal_counter,
-					self.gem_counter,
-					self.add_text,
-					self.game_progress,
-					self.cry_anim,
-					self.col_gem1,
-					self.col_gem2,
-					self.col_gem3,
-					self.col_gem4,
-					self.col_gem5,
-					self.cleargem,
-					self]:
-			if st.pause:
-				vis.show()
-			else:
-				vis.hide()
+		pa=st.pause
+		s=self
+		if pa:
+			s.blink_time=max(s.blink_time-time.dt,0)
+			if s.blink_time <= 0:
+				s.select_menu()
+		s.crystal_counter.visible=(pa)
+		s.game_progress.visible=(pa)
+		s.gem_counter.visible=(pa)
+		s.lvl_name.visible=(pa)
+		s.select_0.visible=(pa)
+		s.select_1.visible=(pa)
+		s.select_2.visible=(pa)
+		s.add_text.visible=(pa)
+		s.cry_anim.visible=(pa)
+		s.col_gem1.visible=(pa)
+		s.col_gem2.visible=(pa)
+		s.col_gem3.visible=(pa)
+		s.col_gem4.visible=(pa)
+		s.col_gem5.visible=(pa)
+		s.cleargem.visible=(pa)
+		s.p_name.visible=(pa)
+		s.ppt.visible=(pa)
+		s.visible=(pa)
+
 
 ## Gem/Crytal
 class CollectedGem(Animation):

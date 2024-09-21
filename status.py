@@ -5,9 +5,9 @@ checkpoint=None
 day_mode=''
 
 ## game progress items
-COLOR_GEM=[1,2,4,5]
-CLEAR_GEM=[1,2,3,4]
-CRYSTAL=[1,2,3,4]
+COLOR_GEM=[]
+CLEAR_GEM=[]
+CRYSTAL=[]
 
 ## reset instances
 NPC_RESET=[]
@@ -18,7 +18,7 @@ C_RESET=[]
 p_last_direc=None
 selected_level=1
 level_index=0
-aku_hit=2
+aku_hit=0
 fails=0
 
 ## wumpa count
@@ -34,12 +34,12 @@ crate_bonus=0
 
 ## live count
 lives_bonus=0
-extra_lives=4
+extra_lives=0
 
 ## collected gems/crystal
-collected_crystals=4
-color_gems=4
-clear_gems=4
+collected_crystals=0
+color_gems=0
+clear_gems=0
 
 ## ui timer
 show_wumpas=0
@@ -50,6 +50,7 @@ show_gems=0
 ## level processing
 LV_CLEAR_PROCESS=False
 LEVEL_CLEAN=False
+game_over=False
 
 level_crystal=False
 level_col_gem=False
@@ -82,10 +83,10 @@ def p_idle(c):
 		return True
 	return False
 def p_rst(c):
-	if death_event or not c.warped or c.freezed:
+	if not c.warped or (c.freezed or death_event):
 		return True
 	return False
 def gproc():
-	if loading or pause or LV_CLEAR_PROCESS or level_solved:
+	if loading or pause or LV_CLEAR_PROCESS or level_solved or game_over:
 		return True
 	return False
