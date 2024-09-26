@@ -346,19 +346,20 @@ class LoadingScreen(Entity):
 		self.ltext=Text('LOADING...',font=_fnt,scale=3.5,position=(-.15,.1,-1.1),color=color.orange,visible=False,parent=CU,eternal=True)
 		self.lname=Text('',font=_fnt,scale=2,position=(-.25,-.05,-1.1),color=color.azure,visible=False,parent=CU,eternal=True)
 	def update(self):
+		s=self
 		if st.loading:
 			if st.level_index in [3,5]:
-				self.lname.x=-.2
+				s.lname.x=-.2
 			else:
-				self.lname.x=-.25
-			self.lname.text=LC.lv_name[st.level_index]
-			self.ltext.visible=True
-			self.lname.visible=True
-			self.visible=True
+				s.lname.x=-.25
+			s.lname.text=LC.lv_name[st.level_index]
+			s.ltext.visible=True
+			s.lname.visible=True
+			s.visible=True
 			return
-		self.ltext.visible=False
-		self.lname.visible=False
-		self.visible=False
+		s.ltext.visible=False
+		s.lname.visible=False
+		s.visible=False
 
 class WhiteScreen(Entity):
 	def __init__(self):

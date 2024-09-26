@@ -1,4 +1,4 @@
-import _core,status,item,sound,animation,level,player,_loc,settings,effect,npc
+import _core,status,item,sound,animation,player,_loc,settings,effect,npc
 from ursina.shaders import *
 from ursina import *
 
@@ -46,9 +46,7 @@ def spawn_tree_wall(pos,cnt,d):
 	for tsp in range(0,cnt):
 		Tree2D(pos=(pos[0]+random.uniform(-.2,.2),pos[1],pos[2]+tsp*2),rot=tro[d])
 
-def bush(pos,s,c,ro_y=None):
-	if ro_y == None:
-		ro_y=0
+def bush(pos,s,c,ro_y=0):
 	BUSH=Entity(model='quad',texture=omf+'l1/bush/bush1.png',name='bush',position=pos,scale=s,color=c,rotation_y=ro_y)
 
 #lv2
@@ -114,6 +112,7 @@ class MossPlatform(Entity):
 		MVP=omf+'l1/p_moss/moss'
 		super().__init__(model='cube',name='mptf',texture=None,position=p,scale=(.6,1,.6),collider=b,visible=False)
 		self.opt_model=Entity(model=MVP+'.ply',texture=MVP+'.tga',scale=.75/1000,position=(p[0],p[1]+.475,p[2]),rotation_x=-90,double_sided=True)
+		self.sp_act={1:lambda:self.dive(),2:lambda:platform_move(self),3:lambda:platform_move(self)}
 		self.spawn_pos=p
 		self.ta=LC.ACTOR
 		self.ptm=ptm
@@ -125,30 +124,31 @@ class MossPlatform(Entity):
 			ddg={1:0,2:0,3:1}
 			self.direct=ddg[ptm]
 	def mv_player(self):
-		if not self.ta.walking and self.ptm > 1:
-			self.ta.x=self.x
-			self.ta.z=self.z
+		s=self
+		if s.ptm > 1:
+			s.ta.x=lerp(s.ta.x,s.x,time.dt*7)
+			s.ta.z=lerp(s.ta.z,s.z,time.dt*7)
 	def dive(self):
-		self.a_tme=max(self.a_tme-time.dt,0)
-		if self.a_tme == 0:
-			self.a_tme=3
-			if self.is_sfc:
-				self.is_sfc=False
-				self.opt_model.animate_y(self.opt_model.y-1,duration=.3)
-				self.animate_y(self.y-1,duration=.3)
+		s=self
+		s.a_tme=max(s.a_tme-time.dt,0)
+		if s.a_tme == 0:
+			s.a_tme=3
+			if s.is_sfc:
+				s.is_sfc=False
+				s.opt_model.animate_y(s.opt_model.y-1,duration=.3)
+				s.animate_y(s.y-1,duration=.3)
 				sn.obj_audio(ID=6)
 				return
-			self.is_sfc=True
-			self.animate_y(self.spawn_pos[1],duration=.3)
-			self.opt_model.animate_y(self.spawn_pos[1]+.475,duration=.3)
+			s.is_sfc=True
+			s.animate_y(s.spawn_pos[1],duration=.3)
+			s.opt_model.animate_y(s.spawn_pos[1]+.475,duration=.3)
 	def update(self):
-		if not st.gproc() and self.ptm > 0:
-			if self.ptm in [2,3]:
-				platform_move(self)
-				self.opt_model.x=self.x
-				self.opt_model.z=self.z
-				return
-			self.dive()
+		if not st.gproc():
+			if self.ptm in self.sp_act:
+				self.sp_act[self.ptm]()
+				if self.ptm > 0:
+					self.opt_model.x=self.x
+					self.opt_model.z=self.z
 
 class BackgroundWall(Entity):
 	def __init__(self,p):
@@ -364,9 +364,23 @@ class SceneWall(Entity):
 		unlit_obj(self)
 
 class TempleWall(Entity):
-	def __init__(self,pos,side):
+	def __init__(self,pos,side,col=color.gray):
 		tmpleW=omf+'l3/temple_wall/w_'+str(side)
-		super().__init__(model=tmpleW+'.ply',texture='l3/temple_wall/water_z.tga',position=pos,scale=.025,rotation=(-90,90,0),collider=b)
+		super().__init__(model=tmpleW+'.ply',texture='l3/temple_wall/water_z.tga',position=pos,scale=.025,rotation=(-90,90,0),color=col,collider=b)
+		if side == 2:
+			Entity(model='plane',texture='grass',position=(self.x-.3,self.y+2.35,self.z+.08),scale=(1.3,0,2.7),color=color.green)
+			bush(pos=(self.x-.3,self.y+2.7,self.z),s=(2,1),c=color.green,ro_y=45)
+			bush(pos=(self.x-.3,self.y+2.7,self.z),s=(2,1),c=color.green,ro_y=-45)
+			bush(pos=(self.x-.2,self.y+2.6,self.z-.8),s=(1,1),c=color.green,ro_y=0)
+			bush(pos=(self.x-.4,self.y+2.5,self.z-.87),s=(1,1),c=color.green,ro_y=0)
+			bush(pos=(self.x,self.y+2.5,self.z-1),s=(1,1),c=color.green,ro_y=0)
+		else:
+			Entity(model='plane',texture='grass',position=(self.x+.36,self.y+2.38,self.z),scale=(1.3,0,2.7),color=color.green)
+			bush(pos=(self.x+.3,self.y+2.7,self.z),s=(2,1),c=color.green,ro_y=45)
+			bush(pos=(self.x+.3,self.y+2.7,self.z),s=(2,1),c=color.green,ro_y=-45)
+			bush(pos=(self.x+.2,self.y+2.6,self.z-.8),s=(1,1),c=color.green,ro_y=0)
+			bush(pos=(self.x+.4,self.y+2.5,self.z-.87),s=(1,1),c=color.green,ro_y=0)
+			bush(pos=(self.x,self.y+2.5,self.z-1),s=(1,1),c=color.green,ro_y=0)
 		unlit_obj(self)
 
 class WoodStage(Entity):
@@ -897,13 +911,9 @@ class BonusPlatform(Entity):## switch -> bonus round
 		sIN='ev/bonus/bonus'
 		super().__init__(model=omf+sIN+'.ply',texture=omf+sIN+'.tga',collider=b,scale=-.001,rotation_x=90,position=pos)
 		self.start_y=self.y
-		self.catch_p=False
-		self.ta=LC.ACTOR
 		unlit_obj(self)
 	def update(self):
 		if not st.gproc():
-			if self.catch_p:
-				cc.ptf_up(p=self,c=self.ta)
 			if st.bonus_solved:
 				cc.purge_instance(self)
 				return
@@ -922,8 +932,6 @@ class GemPlatform(Entity):## gem platform
 		self.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),position=(self.x,self.y-.011,self.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
 		self.org_color=self.color
 		self.start_y=self.y
-		self.catch_p=False
-		self.ta=LC.ACTOR
 		self.typ=t
 		if self.is_enabled:
 			self.shader=unlit_shader
@@ -940,8 +948,6 @@ class GemPlatform(Entity):## gem platform
 			self.bg_darkness.position=(self.x,self.y-.01,self.z)
 			if self.is_enabled:
 				self.rotation_y+=time.dt*20
-			if self.catch_p:
-				cc.ptf_up(p=self,c=self.ta)
 
 class LevelScene(Entity):
 	def __init__(self,pos,sca):

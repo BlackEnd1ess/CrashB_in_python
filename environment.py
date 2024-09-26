@@ -33,7 +33,7 @@ AMB_COL={'day':c.rgb32(180,180,180),
 		'woods':c.rgb32(120,130,120)}
 
 def init_amb_light():#called 1 time
-	amv=AmbientLight(color=color.gray)
+	amv=AmbientLight(color=c.gray)
 	LC.AMBIENT_LIGHT=amv
 
 def env_switch(idx):
@@ -62,17 +62,26 @@ class SkyBox(Sky):
 		LC.bgT.texture=self.bgr+'bg_ruins.jpg'
 		LC.bgT.texture_scale=LC.bgT.orginal_tsc
 		self.thunder_time=random.randint(4,10)
+	def weather_sky(self):
+		if st.weather_thunder:
+			self.thunder_time=max(self.thunder_time-time.dt,0)
+			if self.thunder_time <= 0:
+				self.thunder_bolt()
+			return
+		if st.bonus_round:
+			self.color=c.black
+			return
+		self.color=self.setting
 	def update(self):
-		if not st.gproc() and st.level_index == 5:
-			if st.weather_thunder:
-				self.thunder_time=max(self.thunder_time-time.dt,0)
-				if self.thunder_time <= 0:
-					self.thunder_bolt()
+		if not st.gproc():
+			if st.level_index == 5:
+				self.weather_sky()
 				return
-			if st.bonus_round:
-				self.color=c.black
-				return
-			self.color=self.setting
+			if st.level_index == 1:
+				if st.is_death_route:
+					self.color=c.rgb32(30,30,60)
+				else:
+					self.color=self.setting
 
 class Fog(Entity):
 	def __init__(self):
@@ -81,17 +90,18 @@ class Fog(Entity):
 		self.B_DST={0:(0,0),1:(-5,20),2:(0,10),3:(5,20),4:(8,15),5:(10,20),6:(15,30)}
 		scene.fog_color=FOG_COL[st.day_mode]
 		scene.fog_density=self.L_DST[st.level_index]
+	def change_color(self):
+		if st.is_death_route:
+			scene.fog_color=c.rgb32(20,20,40)
+			return
+		scene.fog_color=FOG_COL[st.day_mode]
 	def update(self):
 		if st.bonus_round:
 			scene.fog_density=self.B_DST[st.level_index]
 			return
-		if st.is_death_route:
-			if st.level_index == 1:
-				scene.fog_density=(10,40)
-			else:
-				scene.fog_density=(5,15)
-			return
 		scene.fog_density=self.L_DST[st.level_index]
+		if st.level_index == 1:
+			self.change_color()
 
 class RainFall(FrameAnimation3d):
 	def __init__(self):

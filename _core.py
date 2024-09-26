@@ -312,7 +312,7 @@ def check_wall(c):
 				return
 			get_damage(c,rsn=1)
 			return
-		c.position-=c.direc*time.dt*c.move_speed
+		c.position=lerp(c.position,c.position-c.direc,time.dt*c.move_speed)
 def check_floor(c):
 	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=[c,LC.shdw],debug=False)
 	vp=vj.entity
@@ -362,22 +362,28 @@ def floor_interact(c,e):
 def spc_floor(c,e):
 	u=str(e)
 	c.is_slippery=(u == 'iceg')
-	if u in ['bonus_platform','gem_platform']:e.catch_p=True
-	if u in ['loose_platform','swpt','HPP']:e.active=True
-	if (u == 'plank' and e.typ == 1):e.pl_touch()
-	if (u == 'swpi' and e.typ == 3):get_damage(c,rsn=3)
-	if u == 'falling_zone':dth_event(c=LC.ACTOR,rsn=0)
-	if u == 'water_hit':dth_event(c,rsn=2)
-	if u == 'mptf':e.mv_player()
-
+	if u in ['bonus_platform','gem_platform']:
+		ptf_up(p=e,c=c)
+		return
+	if u in ['loose_platform','swpt','HPP']:
+		e.active=True
+	if (u == 'plank' and e.typ == 1):
+		e.pl_touch()
+	if (u == 'swpi' and e.typ == 3):
+		get_damage(c,rsn=3)
+	if u == 'falling_zone':
+		dth_event(c=LC.ACTOR,rsn=0)
+	if u == 'water_hit':
+		dth_event(c,rsn=2)
+	if u == 'mptf':
+		e.mv_player()
 def ptf_up(p,c):
 	if not c.freezed:
 		c.freezed=True
 		c.position=(p.x,c.y,p.z)
 		c.rotation_y=0
 	p.y+=time.dt/1.5
-	if p.y >= p.start_y+3:
-		p.catch_p=False
+	if p.y > p.start_y+3:
 		p.y=p.start_y
 		if str(p) == 'bonus_platform':
 			load_bonus(c)

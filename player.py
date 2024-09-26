@@ -44,14 +44,14 @@ class CrashB(Entity):
 				'w':lambda:setattr(self,'CMS',3.2),
 				's':lambda:setattr(self,'CMS',4.2),
 				#dev inp
-				'u':lambda:setattr(self,'position',(-.6,2.5,6.6)),
-				'b':lambda:print(self.position),
+				'u':lambda:setattr(self,'position',(-.3,2,-18)),
+				#'b':lambda:print(self.position),
 				'e':lambda:EditorCamera()}
 	def input(self,key):
 		if st.p_rst(self):
 			return
-		#if key == 'b':
-		#	map_tools.pos_info(self)
+		if key == 'b':
+			map_tools.pos_info(self)
 		if key in self.KEY_ACT:
 			self.KEY_ACT[key]()
 	def spin_attack(self):

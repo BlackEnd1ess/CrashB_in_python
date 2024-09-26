@@ -11,7 +11,8 @@ n=npc
 def dev_object():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass')
 	o.StartRoom(pos=(0,0,-32.2))
-	o.SewerPipe(pos=(0,.3,-25),typ=3)
+	#o.MossPlatform(p=(0,.2,-23),ptm=2)
+	o.TempleWall(pos=(0,-1.7,-20),side=1)
 	#o.RuinsCorridor(pos=(0,0,-22))
 	#o.LightArea(pos=(0,.5,-15))
 	#for gv in range(0,6):
