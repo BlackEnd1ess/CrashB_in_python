@@ -343,10 +343,11 @@ class WaterFlow(Entity):
 class WaterFall(Entity):
 	def __init__(self,pos):
 		self.pa=omf+'l3/water_fall/waterf'
-		super().__init__(model='plane',name='wtfa',texture=self.pa+'0.png',position=pos,scale=(5,0,1),rotation_x=-90,texture_scale=(10,1),color=color.rgb32(240,255,240))
+		super().__init__(model='quad',name='wtfa',texture=self.pa+'0.png',position=pos,scale=(5,1),texture_scale=(10,1),color=color.rgb32(240,255,240))
 		Entity(model='plane',color=color.black,scale=(12,1,20),position=(self.x,self.y-.7,self.z+1.3))
-		self.y+=1
 		self.frm=0
+		Foam(pos=(self.x,self.y-.49,self.z-.5),t=0)
+		Foam(pos=(self.x,self.y+.501,self.z+.49),t=1)
 	def update(self):
 		if not st.gproc():
 			self.frm+=time.dt*7
@@ -403,17 +404,41 @@ class MushroomTree(Entity):
 		unlit_obj(self)
 
 class Foam(Entity):
-	def __init__(self,pos):
+	def __init__(self,pos,t):
+		rrfm={0:0,1:180}
 		self.t=omf+'l3/foam/'
-		super().__init__(model='quad',texture=self.t+'0.png',position=pos,scale=(5,1),texture_scale=(10,1),rotation_x=90)
+		super().__init__(model='quad',texture=self.t+'0.png',position=pos,scale=(5,1),texture_scale=(10,1),rotation=(90,rrfm[t],0))
+		self.typ=t
+		if t == 1:
+			self.color=color.rgb32(210,210,210)
+			self.frm=15.99
+			return
 		self.frm=0
+	def flow_normal(self):
+		self.frm+=time.dt*6
+		if self.frm > 15.9:
+			self.frm=0
+		self.texture=self.t+str(int(self.frm))+'.png'
+	def flow_reverse(self):
+		self.frm-=time.dt*6
+		if self.frm <= 0:
+			self.frm=15.99
+		self.texture=self.t+str(int(self.frm))+'.png'
 	def update(self):
 		if not st.gproc():
-			self.frm+=time.dt*6
-			if self.frm > 15.9:
-				self.frm=0
-			self.texture=self.t+str(int(self.frm))+'.png'
+			if self.typ == 1:
+				self.flow_reverse()
+				return
+			self.flow_normal()
 
+class BonusBackground(Entity):
+	def __init__(self,pos,sca):
+		super().__init__(model='quad',texture='res/background/bonus_1.jpg',scale=sca,texture_scale=(1,1),position=pos,color=color.rgb32(100,60,80),unlit=False,shader=unlit_shader)
+
+class BonusScene(Entity):
+	def __init__(self,pos):
+		bcnn=omf+'l3/mtree_scn/'
+		super().__init__(model=bcnn+'wtr_bSCN.ply',texture=bcnn+'tm_scn.tga',position=pos,scale=.035,rotation=(-90,90,0),double_sided=True)
 
 ####################
 ## level 4 objects #
@@ -1013,6 +1038,10 @@ class LODProcess(Entity):## Level of Detail
 		self.rt=.5
 		CLW={1:LC.LV1_LOD,2:LC.LV2_LOD,3:LC.LV3_LOD,4:LC.LV4_LOD,5:LC.LV5_LOD,6:LC.LV3_LOD}
 		self.MAIN_LOD=CLW[st.level_index]
+		if st.level_index == 3:
+			self.dst_a=5
+			self.dst_b=32
+			return
 		if st.level_index == 4:
 			self.dst_a=3
 			self.dst_b=26
@@ -1024,23 +1053,28 @@ class LODProcess(Entity):## Level of Detail
 		else:
 			self.dst_a=2
 			self.dst_b=20
-			return
 	def wmp_lod(self,w,p):
-		w.enabled=distance(w,p) < 8
+		w.enabled=(distance(w,p) < 8)
 	def crt_lod(self,c,p):
-		c.visible=distance(p,c) < 16
-	def enm_lod(self,e,p):
-		e.enabled=distance(e,p) < 20
+		c.visible=(distance(p,c) < 26)
+	def npc_lod(self,e,p):
+		e.enabled=(distance(e,p) < 24)
 	def vwi_lod(self,v,p):
 		v.enabled=(p.z < v.z+self.dst_a and v.z < p.z+self.dst_b)
 	def refr(self):
+		s=self
 		for b in scene.entities[:]:
 			A=LC.ACTOR
-			if isinstance(b,item.WumpaFruit):self.wmp_lod(w=b,p=A)
-			if 'tnt.wav' in str(b) and not b.playing:scene.entities.remove(b)
-			if cc.is_crate(b):self.crt_lod(c=b,p=A)
-			if cc.is_enemie(b):self.enm_lod(e=b,p=A)
-			if str(b) in self.MAIN_LOD:self.vwi_lod(v=b,p=A)
+			if isinstance(b,item.WumpaFruit):
+				s.wmp_lod(w=b,p=A)
+			if 'tnt.wav' in str(b) and not b.playing:
+				scene.entities.remove(b)
+			if cc.is_crate(b):
+				s.crt_lod(c=b,p=A)
+			if cc.is_enemie(b):
+				s.npc_lod(e=b,p=A)
+			if str(b) in s.MAIN_LOD:
+				s.vwi_lod(v=b,p=A)
 	def update(self):
 		if not status.gproc():
 			self.rt=max(self.rt-time.dt,0)

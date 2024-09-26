@@ -1,4 +1,4 @@
-import status,_loc,level,sound,settings,ui
+import status,_loc,level,sound,settings,ui,_core
 from ursina import *
 st=status
 sn=sound
@@ -11,13 +11,22 @@ class LvSelect(Entity):
 		if key == 's' and st.selected_level < 5:
 			st.selected_level+=1
 			sn.ui_audio(ID=0,pit=.125)
+			return
 		if key == 'w' and st.selected_level > 1:
 			st.selected_level-=1
 			sn.ui_audio(ID=0,pit=.125)
-		if key == 'd':
-			st.level_index=6
+			return
+		if key == 'f2':
+			sn.ui_audio(ID=1)
+			_core.save_game()
+			return
+		if key == 'f3':
+			sn.ui_audio(ID=1)
+			_core.load_game()
 			scene.clear()
-			level.main_instance(6)
+			ui.BlackScreen()
+			level_select()
+			return
 		if key == 'enter':
 			sn.ui_audio(ID=1)
 			scene.clear()

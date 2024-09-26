@@ -58,14 +58,17 @@ def destroy_event(c):
 		st.b_audio=True
 		sn.crate_audio(ID=2)
 		invoke(cc.reset_audio,delay=.1)
-	animation.CrateBreak(cr=c)
 	cc.check_crates_over(c)
+	animation.CrateBreak(cr=c)
 	cc.purge_instance(c)
 
 def block_destroy(c):
 	if not c.p_snd:
 		c.p_snd=True
-		sn.crate_audio(ID=0)
+		dpt=1
+		if c.vnum == 14:
+			dpt=.7
+		sn.crate_audio(ID=0,pit=dpt)
 		invoke(lambda:setattr(c,'p_snd',False),delay=.5)
 
 def spawn_ico(c):

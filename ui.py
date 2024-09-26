@@ -237,33 +237,42 @@ class WumpaBonus(Entity):
 			cc.purge_instance(self.w_text)
 			cc.purge_instance(self)
 
-class CrateBonus(Animation):
+class CrateBonus(Entity):
 	def __init__(self):
-		super().__init__(_icn+'crate.gif',parent=CU,scale=.075,color=color.rgb32(90,70,0),position=(0,-.4,0),fps=4,visible=False)
-		self.c_text=Text(text=None,font=_fnt,x=self.x+.05,y=self.y+.025,scale=2,color=self.color,visible=False,parent=CU)
+		super().__init__(model=q,texture=None,parent=CU,scale=.07,position=(0,-.4,0),visible=False)
+		self.c_text=Text(text=None,font=_fnt,x=self.x+.04,y=self.y+.025,scale=2,color=color.rgb32(90,70,0),visible=False,parent=CU)
 		self.c_time=0
+		self.icf=0
+	def crate_refr_ico(self):
+		self.icf+=time.dt*30
+		if self.icf > 63.9:
+			self.icf=0
+		self.texture=crti+'anim_crt_'+str(int(self.icf))+'.png'
 	def check_c(self):
 		if (st.bonus_solved and st.crate_bonus > 0):
 			return True
 		return False
 	def c_count(self):
-		if self.check_c():
-			self.c_time=max(self.c_time-time.dt,0)
-			if self.c_time <= 0:
-				self.c_time=.075
-				status.crate_bonus-=1
-				status.crate_count+=1
-				status.show_crates=1
+		s=self
+		if s.check_c():
+			s.c_time=max(s.c_time-time.dt,0)
+			if s.c_time <= 0:
+				s.c_time=.075
+				st.crate_bonus-=1
+				st.crate_count+=1
+				st.show_crates=1
 	def update(self):
 		if not st.gproc():
-			if st.bonus_round or self.check_c():
-				self.c_count()
-				self.c_text.show()
-				self.show()
-				self.c_text.text=str(st.crate_bonus)+'/'+str(st.crates_in_bonus)
+			s=self
+			if st.bonus_round or s.check_c():
+				s.c_count()
+				s.crate_refr_ico()
+				s.c_text.show()
+				s.show()
+				s.c_text.text=str(st.crate_bonus)+'/'+str(st.crates_in_bonus)
 				return
-			cc.purge_instance(self.c_text)
-			cc.purge_instance(self)
+			cc.purge_instance(s.c_text)
+			cc.purge_instance(s)
 
 class LiveBonus(Entity):
 	def __init__(self):

@@ -16,17 +16,19 @@ class pShadow(Entity):## shadow point
 		self.ta=LC.ACTOR
 		_loc.shdw=self
 	def flw_p(self):
-		self.x=self.ta.x
-		self.z=self.ta.z
-		vSH=raycast(self.ta.world_position,-Vec3(0,1,0),distance=2,ignore=[self,self.ta],debug=False)
+		s=self
+		s.x=s.ta.x
+		s.z=s.ta.z
+		vSH=raycast(s.ta.world_position,-Vec3(0,1,0),distance=2,ignore=[self,self.ta],debug=False)
+		if s.ta.landed:
+			s.y=(s.ta.y)
+			return
 		if vSH.normal:
-			if not str(vSH.entity) in LC.item_lst:
-				self.y=vSH.world_point.y
+			if not vSH.entity.name in LC.item_lst:
+				s.y=vSH.world_point.y
 	def update(self):
 		if not st.gproc():
-			self.visible=not(self.ta.landed)
-			if self.visible:
-				self.flw_p()
+			self.flw_p()
 
 class CrashB(Entity):
 	def __init__(self,pos):
@@ -42,12 +44,14 @@ class CrashB(Entity):
 				'w':lambda:setattr(self,'CMS',3.2),
 				's':lambda:setattr(self,'CMS',4.2),
 				#dev inp
-				'u':lambda:setattr(self,'position',(194,0,31)),
+				'u':lambda:setattr(self,'position',(-.6,2.5,6.6)),
 				'b':lambda:print(self.position),
 				'e':lambda:EditorCamera()}
 	def input(self,key):
 		if st.p_rst(self):
 			return
+		#if key == 'b':
+		#	map_tools.pos_info(self)
 		if key in self.KEY_ACT:
 			self.KEY_ACT[key]()
 	def spin_attack(self):
@@ -71,7 +75,7 @@ class CrashB(Entity):
 			mn=str(me)
 			if not mc or (mc and mn in LC.item_lst+LC.trigger_lst):
 				s.position+=s.direc*time.dt*s.move_speed
-			if (mn == 'swpi' and me.danger) or (mn == 'fthr'):
+			if (mn == 'fthr'):
 				cc.get_damage(s,rsn=3)
 			if (cc.is_crate(me) and me.vnum == 12):
 				me.destroy()
@@ -114,10 +118,10 @@ class CrashB(Entity):
 		an.fall(s,sp=12)
 	def jump_typ(self,t):
 		s=self
-		grv={1:(2.1),2:(2.7),3:(2.8),4:(2.6)}
+		grv={1:(2.2),2:(2.7),3:(2.8),4:(2.6)}
 		jmt={1:s.y+.9,#normal jump
-			2:s.y+1.15,#crate jump
-			3:s.y+1.25,#bounce jump
+			2:s.y+1.1,#crate jump
+			3:s.y+1.2,#bounce jump
 			4:s.y+1.5}#spring jump
 		s.gravity=grv[t]
 		s.vpos=jmt[t]
@@ -127,12 +131,13 @@ class CrashB(Entity):
 	def jump(self):
 		s=self
 		s.frst_lnd=True
-		s.y+=time.dt*s.gravity
+		#s.y+=time.dt*s.gravity
+		s.y=lerp(s.y,(s.vpos+.1),.07)
 		if s.walking:
 			s.is_flip=True
 		if not s.is_flip:
 			an.jup(s,sp=12)
-		if s.y > s.vpos:
+		if s.y >= s.vpos:
 			s.jumping=False
 	def check_jump(self):
 		if self.landed:

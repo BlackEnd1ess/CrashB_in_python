@@ -11,6 +11,7 @@ n=npc
 def dev_object():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass')
 	o.StartRoom(pos=(0,0,-32.2))
+	o.SewerPipe(pos=(0,.3,-25),typ=3)
 	#o.RuinsCorridor(pos=(0,0,-22))
 	#o.LightArea(pos=(0,.5,-15))
 	#for gv in range(0,6):
@@ -18,7 +19,9 @@ def dev_object():
 	#	if gv > 0:
 	#		o.GemPlatform(pos=(-7+gv,.3,-24),t=gv)
 def dev_crate():
-	return
+	mt.crate_plane(ID=3,POS=(1,.16,-23),CNT=[10,6])
+	mt.crate_plane(ID=3,POS=(1,1.76,-23),CNT=[10,6])
+	#mt.crate_plane(ID=14,POS=(0,.16,-23),CNT=[2,2])
 	#mt.crate_row(ID=1,POS=(0,.16,-22),CNT=20,WAY=0)
 	#mt.crate_row(ID=7,POS=(0,.16,-20),CNT=12,WAY=0)
 	#mt.crate_row(ID=3,POS=(0,.16,-25),CNT=12,WAY=0)
@@ -40,7 +43,7 @@ def dev_crate():
 def dev_wumpa():
 	return#mt.wumpa_row(POS=(0,.3,-16),CNT=20,WAY=0)
 def dev_npc():
-	n.spawn(mID=14,pos=(5,0,-22),mDirec=1)
+	#n.spawn(mID=7,pos=(5,0,-22),mDirec=1)
 	return#for np in range(15):
 	#	n.spawn(mID=0,pos=(-7+np,0,-22),mDirec=1)
 
@@ -74,7 +77,7 @@ def lv1_object():
 	o.TreeScene(pos=(-1.37,1.5,-46),s=.0175)
 	o.TreeScene(pos=(1.32,1.5,-46),s=.0175)
 	o.TreeScene(pos=(0,1.7,-26.4),s=.0175)
-	o.TreeScene(pos=(3,1.7,10.6),s=.02)
+	o.TreeScene(pos=(-1.4,1.5,10.6),s=.02)
 	o.spawn_tree_wall(pos=(-4,2.3,-64),cnt=50,d=0)
 	o.spawn_tree_wall(pos=(-4,2,-64),cnt=50,d=0)
 	o.spawn_tree_wall(pos=(4.5,2.3,-64),cnt=50,d=1)
@@ -88,7 +91,6 @@ def lv1_object():
 	o.bush(pos=(-2,1.5,10.2),s=2,c=color.yellow)
 	o.TreeScene(pos=(-1.5,1.6,19.3),s=.02)
 	o.TreeScene(pos=(1.2,1.8,19.3),s=.02)
-	o.TreeScene(pos=(-.2,1.5,-2.6),s=.02)
 	o.TreeScene(pos=(1.1,1.5,11),s=.02)
 	o.bush(pos=(2.43,1.4,23),s=3,c=cG)
 	o.bush(pos=(-2.37,1.4,23),s=3,c=color.yellow)
@@ -153,7 +155,8 @@ def lv1_crate():
 	if not 4 in status.COLOR_GEM:
 		c.place_crate(ID=16,p=(-.3,CRP,-58))
 	mt.crate_block(ID=2,POS=(-1.8,CRP,3.3),CNT=[2,2,2])
-	mt.crate_block(ID=1,POS=(-1.5,CRP,-2.5),CNT=[2,2,2])
+	mt.crate_plane(ID=14,POS=(-1.3,1.14,8.8),CNT=[2,2])
+	mt.crate_plane(ID=1,POS=(-1.5,CRP,-2.5),CNT=[2,4])
 	mt.crate_wall(ID=1,POS=(1,CRP,-56.5),CNT=[2,2])
 	mt.crate_wall(ID=1,POS=(-1,CRP,-49),CNT=[2,2])
 	c.place_crate(ID=5,p=(0,CRP,-54))
@@ -216,8 +219,8 @@ def lv2_object():
 	o.CamSwitch(pos=(10.5,2.5,2.3),sca=(2,.2,.5))
 	o.CamSwitch(pos=(16,2.9,2.3),sca=(7,.2,.5))
 	o.CamSwitch(pos=(23,6,2.4),sca=(.6,.3,.5))
-	o.CamSwitch(pos=(24.5,5,2.2),sca=(.3,2,.2))
-	o.CamSwitch(pos=(23,3,2.2),sca=(1.5,.2,.2))
+	o.CamSwitch(pos=(24.5,5,2.2),sca=(.3,2,.4))
+	o.CamSwitch(pos=(23,3,2.2),sca=(1.5,.2,.4))
 	o.CamSwitch(pos=(42,6.5,35),sca=(6,.3,1))
 	o.CamSwitch(pos=(42,7,37),sca=(6,.7,1))
 	for i_ch in range(50):
@@ -346,8 +349,8 @@ def lv2_crate():
 	c.place_crate(ID=12,p=(0,h1,-4))
 	mt.crate_row(ID=2,POS=(18,2.625+.16,2.3),CNT=4,WAY=0)
 	mt.crate_row(ID=3,POS=(21,2.6,2.3),CNT=3,WAY=0)
-	c.place_crate(ID=8,p=(24.5,3.525+.16,2.2))
-	c.place_crate(ID=8,p=(23.7,4.5,2.2))
+	c.place_crate(ID=8,p=(24.5,3.3,2.2))
+	c.place_crate(ID=8,p=(23.7,4.2,2.2))
 	mt.crate_plane(ID=1,POS=(21.6,h3,5.4),CNT=[3,3])
 	c.place_crate(ID=3,p=(23.2,5.45+.16,13))
 	c.place_crate(ID=10,p=(37,h3+.48,30.4))
@@ -363,24 +366,26 @@ def lv2_crate():
 	c.place_crate(ID=6,p=(24.4,h3,27))
 def lv2_wumpa():
 	whl=1.2
-	mt.wumpa_plane(POS=(-.5,whl,-58.4),CNT=[3,3])
-	mt.wumpa_plane(POS=(-.3,1.1,-46),CNT=[3,3])
-	mt.wumpa_plane(POS=(-.3,1.1,-37),CNT=[3,3])
-	mt.wumpa_plane(POS=(-.3,1.1,-29.5),CNT=[3,3])
-	mt.wumpa_plane(POS=(-.3,1.1,-27.8),CNT=[2,2])
-	mt.wumpa_plane(POS=(-.3,1.1,-24),CNT=[2,2])
-	mt.wumpa_plane(POS=(-.3,1.1,-19.8),CNT=[3,3])
-	mt.wumpa_double_row(POS=(-.5,1.5,2.25),CNT=8)
-	mt.wumpa_double_row(POS=(5.7,1.8,2.25),CNT=3)
-	mt.wumpa_double_row(POS=(13,2.85,2.25),CNT=12)
+	mt.wumpa_wall(POS=(-.7,1.13,-58.7),CNT=[6,2])
+	mt.wumpa_wall(POS=(-.2,.95,-53),CNT=[2,3])
+	mt.wumpa_wall(POS=(-.2,.95,-44),CNT=[2,3])
+	mt.wumpa_wall(POS=(-.2,.95,-37),CNT=[2,3])
+	mt.wumpa_plane(POS=(-.3,.95,-30),CNT=[3,3])
+	mt.wumpa_plane(POS=(-.3,.95,-28),CNT=[3,2])
+	mt.wumpa_plane(POS=(-.3,.95,-26),CNT=[3,8])
+	mt.wumpa_double_row(POS=(-.5,1.5,2.2),CNT=8)
+	mt.wumpa_double_row(POS=(5.7,1.8,2.2),CNT=3)
+	mt.wumpa_double_row(POS=(13,2.85,2.2),CNT=12)
 	mt.wumpa_plane(POS=(22.7,5.6,5),CNT=[3,3])
 	mt.wumpa_plane(POS=(22.7,5.6,8.4),CNT=[3,3])
 	mt.wumpa_plane(POS=(22.7,5.7,22),CNT=[3,3])
 	mt.wumpa_double_row(POS=(25,5.6,27),CNT=16)
+	mt.wumpa_wall(POS=(22.7,5.55,18.9),CNT=[2,3])
 def lv2_npc():
-	n.spawn(pos=(3,1.4,2.5),mID=4,mDirec=0)
-	n.spawn(pos=(0,.9,1),mID=4,mDirec=0)
-	n.spawn(pos=(14.5,2.7,2.5),mID=6,mDirec=0)
+	n.spawn(pos=(3,1.3,2.45),mID=4,mDirec=0)
+	n.spawn(pos=(0,.92,1),mID=5,mDirec=0)
+	n.spawn(pos=(14.5,2.65,2.4),mID=6,mDirec=0)
+	n.spawn(pos=(31.7,5.35,26.9),mID=5,mDirec=0)
 
 #### LEVEL3 STUCT ####
 def lv3_object():
@@ -425,6 +430,7 @@ def lv3_object():
 	o.multi_tile(p=(0,tH,-5),cnt=[1,4])
 	#e1
 	o.multi_tile(p=(.85,tH+1.1,0),cnt=[1,6])
+	o.multi_tile(p=(-.85,tH+1.1,2),cnt=[1,1])
 	o.multi_tile(p=(-.85,tH+1.1,.85*5),cnt=[2,1])
 	o.multi_tile(p=(-.85,tH+1.1,.85*5),cnt=[1,8])
 	o.multi_tile(p=(0,tH+1.1,.85*8),cnt=[2,1])
@@ -454,10 +460,9 @@ def lv3_object():
 	o.WaterFlow(pos=(0,.7,30),sca=(5,62))
 	o.WaterFlow(pos=(0,1.7,73),sca=(5,32))
 	#waterfall
-	o.WaterFall(pos=(0,-.8,-1))
-	o.WaterFall(pos=(0,.2,57))
+	o.WaterFall(pos=(0,.2,-1))
+	o.WaterFall(pos=(0,1.2,57))
 	#foam
-	o.Foam(pos=(0,-.29,-1.5))
 	#scene
 	o.SceneWall(pos=(-3.1,.65,-13),s=1)
 	o.SceneWall(pos=(3,.5,-13),s=2)
@@ -477,6 +482,7 @@ def lv3_object():
 		o.bush(pos=(-3.2,4.2,31+wba*2),s=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=-35)
 		o.bush(pos=(3.2,3.6,31+wba*2),s=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=35)
 	o.EndRoom(pos=(1,3.7,88),c=color.rgb32(200,210,200))
+	Entity(model='quad',color=color.black,scale=(100,20),position=(0,-10,95))
 def lv3_crate():
 	if not 5 in st.COLOR_GEM:
 		c.place_crate(ID=16,p=(0,.24+.16,-21))
@@ -492,6 +498,9 @@ def lv3_crate():
 	mt.crate_wall(ID=2,POS=(-.2,.16,-3.8),CNT=[2,2])
 	mt.crate_wall(ID=1,POS=(.65,1.05+.16,2.5),CNT=[2,2])
 	mt.crate_row(ID=1,POS=(0,u0,19.7),CNT=6,WAY=1)
+	mt.crate_wall(ID=1,POS=(1.6,2.2,58.4),CNT=[1,3])
+	mt.crate_wall(ID=1,POS=(.7,.11,-17),CNT=[1,2])
+	mt.crate_block(ID=14,POS=(-1,1.21,1.8),CNT=[2,2,1])
 	c.place_crate(ID=1,p=(0,u0,24.5))
 	c.place_crate(ID=2,p=(0,u0,27.5))
 	c.place_crate(ID=1,p=(0,u0,30.5))
@@ -523,7 +532,26 @@ def lv3_crate():
 	c.place_crate(ID=6,p=(.85,1.05+.16,44.6))
 	c.place_crate(ID=6,p=(0,2.04+.16,58.5))
 def lv3_wumpa():
-	return
+	mt.wumpa_row(POS=(0,.15,-28.3),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(0,.44,-20.4),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(0,.44,-11),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(.9,1.25,-.2),CNT=8,WAY=1)
+	mt.wumpa_row(POS=(-.8,1.25,5),CNT=10,WAY=1)
+	mt.wumpa_row(POS=(0,1.18,19.7),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(.8,1.25,42.1),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(-.8,1.25,47.2),CNT=7,WAY=1)
+	mt.wumpa_row(POS=(0,1.18,52.4),CNT=8,WAY=1)
+	mt.wumpa_row(POS=(0,2.15,66.4),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(0,2.15,72.4),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(0,2.15,79.9),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(-.9,.44,-11.4),CNT=7,WAY=0)
+	mt.wumpa_row(POS=(-.5,1.25,6.8),CNT=3,WAY=0)
+	mt.wumpa_row(POS=(-.9,1.25,46.4),CNT=7,WAY=0)
+	mt.wumpa_row(POS=(-.6,.44,-21.5),CNT=5,WAY=0)
+	mt.wumpa_row(POS=(-1.,.15,-17.0),CNT=5,WAY=0)
+	mt.wumpa_plane(POS=(.2,.15,-15.),CNT=[3,5])
+	mt.wumpa_plane(POS=(-.2,.15,-5.2),CNT=[2,3])
+	mt.wumpa_plane(POS=(-.3,1.25,40.5),CNT=[5,5])
 def lv3_npc():
 	n.Hippo(pos=(0,1.8,64.7))
 	n.Hippo(pos=(0,1.8,63))
@@ -587,6 +615,8 @@ def lv4_object():
 	o.SewerPipe(pos=(6,1.5,49.4),typ=0)
 	o.SewerPipe(pos=(8,1.5,49.4),typ=0)
 	o.SewerPipe(pos=(10,1.5,49.4),typ=0)
+	for spj in range(39):
+		o.SewerPipe(pos=(5.2,1.3,9.8+spj/2),typ=3)
 	#platforms
 	ph=.3
 	pg=.65
@@ -697,7 +727,37 @@ def lv4_crate():
 	if not 2 in status.COLOR_GEM:
 		c.place_crate(ID=16,p=(-.4,.16,-55))
 def lv4_wumpa():
-	return
+	mt.wumpa_row(POS=(0,.56+.2,-58.7),CNT=6,WAY=1)
+	mt.wumpa_row(POS=(-.5,.16+.2,-51.8),CNT=8,WAY=1)
+	mt.wumpa_row(POS=(.8,.56+.2,-50),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(.6,.16+.2,-41.9),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(.5,.16+.2,-26.6),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(-1.0,.56+.2,-13.1),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(0,.91+.2,4.4),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(5.2,1.91+.2,8.3),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(5.5,1.91+.2,18.9),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(4.5,1.91+.2,22),CNT=10,WAY=1)
+	mt.wumpa_row(POS=(5,1.91+.2,25.4),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(5,1.91+.2,33.1),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(5,1.91+.2,44.5),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(14.5,3.91+.2,50.6),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(14.6,3.56+.2,62.7),CNT=5,WAY=1)
+	
+	mt.wumpa_row(POS=(-.5,.56,-60.8),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(0,.6,-30),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(-1,.6,-23.1),CNT=3,WAY=0)
+	mt.wumpa_row(POS=(.5,.95,7.9),CNT=5,WAY=0)
+	mt.wumpa_row(POS=(4,1.95,36),CNT=7,WAY=0)
+	mt.wumpa_row(POS=(5.4,1.95,48.5),CNT=8,WAY=0)
+	mt.wumpa_row(POS=(9,2.45,48.5),CNT=3,WAY=0)
+	mt.wumpa_row(POS=(11.0,2.45,48.5),CNT=3,WAY=0)
+	mt.wumpa_row(POS=(-1,.95,-.6),CNT=8,WAY=0)
+	
+	mt.wumpa_plane(POS=(-.6,.2+.2,-19.),CNT=[3,5])
+	mt.wumpa_plane(POS=(.6,.2+.2,-12.),CNT=[3,5])
+	mt.wumpa_plane(POS=(.9,.95+.2,2.6),CNT=[3,3])
+	mt.wumpa_plane(POS=(4.0,1.95,39.0),CNT=[7,7])
+	mt.wumpa_plane(POS=(4.5,1.95,42.5),CNT=[3,3])
 def lv4_npc():
 	n.spawn(pos=(0,.25,-53.5),mID=12,mDirec=0)
 	n.spawn(pos=(0,.25,-35.5),mID=12,mDirec=0)

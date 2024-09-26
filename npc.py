@@ -95,7 +95,7 @@ class Penguin(Entity):
 	def __init__(self,p,d):
 		nN='penguin'
 		self.vnum=4
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=.8/1100,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(300,300,600))
 		cc.set_val_npc(self,di=d)
 		self.move_speed=1.1
@@ -148,7 +148,7 @@ class EatingPlant(Entity):
 	def __init__(self,p,d):
 		nN='eating_plant'
 		self.vnum=7
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=.8/900,position=p)
 		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+500),size=Vec3(400,400,700))
 		cc.set_val_npc(self,di=d)
 		self.m_direction=0
@@ -158,20 +158,21 @@ class EatingPlant(Entity):
 		self.atk=False
 		self.eat=False
 	def action(self):
-		dc=distance(self,self.ta)
+		s=self
+		dc=distance(s,s.ta)
 		if dc < 3:
-			cc.rotate_to_crash(self)
-			if dc <= 1 and not self.atk:
+			cc.rotate_to_crash(s)
+			if dc <= 1 and not s.atk:
 				if st.death_event:
 					return
-				self.atk=True
+				s.atk=True
 				sn.npc_audio(ID=0)
-				if not (self.ta.is_attack or self.ta.jumping):
-					if status.aku_hit < 1:
-						self.eat=True
-					if self.ta.y <= self.y+.2:
+				if not (s.ta.is_attack or s.ta.jumping):
+					if st.aku_hit < 1:
+						s.eat=True
+					if s.ta.y <= s.y+.2:
 						cc.get_damage(LC.ACTOR,rsn=5)
-				invoke(lambda:setattr(self,'atk',False),delay=1)
+				invoke(lambda:setattr(s,'atk',False),delay=1)
 	def update(self):
 		if not st.gproc():
 			if self.is_hitten:

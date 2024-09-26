@@ -1,22 +1,13 @@
 - Level 1 new Gem Path, which will replace the last one
-- Game Options for SFX/Music volume and Controls
 - Orginal Rain Effects for Rain strength (with Rain Cards)
+- belly smash
+
 - Boss Fight
-- save game
-- Disclaimer like on PS1 Screen
 - Credits
+- Disclaimer like on PS1 Screen
+- Game Options for SFX/Music volume and Controls
+- .png to .tga/jpg
+- level decoration on level 1,2,4, wroom
 
 ##MODULE
 imageio
-
-- level decoration on level 1,2,4
-
-#level 2
-- walls
-- wumpa position, row len
-
-# level 3
-- water foam
-- wumpa
-
-# level 4 wumpa fruits

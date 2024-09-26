@@ -27,7 +27,7 @@ t=18
 ## player animation
 def idle(d,sp):
 	d.idfr+=time.dt*sp
-	if d.idfr > 10.75:
+	if d.idfr > 10.9:
 		d.idfr=0
 	d.texture=af+'idle/crash.tga'
 	d.model=af+'idle/'+str(int(d.idfr))+'.ply'

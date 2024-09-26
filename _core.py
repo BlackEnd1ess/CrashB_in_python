@@ -1,4 +1,4 @@
-import ui,crate,item,status,sound,npc,settings,_loc,math,warproom
+import json,ui,crate,item,status,sound,npc,settings,_loc,math,warproom
 from math import atan2,sqrt
 from ursina import *
 
@@ -16,7 +16,7 @@ def set_val(c):
 	for _v in ['aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
 		setattr(c,_v,False)#flags
 	c.move_speed=2.4
-	c.gravity=2.5
+	c.gravity=2.6
 	c.direc=(0,0,0)
 	c.vpos=c.y
 	c.indoor=.5
@@ -319,14 +319,15 @@ def check_floor(c):
 	if vj.normal and not (str(vp) in LC.item_lst+LC.dangers+LC.trigger_lst):
 		if not c.jumping:
 			landing(c,e=vj.world_point.y,o=vp)
+			spc_floor(c,e=vp)
 		return
 	c.landed=False
 def landing(c,e,o):
-	floor_interact(c,o)
 	if c.y < e:
 		c.y=e
 	c.landed=True
 	if c.frst_lnd:
+		floor_interact(c,o)
 		c.frst_lnd=False
 		c.is_flip=False
 		c.flfr=0
@@ -338,7 +339,7 @@ def landing(c,e,o):
 		sn.foot_step(c,o)
 def floor_interact(c,e):
 	u=str(e)
-	if is_crate(e) and not ((e.vnum in [0,14]) or (e.vnum in [9,10,11] and e.activ)) and c.fall_time > .1:
+	if is_crate(e) and not ((e.vnum == 0) or (e.vnum in [9,10,11] and e.activ)) and c.fall_time > .1:
 		if e.vnum in [7,8]:
 			c.jump_typ(t=4)
 			e.c_action()
@@ -346,7 +347,8 @@ def floor_interact(c,e):
 		if e.vnum == 3:
 			c.jump_typ(t=3)
 		else:
-			c.jump_typ(t=2)
+			if not e.vnum == 14:
+				c.jump_typ(t=2)
 		e.destroy()
 		return
 	if is_enemie(e) and not e.is_hitten:
@@ -357,10 +359,13 @@ def floor_interact(c,e):
 			c.jump_typ(t=2)
 			sn.pc_audio(ID=5)
 		return
+def spc_floor(c,e):
+	u=str(e)
 	c.is_slippery=(u == 'iceg')
 	if u in ['bonus_platform','gem_platform']:e.catch_p=True
 	if u in ['loose_platform','swpt','HPP']:e.active=True
 	if (u == 'plank' and e.typ == 1):e.pl_touch()
+	if (u == 'swpi' and e.typ == 3):get_damage(c,rsn=3)
 	if u == 'falling_zone':dth_event(c=LC.ACTOR,rsn=0)
 	if u == 'water_hit':dth_event(c,rsn=2)
 	if u == 'mptf':e.mv_player()
@@ -630,5 +635,32 @@ def bash_enemie(e,h):
 	sn.obj_audio(ID=8)
 
 ## game progress
+save_file='savegame.json'
 def save_game():
-	return
+	save_data={
+		'SV_WU':st.wumpa_fruits,#wumpa fruits
+		'SV_LF':st.extra_lives,#extra lives
+		'SV_CR':st.collected_crystals,#crystal count
+		'SV_CG':st.color_gems,#color gem count
+		'SV_CL':st.clear_gems,#clear gem count
+		'SV_AK':st.aku_hit,#aku mask
+		'LS_CR':st.CRYSTAL,#Lv ID crystal
+		'LS_CL':st.CLEAR_GEM,#Lv ID clear gem
+		'LS_CG':st.COLOR_GEM}#Color Gem ID
+	with open(save_file,'w') as f:
+		json.dump(save_data,f)
+	print("Spiel gespeichert!")
+
+def load_game():
+	with open(save_file,'r') as f:
+		save_data=json.load(f)
+	st.wumpa_fruits=save_data['SV_WU']
+	st.extra_lives=save_data['SV_LF']
+	st.collected_crystals=save_data['SV_CR']
+	st.color_gems=save_data['SV_CG']
+	st.clear_gems=save_data['SV_CL']
+	st.aku_hit=save_data['SV_AK']
+	st.CRYSTAL=[(x) for x in save_data['LS_CR']]
+	st.CLEAR_GEM=[(x) for x in save_data['LS_CL']]
+	st.COLOR_GEM=[(x) for x in save_data['LS_CG']]
+	print("Spiel geladen!")

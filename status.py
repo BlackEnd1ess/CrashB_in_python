@@ -34,7 +34,7 @@ crate_bonus=0
 
 ## live count
 lives_bonus=0
-extra_lives=0
+extra_lives=4
 
 ## collected gems/crystal
 collected_crystals=0

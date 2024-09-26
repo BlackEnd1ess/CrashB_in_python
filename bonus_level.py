@@ -59,7 +59,7 @@ def bonus2():
 	o.BonusPlatform(pos=(16,-37.1,U))
 
 def bonus3():
-	Entity(model='plane',texture='res/background/bonus_1.jpg',scale=(60,1,30),position=(10,-40,15),rotation_x=-90,unlit=False)
+	o.BonusBackground(pos=(10,-40,35),sca=(80,35))
 	MT.wumpa_double_row(POS=(12.8,-35,U),CNT=6)
 	MT.wumpa_double_row(POS=(-.5,-36.5,U),CNT=4)
 	MT.wumpa_row(POS=(1.5,-36.35,U),CNT=3,WAY=0)
@@ -75,6 +75,14 @@ def bonus3():
 	o.MushroomTree(pos=(9.5,-38.5,U+1.2),typ=1)
 	o.MushroomTree(pos=(10.5,-38,U+1.2),typ=1)
 	o.MushroomTree(pos=(11.5,-38,U+1.2),typ=1)
+	o.BonusScene(pos=(-5,-43,4))
+	o.BonusScene(pos=(8,-43,3.9))
+	o.BonusScene(pos=(21,-43,3.9))
+
+	o.BonusScene(pos=(-3,-44,6))
+	o.BonusScene(pos=(6,-44,5.9))
+	o.BonusScene(pos=(19,-44,6))
+
 	c.place_crate(ID=11,p=(12.5,-36,U))
 	MT.crate_row(ID=12,POS=(12.82,-36,U),WAY=0,CNT=7)
 	MT.crate_row(ID=1,POS=(12.82,-35.68,U),WAY=0,CNT=7)

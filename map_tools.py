@@ -9,7 +9,7 @@ I=item
 def pos_info(c):
 	sx=f"{c.x:.1f}"
 	sy=f"{c.y+.16:.2f}"#c
-	#sy=f"{c.y+.3:.2f}"#w
+	#sy=f"{c.y+.2:.2f}"#w
 	sz=f"{c.z:.1f}"
 	#print(len(scene.entities))
 	#map_tools.pos_info(self)
@@ -17,9 +17,10 @@ def pos_info(c):
 	#print('CRATE reset: '+str(len(st.C_RESET)))
 	#print(scene.entities[-1])
 	#print(f"c.place_crate(ID=3,p=({sx},{sy},{sz}))")
-	#print(f"mt.crate_wall(ID=1,POS=({sx},{sy},{sz}),CNT=[1,3])")
+	print(f"mt.crate_wall(ID=1,POS=({sx},{sy},{sz}),CNT=[1,3])")
 	#print(f"mt.crate_block(ID=1,POS=({sx},{sy},{sz}),CNT=[2,2,2])")
-	#print(f"mt.wumpa_row(POS=({sx},{sy},{sz}),CNT=5,WAY=2)")
+	#print(f"mt.wumpa_wall(POS=({sx},{sy},{sz}),CNT=[2,4])")
+	#print(f"mt.wumpa_row(POS=({sx},{sy},{sz}),CNT=5,WAY=0)")
 	#print(f"mt.wumpa_double_row(POS=({sx},{sy},{sz}),CNT=4)")
 	#print(f"mt.bounce_twin(POS=({sx},{sy},{sz}),CNT=1)")
 

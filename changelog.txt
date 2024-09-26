@@ -154,3 +154,8 @@
 - fixxed aku sparkle on start
 - Gorilla Logs fly away by attack
 - fixxed multible akuaku music
+
+#26.09.2024
+- save game / load game
+- wumpa fruits on level 3
+- waterfall fixxed water foam
