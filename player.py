@@ -24,7 +24,7 @@ class pShadow(Entity):## shadow point
 			s.y=(s.ta.y)
 			return
 		if vSH.normal:
-			if not vSH.entity.name in LC.item_lst:
+			if not str(vSH.entity) in LC.item_lst:
 				s.y=vSH.world_point.y
 	def update(self):
 		if not st.gproc():
@@ -44,16 +44,15 @@ class CrashB(Entity):
 				'w':lambda:setattr(self,'CMS',3.2),
 				's':lambda:setattr(self,'CMS',4.2),
 				#dev inp
-				'u':lambda:setattr(self,'position',(-.3,2,-18)),
-				#'b':lambda:print(self.position),
+				'u':lambda:setattr(self,'position',(0,4,83)),
+				'b':lambda:print(self.position),
 				'e':lambda:EditorCamera()}
 	def input(self,key):
-		if st.p_rst(self):
+		s=self
+		if st.p_rst(s):
 			return
-		if key == 'b':
-			map_tools.pos_info(self)
-		if key in self.KEY_ACT:
-			self.KEY_ACT[key]()
+		if key in s.KEY_ACT:
+			s.KEY_ACT[key]()
 	def spin_attack(self):
 		if not self.is_attack:
 			self.is_attack=True
@@ -118,25 +117,32 @@ class CrashB(Entity):
 		an.fall(s,sp=12)
 	def jump_typ(self,t):
 		s=self
-		grv={1:(2.2),2:(2.7),3:(2.8),4:(2.6)}
-		jmt={1:s.y+.9,#normal jump
+		upr={1:(.075),2:(.085),3:(.09),4:(.07)}
+		grv={1:(2.2),2:(2.85),3:(6),4:(2.6)}
+		jmh={1:s.y+.9,#normal jump
 			2:s.y+1.1,#crate jump
 			3:s.y+1.2,#bounce jump
 			4:s.y+1.5}#spring jump
-		s.gravity=grv[t]
-		s.vpos=jmt[t]
+		s.gravity=grv[t]#fall speed
+		s.vpos=jmh[t]#jump heigt limit
+		s.jmp_typ=upr[t]#jump speed
 		s.fall_time=0
 		s.frst_lnd=True
 		s.jumping=True
 	def jump(self):
 		s=self
 		s.frst_lnd=True
-		#s.y+=time.dt*s.gravity
-		s.y=lerp(s.y,(s.vpos+.1),.07)
+		s.y=lerp(s.y,(s.vpos+.1),s.jmp_typ)
 		if s.walking:
 			s.is_flip=True
 		if not s.is_flip:
 			an.jup(s,sp=12)
+		#if held_keys['space']:
+		#	s.space_time+=time.dt
+		#	if s.space_time > .4:
+		#		if not s.h_lock:
+		#			s.h_lock=True
+		#			s.vpos=(s.vpos+.3)
 		if s.y >= s.vpos:
 			s.jumping=False
 	def check_jump(self):
@@ -145,9 +151,10 @@ class CrashB(Entity):
 			self.jump_typ(t=1)
 	def c_camera(self):
 		if not st.death_event:
-			cc.cam_rotate(self)
+			if st.bonus_round:
+				cc.cam_bonus(self)
+				return
 			cc.cam_follow(self)
-			camera.y=lerp(camera.y,self.y+1.2,time.dt*2)
 	def death_action(self,rsn):
 		s=self
 		if rsn > 0:#0 is falling

@@ -6,7 +6,7 @@ def game():
 	settings.load()
 	ui.LoadingScreen()
 	#warproom.level_select()
-	dev_start(1)
+	dev_start(6)
 
 def dev_start(idx):
 	import status,level

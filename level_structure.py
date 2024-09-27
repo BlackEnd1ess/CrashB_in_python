@@ -12,16 +12,14 @@ def dev_object():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass')
 	o.StartRoom(pos=(0,0,-32.2))
 	#o.MossPlatform(p=(0,.2,-23),ptm=2)
-	o.TempleWall(pos=(0,-1.7,-20),side=1)
-	#o.RuinsCorridor(pos=(0,0,-22))
 	#o.LightArea(pos=(0,.5,-15))
 	#for gv in range(0,6):
 	#	item.GemStone(pos=(-6+gv/2,.3,-23),c=gv)
 	#	if gv > 0:
 	#		o.GemPlatform(pos=(-7+gv,.3,-24),t=gv)
 def dev_crate():
-	mt.crate_plane(ID=3,POS=(1,.16,-23),CNT=[10,6])
-	mt.crate_plane(ID=3,POS=(1,1.76,-23),CNT=[10,6])
+	mt.crate_plane(ID=3,POS=(-3,.16,-23),CNT=[32,2])
+	#mt.crate_plane(ID=3,POS=(1,1.76,-23),CNT=[16,1])
 	#mt.crate_plane(ID=14,POS=(0,.16,-23),CNT=[2,2])
 	#mt.crate_row(ID=1,POS=(0,.16,-22),CNT=20,WAY=0)
 	#mt.crate_row(ID=7,POS=(0,.16,-20),CNT=12,WAY=0)
@@ -44,7 +42,6 @@ def dev_crate():
 def dev_wumpa():
 	return#mt.wumpa_row(POS=(0,.3,-16),CNT=20,WAY=0)
 def dev_npc():
-	#n.spawn(mID=7,pos=(5,0,-22),mDirec=1)
 	return#for np in range(15):
 	#	n.spawn(mID=0,pos=(-7+np,0,-22),mDirec=1)
 
@@ -155,7 +152,7 @@ def lv1_crate():
 	CRP=1.16
 	if not 4 in status.COLOR_GEM:
 		c.place_crate(ID=16,p=(-.3,CRP,-58))
-	mt.crate_block(ID=2,POS=(-1.8,CRP,3.3),CNT=[2,2,2])
+	mt.crate_block(ID=2,POS=(-1.8,CRP,3.3),CNT=[2,2,1])
 	mt.crate_plane(ID=14,POS=(-1.3,1.14,8.8),CNT=[2,2])
 	mt.crate_plane(ID=1,POS=(-1.5,CRP,-2.5),CNT=[2,4])
 	mt.crate_wall(ID=1,POS=(1,CRP,-56.5),CNT=[2,2])
@@ -173,7 +170,7 @@ def lv1_crate():
 	mt.crate_row(ID=0,POS=(-.1,.8,20.16),CNT=10,WAY=1)
 	c.place_crate(ID=4,p=(.9,CRP,-3.9))
 	c.place_crate(ID=3,m=1,l=0,p=(-2,CRP,-6))
-	mt.crate_block(ID=1,POS=(-1.09,CRP,17),CNT=[2,2,2])
+	mt.crate_wall(ID=1,POS=(-1.09,CRP,17),CNT=[2,2])
 	mt.bounce_twin(POS=(1.1,CRP,18),CNT=2)
 	#checkpoints
 	c.place_crate(ID=6,p=(0,CRP,-46))
@@ -212,18 +209,6 @@ def lv2_object():
 	Entity(model='quad',scale=(512,512,1),color=color.white,z=64)
 	#invisible walls
 	o.InvWall(pos=(16.5,9,1.75),sca=(30,15,.5))
-	#cam trigger
-	o.CamSwitch(pos=(.5,1.4,.9),sca=(4,.3,1))
-	o.CamSwitch(pos=(.5,1.7,2.5),sca=(4,.2,.5))
-	o.CamSwitch(pos=(6,1.8,2.4),sca=(.5,.2,.5))
-	o.CamSwitch(pos=(7.4,2.3,2.4),sca=(1,.2,.5))
-	o.CamSwitch(pos=(10.5,2.5,2.3),sca=(2,.2,.5))
-	o.CamSwitch(pos=(16,2.9,2.3),sca=(7,.2,.5))
-	o.CamSwitch(pos=(23,6,2.4),sca=(.6,.3,.5))
-	o.CamSwitch(pos=(24.5,5,2.2),sca=(.3,2,.4))
-	o.CamSwitch(pos=(23,3,2.2),sca=(1.5,.2,.4))
-	o.CamSwitch(pos=(42,6.5,35),sca=(6,.3,1))
-	o.CamSwitch(pos=(42,7,37),sca=(6,.7,1))
 	for i_ch in range(50):
 		o.IceChunk(pos=(-4-random.uniform(-.5,-1),1.8,-63+i_ch*1.5),rot=(-90,30,0),typ=1)
 		if i_ch < 38:
@@ -452,10 +437,6 @@ def lv3_object():
 	o.multi_tile(p=(0,1.8,66.5+.85*7),cnt=[1,4])
 	o.multi_tile(p=(0,1.8,80),cnt=[1,5])
 	o.multi_tile(p=(.85,1.8,80+.85),cnt=[1,1])
-	o.CamSwitch(pos=(1,1.2,2.5),sca=(2,.2,6))
-	o.CamSwitch(pos=(-.8,1.2,6.8),sca=(2,.2,1))
-	o.CamSwitch(pos=(0,1.2,54.7),sca=(1,.2,1))
-	o.CamSwitch(pos=(0,2.1,57.1),sca=(2,.2,1))
 	#waterflow
 	o.WaterFlow(pos=(0,-.3,-16),sca=(5,32))
 	o.WaterFlow(pos=(0,.7,30),sca=(5,62))
@@ -663,14 +644,6 @@ def lv4_object():
 	o.swr_multi_ptf(p=(13.5,pg+3,72.5),cnt=[5,3])
 	#dangers
 	o.SewerPipe(pos=(0,.9,.8),typ=3)
-	o.CamSwitch(pos=(-.5,1.2,3),sca=(3,.5,8))
-	o.CamSwitch(pos=(2.9,1.5,7.9),sca=(1,.5,.4))
-	o.CamSwitch(pos=(4,1.85,7.9),sca=(1,.5,.4))
-	o.CamSwitch(pos=(5.2,2.2,9.75),sca=(2,.5,6))
-	o.CamSwitch(pos=(9.2,2.65,48.5),sca=(1,.5,.4))
-	o.CamSwitch(pos=(12.5,3.15,48.5),sca=(1,.5,.4))
-	o.CamSwitch(pos=(13.5,3.65,48.5),sca=(1,.5,.4))
-	o.CamSwitch(pos=(14.5,4.1,48.5),sca=(1,.5,.4))
 def lv4_crate():
 	#crates
 	mt.crate_wall(ID=1,POS=(.25,.56,-60.54),CNT=[2,1])
@@ -870,14 +843,6 @@ def lv5_object():
 	o.MonkeySculpture(pos=(51.4,1.1,17.2),r=False,d=True,ro_y=-90)
 	o.MonkeySculpture(pos=(53.4,1.1,18.7),r=False,d=True,ro_y=90)
 	o.MonkeySculpture(pos=(51.4,1.1,20.2),r=False,d=True,ro_y=-90)
-	#cam trigger
-	o.CamSwitch(pos=(25,.6,4.6),sca=(1.5,.3,1.5))
-	o.CamSwitch(pos=(30.5,1.5,4.5),sca=(2,.3,1))
-	o.CamSwitch(pos=(39,1.5,4.7),sca=(.5,.3,.5))
-	o.CamSwitch(pos=(40.4,.7,4.7),sca=(.5,.3,.75))
-	o.CamSwitch(pos=(44.7,-.1,4.7),sca=(5.5,.3,.75))
-	o.CamSwitch(pos=(48.7,.6,4.7),sca=(.75,.3,.75))
-	o.CamSwitch(pos=(50,1.4,5.4),sca=(2,.3,.75))
 	#pseudo gem pltf
 	o.PseudoGemPlatform(pos=(43.5,-.52,3.5),t=1)
 	o.PseudoGemPlatform(pos=(43.5,-.52,2),t=1)

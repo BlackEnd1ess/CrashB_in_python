@@ -11,9 +11,9 @@ N=npc
 
 ## player
 def set_val(c):
-	for _a in ['rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','srfr','walk_snd','fall_time','slide_fwd','in_water']:
+	for _a in ['rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','srfr','walk_snd','fall_time','slide_fwd','in_water','jmp_typ','space_time']:
 		setattr(c,_a,0)#animation frames
-	for _v in ['aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop']:
+	for _v in ['aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop','h_lock']:
 		setattr(c,_v,False)#flags
 	c.move_speed=2.4
 	c.gravity=2.6
@@ -134,24 +134,26 @@ def c_invincible(c):
 				inv.collect()
 
 ## camera actor
-def cam_rotate(c):
-	ftt=time.dt*1.5
-	if c.jumping:
-		camera.rotation_x-=ftt
-		return
-	if camera.rotation_x < 15:
-		camera.rotation_x+=ftt
 def cam_follow(c):
-	ftr=time.dt*3
-	camera.z=lerp(camera.z,c.z-c.CMS,ftr)
-	camera.x=lerp(camera.x,c.x,ftr)
+	ftt=time.dt
+	camera.z=lerp(camera.z,c.z-c.CMS,ftt*3)
+	camera.x=lerp(camera.x,c.x,ftt*2)
+	if c.jumping:
+		camera.rotation_x=lerp(camera.rotation_x,10,ftt/2.5)
 	if c.indoor > 0:
 		if c.landed:
-			camera.y=lerp(camera.y,c.y+1,time.dt)
-		camera.rotation_x=12
+			camera.y=lerp(camera.y,c.y+1,time.dt*1.5)
+		camera.rotation_x=15
 		return
-	if (st.bonus_round or st.is_death_route) and not c.freezed:
-		camera.y=lerp(camera.y,c.y+1,time.dt)
+	if (c.landed and not c.freezed):
+		camera.y=lerp(camera.y,c.y+1.6,time.dt)
+		camera.rotation_x=lerp(camera.rotation_x,20,time.dt/2)
+def cam_bonus(c):
+	ftt=time.dt*3
+	camera.x=lerp(camera.x,c.x,ftt)
+	camera.z=lerp(camera.z,(c.z-3),ftt)
+	camera.y=lerp(camera.y,c.y+1.4,ftt)
+	camera.rotation_x=16
 
 ## world, misc
 def spawn_level_crystal(idx):
@@ -243,6 +245,7 @@ def delete_states():
 	st.bonus_round=False
 	st.LEVEL_CLEAN=False
 	st.death_event=False
+	st.gem_death=False
 	st.pause=False
 	st.day_mode=''
 	level_ready=False
@@ -330,10 +333,12 @@ def landing(c,e,o):
 		floor_interact(c,o)
 		c.frst_lnd=False
 		c.is_flip=False
+		c.h_lock=False
 		c.flfr=0
 		c.ldfr=0
 		c.jmfr=0
 		c.is_landing=True
+		c.space_time=0
 		c.fall_time=0
 		c.gravity=2.5
 		sn.foot_step(c,o)

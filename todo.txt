@@ -1,13 +1,13 @@
-- Level 1 new Gem Path, which will replace the last one
 - Orginal Rain Effects for Rain strength (with Rain Cards)
 - belly smash
+- Game Options for SFX/Music volume and Controls
+- crash jump/fall lerp
 
 - Boss Fight
 - Credits
 - Disclaimer like on PS1 Screen
-- Game Options for SFX/Music volume and Controls
 - .png to .tga/jpg
-- level decoration on level 1,2,4, wroom
+- level decoration on level 1,2,4,wroom
 
 ##MODULE
-imageio
+ursina,imageio

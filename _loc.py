@@ -16,7 +16,7 @@ lv_name=['CENTRAL - WARP ROOM',
 dt_act={0:'fall_endl',1:'angel',2:'water',3:'explode',4:'burn',5:'electric',6:'eat_by_plant'}
 
 #triggers
-trigger_lst=['cam_switch','indoor_zone','level_finish','elwt','falling_zone']
+trigger_lst=['indoor_zone','level_finish','elwt','falling_zone']
 
 #item/obj name list
 item_lst=['wumpa_fruit','extra_live','gem_stone','energy_crystal','trial_clock']

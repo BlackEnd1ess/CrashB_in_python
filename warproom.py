@@ -1,4 +1,4 @@
-import status,_loc,level,sound,settings,ui,_core
+import status,_loc,level,sound,settings,ui,_core,objects
 from ursina import *
 st=status
 sn=sound
@@ -37,7 +37,11 @@ class LvSelect(Entity):
 def level_select():
 	st.LV_CLEAR_PROCESS=False
 	st.level_index=0
-	Entity(model='quad',texture='res/background/wroom.png',scale=(2,1),parent=camera.ui,color=color.rgb32(140,160,140),position=(0,0,2))
+	Entity(model='quad',texture='res/background/wroom.png',scale=(40,20),color=color.rgb32(140,160,140),position=(0,0,4))
+	camera.position=(0,0,-20)
+	camera.rotation=(0,0,0)
+	scene.fog_density=(100,200)
+	objects.PseudoCrash()
 	LvSelect()
 	for lvs in [1,2,3,4,5]:
 		ui.LevelInfo(idx=lvs,pos=(-.8,.5-lvs/6))

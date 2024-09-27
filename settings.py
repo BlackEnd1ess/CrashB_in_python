@@ -16,16 +16,12 @@ def load():
 	##
 	w.fullscreen=False
 	w.borderless=False
-	cam()
-
-def cam():
+	camera.fov=65
 	environment.init_amb_light()
-	camera.rotation_x=15
-	camera.fov=60
 	print('default settings loaded')
 
-MUSIC_VOLUME=0
-SFX_VOLUME=0
+MUSIC_VOLUME=1
+SFX_VOLUME=1
 #----------------------------
 #camera_contrast_shader
 #camera_vertical_blur_shader

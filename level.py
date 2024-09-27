@@ -10,6 +10,7 @@ sn=sound
 
 ## start level
 def free_level():
+	camera.rotation_x=15
 	st.loading=False
 	cc.spawn_level_crystal(st.level_index)
 	cc.check_cstack()

@@ -90,7 +90,6 @@ class GemStone(Entity):
 			4:(self.x-lgx,self.y+lgy,self.z-lgz),
 			5:(self.x-lgx,self.y+lgy,self.z-lgz)}
 		self.shine=SpotLight(position=s_pos[self.gemID],color=color.gray)
-		#Entity(model='quad',scale=.01,position=self.shine.position,alpha=.7)
 	def gem_fail(self):
 		gi=self.gemID
 		if gi == 4 and (st.level_index == 1 and st.crate_count > 0):#blue gem

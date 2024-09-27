@@ -159,3 +159,8 @@
 - save game / load game
 - wumpa fruits on level 3
 - waterfall fixxed water foam
+
+#27.09.2024
+- replaced level 1 gem path to 3d
+- changed camera follow, removed cam switches
+- warp room crash animation wait

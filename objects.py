@@ -100,6 +100,17 @@ def spw_ruin_ptf(p,cnt,way):
 		else:
 			RuinsBlock(pos=(p[0],p[1],p[2]+rpv*.75))
 
+## Pseudo CrashB
+class PseudoCrash(Entity):
+	def __init__(self):
+		MVP=omf+'l1/p_moss/moss'
+		rp='res/pc/crash'
+		super().__init__(model=rp+'.ply',texture=rp+'.tga',scale=.1/20,rotation=(-90,20,0),position=(7,-4,0),unlit=False)
+		Entity(model=MVP+'.ply',texture=MVP+'.tga',scale=.75/300,position=(self.x,self.y,self.z),rotation_x=-90,double_sided=True)
+		self.idfr=0
+	def update(self):
+		animation.idle(self,sp=16)
+
 ####################
 ## level 1 objects #
 class Tree2D(Entity):
@@ -112,7 +123,6 @@ class MossPlatform(Entity):
 		MVP=omf+'l1/p_moss/moss'
 		super().__init__(model='cube',name='mptf',texture=None,position=p,scale=(.6,1,.6),collider=b,visible=False)
 		self.opt_model=Entity(model=MVP+'.ply',texture=MVP+'.tga',scale=.75/1000,position=(p[0],p[1]+.475,p[2]),rotation_x=-90,double_sided=True)
-		self.sp_act={1:lambda:self.dive(),2:lambda:platform_move(self),3:lambda:platform_move(self)}
 		self.spawn_pos=p
 		self.ta=LC.ACTOR
 		self.ptm=ptm
@@ -137,18 +147,21 @@ class MossPlatform(Entity):
 				s.is_sfc=False
 				s.opt_model.animate_y(s.opt_model.y-1,duration=.3)
 				s.animate_y(s.y-1,duration=.3)
-				sn.obj_audio(ID=6)
+				if distance(s,LC.ACTOR) < 6:
+					sn.obj_audio(ID=6)
 				return
 			s.is_sfc=True
 			s.animate_y(s.spawn_pos[1],duration=.3)
 			s.opt_model.animate_y(s.spawn_pos[1]+.475,duration=.3)
 	def update(self):
+		s=self
 		if not st.gproc():
-			if self.ptm in self.sp_act:
-				self.sp_act[self.ptm]()
-				if self.ptm > 0:
-					self.opt_model.x=self.x
-					self.opt_model.z=self.z
+			sp_act={1:lambda:s.dive(),2:lambda:platform_move(s),3:lambda:platform_move(s)}
+			if s.ptm in sp_act:
+				sp_act[s.ptm]()
+				if s.ptm > 0:
+					s.opt_model.x=s.x
+					s.opt_model.z=s.z
 
 class BackgroundWall(Entity):
 	def __init__(self,p):
@@ -991,14 +1004,8 @@ class PseudoGemPlatform(Entity):
 			self.bg_darkness.hide()
 		unlit_obj(self)
 
-## Switches
-class CamSwitch(Entity):## allow cam move y if player collide with them
-	def __init__(self,pos,sca):
-		super().__init__(model='cube',position=pos,scale=sca,collider=b,visible=False)
-	def do_act(self):#avoid pyhsics with them
-		if not st.gproc() and LC.ACTOR != None:
-			camera.y=lerp(camera.y,LC.ACTOR.y+1.2,time.dt*2)
 
+## Switches
 class LevelFinish(Entity):## finish level
 	def __init__(self,p):
 		trpv=omf+'ev/teleport/warp_effect'
