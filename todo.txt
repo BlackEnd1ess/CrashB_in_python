@@ -1,13 +1,12 @@
-- Orginal Rain Effects for Rain strength (with Rain Cards)
-- belly smash
 - Game Options for SFX/Music volume and Controls
-- crash jump/fall lerp
+- belly smash
+- Orginal Rain Effects for Rain strength (with Rain Cards)
 
 - Boss Fight
 - Credits
 - Disclaimer like on PS1 Screen
 - .png to .tga/jpg
-- level decoration on level 1,2,4,wroom
+- level decoration on level 1,2,4,
 
 ##MODULE
 ursina,imageio

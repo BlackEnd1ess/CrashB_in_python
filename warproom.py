@@ -3,6 +3,18 @@ from ursina import *
 st=status
 sn=sound
 
+mc='res/ui/icon/memcard.png'
+fn='res/ui/font.ttf'
+cu=camera.ui
+q='quad'
+class MemorycardSave(Entity):
+	def __init__(self):
+		super().__init__(model=q,texture=mc,position=(.6,.24),scale=(.07,.1),parent=camera.ui)
+		self.desc_s=Text('Save Game - F2',font=fn,scale=1.5,position=(self.x-.1,self.y-.07,self.z),color=color.green,parent=cu)
+		self.desc_l=Text('Load Game - F3',font=fn,scale=1.5,position=(self.x-.1,self.y-.12,self.z),color=color.azure,parent=cu)
+#	def update(self):
+#		print(self)
+
 class LvSelect(Entity):
 	def __init__(self):
 		super().__init__()
@@ -37,11 +49,11 @@ class LvSelect(Entity):
 def level_select():
 	st.LV_CLEAR_PROCESS=False
 	st.level_index=0
-	Entity(model='quad',texture='res/background/wroom.png',scale=(40,20),color=color.rgb32(140,160,140),position=(0,0,4))
 	camera.position=(0,0,-20)
 	camera.rotation=(0,0,0)
 	scene.fog_density=(100,200)
 	objects.PseudoCrash()
+	MemorycardSave()
 	LvSelect()
 	for lvs in [1,2,3,4,5]:
 		ui.LevelInfo(idx=lvs,pos=(-.8,.5-lvs/6))

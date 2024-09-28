@@ -18,7 +18,9 @@ def dev_object():
 	#	if gv > 0:
 	#		o.GemPlatform(pos=(-7+gv,.3,-24),t=gv)
 def dev_crate():
-	mt.crate_plane(ID=3,POS=(-3,.16,-23),CNT=[32,2])
+	mt.crate_plane(ID=1,POS=(-3,.16,-23),CNT=[32,1])
+	mt.crate_plane(ID=3,POS=(-3,.16,-23.32),CNT=[32,1])
+	mt.crate_plane(ID=7,POS=(-3,.16,-23.64),CNT=[32,1])
 	#mt.crate_plane(ID=3,POS=(1,1.76,-23),CNT=[16,1])
 	#mt.crate_plane(ID=14,POS=(0,.16,-23),CNT=[2,2])
 	#mt.crate_row(ID=1,POS=(0,.16,-22),CNT=20,WAY=0)

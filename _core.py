@@ -16,7 +16,7 @@ def set_val(c):
 	for _v in ['aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop','h_lock']:
 		setattr(c,_v,False)#flags
 	c.move_speed=2.4
-	c.gravity=2.6
+	c.gravity=2.2
 	c.direc=(0,0,0)
 	c.vpos=c.y
 	c.indoor=.5
@@ -340,7 +340,6 @@ def landing(c,e,o):
 		c.is_landing=True
 		c.space_time=0
 		c.fall_time=0
-		c.gravity=2.5
 		sn.foot_step(c,o)
 def floor_interact(c,e):
 	u=str(e)

@@ -20,7 +20,7 @@ class pShadow(Entity):## shadow point
 		s.x=s.ta.x
 		s.z=s.ta.z
 		vSH=raycast(s.ta.world_position,-Vec3(0,1,0),distance=2,ignore=[self,self.ta],debug=False)
-		if s.ta.landed:
+		if (s.ta.landed and not s.ta.jumping):
 			s.y=(s.ta.y)
 			return
 		if vSH.normal:
@@ -117,8 +117,8 @@ class CrashB(Entity):
 		an.fall(s,sp=12)
 	def jump_typ(self,t):
 		s=self
-		upr={1:(.075),2:(.085),3:(.09),4:(.07)}
-		grv={1:(2.2),2:(2.85),3:(6),4:(2.6)}
+		upr={1:(.08),2:(.085),3:(.09),4:(.08)}
+		grv={1:(2.2),2:(2.85),3:(3.1),4:(3.5)}
 		jmh={1:s.y+.9,#normal jump
 			2:s.y+1.1,#crate jump
 			3:s.y+1.2,#bounce jump
@@ -186,6 +186,7 @@ class CrashB(Entity):
 	def update(self):
 		if not st.gproc():
 			s=self
+			print(s.gravity)
 			cc.check_floor(s)
 			cc.check_wall(s)
 			if not s.landed:

@@ -403,6 +403,13 @@ class LevelInfo(Entity):
 		s.lv_col_gem=Animation(cgs[idx]+'.gif',position=(s.x+.945,s.y,s.z),scale=sf,parent=CU,color=req_col)
 		s.lv_clr_gem=Animation(_icn+'gem.gif',position=(s.x+1.09,s.y,s.z),scale=sf,parent=CU,color=req_col)
 		s.lv_name=Text(_loc.lv_name[idx],font=_fnt,position=(s.x,s.y+.04,s.z),scale=2.5,color=color.orange,parent=CU)
+		Entity(model='quad',texture='res/background/wroom.png',scale=(40,20),color=color.rgb32(140,160,140),position=(0,0,4))
+		
+		Entity(parent=CU,model='quad',texture='res/ui/misc/ivy_m.png',scale=.2,position=(-.8,.4,.1))
+		Entity(parent=CU,model='quad',texture='res/ui/misc/ivy_m.png',scale=.2,position=(-.8,-.4,.1),rotation_z=-90)
+		Entity(parent=CU,model='quad',texture='res/ui/misc/ivy.png',scale=.2,position=(.8,.4,.1))
+		Entity(parent=CU,model='quad',texture='res/ui/misc/ivy.png',scale=.2,position=(.8,-.4,.1),rotation_z=90)
+		
 		s.lv_col_gem.scale_y=gcsa[idx]
 		s.lvID=idx
 		for iwb in range(3):
