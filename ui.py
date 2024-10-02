@@ -1,5 +1,5 @@
+import status,_core,_loc,sound,settings
 from time import strftime,gmtime
-import status,_core,_loc,sound
 from ursina import *
 
 w_pa='res/ui/icon/wumpa_fruit/w'
@@ -345,21 +345,17 @@ class LoadingScreen(Entity):
 		super().__init__(model=q,color=color.black,scale=(16,10),visible=False,parent=CU,z=-1,eternal=True)
 		self.ltext=Text('LOADING...',font=_fnt,scale=3.5,position=(-.15,.1,-1.1),color=color.orange,visible=False,parent=CU,eternal=True)
 		self.lname=Text('',font=_fnt,scale=2,position=(-.25,-.05,-1.1),color=color.azure,visible=False,parent=CU,eternal=True)
+		self.uds={0:(-.21),1:(-.25),2:(-.25),3:(-.2),4:(-.25),5:(-.185),6:(-.2)}
 	def update(self):
 		s=self
-		if st.loading:
-			if st.level_index in [3,5]:
-				s.lname.x=-.2
-			else:
-				s.lname.x=-.25
-			s.lname.text=LC.lv_name[st.level_index]
-			s.ltext.visible=True
-			s.lname.visible=True
-			s.visible=True
-			return
-		s.ltext.visible=False
-		s.lname.visible=False
-		s.visible=False
+		si=st.level_index
+		sl=st.loading
+		s.lname.text=LC.lv_name[si]
+		s.lname.x=s.uds[si]
+		s.ltext.visible=(sl)
+		s.lname.visible=(sl)
+		s.visible=(sl)
+
 
 class WhiteScreen(Entity):
 	def __init__(self):
@@ -404,12 +400,11 @@ class LevelInfo(Entity):
 		s.lv_clr_gem=Animation(_icn+'gem.gif',position=(s.x+1.09,s.y,s.z),scale=sf,parent=CU,color=req_col)
 		s.lv_name=Text(_loc.lv_name[idx],font=_fnt,position=(s.x,s.y+.04,s.z),scale=2.5,color=color.orange,parent=CU)
 		Entity(model='quad',texture='res/background/wroom.png',scale=(40,20),color=color.rgb32(140,160,140),position=(0,0,4))
-		
+		#2d leaf
 		Entity(parent=CU,model='quad',texture='res/ui/misc/ivy_m.png',scale=.2,position=(-.8,.4,.1))
 		Entity(parent=CU,model='quad',texture='res/ui/misc/ivy_m.png',scale=.2,position=(-.8,-.4,.1),rotation_z=-90)
 		Entity(parent=CU,model='quad',texture='res/ui/misc/ivy.png',scale=.2,position=(.8,.4,.1))
 		Entity(parent=CU,model='quad',texture='res/ui/misc/ivy.png',scale=.2,position=(.8,-.4,.1),rotation_z=90)
-		
 		s.lv_col_gem.scale_y=gcsa[idx]
 		s.lvID=idx
 		for iwb in range(3):
@@ -474,7 +469,6 @@ class PauseMenu(Entity):
 		##text
 		self.selection=['RESUME','OPTIONS','QUIT']
 		self.font_color=color.rgb32(230,100,0)
-		self.need_loop=True
 		self.blink_time=0
 		self.choose=0
 		vF=0
@@ -495,28 +489,60 @@ class PauseMenu(Entity):
 		self.col_gem4=Animation('res/ui/icon/gem.gif',position=(vF+.61,vF+.075,self.z-1),scale=(.15,.075),fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
 		self.col_gem5=Animation('res/ui/icon/gem.gif',position=(vF+.73,vF+.075,self.z-1),scale=(.15,.19),fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
 		self.cleargem=Animation('res/ui/icon/gem.gif',position=(vF+.6,vF-.03,self.z-1),scale=.2,fps=12,parent=CU,color=color.rgb32(130,130,190),visible=False)
+		##options
+		self.music_vol=Text('SOUND VOLUME '+str(settings.SFX_VOLUME*10),tag=0,font=_fnt,scale=3,color=self.font_color,parent=CU,position=(vF-.7,vF-.2,self.z-1),visible=False)
+		self.sound_vol=Text('MUSIC VOLUME '+str(settings.MUSIC_VOLUME*10),tag=1,font=_fnt,scale=3,color=self.font_color,parent=CU,position=(vF-.7,vF-.275,self.z-1),visible=False)
+		self.opt_exit=Text('EXIT',tag=3,font=_fnt,scale=3,color=self.font_color,parent=CU,position=(vF-.7,vF-.35,self.z-1),visible=False)
+		
+		#self.opt_exit=Text('press enter to exit')
 		self.check_collected()
+		self.opt_menu=False
+		self.sel_opt=0
 	def input(self,key):
-		if st.pause:
+		s=self
+		if not st.pause:
+			return
+		if not s.opt_menu:
 			if key in ['down arrow','s']:
 				sn.ui_audio(ID=0,pit=.125)
-				if self.choose < 2:
-					self.choose+=1
+				if s.choose < 2:
+					s.choose+=1
 				return
 			elif key in ['up arrow','w']:
 				sn.ui_audio(ID=0,pit=.125)
-				if self.choose > 0:
-					self.choose-=1
+				if s.choose > 0:
+					s.choose-=1
 				return
 			if key == 'enter':
 				sn.ui_audio(ID=1)
-				if self.choose == 0:
-					status.pause=False
-				if self.choose == 1:
-					print('menu options')
-				if self.choose == 2:
+				if s.choose == 0:
+					st.pause=False
+					return
+				if s.choose == 1:
+					s.opt_menu=True
+				if s.choose == 2:
 					if not st.LEVEL_CLEAN:
 						cc.clear_level(passed=False)
+			return
+		if key in ['w','s']:
+			if s.sel_opt == 0:
+				s.sel_opt=1
+			else:
+				s.sel_opt=0
+		if key == '+':
+			if s.sel_opt == 1:
+				settings.SFX_VOLUME+=.1
+			elif s.sel_opt == 0:
+				settings.MUSIC_VOLUME+=.1
+			sn.ui_audio(ID=1)
+		if key == '-':
+			if s.sel_opt == 1:
+				settings.SFX_VOLUME-=.1
+			elif s.sel_opt == 0:
+				settings.MUSIC_VOLUME-=.1
+			sn.ui_audio(ID=1)
+		if key == 'enter':
+			s.opt_menu=False
 	def check_collected(self):
 		s=self
 		gems_total=st.color_gems+st.clear_gems
@@ -531,26 +557,43 @@ class PauseMenu(Entity):
 				4:lambda:setattr(s.col_gem4,'color',color.rgb32(0,0,O)),
 				5:lambda:setattr(s.col_gem5,'color',color.rgb32(O-15,O-15,0))}
 			gfc[gC]()
+	def option_menu(self):
+		return
 	def select_menu(self):
 		for mn in [self.select_0,self.select_1,self.select_2]:
 			if self.choose == mn.tag:
 				text_blink(M=self,t=mn)
 			else:
 				mn.color=self.font_color
+	def select_option(self):
+		for ot in [self.music_vol,self.sound_vol]:
+			if self.sel_opt == ot.tag:
+				text_blink(M=self,t=ot)
+			else:
+				ot.color=self.font_color
 	def update(self):
-		pa=st.pause
 		s=self
-		if pa:
+		pa=st.pause
+		if st.pause:
 			s.blink_time=max(s.blink_time-time.dt,0)
 			if s.blink_time <= 0:
-				s.select_menu()
+				if s.opt_menu:
+					s.select_option()
+				else:
+					s.select_menu()
+		else:
+			s.opt_menu=False
+		s.music_vol.text='MUSIC VOLUME '+str(int(settings.MUSIC_VOLUME*100))+'%'
+		s.sound_vol.text='SOUND VOLUME '+str(int(settings.SFX_VOLUME*100))+'%'
 		s.crystal_counter.visible=(pa)
 		s.game_progress.visible=(pa)
 		s.gem_counter.visible=(pa)
 		s.lvl_name.visible=(pa)
-		s.select_0.visible=(pa)
-		s.select_1.visible=(pa)
-		s.select_2.visible=(pa)
+		s.music_vol.visible=(s.opt_menu)
+		s.sound_vol.visible=(s.opt_menu)
+		s.select_0.visible=(pa and not s.opt_menu)
+		s.select_1.visible=(pa and not s.opt_menu)
+		s.select_2.visible=(pa and not s.opt_menu)
 		s.add_text.visible=(pa)
 		s.cry_anim.visible=(pa)
 		s.col_gem1.visible=(pa)

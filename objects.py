@@ -105,7 +105,7 @@ class PseudoCrash(Entity):
 	def __init__(self):
 		MVP=omf+'l1/p_moss/moss'
 		rp='res/pc/crash'
-		super().__init__(model=rp+'.ply',texture=rp+'.tga',scale=.1/20,rotation=(-90,20,0),position=(7,-4,0),unlit=False)
+		super().__init__(model=rp+'.ply',texture=rp+'.tga',scale=.1/20,rotation=(-90,30,0),position=(9,-4,0),unlit=False)
 		Entity(model=MVP+'.ply',texture=MVP+'.tga',scale=.75/300,position=(self.x,self.y,self.z),rotation_x=-90,double_sided=True)
 		self.idfr=0
 	def update(self):

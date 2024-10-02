@@ -11,9 +11,9 @@ N=npc
 
 ## player
 def set_val(c):
-	for _a in ['rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','srfr','walk_snd','fall_time','slide_fwd','in_water','jmp_typ','space_time']:
+	for _a in ['rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','walk_snd','fall_time','slide_fwd','in_water','jmp_typ','space_time']:
 		setattr(c,_a,0)#animation frames
-	for _v in ['aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop','h_lock']:
+	for _v in ['aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop','h_lock','b_smash','standup']:
 		setattr(c,_v,False)#flags
 	c.move_speed=2.4
 	c.gravity=2.2
@@ -92,19 +92,6 @@ def various_val(c):
 		c.move_speed=2.4
 	if st.bonus_solved and not st.wait_screen:
 		c.aq_bonus=(st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0)
-def c_attack(c):
-	for e in scene.entities[:]:
-		if distance(c,e) < .5:
-			if (is_crate(e) and e.collider != None):
-				if e.vnum in [3,11]:
-					e.empty_destroy()
-				else:
-					if not e.falling and not e.vnum == 13:
-						e.destroy()
-			if is_enemie(e) and not (e.is_hitten or e.is_purge):
-				if (e.vnum == 1) or (e.vnum == 5 and e.def_mode):
-					get_damage(c,rsn=1)
-				bash_enemie(e,h=c)
 def c_slide(c):
 	if not c.walking:
 		if c.slide_fwd > 0 and status.p_last_direc != None:
@@ -120,18 +107,30 @@ def c_slide(c):
 		c.move_speed+=time.dt
 		if c.move_speed > 0:
 			c.slide_fwd=c.move_speed
-def c_invincible(c):
-	for inv in scene.entities[:]:
-		if distance(c,inv) < 1 and inv.collider != None:
-			if is_crate(inv):
-				if inv.vnum == 11:
-					inv.empty_destroy()
+def c_attack(c):
+	for k in scene.entities[:]:
+		if distance(c,k) < .5:
+			if is_enemie(k) and not (k.is_hitten or k.is_purge):
+				if (k.vnum == 1) or (k.vnum == 5 and k.def_mode):
+					get_damage(c,rsn=1)
+				bash_enemie(k,h=c)
+			if is_crate(k) and k.collider != None:
+				if k.vnum in [3,11]:
+					k.empty_destroy()
 				else:
-					inv.destroy()
-			if is_enemie(inv):
-				bash_enemie(e=inv,h=c)
-			if isinstance(inv,item.WumpaFruit):
-				inv.collect()
+					k.destroy()
+def c_smash(c):
+	for wr in scene.entities[:]:
+		if distance(wr,c) < .3:
+			if is_crate(wr) and wr.collider != None:
+				if wr.vnum in [3,11]:
+					wr.empty_destroy()
+				if wr.vnum == 14:
+					wr.c_destroy()
+				else:
+					wr.destroy()
+			if is_enemie(wr):
+				wr.is_purge=True
 
 ## camera actor
 def cam_follow(c):
@@ -152,7 +151,7 @@ def cam_bonus(c):
 	ftt=time.dt*3
 	camera.x=lerp(camera.x,c.x,ftt)
 	camera.z=lerp(camera.z,(c.z-3),ftt)
-	camera.y=lerp(camera.y,c.y+1.4,ftt)
+	camera.y=lerp(camera.y,c.y+1.4,time.dt*2)
 	camera.rotation_x=16
 
 ## world, misc
@@ -284,12 +283,13 @@ def game_pause():
 def game_over():
 	#ui.BlackScreen()
 	invoke(lambda:ui.GameOverScreen(),delay=2)
+
 ## collisions
 def check_ceiling(c):
 	vc=c.intersects(ignore=[c,LC.shdw])
 	if vc and vc.normal == Vec3(0,-1,0):
 		e=vc.entity
-		if not (str(e) in LC.item_lst+LC.trigger_lst):
+		if not (str(e) in LC.item_lst+LC.trigger_lst+LC.spc_collider):
 			if is_crate(e) and not c.tcr:
 				c.tcr=True
 				e.destroy()
@@ -297,29 +297,28 @@ def check_ceiling(c):
 			c.y=c.y
 			c.jumping=False
 def check_wall(c):
-	if st.aku_hit > 2:
-		c_invincible(c)
 	hT=c.intersects(ignore=[c,LC.shdw])
 	jV=hT.entity
 	xa=str(jV)
 	if hT and hT.normal != Vec3(0,1,0):
+		if is_crate(jV) and jV.collider != None:
+			if not hT.normal == Vec3(0,-1,0):
+				c.position=lerp(c.position,(c.position+hT.normal),.1)
+				return
 		if xa in LC.trigger_lst:
 			jV.do_act()
 			return
 		if xa in LC.item_lst:
 			jV.collect()
-			return
 		if (is_enemie(jV) and not c.is_attack):
 			if jV.vnum == 7:
 				get_damage(c,rsn=5)
 				return
 			get_damage(c,rsn=1)
-			return
-		c.position=lerp(c.position,c.position-c.direc,time.dt*c.move_speed)
 def check_floor(c):
 	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=[c,LC.shdw],debug=False)
 	vp=vj.entity
-	if vj.normal and not (str(vp) in LC.item_lst+LC.dangers+LC.trigger_lst):
+	if vj.normal and not (str(vp) in LC.item_lst+LC.dangers+LC.trigger_lst+LC.spc_collider):
 		if not c.jumping:
 			landing(c,e=vj.world_point.y,o=vp)
 			spc_floor(c,e=vp)
@@ -659,8 +658,6 @@ def save_game():
 		'LS_CG':st.COLOR_GEM}#Color Gem ID
 	with open(save_file,'w') as f:
 		json.dump(save_data,f)
-	print("Spiel gespeichert!")
-
 def load_game():
 	with open(save_file,'r') as f:
 		save_data=json.load(f)
@@ -673,4 +670,3 @@ def load_game():
 	st.CRYSTAL=[(x) for x in save_data['LS_CR']]
 	st.CLEAR_GEM=[(x) for x in save_data['LS_CL']]
 	st.COLOR_GEM=[(x) for x in save_data['LS_CG']]
-	print("Spiel geladen!")

@@ -12,6 +12,9 @@ lv_name=['CENTRAL - WARP ROOM',
 		'LEVEL 5 - RUINED',
 		'DEVELOPER TEST LEVEL']
 
+# special collider
+spc_collider=['p_attack','smash_atk','p_shield']
+
 # crash death actions/animations
 dt_act={0:'fall_endl',1:'angel',2:'water',3:'explode',4:'burn',5:'electric',6:'eat_by_plant'}
 

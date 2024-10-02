@@ -166,3 +166,4 @@
 - warp room crash animation wait
 - shadow point fixx
 - changed physics
+- option for sound/music volume

@@ -343,19 +343,20 @@ class Gorilla(Entity):
 ## passive NPC
 class AkuAkuMask(Entity):
 	def __init__(self,pos):
-		self.tpa='res/npc/akuaku/'
+		s=self
+		s.tpa='res/npc/akuaku/'
 		super().__init__(model=None,texture=None,scale=.00075,rotation_x=rx,position=pos,unlit=False)
-		self.skin_0=self.tpa+'aku.ply'
-		self.tex_0=self.tpa+'aku.tga'
-		self.skin_1=self.tpa+'aku2.ply'
-		self.tex_1=self.tpa+'aku2.tga'
-		self.last_y=self.y
+		s.skin_0=s.tpa+'aku.ply'
+		s.tex_0=s.tpa+'aku.tga'
+		s.skin_1=s.tpa+'aku2.ply'
+		s.tex_1=s.tpa+'aku2.tga'
+		s.last_y=s.y
 		st.aku_exist=True
-		self.ta=LC.ACTOR
-		self.flt_di=0
-		self.spt=.5
-		self.change_skin()
-		self.spkw=0
+		s.ta=LC.ACTOR
+		s.flt_di=0
+		s.spt=.5
+		s.change_skin()
+		s.spkw=0
 	def change_skin(self):
 		if st.aku_hit > 1:
 			self.model=self.skin_1

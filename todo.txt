@@ -1,4 +1,3 @@
-- Game Options for SFX/Music volume and Controls
 - belly smash
 - Orginal Rain Effects for Rain strength (with Rain Cards)
 

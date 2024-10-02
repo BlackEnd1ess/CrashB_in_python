@@ -24,28 +24,59 @@ class pShadow(Entity):## shadow point
 			s.y=(s.ta.y)
 			return
 		if vSH.normal:
-			if not str(vSH.entity) in LC.item_lst:
+			if not (str(vSH.entity) in LC.item_lst):
 				s.y=vSH.world_point.y
 	def update(self):
 		if not st.gproc():
 			self.flw_p()
 
+class pShield(Entity):
+	def __init__(self):
+		super().__init__(model='cube',collider='box',scale=(4,3,4),position=(0,-5,0),visible=False)
+	def check_block(self):
+		wt=self.intersects(ignore=[LC.ACTOR,LC.shdw])
+		we=wt.entity
+		if wt.normal:
+			if cc.is_enemie(we) and not (we.is_hitten or we.is_purge):
+				if (we.vnum == 1) or (we.vnum == 5 and we.def_mode):
+					cc.get_damage(LC.ACTOR,rsn=1)
+				cc.bash_enemie(we,h=LC.ACTOR)
+				return
+			if str(we) in LC.item_lst:
+				we.collect()
+				return
+			if cc.is_crate(we):
+				if we.vnum in [3,11]:
+					we.empty_destroy()
+				else:
+					we.destroy()
+				return
+	def update(self):
+		s=self
+		if st.aku_hit > 2:
+			fv=LC.ACTOR
+			s.position=(fv.x,fv.y+.5,fv.z)
+			s.check_block()
+
 class CrashB(Entity):
 	def __init__(self,pos):
+		s=self
 		super().__init__(model=cHr+'crash.ply',texture=cHr+'crash.tga',scale=.1/110,rotation_x=-90,position=pos,unlit=False)
-		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+400),size=Vec3(200,200,600))
-		cc.set_val(self)
-		an.WarpRingEffect(pos=self.position)
+		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(200,200,600))
+		cc.set_val(s)
+		an.WarpRingEffect(pos=s.position)
 		pShadow()
-		self.KEY_ACT={'escape':lambda:cc.game_pause(),
-				'space':lambda:self.check_jump(),
+		#pShield()
+		s.KEY_ACT={'escape':lambda:cc.game_pause(),
+				'space':lambda:s.check_jump(),
 				'tab':lambda:cc.show_status_ui(),
-				'alt':lambda:self.spin_attack(),
-				'w':lambda:setattr(self,'CMS',3.2),
-				's':lambda:setattr(self,'CMS',4.2),
+				'alt':lambda:s.spin_attack(),
+				'v':lambda:s.belly_smash(),
+				'w':lambda:setattr(s,'CMS',3.2),
+				's':lambda:setattr(s,'CMS',4.2),
 				#dev inp
-				'u':lambda:setattr(self,'position',(0,4,83)),
-				'b':lambda:print(self.position),
+				'u':lambda:setattr(s,'position',(0,4,83)),
+				'b':lambda:print(s.position),
 				'e':lambda:EditorCamera()}
 	def input(self,key):
 		s=self
@@ -53,16 +84,29 @@ class CrashB(Entity):
 			return
 		if key in s.KEY_ACT:
 			s.KEY_ACT[key]()
+	def belly_smash(self):
+		s=self
+		if s.jumping or not s.landed:
+			if not s.b_smash:
+				s.b_smash=True
+				s.landing=False
+				s.jumping=False
+				s.is_flip=False
+				s.animate_y(s.y+.4,.3)
 	def spin_attack(self):
-		if not self.is_attack:
-			self.is_attack=True
-			self.is_landing=False
+		s=self
+		if not s.is_attack:
+			s.is_attack=True
+			s.standup=False
+			s.is_landing=False
 			sn.pc_audio(ID=3)
-			invoke(lambda:setattr(self,'is_attack',False),delay=.5)
+			invoke(lambda:setattr(s,'is_attack',False),delay=.6)
 			return
 		sn.pc_audio(ID=0)
 	def move(self):
 		s=self
+		if s.b_smash or st.p_rst(s):
+			return
 		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
 		s.direc=mvD
 		if s.is_slippery:
@@ -72,8 +116,8 @@ class CrashB(Entity):
 			mc=raycast(s.world_position+(0,.1,0),s.direc,distance=.2,ignore=[s,LC.shdw],debug=False)
 			me=mc.entity
 			mn=str(me)
-			if not mc or (mc and mn in LC.item_lst+LC.trigger_lst):
-				s.position+=s.direc*time.dt*s.move_speed
+			if not mc or (mc and mn in LC.item_lst+LC.trigger_lst+LC.spc_collider):
+				s.position=lerp(s.position,(s.position+s.direc),time.dt*s.move_speed)
 			if (mn == 'fthr'):
 				cc.get_damage(s,rsn=3)
 			if (cc.is_crate(me) and me.vnum == 12):
@@ -110,11 +154,15 @@ class CrashB(Entity):
 			s.walk_snd=.35
 	def fall(self):
 		s=self
-		s.y-=time.dt*s.gravity
+		fsp={False:(time.dt*s.gravity),True:(time.dt*s.gravity)*2}
+		s.y-=fsp[s.b_smash]
 		s.fall_time+=time.dt
 		if (s.is_flip or s.is_attack):
 			return
-		an.fall(s,sp=12)
+		if s.b_smash:
+			an.belly(s,sp=12)
+		else:
+			an.fall(s,sp=12)
 	def jump_typ(self,t):
 		s=self
 		upr={1:(.08),2:(.085),3:(.09),4:(.08)}
@@ -168,6 +216,9 @@ class CrashB(Entity):
 		invoke(lambda:cc.reset_state(s),delay=2)
 	def refr_anim(self):
 		s=self
+		if (s.standup):
+			an.stand_up(s,sp=16)
+			return
 		if (s.is_attack):
 			an.spin(s,sp=20)
 			return
@@ -175,7 +226,10 @@ class CrashB(Entity):
 			an.flip(s,sp=18)
 			return
 		if (s.landed and s.is_landing) and not (s.walking and s.jumping and s.is_attack):
-			an.land(s,sp=18)
+			if s.b_smash:
+				an.belly_land(s,sp=12)
+			else:
+				an.land(s,sp=18)
 			return
 		if st.p_idle(s) or self.freezed:
 			an.idle(s,sp=16)
@@ -186,17 +240,18 @@ class CrashB(Entity):
 	def update(self):
 		if not st.gproc():
 			s=self
-			print(s.gravity)
 			cc.check_floor(s)
 			cc.check_wall(s)
+			cc.various_val(s)
 			if not s.landed:
 				cc.check_ceiling(s)
-			cc.various_val(s)
 			if not st.p_rst(s):
 				s.move()
 				if not (s.landed or s.jumping):
 					s.fall()
 				s.c_camera()
+				if s.b_smash:
+					cc.c_smash(s)
 				if s.is_attack:
 					cc.c_attack(s)
 				if s.jumping:

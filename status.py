@@ -18,7 +18,7 @@ C_RESET=[]
 p_last_direc=None
 selected_level=1
 level_index=0
-aku_hit=0
+aku_hit=2
 fails=0
 
 ## wumpa count
@@ -83,7 +83,7 @@ def p_idle(c):
 		return True
 	return False
 def p_rst(c):
-	if not c.warped or (c.freezed or death_event):
+	if not c.warped or (c.standup or c.freezed or death_event):
 		return True
 	return False
 def gproc():

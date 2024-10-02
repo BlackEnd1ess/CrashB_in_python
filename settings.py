@@ -20,7 +20,7 @@ def load():
 	environment.init_amb_light()
 	print('default settings loaded')
 
-MUSIC_VOLUME=1
+MUSIC_VOLUME=0
 SFX_VOLUME=1
 #----------------------------
 #camera_contrast_shader

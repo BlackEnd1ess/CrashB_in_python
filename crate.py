@@ -67,7 +67,7 @@ def block_destroy(c):
 		c.p_snd=True
 		dpt=1
 		if c.vnum == 14:
-			dpt=.7
+			dpt=.75
 		sn.crate_audio(ID=0,pit=dpt)
 		invoke(lambda:setattr(c,'p_snd',False),delay=.5)
 
@@ -359,6 +359,7 @@ class Protected(Entity):
 			animation.prtc_anim(self)
 		block_destroy(self)
 	def c_destroy(self):
+		sn.crate_audio(ID=4,pit=.35)
 		item.place_wumpa(self.position,cnt=random.randint(5,10),c_prg=True)
 		destroy_event(self)
 

@@ -18,9 +18,11 @@ def dev_object():
 	#	if gv > 0:
 	#		o.GemPlatform(pos=(-7+gv,.3,-24),t=gv)
 def dev_crate():
-	mt.crate_plane(ID=1,POS=(-3,.16,-23),CNT=[32,1])
-	mt.crate_plane(ID=3,POS=(-3,.16,-23.32),CNT=[32,1])
-	mt.crate_plane(ID=7,POS=(-3,.16,-23.64),CNT=[32,1])
+	#return
+	mt.crate_block(ID=14,POS=(-3,.16,-23),CNT=[12,1,2])
+	#mt.crate_block(ID=1,POS=(-3,1.7,-23),CNT=[12,1,3])
+	#mt.crate_plane(ID=3,POS=(-3,.16,-23.32),CNT=[32,1])
+	#mt.crate_plane(ID=7,POS=(-3,.16,-23.64),CNT=[32,1])
 	#mt.crate_plane(ID=3,POS=(1,1.76,-23),CNT=[16,1])
 	#mt.crate_plane(ID=14,POS=(0,.16,-23),CNT=[2,2])
 	#mt.crate_row(ID=1,POS=(0,.16,-22),CNT=20,WAY=0)
@@ -44,8 +46,9 @@ def dev_crate():
 def dev_wumpa():
 	return#mt.wumpa_row(POS=(0,.3,-16),CNT=20,WAY=0)
 def dev_npc():
-	return#for np in range(15):
-	#	n.spawn(mID=0,pos=(-7+np,0,-22),mDirec=1)
+	return
+	#for np in range(15):
+	#	n.spawn(mID=np,pos=(-7+np,0,-22),mDirec=1)
 
 #### LEVEL1 STUCT ####
 def lv1_object():
@@ -166,8 +169,8 @@ def lv1_crate():
 	c.place_crate(ID=9,m=1,l=0,p=(-1.3,.9,-22.82))
 	for aE in range(4):
 		c.place_crate(ID=13,m=1,l=0,p=(-.98+.32*aE,.9,-22.82))
-	mt.crate_row(ID=3,POS=(-1.3,.9,-27),CNT=3,WAY=0)
-	mt.crate_row(ID=2,POS=(-1.3,2.56,-27),CNT=3,WAY=0)
+	mt.crate_row(ID=3,POS=(-1.3,.9,-27.5),CNT=3,WAY=0)
+	mt.crate_row(ID=2,POS=(-1.3,2.56,-27.5),CNT=3,WAY=0)
 	mt.crate_row(ID=1,POS=(1.8,.8,1.1),CNT=10,WAY=1)
 	mt.crate_row(ID=0,POS=(-.1,.8,20.16),CNT=10,WAY=1)
 	c.place_crate(ID=4,p=(.9,CRP,-3.9))

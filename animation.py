@@ -99,6 +99,35 @@ def flip(d,sp):
 	d.texture=af+'flp/crash.tga'
 	d.model=af+'flp/'+str(int(d.flfr))+'.ply'
 
+def belly(d,sp):
+	d.smfr+=time.dt*sp
+	if d.smfr > 2.9:
+		d.smfr=2
+		return
+	d.texture=af+'smash/crash.tga'
+	d.model=af+'smash/'+str(int(d.smfr))+'.ply'
+
+def belly_land(d,sp):
+	d.blfr+=time.dt*sp
+	if d.blfr > 3.9:
+		d.blfr=0
+		d.standup=True
+		d.b_smash=False
+		return
+	d.texture=af+'smash_land/crash.tga'
+	d.model=af+'smash_land/'+str(int(d.blfr))+'.ply'
+
+def stand_up(d,sp):
+	d.sufr+=time.dt*sp
+	if d.sufr > 8.9:
+		d.sufr=0
+		d.blfr=0
+		d.is_landing=False
+		d.standup=False
+		return
+	d.texture=af+'stand_up/crash.tga'
+	d.model=af+'stand_up/'+str(int(d.sufr))+'.ply'
+
 ## crash death animationsa
 def angel_fly(c):
 	DTH=13
@@ -257,7 +286,7 @@ class CrateBreak(Entity):
 				return
 			self.model=cf+'brk/'+str(int(self.frame_break))+'.ply'
 
-##warp rings 
+##warp rings
 class WarpRingEffect(Entity): ## spawn animation
 	def __init__(self,pos):
 		self.omf='res/objects/ev/'
