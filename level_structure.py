@@ -19,8 +19,8 @@ def dev_object():
 	#		o.GemPlatform(pos=(-7+gv,.3,-24),t=gv)
 def dev_crate():
 	#return
-	mt.crate_block(ID=14,POS=(-3,.16,-23),CNT=[12,1,2])
-	#mt.crate_block(ID=1,POS=(-3,1.7,-23),CNT=[12,1,3])
+	mt.crate_block(ID=7,POS=(-3,.16,-23),CNT=[12,1,1])
+	mt.crate_block(ID=1,POS=(-3,1.7,-23),CNT=[12,1,3])
 	#mt.crate_plane(ID=3,POS=(-3,.16,-23.32),CNT=[32,1])
 	#mt.crate_plane(ID=7,POS=(-3,.16,-23.64),CNT=[32,1])
 	#mt.crate_plane(ID=3,POS=(1,1.76,-23),CNT=[16,1])
@@ -345,7 +345,7 @@ def lv2_crate():
 	mt.crate_plane(ID=1,POS=(21.6,h3,5.4),CNT=[3,3])
 	c.place_crate(ID=3,p=(23.2,5.45+.16,13))
 	c.place_crate(ID=10,p=(37,h3+.48,30.4))
-	c.place_crate(ID=5,p=(6.8,2.125+.16,2.3))
+	c.place_crate(ID=5,p=(7.2,2.125+.16,2.3))
 	c.place_crate(ID=5,p=(24.3,h3,5))
 	mt.bounce_twin(POS=(24.5,h3,6),CNT=1)
 	if not 1 in st.COLOR_GEM:

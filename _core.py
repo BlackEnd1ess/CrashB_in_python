@@ -289,32 +289,32 @@ def check_ceiling(c):
 	vc=c.intersects(ignore=[c,LC.shdw])
 	if vc and vc.normal == Vec3(0,-1,0):
 		e=vc.entity
-		if not (str(e) in LC.item_lst+LC.trigger_lst+LC.spc_collider):
+		if not (e.name in LC.item_lst+LC.trigger_lst+LC.spc_collider):
 			if is_crate(e) and not c.tcr:
 				c.tcr=True
 				e.destroy()
 				invoke(lambda:setattr(c,'tcr',False),delay=.1)
-			c.y=c.y
+			c.y-=.1
 			c.jumping=False
 def check_wall(c):
 	hT=c.intersects(ignore=[c,LC.shdw])
 	jV=hT.entity
 	xa=str(jV)
 	if hT and hT.normal != Vec3(0,1,0):
-		if is_crate(jV) and jV.collider != None:
-			if not hT.normal == Vec3(0,-1,0):
-				c.position=lerp(c.position,(c.position+hT.normal),.1)
-				return
 		if xa in LC.trigger_lst:
 			jV.do_act()
 			return
 		if xa in LC.item_lst:
 			jV.collect()
+			return
 		if (is_enemie(jV) and not c.is_attack):
+			R=1
 			if jV.vnum == 7:
-				get_damage(c,rsn=5)
-				return
-			get_damage(c,rsn=1)
+				R=5
+			get_damage(c,rsn=R)
+			return
+		if not xa in LC.spc_collider:
+			c.position=lerp(c.position,c.position-c.direc,time.dt*c.move_speed)
 def check_floor(c):
 	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=[c,LC.shdw],debug=False)
 	vp=vj.entity
@@ -368,7 +368,7 @@ def spc_floor(c,e):
 	if u in ['bonus_platform','gem_platform']:
 		ptf_up(p=e,c=c)
 		return
-	if u in ['loose_platform','swpt','HPP']:
+	if u in ['loos','swpt','HPP']:
 		e.active=True
 	if (u == 'plank' and e.typ == 1):
 		e.pl_touch()
@@ -674,3 +674,34 @@ def load_game():
 	st.COLOR_GEM=[(x) for x in save_data['LS_CG']]
 	settings.SFX_VOLUME=save_data['S_VOL']
 	settings.MUSIC_VOLUME=save_data['M_VOL']
+
+## Level of Detail
+class LOD(Entity):
+	def __init__(self):
+		s=self
+		super().__init__()
+		si=st.level_index
+		CLW={1:LC.LV1_LOD,2:LC.LV2_LOD,3:LC.LV3_LOD,4:LC.LV4_LOD,5:LC.LV5_LOD,6:LC.LV3_LOD}
+		s.dst_far={1:(16),2:(16),3:(18),4:(22),5:(16),6:(16)}[si]
+		s.dst_bck={1:(2),2:(2),3:(4),4:(3),5:(4),6:(16)}[si]
+		s.MAIN_LOD=CLW[si]
+		s.rt=.5
+	def refr(self):
+		p=LC.ACTOR
+		s=self
+		for v in scene.entities[:]:
+			if isinstance(v,item.WumpaFruit):
+				v.enabled=(distance(p,v) < 6)
+			if is_enemie(v):
+				v.enabled=(v.z < p.z+18 and p.z < v.z+3 and abs(p.x-v.x) < 6)
+			if is_crate(v):
+				v.visible=(v.z < p.z+16 and p.z < v.z+3 and abs(p.x-v.x) < 6)
+			if v.name in s.MAIN_LOD:
+				v.enabled=(v.z < p.z+s.dst_far and p.z < v.z+s.dst_bck and abs(p.x-v.x) < 6)
+	def update(self):
+		s=self
+		if not st.gproc():
+			s.rt=max(s.rt-time.dt,0)
+			if s.rt <= 0:
+				s.rt=.5
+				s.refr()

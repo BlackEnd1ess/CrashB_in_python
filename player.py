@@ -169,7 +169,7 @@ class CrashB(Entity):
 	def jump_typ(self,t):
 		s=self
 		upr={1:(.08),2:(.085),3:(.09),4:(.08)}
-		grv={1:(2.2),2:(2.85),3:(3.1),4:(3.5)}
+		grv={1:(2.3),2:(2.85),3:(3.1),4:(3.5)}
 		jmh={1:s.y+.9,#normal jump
 			2:s.y+1.1,#crate jump
 			3:s.y+1.2,#bounce jump
@@ -187,7 +187,7 @@ class CrashB(Entity):
 		if s.walking:
 			s.is_flip=True
 		if not s.is_flip:
-			an.jup(s,sp=12)
+			an.jup(s,sp=16)
 		#if held_keys['space']:
 		#	s.space_time+=time.dt
 		#	if s.space_time > .4:
@@ -235,7 +235,10 @@ class CrashB(Entity):
 				an.land(s,sp=18)
 			return
 		if st.p_idle(s) or self.freezed:
-			an.idle(s,sp=16)
+			if s.is_slippery:
+				an.slide_stop(s,sp=8)
+			else:
+				an.idle(s,sp=16)
 			return
 	def hurt_visual(self):
 		for vkh in range(7):
@@ -246,18 +249,18 @@ class CrashB(Entity):
 			cc.check_floor(s)
 			cc.check_wall(s)
 			cc.various_val(s)
-			if not s.landed:
-				cc.check_ceiling(s)
+			#if not s.landed:
+			cc.check_ceiling(s)
 			if not st.p_rst(s):
 				s.move()
+				s.c_camera()
 				if not (s.landed or s.jumping):
 					s.fall()
-				s.c_camera()
+				if s.jumping:
+					s.jump()
 				if s.b_smash:
 					cc.c_smash(s)
 				if s.is_attack:
 					cc.c_attack(s)
-				if s.jumping:
-					s.jump()
 			if not st.death_event:
 				s.refr_anim()

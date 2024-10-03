@@ -10,7 +10,6 @@ lvtf='res/ui/digit_live/'
 _fnt='res/ui/font.ttf'
 btxt='res/ui/bonus/'
 _icn='res/ui/icon/'
-
 q='quad'
 
 CU=camera.ui

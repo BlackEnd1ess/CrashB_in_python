@@ -315,7 +315,7 @@ class Nitro(Entity):
 		self.start_y=self.y
 		self.acustic=False
 		self.snd_time=1
-		if status.level_index != 2:
+		if st.level_index != 2:
 			self.shader=unlit_shader
 	def destroy(self):
 		destroy_event(self)

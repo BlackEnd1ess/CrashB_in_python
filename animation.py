@@ -1,4 +1,5 @@
 import status,_core,_loc,sound
+from ursina.shaders import *
 from ursina import *
 
 npc_anim={0:7,#amadillo
@@ -289,12 +290,13 @@ class CrateBreak(Entity):
 ##warp rings
 class WarpRingEffect(Entity): ## spawn animation
 	def __init__(self,pos):
-		self.omf='res/objects/ev/'
-		super().__init__(model=self.omf+'warp_rings/0.ply',texture=self.omf+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.8,unlit=False)
-		self.activ=False
-		self.ta=_loc.ACTOR
-		self.rings=0
-		self.times=0
+		s=self
+		s.omf='res/objects/ev/'
+		super().__init__(model=s.omf+'warp_rings/0.ply',texture=s.omf+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.9,unlit=False,shader=unlit_shader)
+		s.activ=False
+		s.ta=_loc.ACTOR
+		s.rings=0
+		s.times=0
 	def update(self):
 		if not status.gproc() and cc.level_ready:
 			s=self
