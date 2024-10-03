@@ -1,11 +1,11 @@
 import status,_loc,level,sound,settings,ui,_core,objects
 from ursina import *
+cu=camera.ui
 st=status
 sn=sound
 
 mc='res/ui/icon/memcard.png'
 fn='res/ui/font.ttf'
-cu=camera.ui
 q='quad'
 class Memorycard(Entity):
 	def __init__(self):
@@ -45,10 +45,12 @@ class LvSelect(Entity):
 			level.main_instance(st.selected_level)
 
 def level_select():
+	scene.clear()
 	st.LV_CLEAR_PROCESS=False
 	st.level_index=0
 	camera.position=(0,0,-20)
 	camera.rotation=(0,0,0)
+	scene.fog_color=color.gray
 	scene.fog_density=(100,200)
 	objects.PseudoCrash()
 	Memorycard()

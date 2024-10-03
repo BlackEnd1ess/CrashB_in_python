@@ -425,9 +425,9 @@ def show_status_ui():
 ## crate actions
 def crate_set_val(cR,Cpos,Cpse):
 	if cR.vnum == 15:
-		cR.texture='res/crate/crate_t'+str(cR.time_stop)+'.png'
+		cR.texture='res/crate/crate_t'+str(cR.time_stop)+'.tga'
 	else:
-		cR.texture='res/crate/'+str(cR.vnum)+'.png'
+		cR.texture='res/crate/'+str(cR.vnum)+'.tga'
 	cR.org_tex=cR.texture
 	cR.fall_down=False
 	cR.is_stack=False
@@ -655,7 +655,9 @@ def save_game():
 		'SV_AK':st.aku_hit,#aku mask
 		'LS_CR':st.CRYSTAL,#Lv ID crystal
 		'LS_CL':st.CLEAR_GEM,#Lv ID clear gem
-		'LS_CG':st.COLOR_GEM}#Color Gem ID
+		'LS_CG':st.COLOR_GEM,#Color Gem ID
+		'M_VOL':settings.MUSIC_VOLUME,
+		'S_VOL':settings.SFX_VOLUME}
 	with open(save_file,'w') as f:
 		json.dump(save_data,f)
 def load_game():
@@ -670,3 +672,5 @@ def load_game():
 	st.CRYSTAL=[(x) for x in save_data['LS_CR']]
 	st.CLEAR_GEM=[(x) for x in save_data['LS_CL']]
 	st.COLOR_GEM=[(x) for x in save_data['LS_CG']]
+	settings.SFX_VOLUME=save_data['S_VOL']
+	settings.MUSIC_VOLUME=save_data['M_VOL']

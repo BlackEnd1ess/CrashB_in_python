@@ -167,3 +167,7 @@
 - shadow point fixx
 - changed physics
 - option for sound/music volume
+
+#03.09.2024
+- belly smash
+- proteced crates

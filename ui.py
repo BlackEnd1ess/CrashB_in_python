@@ -1,4 +1,4 @@
-import status,_core,_loc,sound,settings
+import status,_core,_loc,sound,settings,warproom
 from time import strftime,gmtime
 from ursina import *
 
@@ -339,6 +339,38 @@ class GameOverScreen(Entity):
 		self.btn_quit.color=self.qt_col[sbt]
 
 
+## Title Screen
+btv='res/ui/misc/'
+class TitleScreen(Entity):
+	def __init__(self):
+		super().__init__(model='quad',texture=btv+'title.jpg',scale=(1.6,.8),parent=CU)
+		self.d_text=Text('fan-game developed by:    blackendless / blackshadow',font=_fnt,scale=2,color=color.green,position=(-.5,.5),parent=CU)
+		self.s_text=Text('press start to begin',font=_fnt,scale=3,color=color.orange,position=(-.3,-.25),parent=CU)
+		self.blk=.3
+	def input(self,key):
+		if key in ['enter','space down','escape']:
+			sn.ui_audio(ID=1)
+			invoke(lambda:warproom.level_select(),delay=.1)
+	def update(self):
+		s=self
+		s.blk=max(s.blk-time.dt,0)
+		if s.blk <= 0:
+			s.blk=.3
+			if s.s_text.color == color.orange:
+				s.s_text.color=color.white
+				return
+			s.s_text.color=color.orange
+
+## Bootscreen
+class ProjectInfo(Entity):
+	def __init__(self):
+		LoadingScreen()
+		Sky(color=color.black)
+		Audio('res/snd/music/ev/title.mp3',loop=True,volume=settings.MUSIC_VOLUME)
+		super().__init__(model='quad',texture=btv+'disclaim.jpg',scale=(1.6,.8),parent=CU)
+		invoke(lambda:TitleScreen(),delay=5)
+		invoke(lambda:cc.purge_instance(self),delay=5)
+
 ## Loading Screen
 class LoadingScreen(Entity):
 	def __init__(self):
@@ -355,7 +387,6 @@ class LoadingScreen(Entity):
 		s.ltext.visible=(sl)
 		s.lname.visible=(sl)
 		s.visible=(sl)
-
 
 class WhiteScreen(Entity):
 	def __init__(self):

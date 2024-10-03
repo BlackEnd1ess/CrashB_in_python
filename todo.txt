@@ -1,11 +1,10 @@
-- belly smash
 - Orginal Rain Effects for Rain strength (with Rain Cards)
-
-- Boss Fight
-- Credits
-- Disclaimer like on PS1 Screen
-- .png to .tga/jpg
 - level decoration on level 1,2,4,
+
+##BUGS/ERORRS
+- massive lagg level 3,5
+- lv 5 corridor wall
+- ice idle animation
 
 ##MODULE
 ursina,imageio

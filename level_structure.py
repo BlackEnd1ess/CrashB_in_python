@@ -160,7 +160,7 @@ def lv1_crate():
 	mt.crate_block(ID=2,POS=(-1.8,CRP,3.3),CNT=[2,2,1])
 	mt.crate_plane(ID=14,POS=(-1.3,1.14,8.8),CNT=[2,2])
 	mt.crate_plane(ID=1,POS=(-1.5,CRP,-2.5),CNT=[2,4])
-	mt.crate_wall(ID=1,POS=(1,CRP,-56.5),CNT=[2,2])
+	mt.crate_wall(ID=14,POS=(1,CRP,-56.5),CNT=[2,2])
 	mt.crate_wall(ID=1,POS=(-1,CRP,-49),CNT=[2,2])
 	c.place_crate(ID=5,p=(0,CRP,-54))
 	mt.bounce_twin(POS=(-1,CRP,-36),CNT=1)

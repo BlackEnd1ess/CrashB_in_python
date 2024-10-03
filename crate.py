@@ -245,7 +245,7 @@ class SwitchEmpty(Entity):
 		if not self.activ:
 			self.activ=True
 			self.model=cr1
-			self.texture=pp+'0.png'
+			self.texture=pp+'0.tga'
 			ccount=0
 			status.C_RESET.append(self)
 			for _air in scene.entities[:]:
@@ -270,7 +270,7 @@ class SwitchNitro(Entity):
 		if not self.activ:
 			self.activ=True
 			self.model=cr1
-			self.texture=pp+'0.png'
+			self.texture=pp+'0.tga'
 			spawn_ico(self)
 			status.C_RESET.append(self)
 			for ni in scene.entities[:]:
@@ -303,7 +303,7 @@ class TNT(Entity):
 				if self.aud.playing:
 					self.aud.volume=settings.SFX_VOLUME
 				self.countdown=max(self.countdown-time.dt/1.15,0)
-				self.texture=self.tx+str(int(self.countdown))+'.png'
+				self.texture=self.tx+str(int(self.countdown))+'.tga'
 				if self.countdown <= 0:
 					self.empty_destroy()
 

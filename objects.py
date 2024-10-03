@@ -823,7 +823,7 @@ class WaterHit(Entity):## collider for water
 class CrateScore(Entity):## level reward
 	def __init__(self,pos):
 		ev='res/crate/'
-		super().__init__(model=ev+'cr_t0.ply',name='ctsc',texture=ev+'1.png',alpha=.4,scale=.18,position=pos,origin_y=.5)
+		super().__init__(model=ev+'cr_t0.ply',name='ctsc',texture=ev+'1.tga',alpha=.4,scale=.18,position=pos,origin_y=.5)
 		self.cc_text=Text(parent=scene,position=(self.x-.2,self.y,self.z),text=None,font='res/ui/font.ttf',color=color.rgb32(255,255,100),scale=10)
 	def update(self):
 		if not st.gproc():

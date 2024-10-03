@@ -36,7 +36,7 @@ class pShield(Entity):
 	def check_block(self):
 		wt=self.intersects(ignore=[LC.ACTOR,LC.shdw])
 		we=wt.entity
-		if wt.normal:
+		if wt:
 			if cc.is_enemie(we) and not (we.is_hitten or we.is_purge):
 				if (we.vnum == 1) or (we.vnum == 5 and we.def_mode):
 					cc.get_damage(LC.ACTOR,rsn=1)
@@ -54,9 +54,12 @@ class pShield(Entity):
 	def update(self):
 		s=self
 		if st.aku_hit > 2:
+			s.collider='box'
 			fv=LC.ACTOR
 			s.position=(fv.x,fv.y+.5,fv.z)
 			s.check_block()
+			return
+		s.collider=None
 
 class CrashB(Entity):
 	def __init__(self,pos):
@@ -66,7 +69,7 @@ class CrashB(Entity):
 		cc.set_val(s)
 		an.WarpRingEffect(pos=s.position)
 		pShadow()
-		#pShield()
+		pShield()
 		s.KEY_ACT={'escape':lambda:cc.game_pause(),
 				'space':lambda:s.check_jump(),
 				'tab':lambda:cc.show_status_ui(),
