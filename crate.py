@@ -157,13 +157,14 @@ class Bounce(Entity):
 		self.empty_destroy()
 	def update(self):
 		if not status.gproc():
-			if self.b_cnt > 0 and st.death_event:
-				self.lf_time=5
-				self.b_cnt=0
+			s=self
+			if s.b_cnt > 0 and st.death_event:
+				s.lf_time=5
+				s.b_cnt=0
 				return
-			if self.visible:
-				if (self.lf_time > 0 and self.b_cnt > 0):
-					self.lf_time-=time.dt
+			if s.visible:
+				if (s.lf_time > 0 and s.b_cnt > 0):
+					s.lf_time-=time.dt
 
 class ExtraLife(Entity):
 	def __init__(self,pos,pse):
@@ -278,45 +279,50 @@ class SwitchNitro(Entity):
 
 class TNT(Entity):
 	def __init__(self,pos,pse):
-		self.vnum=11
-		self.tx=pp+'crate_tnt_'
+		s=self
+		s.vnum=11
+		s.tx=pp+'crate_tnt_'
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
-		self.aud=Audio('res/snd/misc/tnt.wav',name='ctn',volume=0,autoplay=False)
-		self.activ=False
-		self.countdown=0
+		s.aud=Audio('res/snd/misc/tnt.wav',name='ctn',volume=0,autoplay=False)
+		s.activ=False
+		s.countdown=0
 	def destroy(self):
-		self.aud.fade_in()
-		self.aud.play()
-		self.activ=True
-		self.countdown=3.99
-		self.shader=unlit_shader
+		s=self
+		s.aud.fade_in()
+		s.aud.play()
+		s.activ=True
+		s.countdown=3.99
+		s.shader=unlit_shader
 	def empty_destroy(self):
-		if self.activ:
-			self.activ=False
-			self.aud.fade_out()
-		self.countdown=0
-		destroy_event(self)
+		s=self
+		if s.activ:
+			s.activ=False
+			s.aud.fade_out()
+		s.countdown=0
+		destroy_event(s)
 	def update(self):
-		if not st.gproc():
-			if self.activ:
-				if self.aud.playing:
-					self.aud.volume=settings.SFX_VOLUME
-				self.countdown=max(self.countdown-time.dt/1.15,0)
-				self.texture=self.tx+str(int(self.countdown))+'.tga'
-				if self.countdown <= 0:
-					self.empty_destroy()
+		s=self
+		if not st.gproc() and s.visible:
+			if s.activ:
+				if s.aud.playing:
+					s.aud.volume=settings.SFX_VOLUME
+				s.countdown=max(s.countdown-time.dt/1.15,0)
+				s.texture=s.tx+str(int(s.countdown))+'.tga'
+				if s.countdown <= 0:
+					s.empty_destroy()
 
 class Nitro(Entity):
 	def __init__(self,pos,pse):
-		self.vnum=12
+		s=self
+		s.vnum=12
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
-		self.start_y=self.y
-		self.acustic=False
-		self.snd_time=1
+		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
+		s.start_y=s.y
+		s.acustic=False
+		s.snd_time=1
 		if st.level_index != 2:
-			self.shader=unlit_shader
+			s.shader=unlit_shader
 	def destroy(self):
 		destroy_event(self)
 	def update(self):

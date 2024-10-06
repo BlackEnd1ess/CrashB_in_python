@@ -452,7 +452,7 @@ class LevelInfo(Entity):
 		if idx == 4 and 2 in st.COLOR_GEM:
 			s.lv_col_gem.color=color.rgb32(0,180,0)
 		if idx == 5 and 3 in st.COLOR_GEM:
-			s.lv_col_gem.color=color.violet
+			s.lv_col_gem.color=color.rgb32(140,0,160)
 	def update(self):
 		if st.selected_level == self.lvID:
 			self.lv_name.color=color.white
@@ -524,8 +524,6 @@ class PauseMenu(Entity):
 		s.music_vol=Text('SOUND VOLUME '+str(settings.SFX_VOLUME*10),tag=0,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.2,s.z-1),visible=False)
 		s.sound_vol=Text('MUSIC VOLUME '+str(settings.MUSIC_VOLUME*10),tag=1,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.275,s.z-1),visible=False)
 		s.opt_exit=Text('EXIT',tag=3,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.35,s.z-1),visible=False)
-		
-		#self.opt_exit=Text('press enter to exit')
 		s.check_collected()
 		s.opt_menu=False
 		s.sel_opt=0
@@ -555,22 +553,26 @@ class PauseMenu(Entity):
 					if not st.LEVEL_CLEAN:
 						cc.clear_level(passed=False)
 			return
-		if key in ['w','s']:
+		if key in ['w','s','down arrow','up arrow']:
 			if s.sel_opt == 0:
 				s.sel_opt=1
 			else:
 				s.sel_opt=0
 		if key == '+':
 			if s.sel_opt == 1:
-				settings.SFX_VOLUME+=.1
+				if settings.SFX_VOLUME < 1:
+					settings.SFX_VOLUME+=.1
 			elif s.sel_opt == 0:
-				settings.MUSIC_VOLUME+=.1
+				if settings.MUSIC_VOLUME < 1:
+					settings.MUSIC_VOLUME+=.1
 			sn.ui_audio(ID=1)
 		if key == '-':
 			if s.sel_opt == 1:
-				settings.SFX_VOLUME-=.1
+				if settings.SFX_VOLUME > .1:
+					settings.SFX_VOLUME-=.1
 			elif s.sel_opt == 0:
-				settings.MUSIC_VOLUME-=.1
+				if settings.MUSIC_VOLUME > .1:
+					settings.MUSIC_VOLUME-=.1
 			sn.ui_audio(ID=1)
 		if key == 'enter':
 			s.opt_menu=False

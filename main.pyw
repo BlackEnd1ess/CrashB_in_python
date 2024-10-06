@@ -5,7 +5,7 @@ app=Ursina(title='Crash Bandicoot',icon='res/cb.ico',vsync=False)
 def game():
 	settings.load()
 	#ui.ProjectInfo()
-	dev_start(3)
+	dev_start(6)
 
 def dev_start(idx):
 	import status,level

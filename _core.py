@@ -111,7 +111,7 @@ def c_attack(c):
 	for k in scene.entities[:]:
 		if distance(c,k) < .5:
 			if is_enemie(k) and not (k.is_hitten or k.is_purge):
-				if (k.vnum == 1) or (k.vnum == 5 and k.def_mode):
+				if (k.vnum in [1,11]) or (k.vnum == 5 and k.def_mode):
 					get_damage(c,rsn=1)
 				bash_enemie(k,h=c)
 			if is_crate(k) and k.collider != None:
@@ -149,9 +149,9 @@ def cam_follow(c):
 		camera.rotation_x=lerp(camera.rotation_x,20,time.dt/2)
 def cam_bonus(c):
 	ftt=time.dt*3
+	camera.z=(c.z-3.2)
 	camera.x=lerp(camera.x,c.x,ftt)
-	camera.z=lerp(camera.z,(c.z-3),ftt)
-	camera.y=lerp(camera.y,c.y+1.4,time.dt*2)
+	camera.y=lerp(camera.y,c.y+1.4,time.dt*1.5)
 	camera.rotation_x=16
 
 ## world, misc
@@ -294,13 +294,16 @@ def check_ceiling(c):
 				c.tcr=True
 				ve.destroy()
 				invoke(lambda:setattr(c,'tcr',False),delay=.1)
-			c.y=lerp(c.y,c.y+vc.normal[1],.1)
+			c.y-=.1
 			c.jumping=False
 def check_wall(c):
 	hT=c.intersects(ignore=[c,LC.shdw])
 	jV=hT.entity
 	xa=str(jV)
 	if hT.hit and not (hT.normal in [Vec3(0,1,0),Vec3(0,-1,0)]):
+		if isinstance(jV,crate.Nitro):
+			jV.destroy()
+			return
 		if xa in LC.item_lst:
 			jV.collect()
 			return
@@ -309,6 +312,7 @@ def check_wall(c):
 			if jV.vnum == 7:
 				R=5
 			get_damage(c,rsn=R)
+			return
 		if not xa in LC.trigger_lst:
 			c.position=lerp(c.position,c.position+hT.normal,time.dt*c.move_speed)
 def check_floor(c):
@@ -321,8 +325,7 @@ def check_floor(c):
 		return
 	c.landed=False
 def landing(c,e,o):
-	if c.y < e:
-		c.y=e
+	c.y=e
 	c.landed=True
 	if c.frst_lnd:
 		floor_interact(c,o)
@@ -349,13 +352,12 @@ def floor_interact(c,e):
 				c.jump_typ(t=2)
 		e.destroy()
 		return
-	if is_enemie(e) and not e.is_hitten:
+	if is_enemie(e) and not (e.is_hitten or e.is_purge):
 		if (e.vnum in [2,9]) or (e.vnum == 5 and e.def_mode):
 			get_damage(c,rsn=1)
-		else:
-			e.is_purge=True
-			c.jump_typ(t=2)
-			sn.pc_audio(ID=5)
+		e.is_purge=True
+		c.jump_typ(t=2)
+		sn.pc_audio(ID=5)
 def spc_floor(c,e):
 	u=str(e)
 	c.is_slippery=(u == 'iceg')
@@ -371,7 +373,7 @@ def spc_floor(c,e):
 		return
 	if u == 'water_hit':
 		dth_event(c,rsn=2)
-	if u == 'mptf':
+	if u == 'mptf' and not c.walking:
 		e.mv_player()
 def ptf_up(p,c):
 	if not c.freezed:
@@ -686,9 +688,9 @@ class LOD(Entity):
 			if isinstance(v,item.WumpaFruit):
 				v.enabled=(distance(p,v) < 6)
 			if is_enemie(v):
-				v.enabled=(v.z < p.z+18 and p.z < v.z+3 and abs(p.x-v.x) < s.dst_cam)
+				v.enabled=(v.z < p.z+20 and p.z < v.z+3 and abs(p.x-v.x) < s.dst_cam)
 			if is_crate(v):
-				v.visible=(v.z < p.z+16 and p.z < v.z+3 and abs(p.x-v.x) < s.dst_cam)
+				v.visible=(v.z < p.z+20 and p.z < v.z+3 and abs(p.x-v.x) < s.dst_cam)
 			if v.name in s.MAIN_LOD:
 				v.enabled=(v.z < p.z+s.dst_far and p.z < v.z+s.dst_bck and abs(p.x-v.x) < s.dst_cam)
 	def update(self):

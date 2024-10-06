@@ -42,7 +42,7 @@ day_m={0:'empty',
 	3:'evening',
 	4:'empty',
 	5:'empty',
-	6:'empty'}
+	6:'day'}
 
 #Ambient Light
 AMBIENT_LIGHT=None

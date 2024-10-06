@@ -179,3 +179,8 @@
 #06.09.2024
 - new rain (rain cards)
 - fixxed bugs,physics
+- closed vertex holes in start room
+- improved ambient lights
+- objects, surrounding takes color from environment
+- hide debugging info ingame
+- fixxed volume sfx/music (min=0,max=100), dont excites anymore

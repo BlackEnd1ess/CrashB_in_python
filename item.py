@@ -21,17 +21,19 @@ def place_wumpa(pos,cnt,c_prg=False):
 
 class WumpaFruit(Entity):
 	def __init__(self,p,c_prg):
-		self.w_pa='res/ui/icon/wumpa_fruit/'
-		super().__init__(model='quad',texture=self.w_pa+'w0.png',name='wmpf',position=(p[0],p[1],p[2]),scale=.22)
-		self.collider=BoxCollider(self,size=Vec3(1,1,1))
-		self.c_purge=c_prg
-		self.frm=0
+		s=self
+		s.w_pa='res/ui/icon/wumpa_fruit/'
+		super().__init__(model='quad',texture=s.w_pa+'w0.png',name='wmpf',position=(p[0],p[1],p[2]),scale=.22)
+		s.collider=BoxCollider(s,size=Vec3(1,1,1))
+		s.c_purge=c_prg
+		s.frm=0
 	def destroy(self):
 		cc.purge_instance(self)
 	def collect(self):
+		s=self
 		cc.wumpa_count(1)
-		if not self.c_purge:
-			st.W_RESET.append(self.position)
+		if not s.c_purge:
+			st.W_RESET.append(s.position)
 		self.destroy()
 	def update(self):
 		if not st.gproc():
@@ -50,6 +52,7 @@ class ExtraLive(Entity):
 
 class GemStone(Entity):
 	def __init__(self,pos,c):
+		s=self
 		if c == 3:
 			ge=i_path+'gemstone/gem2'
 		elif c == 2:
@@ -57,16 +60,17 @@ class GemStone(Entity):
 		else:
 			ge=i_path+'gemstone/gem'
 		super().__init__(model=ge+'.ply',texture=ge+'.tga',name='gems',color=color.gray,scale=.0011,position=pos,rotation_x=-90,collider=b)
-		self.gemID=c
-		self.gem_visual()
+		s.gemID=c
+		s.gem_visual()
 		if c != 0:
-			_loc.C_GEM=self
+			_loc.C_GEM=s
 			if (c == 5 and st.level_index == 3):
 				ui.TrialTimer(t=90)
 				return
-		self.purge_time=1
+		s.purge_time=1
 	def gem_visual(self):
 		##color
+		s=self
 		R=220
 		ge_c={0:color.rgb32(R-10,R-10,R),#clear gem
 			1:color.rgb32(R,0,0),#red gem
@@ -74,22 +78,22 @@ class GemStone(Entity):
 			3:color.rgb32(R,0,R),#purple gem
 			4:color.rgb32(0,0,R),#blue gem
 			5:color.rgb32(R-20,R-20,0)}#yellow gem
-		self.color=ge_c[self.gemID]
+		s.color=ge_c[s.gemID]
 		##scale - info: blue gem and yellow gem are Y scaled
-		if self.gemID in [4,5]:
-			gSC={4:self.scale_z/2,5:self.scale_z*1.5}
-			self.scale_z=gSC[self.gemID]
+		if s.gemID in [4,5]:
+			gSC={4:s.scale_z/2,5:s.scale_z*1.5}
+			s.scale_z=gSC[s.gemID]
 		##light reflection
 		lgx=0
 		lgy=.32
 		lgz=.18
-		s_pos={0:(self.x-lgx,self.y+lgy,self.z-lgz),
-			1:(self.x-lgx,self.y+lgy,self.z-lgz),
-			2:(self.x-lgx,self.y+lgy,self.z-lgz),
-			3:(self.x-lgx,self.y+lgy,self.z-lgz),
-			4:(self.x-lgx,self.y+lgy,self.z-lgz),
-			5:(self.x-lgx,self.y+lgy,self.z-lgz)}
-		self.shine=SpotLight(position=s_pos[self.gemID],color=color.gray)
+		s_pos={0:(s.x-lgx,s.y+lgy,s.z-lgz),
+			1:(s.x-lgx,s.y+lgy,s.z-lgz),
+			2:(s.x-lgx,s.y+lgy,s.z-lgz),
+			3:(s.x-lgx,s.y+lgy,s.z-lgz),
+			4:(s.x-lgx,s.y+lgy,s.z-lgz),
+			5:(s.x-lgx,s.y+lgy,s.z-lgz)}
+		s.shine=SpotLight(position=s_pos[s.gemID],color=color.gray)
 	def gem_fail(self):
 		gi=self.gemID
 		if gi == 4 and (st.level_index == 1 and st.crate_count > 0):#blue gem
@@ -100,11 +104,12 @@ class GemStone(Entity):
 			return True
 		return False
 	def purge(self):
-		self.collider=None
+		s=self
+		s.collider=None
 		_loc.C_GEM=None
-		self.shine.color=color.black
-		cc.purge_instance(self.shine)
-		cc.purge_instance(self)
+		s.shine.color=color.black
+		cc.purge_instance(s.shine)
+		cc.purge_instance(s)
 	def collect(self):
 		if self.gemID == 0:
 			st.level_cle_gem=True
@@ -114,19 +119,21 @@ class GemStone(Entity):
 		st.show_gems=5
 		self.purge()
 	def push_gem(self):
+		s=self
 		if not _loc.C_GEM:
 			return
-		if abs(self.x-_loc.C_GEM.x) < .5:
-			if (self.y < _loc.C_GEM.y+.2):
-				self.y+=time.dt
+		if abs(s.x-_loc.C_GEM.x) < .5:
+			if (s.y < _loc.C_GEM.y+.2):
+				s.y+=time.dt
 	def update(self):
 		if not st.gproc():
-			self.rotation_y-=time.dt*60
-			if self.gem_fail():
-				self.purge()
+			s=self
+			s.rotation_y-=time.dt*60
+			if s.gem_fail():
+				s.purge()
 				return
-			if self.gemID == 0:
-				self.push_gem()
+			if s.gemID == 0:
+				s.push_gem()
 
 class EnergyCrystal(Entity):
 	def __init__(self,pos):
@@ -140,8 +147,9 @@ class EnergyCrystal(Entity):
 		cc.purge_instance(self)
 	def update(self):
 		if not st.gproc():
-			self.visible=(distance(self,_loc.ACTOR) < 12)
-			self.rotation_y-=time.dt*70
+			s=self
+			s.visible=(distance(s,_loc.ACTOR) < 12)
+			s.rotation_y-=time.dt*70
 
 class TrialClock(Entity):
 	def __init__(self,pos):

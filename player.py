@@ -1,8 +1,9 @@
-import _core,status,animation,sound,_loc,map_tools
+import _core,status,animation,sound,_loc,map_tools,settings
 from ursina.shaders import *
 from math import atan2
 from ursina import *
 
+sg=settings
 an=animation
 sn=sound
 cc=_core
@@ -69,16 +70,16 @@ class CrashB(Entity):
 		cc.set_val(s)
 		an.WarpRingEffect(pos=s.position)
 		pShadow()
-		s.KEY_ACT={'escape':lambda:cc.game_pause(),
-				'space':lambda:s.check_jump(),
-				'tab':lambda:cc.show_status_ui(),
-				'alt':lambda:s.spin_attack(),
-				'v':lambda:s.belly_smash(),
-				'w':lambda:setattr(s,'CMS',3.2),
-				's':lambda:setattr(s,'CMS',4.2),
+		s.KEY_ACT={sg.MNU_KEY:lambda:cc.game_pause(),
+				sg.JMP_KEY:lambda:s.check_jump(),
+				sg.IFC_KEY:lambda:cc.show_status_ui(),
+				sg.ATK_KEY:lambda:s.spin_attack(),
+				sg.BLY_KEY:lambda:s.belly_smash(),
+				sg.FWD_KEY:lambda:setattr(s,'CMS',3.2),
+				sg.BCK_KEY:lambda:setattr(s,'CMS',4.2),
 				#dev inp
-				'u':lambda:setattr(s,'position',(4.8,4,31.7)),
-				#'b':lambda:print(s.position),
+				'u':lambda:setattr(s,'position',(0,4,82)),
+				'b':lambda:print(s.position),
 				'e':lambda:EditorCamera()}
 	def input(self,key):
 		s=self
@@ -104,12 +105,12 @@ class CrashB(Entity):
 			sn.pc_audio(ID=3)
 			invoke(lambda:setattr(s,'is_attack',False),delay=.6)
 			return
-		sn.pc_audio(ID=0)
+		sn.pc_audio(ID=4)
 	def move(self):
 		s=self
 		if s.b_smash or st.p_rst(s):
 			return
-		mvD=Vec3(held_keys['d']-held_keys['a'],0,held_keys['w']-held_keys['s']).normalized()
+		mvD=Vec3(held_keys[sg.RGT_KEY]-held_keys[sg.LFT_KEY],0,held_keys[sg.FWD_KEY]-held_keys[sg.BCK_KEY]).normalized()
 		s.direc=mvD
 		if s.is_slippery:
 			cc.c_slide(s)
@@ -160,11 +161,11 @@ class CrashB(Entity):
 			an.fall(s,sp=12)
 	def jump_typ(self,t):
 		s=self
-		grv={1:(2.2),2:(2.6),3:(2.9),4:(2.7)}
+		grv={1:(2.2),2:(2.6),3:(2.8),4:(2.5)}
 		jmh={1:s.y+.8,#normal jump
 			2:s.y+1,#crate jump
-			3:s.y+1.2,#bounce jump
-			4:s.y+1.4}#spring jump
+			3:s.y+1.1,#bounce jump
+			4:s.y+1.5}#spring jump
 		s.gravity=grv[t]#fall speed
 		s.vpos=jmh[t]#jump heigt limit
 		s.fall_time=0

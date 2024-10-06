@@ -18,11 +18,11 @@ class LvSelect(Entity):
 		super().__init__()
 		self.bgm=Audio('res/snd/music/ev/wroom.mp3',volume=settings.MUSIC_VOLUME,loop=True)
 	def input(self,key):
-		if key == 's' and st.selected_level < 5:
+		if key in settings.BCK_KEY and st.selected_level < 5:
 			st.selected_level+=1
 			sn.ui_audio(ID=0,pit=.125)
 			return
-		if key == 'w' and st.selected_level > 1:
+		if key == settings.FWD_KEY and st.selected_level > 1:
 			st.selected_level-=1
 			sn.ui_audio(ID=0,pit=.125)
 			return

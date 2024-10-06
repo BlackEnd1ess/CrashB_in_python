@@ -106,25 +106,27 @@ class Penguin(Entity):
 
 class Hedgehog(Entity):
 	def __init__(self,p,d):
+		s=self
 		nN='hedgehog'
-		self.vnum=5
+		s.vnum=5
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC/1.5,position=p)
-		self.collider=BoxCollider(self,center=Vec3(self.x,self.y+50,self.z+250),size=Vec3(400,400,400))
-		cc.set_val_npc(self,di=d)
-		self.def_mode=False
-		self.move_speed=1.1
-		self.def_frame=0
+		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+250),size=Vec3(400,400,400))
+		cc.set_val_npc(s,di=d)
+		s.def_mode=False
+		s.move_speed=1.1
+		s.def_frame=0
 	def anim_act(self):
 		an.hedge_defend(self)
 	def update(self):
 		if not st.gproc():
-			an.npc_walking(self)
-			cc.npc_action(self)
-			if distance(self,LC.ACTOR) < 2:
-				self.defend_mode=True
-				self.anim_act()
+			s=self
+			an.npc_walking(s)
+			cc.npc_action(s)
+			if distance(s,LC.ACTOR) < 2:
+				s.def_mode=True
+				s.anim_act()
 				return
-			self.defend_mode=False
+			s.def_mode=False
 
 class Seal(Entity):
 	def __init__(self,p,d):

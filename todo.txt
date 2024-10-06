@@ -2,13 +2,4 @@
 ursina,imageio,math,random
 
 ## BUGS/ERORRS
-- nitro & dangers collider
-- enemie hit/damage
-- options controls
-- lv3 nitro switch height
 - gem gloss
-- attack block sound by running state
-- tunnel walls
-- gem ptf unlit
-- laggs reduce
-- indoor zone lv 1,5

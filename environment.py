@@ -16,7 +16,7 @@ SKY_COL={'day':c.rgb32(200,230,255),
 
 FOG_COL={'day':c.rgb32(120,140,140),
 		'empty':c.black,
-		'evening':c.rgb32(10,40,10),
+		'evening':c.rgb32(25,45,25),
 		'night':c.rgb32(0,0,0),
 		'dark':c.rgb32(0,0,0),
 		'rain':c.rgb32(0,0,0),
@@ -25,12 +25,12 @@ FOG_COL={'day':c.rgb32(120,140,140),
 
 AMB_COL={'day':c.rgb32(180,180,180),
 		'empty':c.rgb32(140,140,140),#c.rgb32(180,180,180),
-		'evening':c.rgb32(220,180,150),
+		'evening':c.rgb32(255,215,185),
 		'night':c.rgb32(0,0,0),
 		'dark':c.rgb32(0,0,0),
 		'rain':c.rgb32(0,0,0),
 		'snow':c.rgb32(200,160,210),
-		'woods':c.rgb32(120,130,120)}
+		'woods':c.rgb32(140,150,140)}
 
 def init_amb_light():#called 1 time
 	amv=AmbientLight(color=c.gray)
@@ -86,7 +86,7 @@ class SkyBox(Sky):
 class Fog(Entity):
 	def __init__(self):
 		super().__init__()
-		self.L_DST={0:(3,30),1:(2,20),2:(3,15),3:(16,22),4:(5,30),5:(5,20),6:(15,30)}
+		self.L_DST={0:(3,30),1:(2,20),2:(3,15),3:(17,19),4:(5,30),5:(5,20),6:(15,30)}
 		self.B_DST={0:(0,0),1:(-5,20),2:(0,10),3:(5,20),4:(8,15),5:(10,20),6:(15,30)}
 		scene.fog_color=FOG_COL[st.day_mode]
 		scene.fog_density=self.L_DST[st.level_index]
@@ -105,25 +105,35 @@ class Fog(Entity):
 
 class RainFall(Entity):
 	def __init__(self):
-		super().__init__(model='quad',scale=(1.8,1),alpha=0,visible=False,z=5,color=color.rgb32(150,150,190),parent=camera.ui)
-		self.tx_r='res/objects/ev/rain/'
+		s=self
+		super().__init__(model='quad',scale=(1.8,1),alpha=0,visible=False,color=c.light_gray,parent=camera.ui,unlit=False)
+		s.tx_r='res/objects/ev/rain/'
 		LC.ACTOR.indoor=.5
 		sound.Rainfall()
-		self.frm=0
-		self.sp=30
+		s.frm=0
+		s.sp=30
+		if st.level_index == 5:
+			s.sp=50
+		s.dup_rain=Entity(model='quad',scale=(12,6),alpha=s.alpha,visible=False,color=c.white,parent=scene,unlit=False)
 	def refr_rain(self):
 		s=self
 		s.frm=min(s.frm+time.dt*s.sp,58.99)
 		if s.frm > 58.98:
 			s.frm=0
-		s.texture=s.tx_r+str(int(s.frm))+'.png'
+		rrt=s.tx_r+str(int(s.frm))+'.png'
+		s.dup_rain.texture=rrt
+		s.texture=rrt
 	def update(self):
 		if not st.gproc():
 			s=self
 			ft=time.dt*2
 			s.refr_rain()
 			if LC.ACTOR.warped and LC.ACTOR.indoor <= 0:
+				s.dup_rain.visible=True
 				s.visible=True
-				s.alpha=lerp(s.alpha,.8,ft)
+				s.dup_rain.position=(camera.x,camera.y-.1,camera.z+4)
+				s.dup_rain.alpha=lerp(s.alpha,1,ft)
+				s.alpha=lerp(s.alpha,.6,ft)
 				return
+			s.dup_rain.alpha=lerp(s.alpha,0,ft)
 			s.alpha=lerp(s.alpha,0,ft)

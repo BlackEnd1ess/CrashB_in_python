@@ -14,7 +14,7 @@ def load_bonus_level(idx):
 ##bonus level
 def bonus1():
 	o.BonusPlatform(pos=(11.5,-37,U))
-	o.Water(pos=(0,-39,0),s=(60,60),c=color.rgb32(100,110,110),a=.9)
+	o.Water(pos=(0,-39,0),sca=(60,60),c=color.rgb32(100,110,110),a=.9)
 	for w in range(2):
 		o.BackgroundWall(p=(0+w*14,-37,2))
 	for bc0 in range(6):
@@ -243,8 +243,8 @@ def dev_bonus():
 def gem_route1():
 	o.LevelScene(pos=(200,0,128),sca=(200,40,1))
 	o.LevelScene(pos=(200,-20,127),sca=(200,40,1))
-	o.Water(pos=(200,-.1,10),s=(8,50),c=color.rgb32(80,80,120),a=1)
-	o.Water(pos=(200,2.3,50),s=(16,40),c=color.rgb32(80,80,120),a=1)
+	o.Water(pos=(200,-.1,10),sca=(8,50),c=color.rgb32(80,80,120),a=1)
+	o.Water(pos=(200,2.3,50),sca=(16,40),c=color.rgb32(80,80,120),a=1)
 	o.FallingZone(pos=(200,-4,0),s=(40,1,32))
 	o.mBlock(pos=(200,0,-3),sca=(2,4))
 	o.mBlock(pos=(200,0,1),sca=(1,1))
@@ -284,7 +284,7 @@ def gem_route1():
 	c.place_crate(ID=8,p=(200,1.125+.16,22.14))
 	c.place_crate(ID=8,p=(200,2.125+.16,27))
 	#decoration
-	twc=color.rgb32(50,50,255)
+	twc=color.rgb32(120,120,200)
 	o.TempleWall(col=twc,pos=(197.5,-.5,15.5),side=2)
 	o.TempleWall(col=twc,pos=(202.5,-.5,15.5),side=1)
 	o.TempleWall(col=twc,pos=(197.5,0,19),side=2)
@@ -304,20 +304,20 @@ def gem_route1():
 	o.spawn_tree_wall(pos=(202.2,1.1,-7),cnt=11,d=1)
 	o.spawn_tree_wall(pos=(199,3.8,41),cnt=11,d=0)
 	o.spawn_tree_wall(pos=(205,3.8,32),cnt=15,d=1)
-	o.TreeScene(pos=(202.7,3.725,51.7),s=.0175)
+	o.TreeScene(pos=(202.7,3.725,51.7),sca=.0175)
 	#bush
-	o.bush(pos=(198.7,0,17.45),s=1.5,c=color.green)
-	o.bush(pos=(197.8,0,17.44),s=1.5,c=color.green)
-	o.bush(pos=(201,0,17.45),s=1.5,c=color.green)
-	o.bush(pos=(202,0,17.44),s=1.5,c=color.green)
-	o.bush(pos=(199,2.3,29.4),s=1.5,c=color.green)
-	o.bush(pos=(201,2.3,29.4),s=1.5,c=color.green)
-	o.bush(pos=(202,2.3,29.41),s=1.5,c=color.green)
-	o.bush(pos=(199,1.5,29.),s=1.5,c=color.green)
-	o.bush(pos=(201,1.5,29.),s=1.5,c=color.green)
-	o.bush(pos=(202,1.5,29.01),s=1.5,c=color.green)
-	o.bush(pos=(199.1,2,39.7),s=2,c=color.green)
-	o.bush(pos=(199.1,3,39.72),s=2,c=color.green)
+	o.bush(pos=(198.7,0,17.45),sca=1.5,c=color.green)
+	o.bush(pos=(197.8,0,17.44),sca=1.5,c=color.green)
+	o.bush(pos=(201,0,17.45),sca=1.5,c=color.green)
+	o.bush(pos=(202,0,17.44),sca=1.5,c=color.green)
+	o.bush(pos=(199,2.3,29.4),sca=1.5,c=color.green)
+	o.bush(pos=(201,2.3,29.4),sca=1.5,c=color.green)
+	o.bush(pos=(202,2.3,29.41),sca=1.5,c=color.green)
+	o.bush(pos=(199,1.5,29.),sca=1.5,c=color.green)
+	o.bush(pos=(201,1.5,29.),sca=1.5,c=color.green)
+	o.bush(pos=(202,1.5,29.01),sca=1.5,c=color.green)
+	o.bush(pos=(199.1,2,39.7),sca=2,c=color.green)
+	o.bush(pos=(199.1,3,39.72),sca=2,c=color.green)
 	#grass
 	o.GrassSide(pos=(197.5,.9,0),ry=0)
 	o.GrassSide(pos=(202.5,.9,0),ry=180)
@@ -406,7 +406,7 @@ def gem_route4():
 	o.GemPlatform(pos=(200,0,31.9),t=5)
 
 def gem_route5():
-	o.FallingZone(pos=(200,-5,0),s=(40,1,32))
+	o.FallingZone(pos=(200,-5,0),s=(40,1,64))
 	o.spw_ruin_ptf(p=(200,-3,U),cnt=1,way=0)
 	o.spw_ruin_ptf(p=(200-.75,-3,U+1.5),cnt=3,way=0)
 	for rn_a in range(3):
