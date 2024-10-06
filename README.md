@@ -12,6 +12,7 @@ optional for help scripts:
 to install this Modules you need Python3 installed on your Computer and then type in your commandline:
 
 pip install ursina --upgrade
+
 pip install imageio --upgrade
 
 After Install, download the ZIP File and extract them into a emtpy Folder.
@@ -32,3 +33,5 @@ Avocado:   https://github.com/JaCzekanski/Avocado ### This Emulator have a 3D Sc
 
 i will update weekly the Template Folder, which contains a lot of time saving Mechanics and easy to understand und build in.
 in the script folder you can find a Tool, that makes automatic export.
+
+The Main Project Folder contains my own Version of this Game, which im showing on Youtube.
