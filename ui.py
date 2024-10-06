@@ -1,4 +1,4 @@
-import status,_core,_loc,sound,settings,warproom
+import status,_core,_loc,sound,settings,warproom,level
 from time import strftime,gmtime
 from ursina import *
 
@@ -342,7 +342,7 @@ class GameOverScreen(Entity):
 btv='res/ui/misc/'
 class TitleScreen(Entity):
 	def __init__(self):
-		super().__init__(model='quad',texture=btv+'title.jpg',scale=(1.6,.8),parent=CU)
+		super().__init__(model='quad',texture=btv+'title.jpg',scale=(1.8,1),parent=CU)
 		self.d_text=Text('fan-game developed by:    blackendless / blackshadow',font=_fnt,scale=2,color=color.green,position=(-.5,.5),parent=CU)
 		self.s_text=Text('press start to begin',font=_fnt,scale=3,color=color.orange,position=(-.3,-.25),parent=CU)
 		self.blk=.3
@@ -493,41 +493,42 @@ O=140
 ## Pause Menu
 class PauseMenu(Entity):
 	def __init__(self):
+		s=self
 		e='res/ui/pause/'
 		super().__init__(parent=CU,model=q,texture=e+'c_pause1.png',scale=(1.05,.5),position=(-.375,-.25,.1),color=color.rgb32(130,140,130),visible=False)
-		self.ppt=Entity(parent=CU,model=q,texture=e+'c_pause2.png',scale=(.75,1),position=(.515,0,.1),color=color.rgb32(130,140,130),visible=False)
+		s.ppt=Entity(parent=CU,model=q,texture=e+'c_pause2.png',scale=(.75,1),position=(.515,0,.1),color=color.rgb32(130,140,130),visible=False)
 		##text
-		self.selection=['RESUME','OPTIONS','QUIT']
-		self.font_color=color.rgb32(230,100,0)
-		self.blink_time=0
-		self.choose=0
+		s.selection=['RESUME','OPTIONS','QUIT']
+		s.font_color=color.rgb32(230,100,0)
+		s.blink_time=0
+		s.choose=0
 		vF=0
-		self.p_name=Text('Crash B.',font='res/ui/font.ttf',scale=3,position=(vF+.4,vF+.475,self.z-1),color=self.font_color,parent=CU,visible=False)
-		self.lvl_name=Text(LC.lv_name[st.level_index],font='res/ui/font.ttf',scale=3,position=(vF-.7,vF-.025,self.z-1),color=color.azure,parent=CU,visible=False)
-		self.select_0=Text(self.selection[0],font='res/ui/font.ttf',scale=3,tag=0,position=(vF-.5,vF-.2,self.z-1),color=self.font_color,parent=CU,visible=False)
-		self.select_1=Text(self.selection[1],font='res/ui/font.ttf',scale=3,tag=1,position=(vF-.5,vF-.275,self.z-1),color=self.font_color,parent=CU,visible=False)
-		self.select_2=Text(self.selection[2],font='res/ui/font.ttf',scale=3,tag=2,position=(vF-.5,vF-.35,self.z-1),color=self.font_color,parent=CU,visible=False)
-		self.crystal_counter=Text('0/5',font='res/ui/font.ttf',scale=6,position=(vF+.325,vF+.325,self.z-1),color=color.rgb32(160,0,160),parent=CU,visible=False)
-		self.gem_counter=Text('0/10 GEMS',font='res/ui/font.ttf',scale=5,position=(vF+.3,vF-.1,self.z-1),color=color.rgb32(170,170,190),parent=CU,visible=False)
-		self.add_text=Text('+ 0',font='res/ui/font.ttf',scale=4,position=(vF+.325,vF+.025,vF-1),color=self.font_color,parent=CU,visible=False)
-		self.game_progress=Text('Progress 0%',font='res/ui/font.ttf',scale=3,position=(vF+.325,vF-.35,self.z-1),color=color.gold,parent=CU,visible=False)
+		s.p_name=Text('Crash B.',font='res/ui/font.ttf',scale=3,position=(vF+.4,vF+.475,s.z-1),color=s.font_color,parent=CU,visible=False)
+		s.lvl_name=Text(LC.lv_name[st.level_index],font='res/ui/font.ttf',scale=3,position=(vF-.7,vF-.025,s.z-1),color=color.azure,parent=CU,visible=False)
+		s.select_0=Text(s.selection[0],font='res/ui/font.ttf',scale=3,tag=0,position=(vF-.5,vF-.2,s.z-1),color=s.font_color,parent=CU,visible=False)
+		s.select_1=Text(s.selection[1],font='res/ui/font.ttf',scale=3,tag=1,position=(vF-.5,vF-.275,s.z-1),color=s.font_color,parent=CU,visible=False)
+		s.select_2=Text(s.selection[2],font='res/ui/font.ttf',scale=3,tag=2,position=(vF-.5,vF-.35,s.z-1),color=s.font_color,parent=CU,visible=False)
+		s.crystal_counter=Text('0/5',font='res/ui/font.ttf',scale=6,position=(vF+.325,vF+.325,s.z-1),color=color.rgb32(160,0,160),parent=CU,visible=False)
+		s.gem_counter=Text('0/10 GEMS',font='res/ui/font.ttf',scale=5,position=(vF+.3,vF-.1,s.z-1),color=color.rgb32(170,170,190),parent=CU,visible=False)
+		s.add_text=Text('+ 0',font='res/ui/font.ttf',scale=4,position=(vF+.325,vF+.025,vF-1),color=s.font_color,parent=CU,visible=False)
+		s.game_progress=Text('Progress 0%',font='res/ui/font.ttf',scale=3,position=(vF+.325,vF-.35,s.z-1),color=color.gold,parent=CU,visible=False)
 		##animation
-		self.cry_anim=Animation('res/ui/icon/crystal.gif',position=(vF+.6,vF+.26,self.z-1),scale=.15,fps=12,parent=CU,color=color.magenta,visible=False)
-		self.col_gem1=Animation('res/ui/icon/gem.gif',position=(vF+.25,vF+.075,self.z-1),scale=.15,fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		self.col_gem2=Animation('res/ui/icon/gem1.gif',position=(vF+.37,vF+.075,self.z-1),scale=.15,fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		self.col_gem3=Animation('res/ui/icon/gem2.gif',position=(vF+.49,vF+.075,self.z-1),scale=.15,fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		self.col_gem4=Animation('res/ui/icon/gem.gif',position=(vF+.61,vF+.075,self.z-1),scale=(.15,.075),fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		self.col_gem5=Animation('res/ui/icon/gem.gif',position=(vF+.73,vF+.075,self.z-1),scale=(.15,.19),fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		self.cleargem=Animation('res/ui/icon/gem.gif',position=(vF+.6,vF-.03,self.z-1),scale=.2,fps=12,parent=CU,color=color.rgb32(130,130,190),visible=False)
+		s.cry_anim=Animation('res/ui/icon/crystal.gif',position=(vF+.6,vF+.26,s.z-1),scale=.15,fps=12,parent=CU,color=color.magenta,visible=False)
+		s.col_gem1=Animation('res/ui/icon/gem.gif',position=(vF+.25,vF+.075,s.z-1),scale=.15,fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
+		s.col_gem2=Animation('res/ui/icon/gem1.gif',position=(vF+.37,vF+.075,s.z-1),scale=.15,fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
+		s.col_gem3=Animation('res/ui/icon/gem2.gif',position=(vF+.49,vF+.075,s.z-1),scale=.15,fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
+		s.col_gem4=Animation('res/ui/icon/gem.gif',position=(vF+.61,vF+.075,s.z-1),scale=(.15,.075),fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
+		s.col_gem5=Animation('res/ui/icon/gem.gif',position=(vF+.73,vF+.075,s.z-1),scale=(.15,.19),fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
+		s.cleargem=Animation('res/ui/icon/gem.gif',position=(vF+.6,vF-.03,s.z-1),scale=.2,fps=12,parent=CU,color=color.rgb32(130,130,190),visible=False)
 		##options
-		self.music_vol=Text('SOUND VOLUME '+str(settings.SFX_VOLUME*10),tag=0,font=_fnt,scale=3,color=self.font_color,parent=CU,position=(vF-.7,vF-.2,self.z-1),visible=False)
-		self.sound_vol=Text('MUSIC VOLUME '+str(settings.MUSIC_VOLUME*10),tag=1,font=_fnt,scale=3,color=self.font_color,parent=CU,position=(vF-.7,vF-.275,self.z-1),visible=False)
-		self.opt_exit=Text('EXIT',tag=3,font=_fnt,scale=3,color=self.font_color,parent=CU,position=(vF-.7,vF-.35,self.z-1),visible=False)
+		s.music_vol=Text('SOUND VOLUME '+str(settings.SFX_VOLUME*10),tag=0,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.2,s.z-1),visible=False)
+		s.sound_vol=Text('MUSIC VOLUME '+str(settings.MUSIC_VOLUME*10),tag=1,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.275,s.z-1),visible=False)
+		s.opt_exit=Text('EXIT',tag=3,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.35,s.z-1),visible=False)
 		
 		#self.opt_exit=Text('press enter to exit')
-		self.check_collected()
-		self.opt_menu=False
-		self.sel_opt=0
+		s.check_collected()
+		s.opt_menu=False
+		s.sel_opt=0
 	def input(self,key):
 		s=self
 		if not st.pause:
@@ -587,8 +588,6 @@ class PauseMenu(Entity):
 				4:lambda:setattr(s.col_gem4,'color',color.rgb32(0,0,O)),
 				5:lambda:setattr(s.col_gem5,'color',color.rgb32(O-15,O-15,0))}
 			gfc[gC]()
-	def option_menu(self):
-		return
 	def select_menu(self):
 		for mn in [self.select_0,self.select_1,self.select_2]:
 			if self.choose == mn.tag:

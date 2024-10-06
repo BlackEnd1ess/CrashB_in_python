@@ -11,44 +11,30 @@ n=npc
 def dev_object():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass')
 	o.StartRoom(pos=(0,0,-32.2))
-	#o.MossPlatform(p=(0,.2,-23),ptm=2)
-	#o.LightArea(pos=(0,.5,-15))
-	#for gv in range(0,6):
-	#	item.GemStone(pos=(-6+gv/2,.3,-23),c=gv)
-	#	if gv > 0:
-	#		o.GemPlatform(pos=(-7+gv,.3,-24),t=gv)
+	for gv in range(0,6):
+		item.GemStone(pos=(1+gv/2,.3,-15),c=gv)
+		if gv > 0:
+			o.GemPlatform(pos=(1.5+gv,.3,-14),t=gv)
 def dev_crate():
-	#return
-	mt.crate_block(ID=7,POS=(-3,.16,-23),CNT=[12,1,1])
-	mt.crate_block(ID=1,POS=(-3,1.7,-23),CNT=[12,1,3])
-	#mt.crate_plane(ID=3,POS=(-3,.16,-23.32),CNT=[32,1])
-	#mt.crate_plane(ID=7,POS=(-3,.16,-23.64),CNT=[32,1])
-	#mt.crate_plane(ID=3,POS=(1,1.76,-23),CNT=[16,1])
-	#mt.crate_plane(ID=14,POS=(0,.16,-23),CNT=[2,2])
-	#mt.crate_row(ID=1,POS=(0,.16,-22),CNT=20,WAY=0)
-	#mt.crate_row(ID=7,POS=(0,.16,-20),CNT=12,WAY=0)
-	#mt.crate_row(ID=3,POS=(0,.16,-25),CNT=12,WAY=0)
-	#mt.bounce_twin(POS=(0,.16,-24),CNT=12,trs=1.6)
-	#mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,3,3])
-	#mt.crate_block(ID=1,POS=(-6.5,.16,-18),CNT=[3,3,3])
-	#mt.crate_block(ID=2,POS=(-5.5,.16,-18),CNT=[3,3,2])
-	#mt.crate_block(ID=3,POS=(-4.5,.16,-18),CNT=[3,3,1])
-	#mt.crate_block(ID=4,POS=(-3.5,.16,-18),CNT=[3,1,1])
-	#mt.crate_block(ID=5,POS=(-2.5,.16,-18),CNT=[6,1,1])
-	#mt.crate_block(ID=6,POS=(-1.5+.32,.16,-25),CNT=[1,1,1])
-	#mt.crate_block(ID=7,POS=(-.5,.16,-18),CNT=[3,3,1])
-	#mt.crate_block(ID=8,POS=(.5,.16,-18),CNT=[3,3,1])
-	#mt.crate_block(ID=9,POS=(1.5+.32,.16,-18),CNT=[1,1,1])
-	#mt.crate_block(ID=10,POS=(2.5+.32,.16,-18),CNT=[1,1,1])
-	#mt.crate_block(ID=11,POS=(3.5+.32,.16,-18),CNT=[1,1,1])
-	#mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,1])
-	#mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,1])
+	mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,3,3])
+	mt.crate_block(ID=1,POS=(-6.5,.16,-18),CNT=[3,3,3])
+	mt.crate_block(ID=2,POS=(-5.5,.16,-18),CNT=[3,3,2])
+	mt.crate_block(ID=3,POS=(-4.5,.16,-18),CNT=[3,3,1])
+	mt.crate_block(ID=4,POS=(-3.5,.16,-18),CNT=[3,1,1])
+	mt.crate_block(ID=5,POS=(-2.5,.16,-18),CNT=[3,1,1])
+	mt.crate_block(ID=6,POS=(-1.5+.32,.16,-18),CNT=[1,1,1])
+	mt.crate_block(ID=7,POS=(-.5,.16,-18),CNT=[3,3,1])
+	mt.crate_block(ID=8,POS=(.5,.16,-18),CNT=[3,3,1])
+	mt.crate_block(ID=9,POS=(1.5+.32,.16,-18),CNT=[1,1,1])
+	mt.crate_block(ID=10,POS=(2.5+.32,.16,-18),CNT=[1,1,1])
+	mt.crate_block(ID=11,POS=(3.5+.32,.16,-18),CNT=[1,1,1])
+	mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,1])
+	mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,1])
 def dev_wumpa():
-	return#mt.wumpa_row(POS=(0,.3,-16),CNT=20,WAY=0)
+	mt.wumpa_row(POS=(0,.3,-20),CNT=20,WAY=0)
 def dev_npc():
-	return
-	#for np in range(15):
-	#	n.spawn(mID=np,pos=(-7+np,0,-22),mDirec=1)
+	for np in range(15):
+		n.spawn(mID=np,pos=(-7+np,0,-10),mDirec=1)
 
 #### LEVEL1 STUCT ####
 def lv1_object():
@@ -81,10 +67,10 @@ def lv1_object():
 	o.TreeScene(pos=(1.32,1.5,-46),s=.0175)
 	o.TreeScene(pos=(0,1.7,-26.4),s=.0175)
 	o.TreeScene(pos=(-1.4,1.5,10.6),s=.02)
-	o.spawn_tree_wall(pos=(-4,2.3,-64),cnt=50,d=0)
-	o.spawn_tree_wall(pos=(-4,2,-64),cnt=50,d=0)
-	o.spawn_tree_wall(pos=(4.5,2.3,-64),cnt=50,d=1)
-	o.spawn_tree_wall(pos=(4,2.3,-63),cnt=50,d=1)
+	o.spawn_tree_wall(pos=(-3.7,2,-63),cnt=50,d=0)
+	o.spawn_tree_wall(pos=(-4.2,2.4,-64),cnt=50,d=0)
+	o.spawn_tree_wall(pos=(4.5,2,-64),cnt=50,d=1)
+	o.spawn_tree_wall(pos=(4,2,-63),cnt=50,d=1)
 	o.bush(pos=(.37,1.3,-26.5),s=2,c=color.orange)
 	o.bush(pos=(1.5,1.4,-14.2),s=2,c=cG)
 	o.bush(pos=(-1.5,1.4,-14.2),s=2,c=color.orange)
@@ -95,6 +81,9 @@ def lv1_object():
 	o.TreeScene(pos=(-1.5,1.6,19.3),s=.02)
 	o.TreeScene(pos=(1.2,1.8,19.3),s=.02)
 	o.TreeScene(pos=(1.1,1.5,11),s=.02)
+	o.TreeScene(pos=(.5,1.3,2.5),s=.02)
+	o.TreeScene(pos=(0,1,-2),s=.013)
+	o.TreeScene(pos=(0,1,6),s=.013)
 	o.bush(pos=(2.43,1.4,23),s=3,c=cG)
 	o.bush(pos=(-2.37,1.4,23),s=3,c=color.yellow)
 	o.TreeScene(pos=(1,1.6,-34.6),s=.02)
@@ -230,6 +219,12 @@ def lv2_object():
 	o.IceChunk(pos=(24.8,5.3,3.2),typ=1,rot=(-80,-90,0))
 	o.IceChunk(pos=(28,5.35,28.1),typ=1,rot=(-180,-90,0))
 	o.IceChunk(pos=(28,7.8,28),typ=1,rot=(-180,-90,0))
+	o.IceChunk(pos=(0,3.3,-60.4),typ=1,rot=(90,-90,0))
+	o.IceChunk(pos=(41.7,8.5,38.3),typ=1,rot=(90,-90,0))
+	for ict in range(12):
+		o.IceChunk(pos=(17+ict*2.5,4.5,43.6),typ=1,rot=(-90,-90,0))
+		o.IceChunk(pos=(17.5+ict*2.5,4.7,44.3),typ=1,rot=(-90,-90,0))
+		o.IceChunk(pos=(17+ict*2.5,4.9,45.3),typ=1,rot=(-90,-90,0))
 	#dangers
 	wlO=3.7
 	o.WoodLog(pos=(10.5,wlO,2.2))
@@ -263,17 +258,19 @@ def lv2_object():
 	o.mBlock(pos=(42,6.2,38),sca=(4,4))
 	#pillar
 	phe=1.1
-	o.pillar_twin(p=(-.75,phe,-56),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.75,phe,-42.6),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.75,phe,-39),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.75,phe,-21.65),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.75,phe,-18),ro_y=(-90,45,0))
-	o.pillar_twin(p=(-.75,phe,-1.8),ro_y=(-90,45,0))
-	o.pillar_twin(p=(22.25,5.35,7),ro_y=(-90,45,0))
-	o.pillar_twin(p=(22.25,5.35,19.85),ro_y=(-90,45,0))
-	o.pillar_twin(p=(22.25,5.35,26.3),ro_y=(-90,45,0))
+	o.pillar_twin(p=(-.75,phe,-56))
+	o.pillar_twin(p=(-.75,phe,-42.6))
+	o.pillar_twin(p=(-.75,phe,-39))
+	o.pillar_twin(p=(-.75,phe,-21.65))
+	o.pillar_twin(p=(-.75,phe,-18))
+	o.pillar_twin(p=(-.75,phe,-1.8))
+	o.pillar_twin(p=(22.25,5.35,7))
+	o.pillar_twin(p=(22.25,5.35,19.85))
+	o.pillar_twin(p=(22.25,5.35,26.3))
 	o.Ropes(pos=(-.5,.7,-56),le=55)
 	o.Ropes(pos=(22.5,5.3,7),le=16)
+	o.Pillar(pos=(40.25,6.55,38.7))
+	o.Pillar(pos=(43.75,6.55,38.7))
 	#planks
 	_pl=.7
 	#bridge1
@@ -373,7 +370,7 @@ def lv2_wumpa():
 	mt.wumpa_double_row(POS=(25,5.6,27),CNT=16)
 	mt.wumpa_wall(POS=(22.7,5.55,18.9),CNT=[2,3])
 def lv2_npc():
-	n.spawn(pos=(3,1.3,2.45),mID=4,mDirec=0)
+	n.spawn(pos=(23,5.375,24.3),mID=4,mDirec=1)
 	n.spawn(pos=(0,.92,1),mID=5,mDirec=0)
 	n.spawn(pos=(14.5,2.65,2.4),mID=6,mDirec=0)
 	n.spawn(pos=(31.7,5.35,26.9),mID=5,mDirec=0)
@@ -551,12 +548,15 @@ def lv3_npc():
 
 #### LEVEL4 STUCT ####
 def lv4_object():
+	sw_tile='res/terrain/l4/sewer_tiles.jpg'
 	o.StartRoom(pos=(0,.3,-64.2))
 	o.FallingZone(pos=(0,-1,0),s=(128,.3,128))
-	o.BonusPlatform(pos=(1.4,.9,4.8))
+	o.BonusPlatform(pos=(6.3,2,8))
 	o.GemPlatform(pos=(4.2,2,31.7),t=5)
 	o.EletricWater(pos=(0,.2,-48),sca=(8,96),ID=0)
 	o.EletricWater(pos=(14.5,3.5,83),sca=(8,64),ID=1)
+	o.Water(pos=(10,1,40),s=(20,23),c=color.rgb32(100,255,0),a=1)
+	o.Water(pos=(0,-1,6),s=(30,10),c=color.rgb32(100,255,0),a=1)
 	o.EndRoom(pos=(15.65,5.5,78.5),c=color.rgb32(180,180,180))
 	o.SewerTunnel(pos=(0,.4,-53))
 	o.SewerTunnel(pos=(0,.4,-44))
@@ -584,7 +584,14 @@ def lv4_object():
 	Entity(model='cube',scale=(4,.5,5),position=(14.5,3.5,52.25),texture_scale=(4,5),collider='box',texture='res/terrain/l4/metal_01.jpg')
 	Entity(model='cube',scale=(16,1,64),position=(14.5,2.9,83),collider='box',visible=False)
 	#walls
-	Entity(model='quad',texture='res/terrain/l4/sewer_tiles.jpg',scale=(10,20),texture_scale=(10,20),position=(-2,1,9),color=color.rgb32(160,150,150))
+	Entity(model='quad',texture=sw_tile,scale=(10,20),texture_scale=(10,20),position=(-2,1,9),color=color.rgb32(160,150,150))
+	Entity(model='quad',texture=sw_tile,scale=(20,20),texture_scale=(20,20),position=(3,1,49.7),color=color.rgb32(160,150,150))
+	Entity(model='cube',texture=sw_tile,scale=(1,20,23),texture_scale=(10,20),position=(2,1,40),color=color.rgb32(160,150,150))
+	Entity(model='cube',texture=sw_tile,scale=(1,20,16),texture_scale=(10,20),position=(8,1,37),color=color.rgb32(160,150,150))
+	o.SewerWall(pos=(5.5,-3.5,9.2))
+	o.SewerWall(pos=(9.5,0,9.2))
+	o.SewerWall(pos=(15,-1,49.3))
+	o.SewerWall(pos=(19.5,4,49.3))
 	o.SewerPipe(pos=(-4,1,9),typ=2)
 	o.SewerPipe(pos=(-2,1,9),typ=2)
 	o.SewerPipe(pos=(0,1,9),typ=2)
@@ -593,7 +600,6 @@ def lv4_object():
 	o.SewerPipe(pos=(-2,-.3,8.7),typ=0)
 	o.SewerPipe(pos=(0,-.3,8.7),typ=0)
 	o.SewerPipe(pos=(2,-.3,8.7),typ=0)
-	Entity(model='quad',texture='res/terrain/l4/sewer_tiles.jpg',scale=(20,20),texture_scale=(20,20),position=(3,1,49.7),color=color.rgb32(160,150,150))
 	o.SewerPipe(pos=(4,3,49),typ=2)
 	o.SewerPipe(pos=(6,3,49),typ=2)
 	o.SewerPipe(pos=(8,3,49),typ=2)

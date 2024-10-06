@@ -11,7 +11,7 @@ N=npc
 
 ## player
 def set_val(c):
-	for _a in ['rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','walk_snd','fall_time','slide_fwd','in_water','jmp_typ','space_time']:
+	for _a in ['rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','walk_snd','fall_time','slide_fwd','in_water','space_time']:
 		setattr(c,_a,0)#animation frames
 	for _v in ['aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop','h_lock','b_smash','standup']:
 		setattr(c,_v,False)#flags
@@ -86,8 +86,8 @@ def reset_state(c):
 	c.visible=True
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def various_val(c):
-	c.indoor=max(c.indoor-time.dt,0)
 	c.in_water=max(c.in_water-time.dt,0)
+	c.indoor=max(c.indoor-time.dt,0)
 	if not c.is_slippery:
 		c.move_speed=2.4
 	if st.bonus_solved and not st.wait_screen:
@@ -121,7 +121,7 @@ def c_attack(c):
 					k.destroy()
 def c_smash(c):
 	for wr in scene.entities[:]:
-		if distance(wr,c) < .3:
+		if distance(wr,c) < .4:
 			if is_crate(wr) and wr.collider != None:
 				if wr.vnum in [3,11]:
 					wr.empty_destroy()
@@ -156,7 +156,7 @@ def cam_bonus(c):
 
 ## world, misc
 def spawn_level_crystal(idx):
-	cry_pos={1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7),6:(0,.3,-19)}
+	cry_pos={0:(0,0,0),1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7),6:(0,.3,-15)}
 	if not idx in st.CRYSTAL:
 		item.EnergyCrystal(pos=cry_pos[idx])
 def collect_reset():
@@ -287,23 +287,20 @@ def game_over():
 ## collisions
 def check_ceiling(c):
 	vc=c.intersects(ignore=[c,LC.shdw])
+	ve=vc.entity
 	if vc and vc.normal == Vec3(0,-1,0):
-		e=vc.entity
-		if not (e.name in LC.item_lst+LC.trigger_lst+LC.spc_collider):
-			if is_crate(e) and not c.tcr:
+		if not (ve.name in LC.item_lst+LC.trigger_lst):
+			if is_crate(ve) and not c.tcr:
 				c.tcr=True
-				e.destroy()
+				ve.destroy()
 				invoke(lambda:setattr(c,'tcr',False),delay=.1)
-			c.y-=.1
+			c.y=lerp(c.y,c.y+vc.normal[1],.1)
 			c.jumping=False
 def check_wall(c):
 	hT=c.intersects(ignore=[c,LC.shdw])
 	jV=hT.entity
 	xa=str(jV)
-	if hT and hT.normal != Vec3(0,1,0):
-		if xa in LC.trigger_lst:
-			jV.do_act()
-			return
+	if hT.hit and not (hT.normal in [Vec3(0,1,0),Vec3(0,-1,0)]):
 		if xa in LC.item_lst:
 			jV.collect()
 			return
@@ -312,13 +309,12 @@ def check_wall(c):
 			if jV.vnum == 7:
 				R=5
 			get_damage(c,rsn=R)
-			return
-		if not xa in LC.spc_collider:
-			c.position=lerp(c.position,c.position-c.direc,time.dt*c.move_speed)
+		if not xa in LC.trigger_lst:
+			c.position=lerp(c.position,c.position+hT.normal,time.dt*c.move_speed)
 def check_floor(c):
 	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=[c,LC.shdw],debug=False)
 	vp=vj.entity
-	if vj.normal and not (str(vp) in LC.item_lst+LC.dangers+LC.trigger_lst+LC.spc_collider):
+	if vj.normal and not (vp.name in LC.item_lst+LC.dangers+LC.trigger_lst):
 		if not c.jumping:
 			landing(c,e=vj.world_point.y,o=vp)
 			spc_floor(c,e=vp)
@@ -339,10 +335,9 @@ def landing(c,e,o):
 		c.is_landing=True
 		c.space_time=0
 		c.fall_time=0
-		sn.foot_step(c,o)
+		sn.landing_sound(c,o)
 def floor_interact(c,e):
-	u=str(e)
-	if is_crate(e) and not ((e.vnum == 0) or (e.vnum in [9,10,11] and e.activ)) and c.fall_time > .1:
+	if is_crate(e) and not ((e.vnum == 0) or (e.vnum in [9,10,11] and e.activ)) and c.fall_time > .05:
 		if e.vnum in [7,8]:
 			c.jump_typ(t=4)
 			e.c_action()
@@ -361,7 +356,6 @@ def floor_interact(c,e):
 			e.is_purge=True
 			c.jump_typ(t=2)
 			sn.pc_audio(ID=5)
-		return
 def spc_floor(c,e):
 	u=str(e)
 	c.is_slippery=(u == 'iceg')
@@ -374,8 +368,7 @@ def spc_floor(c,e):
 		e.pl_touch()
 	if (u == 'swpi' and e.typ == 3):
 		get_damage(c,rsn=3)
-	if u == 'falling_zone':
-		dth_event(c=LC.ACTOR,rsn=0)
+		return
 	if u == 'water_hit':
 		dth_event(c,rsn=2)
 	if u == 'mptf':
@@ -472,8 +465,8 @@ def load_b_ui():
 	ui.CrateBonus()
 	ui.LiveBonus()
 def load_bonus(c):
-	status.loading=True
-	status.checkpoint=LC.bonus_checkpoint[st.level_index]
+	st.loading=True
+	st.checkpoint=LC.bonus_checkpoint[st.level_index]
 	collect_reset()
 	if st.bonus_round:
 		invoke(lambda:back_to_level(c),delay=.5)
@@ -481,9 +474,8 @@ def load_bonus(c):
 	invoke(lambda:enter_bonus(c),delay=.5)
 def enter_bonus(c):
 	ui.BlackScreen()
-	status.bonus_round=True
+	st.bonus_round=True
 	load_b_ui()
-	status.day_mode='bonus'
 	sn.BonusMusic(T=st.level_index)
 	ui.BonusText()
 	c.position=(0,-35,-3)
@@ -682,8 +674,9 @@ class LOD(Entity):
 		super().__init__()
 		si=st.level_index
 		CLW={1:LC.LV1_LOD,2:LC.LV2_LOD,3:LC.LV3_LOD,4:LC.LV4_LOD,5:LC.LV5_LOD,6:LC.LV3_LOD}
-		s.dst_far={1:(16),2:(16),3:(18),4:(22),5:(16),6:(16)}[si]
+		s.dst_far={1:(18),2:(16),3:(18),4:(22),5:(16),6:(16)}[si]
 		s.dst_bck={1:(2),2:(2),3:(4),4:(3),5:(4),6:(16)}[si]
+		s.dst_cam=8
 		s.MAIN_LOD=CLW[si]
 		s.rt=.5
 	def refr(self):
@@ -693,11 +686,11 @@ class LOD(Entity):
 			if isinstance(v,item.WumpaFruit):
 				v.enabled=(distance(p,v) < 6)
 			if is_enemie(v):
-				v.enabled=(v.z < p.z+18 and p.z < v.z+3 and abs(p.x-v.x) < 6)
+				v.enabled=(v.z < p.z+18 and p.z < v.z+3 and abs(p.x-v.x) < s.dst_cam)
 			if is_crate(v):
-				v.visible=(v.z < p.z+16 and p.z < v.z+3 and abs(p.x-v.x) < 6)
+				v.visible=(v.z < p.z+16 and p.z < v.z+3 and abs(p.x-v.x) < s.dst_cam)
 			if v.name in s.MAIN_LOD:
-				v.enabled=(v.z < p.z+s.dst_far and p.z < v.z+s.dst_bck and abs(p.x-v.x) < 6)
+				v.enabled=(v.z < p.z+s.dst_far and p.z < v.z+s.dst_bck and abs(p.x-v.x) < s.dst_cam)
 	def update(self):
 		s=self
 		if not st.gproc():

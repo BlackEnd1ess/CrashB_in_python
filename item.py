@@ -22,7 +22,7 @@ def place_wumpa(pos,cnt,c_prg=False):
 class WumpaFruit(Entity):
 	def __init__(self,p,c_prg):
 		self.w_pa='res/ui/icon/wumpa_fruit/'
-		super().__init__(model='quad',texture=self.w_pa+'w0.png',position=(p[0],p[1],p[2]),scale=.22)
+		super().__init__(model='quad',texture=self.w_pa+'w0.png',name='wmpf',position=(p[0],p[1],p[2]),scale=.22)
 		self.collider=BoxCollider(self,size=Vec3(1,1,1))
 		self.c_purge=c_prg
 		self.frm=0
@@ -39,7 +39,7 @@ class WumpaFruit(Entity):
 
 class ExtraLive(Entity):
 	def __init__(self,pos):
-		super().__init__(model='quad',texture='res/ui/icon/crash_live.tga',position=pos,scale=.3,collider=b)
+		super().__init__(model='quad',texture='res/ui/icon/crash_live.tga',name='exlf',position=pos,scale=.3,collider=b)
 		self.collider=BoxCollider(self,size=Vec3(1,1,1))
 	def collect(self):
 		cc.give_extra_live()
@@ -56,7 +56,7 @@ class GemStone(Entity):
 			ge=i_path+'gemstone/gem1'
 		else:
 			ge=i_path+'gemstone/gem'
-		super().__init__(model=ge+'.ply',texture=ge+'.tga',color=color.gray,scale=.0011,position=pos,rotation_x=-90,collider=b)
+		super().__init__(model=ge+'.ply',texture=ge+'.tga',name='gems',color=color.gray,scale=.0011,position=pos,rotation_x=-90,collider=b)
 		self.gemID=c
 		self.gem_visual()
 		if c != 0:
@@ -131,7 +131,7 @@ class GemStone(Entity):
 class EnergyCrystal(Entity):
 	def __init__(self,pos):
 		CRY='crystal/crystal'
-		super().__init__(model=i_path+CRY+'.ply',texture=i_path+CRY+'.tga',scale=.0013,rotation_x=-90,position=pos,double_sided=True,color=color.magenta,shader=unlit_shader,unlit=False)
+		super().__init__(model=i_path+CRY+'.ply',texture=i_path+CRY+'.tga',name='crys',scale=.0013,rotation_x=-90,position=pos,double_sided=True,color=color.magenta,shader=unlit_shader,unlit=False)
 		self.collider=b
 	def collect(self):
 		st.level_crystal=True

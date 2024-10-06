@@ -27,73 +27,65 @@ t=18
 
 ## player animation
 def idle(d,sp):
-	d.idfr+=time.dt*sp
-	if d.idfr > 10.9:
+	d.idfr=min(d.idfr+time.dt*sp,10.99)
+	if d.idfr > 10.98:
 		d.idfr=0
 	d.texture=af+'idle/crash.tga'
 	d.model=af+'idle/'+str(int(d.idfr))+'.ply'
 
 def run(d,sp):
-	d.rnfr+=time.dt*sp
-	if d.rnfr > 10.9:
+	d.rnfr=min(d.rnfr+time.dt*sp,10.99)
+	if d.rnfr > 10.98:
 		d.rnfr=0
 	d.texture=af+'run/crash.tga'
 	d.model=af+'run/'+str(int(d.rnfr))+'.ply'
 
 def run_s(d,sp):
-	d.srfr+=time.dt*sp
-	if d.srfr > 6.75:
+	d.srfr=min(d.srfr+time.dt*sp,6.99)
+	if d.srfr > 6.98:
 		d.srfr=0
 	d.texture=af+'slide_start/crash.tga'
 	d.model=af+'slide_start/'+str(int(d.srfr))+'.ply'
 
 def slide_stop(d,sp):
-	d.ssfr+=time.dt*sp
-	if d.ssfr > 3.9:
+	d.ssfr=min(d.ssfr+time.dt*sp,3.99)
+	if d.ssfr > 3.98:
 		d.ssfr=3
 	d.texture=af+'slide_stop/crash.tga'
 	d.model=af+'slide_stop/'+str(int(d.ssfr))+'.ply'
 
 def jup(d,sp):
-	d.jmfr+=time.dt*sp
-	if d.jmfr > 2.9:
+	d.jmfr=min(d.jmfr+time.dt*sp,2.99)
+	if d.jmfr > 2.98:
 		return
 	d.texture=af+'jmup/crash.tga'
 	d.model=af+'jmup/'+str(int(d.jmfr))+'.ply'
 
 def spin(d,sp):
-	d.spfr+=time.dt*sp
-	if d.spfr > 11.9:
+	d.spfr=min(d.spfr+time.dt*sp,11.99)
+	if d.spfr > 11.98:
 		d.spfr=0
 	d.texture=af+'spn/crash.tga'
 	d.model=af+'spn/'+str(int(d.spfr))+'.ply'
 
 def land(d,sp):
-	d.ldfr+=time.dt*sp
-	if d.ldfr > 12.9:
+	d.ldfr=min(d.ldfr+time.dt*sp,12.99)
+	if d.ldfr > 12.98:
 		d.is_landing=False
 		d.ldfr=0
 		return
 	d.texture=af+'lnd/crash.tga'
 	d.model=af+'lnd/'+str(int(d.ldfr))+'.ply'
 
-def land_s(d,sp):
-	d.land_s_anim+=time.dt*sp
-	if d.land_s_anim > 7.9:
-		d.land_s_anim=0
-	d.texture=af+'slide_land/crash.tga'
-	d.model=af+'slide_land/'+str(int(d.land_anim))+'.ply'
-
 def fall(d,sp):
 	if d.fafr < 7.99:
-		d.fafr=1
-	d.fafr+=time.dt*sp
+		d.fafr=min(d.fafr+time.dt*sp,7.99)
 	d.texture=af+'fall/crash.tga'
 	d.model=af+'fall/'+str(int(d.fafr))+'.ply'
 
 def flip(d,sp):
-	d.flfr+=time.dt*sp
-	if d.flfr > 16.9:
+	d.flfr=min(d.flfr+time.dt*sp,16.99)
+	if d.flfr > 16.98:
 		d.is_flip=False
 		d.flfr=0
 		return
@@ -101,8 +93,8 @@ def flip(d,sp):
 	d.model=af+'flp/'+str(int(d.flfr))+'.ply'
 
 def belly(d,sp):
-	d.smfr+=time.dt*sp
-	if d.smfr > 2.9:
+	d.smfr=min(d.smfr+time.dt*sp,2.99)
+	if d.smfr > 2.98:
 		d.smfr=2
 		return
 	d.texture=af+'smash/crash.tga'

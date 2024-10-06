@@ -2,21 +2,33 @@ import status,settings,_core,_loc
 from ursina import *
 
 VS='res/snd/ambience/'
-SN='res/snd/misc/'
 SP='res/snd/player/'
+SN='res/snd/misc/'
 SA='res/snd/npc/'
 se=settings
 cc=_core
 
-##landing sound material
-def foot_step(c,o):
-	if cc.is_crate(o) and o.vnum != 0:
+##footstep
+def footstep(c):
+	if c.is_slippery:
+		pc_audio(ID=8,pit=1.5)
 		return
-	if o.name in ['swpt','swpl']:
-		pc_audio(ID=13)
-	elif c.in_water > 0:
-		pc_audio(ID=10)
+	if c.in_water > 0:
+		pc_audio(ID=11,pit=random.uniform(.9,1))
+		return
 	else:
+		if status.level_index == 4:
+			pc_audio(ID=12)
+			return
+		pc_audio(ID=0)
+
+##landing sound material
+def landing_sound(c,o):
+	fn=o.name
+	if fn in ['swpt','swpl']:
+		pc_audio(ID=13)
+		return
+	if not cc.is_crate(o):
 		pc_audio(ID=2)
 
 ## ambience sound

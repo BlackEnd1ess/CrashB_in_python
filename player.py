@@ -24,7 +24,7 @@ class pShadow(Entity):## shadow point
 			s.y=(s.ta.y)
 			return
 		if vSH.normal:
-			if not (str(vSH.entity) in LC.item_lst):
+			if not (str(vSH.entity) in LC.item_lst+LC.trigger_lst):
 				s.y=vSH.world_point.y
 	def update(self):
 		if not st.gproc():
@@ -69,7 +69,6 @@ class CrashB(Entity):
 		cc.set_val(s)
 		an.WarpRingEffect(pos=s.position)
 		pShadow()
-		pShield()
 		s.KEY_ACT={'escape':lambda:cc.game_pause(),
 				'space':lambda:s.check_jump(),
 				'tab':lambda:cc.show_status_ui(),
@@ -78,8 +77,8 @@ class CrashB(Entity):
 				'w':lambda:setattr(s,'CMS',3.2),
 				's':lambda:setattr(s,'CMS',4.2),
 				#dev inp
-				'u':lambda:setattr(s,'position',(0,4,83)),
-				'b':lambda:print(s.position),
+				'u':lambda:setattr(s,'position',(4.8,4,31.7)),
+				#'b':lambda:print(s.position),
 				'e':lambda:EditorCamera()}
 	def input(self,key):
 		s=self
@@ -119,7 +118,7 @@ class CrashB(Entity):
 			mc=raycast(s.world_position+(0,.1,0),s.direc,distance=.2,ignore=[s,LC.shdw],debug=False)
 			me=mc.entity
 			mn=str(me)
-			if not mc or (mc and mn in LC.item_lst+LC.trigger_lst+LC.spc_collider):
+			if not mc or (mc and mn in LC.item_lst+LC.trigger_lst):
 				s.position=lerp(s.position,(s.position+s.direc),time.dt*s.move_speed)
 			if (mn == 'fthr'):
 				cc.get_damage(s,rsn=3)
@@ -143,17 +142,10 @@ class CrashB(Entity):
 			an.run(s,sp=18)
 		s.walk_snd=max(s.walk_snd-time.dt,0)
 		if s.walk_snd <= 0:
+			sn.footstep(self)
 			if s.is_slippery:
 				s.walk_snd=.5
-				sn.pc_audio(ID=8,pit=1.5)
 				return
-			if s.in_water > 0:
-				sn.pc_audio(ID=11,pit=random.uniform(.9,1))
-			else:
-				if st.level_index == 4:
-					sn.pc_audio(ID=12)
-				else:
-					sn.pc_audio(ID=0)
 			s.walk_snd=.35
 	def fall(self):
 		s=self
@@ -168,32 +160,24 @@ class CrashB(Entity):
 			an.fall(s,sp=12)
 	def jump_typ(self,t):
 		s=self
-		upr={1:(.08),2:(.085),3:(.09),4:(.08)}
-		grv={1:(2.3),2:(2.85),3:(3.1),4:(3.5)}
-		jmh={1:s.y+.9,#normal jump
-			2:s.y+1.1,#crate jump
+		grv={1:(2.2),2:(2.6),3:(2.9),4:(2.7)}
+		jmh={1:s.y+.8,#normal jump
+			2:s.y+1,#crate jump
 			3:s.y+1.2,#bounce jump
-			4:s.y+1.5}#spring jump
+			4:s.y+1.4}#spring jump
 		s.gravity=grv[t]#fall speed
 		s.vpos=jmh[t]#jump heigt limit
-		s.jmp_typ=upr[t]#jump speed
 		s.fall_time=0
 		s.frst_lnd=True
 		s.jumping=True
 	def jump(self):
 		s=self
 		s.frst_lnd=True
-		s.y=lerp(s.y,(s.vpos+.1),s.jmp_typ)
+		s.y=lerp(s.y,s.vpos+.1,(time.dt*s.gravity)*2)
 		if s.walking:
 			s.is_flip=True
 		if not s.is_flip:
 			an.jup(s,sp=16)
-		#if held_keys['space']:
-		#	s.space_time+=time.dt
-		#	if s.space_time > .4:
-		#		if not s.h_lock:
-		#			s.h_lock=True
-		#			s.vpos=(s.vpos+.3)
 		if s.y >= s.vpos:
 			s.jumping=False
 	def check_jump(self):
@@ -249,7 +233,6 @@ class CrashB(Entity):
 			cc.check_floor(s)
 			cc.check_wall(s)
 			cc.various_val(s)
-			#if not s.landed:
 			cc.check_ceiling(s)
 			if not st.p_rst(s):
 				s.move()

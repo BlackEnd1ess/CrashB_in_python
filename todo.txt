@@ -1,8 +1,14 @@
-- Orginal Rain Effects for Rain strength (with Rain Cards)
-- level decoration on level 1,2,4
+## MODULES
+ursina,imageio,math,random
 
-##BUGS/ERORRS
-- jump spring to crate
-
-##MODULE
-ursina,imageio
+## BUGS/ERORRS
+- nitro & dangers collider
+- enemie hit/damage
+- options controls
+- lv3 nitro switch height
+- gem gloss
+- attack block sound by running state
+- tunnel walls
+- gem ptf unlit
+- laggs reduce
+- indoor zone lv 1,5

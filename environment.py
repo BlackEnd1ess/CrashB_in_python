@@ -103,31 +103,27 @@ class Fog(Entity):
 		if st.level_index == 1:
 			self.change_color()
 
-class RainFall(FrameAnimation3d):
+class RainFall(Entity):
 	def __init__(self):
-		j=.0042
-		super().__init__('res/objects/ev/rain/rain',scale=(j,j/1.5,j),color=color.rgb32(180,180,200),fps=80,loop=True,alpha=0,rotation=(0,10,10),visible=False)
+		super().__init__(model='quad',scale=(1.8,1),alpha=0,visible=False,z=5,color=color.rgb32(150,150,190),parent=camera.ui)
+		self.tx_r='res/objects/ev/rain/'
+		LC.ACTOR.indoor=.5
 		sound.Rainfall()
-		self.ta=LC.ACTOR
-		self.ta.indoor=.5
-	def rain_start(self):
-		self.fps=60
-		self.visible=True
-		self.alpha=lerp(self.alpha,.7,time.dt*2)
-	def rain_stop(self):
-		self.fps=0
-		self.alpha=lerp(self.alpha,0,time.dt*2)
-	def follow_p(self):
+		self.frm=0
+		self.sp=30
+	def refr_rain(self):
 		s=self
-		tpp=s.ta.position
-		if distance(s,s.ta) > 5:
-			s.position=(tpp.x,tpp.y,tpp.z+.5)
-			return
-		s.position=lerp(s.position,(s.ta.x,camera.y-1.2,s.ta.z+-.1),time.dt*4)
+		s.frm=min(s.frm+time.dt*s.sp,58.99)
+		if s.frm > 58.98:
+			s.frm=0
+		s.texture=s.tx_r+str(int(s.frm))+'.png'
 	def update(self):
-		if not st.gproc() and self.ta.warped:
-			if self.ta.indoor > 0:
-				self.rain_stop()
+		if not st.gproc():
+			s=self
+			ft=time.dt*2
+			s.refr_rain()
+			if LC.ACTOR.warped and LC.ACTOR.indoor <= 0:
+				s.visible=True
+				s.alpha=lerp(s.alpha,.8,ft)
 				return
-			self.rain_start()
-			self.follow_p()
+			s.alpha=lerp(s.alpha,0,ft)

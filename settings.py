@@ -1,10 +1,11 @@
 from ursina.shaders import *
-import _core,environment
+import _core,environment,os
 from ursina import *
 
-debg=True
+debg=False
 w=window
 def load():
+	os.system('cls')
 	w.windowed_size=(1600,900)
 	w.render_mode='default'
 	w.exit_button.visible=False
@@ -22,12 +23,3 @@ def load():
 
 MUSIC_VOLUME=1
 SFX_VOLUME=1
-#----------------------------
-#camera_contrast_shader
-#camera_vertical_blur_shader
-#camera_grayscale_shader
-#lit_with_shadows_shader
-#ssao_shader
-#colored_lights_shader
-#matcap_shader
-#unlit_shader

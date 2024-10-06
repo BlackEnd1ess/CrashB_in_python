@@ -358,13 +358,14 @@ class AkuAkuMask(Entity):
 		s.change_skin()
 		s.spkw=0
 	def change_skin(self):
+		s=self
 		if st.aku_hit > 1:
-			self.model=self.skin_1
-			self.texture=self.tex_1
-			self.spark()
+			s.model=s.skin_1
+			s.texture=s.tex_1
+			s.spark()
 			return
-		self.model=self.skin_0
-		self.texture=self.tex_0
+		s.model=s.skin_0
+		s.texture=s.tex_0
 	def spark(self):
 		s=self
 		s.spt=max(s.spt-time.dt,0)
@@ -374,51 +375,55 @@ class AkuAkuMask(Entity):
 			if s.spkw > 2:
 				effect.Sparkle((s.x+random.uniform(-.1,.1),s.y+random.uniform(-.1,.1),s.z+random.uniform(-.1,.1)))
 	def follow_player(self):
-		TG=self.ta
+		s=self
 		aSP=time.dt*8
-		self.rotation_y=lerp(self.rotation_y,TG.rotation_y,aSP)
+		s.rotation_y=lerp(s.rotation_y,s.ta.rotation_y,aSP)
 		if st.aku_hit < 3:
-			self.scale=.00075
-			if not self.ta.walking and self.ta.landed:
-				self.floating()
+			s.scale=.00075
+			if not s.ta.walking and s.ta.landed:
+				s.floating()
 			else:
-				self.position=lerp(self.position,(TG.x-.25,TG.y+.6,TG.z-.4),aSP)
-				self.last_y=self.y
+				s.position=lerp(s.position,(s.ta.x-.25,s.ta.y+.6,s.ta.z-.4),aSP)
+				s.last_y=s.y
 			return
-		self.scale=.0012
-		fwd=Vec3(-sin(radians(TG.rotation_y)),0,-cos(radians(TG.rotation_y)))
-		mask_pos=TG.position+fwd*.25
-		self.position=(mask_pos.x,TG.y+.5,mask_pos.z)
+		s.scale=.0012
+		fwd=Vec3(-sin(radians(s.ta.rotation_y)),0,-cos(radians(s.ta.rotation_y)))
+		mask_pos=s.ta.position+fwd*.25
+		s.position=(mask_pos.x,s.ta.y+.5,mask_pos.z)
 	def check_dist_player(self):
-		if distance(self,self.ta) > 2:
-			self.position=self.ta.position
+		s=self
+		if distance(s,s.ta) > 2:
+			s.position=s.ta.position
 	def floating(self):
-		if self.flt_di == 0:
-			self.y+=time.dt/10
-			if self.y >= self.last_y+.2:
-				self.flt_di=1
+		s=self
+		if s.flt_di == 0:
+			s.y+=time.dt/10
+			if s.y >= s.last_y+.2:
+				s.flt_di=1
 			return
-		self.y-=time.dt/10
-		if self.y <= self.last_y-.2:
-			self.flt_di=0
+		s.y-=time.dt/10
+		if s.y <= s.last_y-.2:
+			s.flt_di=0
 	def update(self):
+		s=self
 		if not st.gproc() and LC.ACTOR != None:
-			self.check_dist_player()
-			self.follow_player()
-			self.change_skin()
+			s.check_dist_player()
+			s.follow_player()
+			s.change_skin()
 			if st.aku_hit < 1:
-				cc.purge_instance(self)
+				cc.purge_instance(s)
 				st.aku_exist=False
 
 class Hippo(Entity):
 	def __init__(self,pos):
+		s=self
 		hPO=npf+'hippo/'
 		super().__init__(model=hPO+'0.ply',texture=hPO+'hpo.tga',position=pos,rotation_x=rx,scale=.0005,double_sided=True,unlit=False)
-		self.col=Entity(model='cube',name='HPP',position=(self.x,self.y-.15,self.z-.2),scale=(.6,.5,1),visible=False,collider='box')
-		self.col.active=False
-		self.active=False
-		self.a_frame=0
-		self.start_y=self.y
+		s.col=Entity(model='cube',name='HPP',position=(s.x,s.y-.15,s.z-.2),scale=(.6,.5,1),visible=False,collider='box')
+		s.col.active=False
+		s.active=False
+		s.a_frame=0
+		s.start_y=self.y
 	def do_act(self):
 		if not self.active:
 			self.active=True
