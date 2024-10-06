@@ -1,5 +1,0 @@
-## MODULES
-ursina,imageio,math,random
-
-## BUGS/ERORRS
-- gem gloss
