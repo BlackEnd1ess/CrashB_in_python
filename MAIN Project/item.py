@@ -13,10 +13,9 @@ r=random
 ##place wumpa fruits
 def place_wumpa(pos,cnt,c_prg=False):
 	for wpo in range(cnt):
+		vpu=pos
 		if cnt > 1:
 			vpu=pos+(r.uniform(-.1,.1),r.uniform(0,.1),r.uniform(-.1,.1))
-		else:
-			vpu=pos
 		WumpaFruit(p=vpu,c_prg=c_prg)
 
 class WumpaFruit(Entity):
@@ -53,13 +52,12 @@ class ExtraLive(Entity):
 class GemStone(Entity):
 	def __init__(self,pos,c):
 		s=self
-		if c == 3:
-			ge=i_path+'gemstone/gem2'
-		elif c == 2:
+		ge=i_path+'gemstone/gem'
+		if c == 2:
 			ge=i_path+'gemstone/gem1'
-		else:
-			ge=i_path+'gemstone/gem'
-		super().__init__(model=ge+'.ply',texture=ge+'.tga',name='gems',color=color.gray,scale=.0011,position=pos,rotation_x=-90,collider=b)
+		elif c == 3:
+			ge=i_path+'gemstone/gem2'
+		super().__init__(model=ge+'.ply',texture=ge+'.tga',name='gems',scale=.0011,position=pos,rotation_x=-90,collider=b,double_sided=False)
 		s.gemID=c
 		s.gem_visual()
 		if c != 0:
@@ -79,6 +77,7 @@ class GemStone(Entity):
 			4:color.rgb32(0,0,R),#blue gem
 			5:color.rgb32(R-20,R-20,0)}#yellow gem
 		s.color=ge_c[s.gemID]
+		#s.alpha=.75
 		##scale - info: blue gem and yellow gem are Y scaled
 		if s.gemID in [4,5]:
 			gSC={4:s.scale_z/2,5:s.scale_z*1.5}

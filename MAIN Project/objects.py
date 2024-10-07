@@ -197,7 +197,7 @@ class GrassSide(Entity):
 class Plank(Entity):
 	def __init__(self,pos,typ,ro_y):
 		s=self
-		super().__init__(model='cube',texture=omf+'l2/plank/plank.png',scale=(1,.1,.4),position=pos,collider=b,rotation_y=ro_y,texture_scale=(2,2))
+		super().__init__(model='cube',texture=omf+'l2/plank/plank.png',name='plnk',scale=(1,.1,.4),position=pos,collider=b,rotation_y=ro_y,texture_scale=(2,2))
 		s.spawn_pos=s.position
 		s.color=color.gray
 		s.typ=typ
@@ -232,7 +232,7 @@ class Ropes(Entity):
 class Pillar(Entity):
 	def __init__(self,pos):
 		ppt=omf+'l2/pillar/s_pillar'
-		super().__init__(model=ppt+'.ply',texture=ppt+'_0.jpg',scale=.2,rotation=(-90,45,0),position=pos,color=color.cyan,collider=b)
+		super().__init__(model=ppt+'.ply',texture=ppt+'_0.jpg',name='pilr',scale=.2,rotation=(-90,45,0),position=pos,color=color.cyan,collider=b)
 		IceCrystal(pos=(self.x,self.y+1.1,self.z+.075))
 
 class SnowWall(Entity):
@@ -258,13 +258,13 @@ class WoodLog(Entity):
 		s.stat=0
 	def reset_pos(self):
 		s=self
-		s.y+=time.dt
-		if s.y >= (s.or_pos+1.3):
+		s.y=min(s.y+time.dt,s.or_pos+1.31)
+		if s.y > (s.or_pos+1.3):
 			s.danger=True
 			s.stat=1
 	def stomp(self):
 		s=self
-		s.y-=time.dt*4
+		s.y=max(s.y-time.dt*4,s.or_pos)
 		if s.y <= s.or_pos:
 			if distance(s,LC.ACTOR) < 2:
 				sn.obj_audio(ID=3)
@@ -280,11 +280,13 @@ class WoodLog(Entity):
 
 class IceGround(Entity):
 	def __init__(self,pos,sca):
+		s=self
 		super().__init__(model='cube',name='iceg',texture='res/terrain/l2/ice_ground.png',position=pos,scale=sca,collider=b,alpha=.8)
-		self.texture_scale=(sca[0],sca[1])
-		self.ta=LC.ACTOR
+		s.texture_scale=(sca[0],sca[1])
+		s.ta=LC.ACTOR
 	def mv_player(self):
-		self.ta.is_slippery=self.ta.landed
+		s=self
+		s.ta.is_slippery=s.ta.landed
 
 class SnowHill(Entity):
 	def __init__(self,pos,ro_y):
@@ -294,7 +296,7 @@ class SnowHill(Entity):
 class IceChunk(Entity):
 	def __init__(self,pos,rot,typ):
 		ice_ch=omf+'l2/ice_pce/ice_pce'
-		super().__init__(model=ice_ch+'_'+str(typ)+'.ply',texture=ice_ch+'.jpg',position=pos,scale=.8,rotation=rot)
+		super().__init__(model=ice_ch+'_'+str(typ)+'.ply',texture=ice_ch+'.jpg',name='ickk',position=pos,scale=.8,rotation=rot)
 
 class SnowPlatform(Entity):
 	def __init__(self,pos):
@@ -358,8 +360,8 @@ class WaterFlow(Entity):
 	def update(self):
 		if not st.gproc():
 			s=self
-			s.frm+=time.dt*9
-			if s.frm > 3.9:
+			s.frm=min(s.frm+time.dt*9,3.99)
+			if s.frm > 3.98:
 				s.frm=0
 			s.texture=s.wtr_t+'water_flow'+str(int(s.frm))+'.tga'
 
@@ -375,17 +377,18 @@ class WaterFall(Entity):
 	def update(self):
 		if not st.gproc():
 			s=self
-			s.frm+=time.dt*7
-			if s.frm > 31.9:
+			s.frm=min(s.frm+time.dt*7,31.99)
+			if s.frm > 31.98:
 				s.frm=0
 			s.texture=s.pa+str(int(s.frm))+'.png'
 
 class SceneWall(Entity):
-	def __init__(self,pos,s):
+	def __init__(self,pos,typ):
+		s=self
 		sWCN=omf+'l3/scn_w/'
-		super().__init__(model=sWCN+'side'+str(s)+'.ply',texture=sWCN+'water2_scn.tga',position=pos,scale=.04,rotation_x=-90)
+		super().__init__(model=sWCN+'side'+str(typ)+'.ply',texture=sWCN+'water2_scn.tga',position=pos,scale=.04,rotation_x=-90)
 		roTY={1:91,2:90}
-		self.rotation_y=roTY[s]
+		s.rotation_y=roTY[typ]
 
 class TempleWall(Entity):
 	def __init__(self,pos,side,col=color.gray):
@@ -417,9 +420,10 @@ class WoodStage(Entity):
 
 class StoneTile(Entity):
 	def __init__(self,pos):
+		s=self
 		tlX=omf+'l3/tile/'
-		super().__init__(model='cube',position=pos,scale=(.85,.3,.85),collider=b,visible=False)
-		self.vis=Entity(model=tlX+'tile.ply',name='stL',texture=tlX+'platform_top.png',position=(self.x,self.y,self.z),rotation_x=-90,scale=.35)
+		super().__init__(model='cube',name='tile',position=pos,scale=(.85,.3,.85),collider=b,visible=False)
+		s.vis=Entity(model=tlX+'tile.ply',name=s.name,texture=tlX+'platform_top.png',position=(s.x,s.y,s.z),rotation_x=-90,scale=.35)
 
 class MushroomTree(Entity):
 	def __init__(self,pos,typ):
@@ -509,10 +513,11 @@ class SewerPlatform(Entity):
 
 class SewerWall(Entity):
 	def __init__(self,pos):
+		s=self
 		mo=omf+'l4/scn/sewer_wall_b'
 		super().__init__(model=mo+'.ply',texture=mo+'.tga',name='ssww',position=pos,scale=.0175,rotation=(-90,90,0),double_sided=True)
-		self.bgw=Entity(model='cube',name='ssww',color=color.black,scale=(5,8,.1),position=(self.x,self.y,self.z+1))
-		self.color=color.rgb(.6,.5,.4)
+		s.bgw=Entity(model='cube',name='ssww',color=color.black,scale=(5,8,.1),position=(s.x,s.y,s.z+1))
+		s.color=color.rgb(.6,.5,.4)
 
 class SwimPlatform(Entity):
 	def __init__(self,pos):
@@ -639,9 +644,10 @@ class EletricWater(Entity):
 
 class DrippingWater(Entity):
 	def __init__(self,pos,sca):
-		self.dpw=omf+'l4/drips/'
-		super().__init__(model='quad',texture=self.dpw+'0.png',name='drpw',position=pos,scale=sca,rotation_z=90)
-		self.frm=0
+		s=self
+		s.dpw=omf+'l4/drips/'
+		super().__init__(model='quad',texture=s.dpw+'0.png',name='drpw',position=pos,scale=sca,rotation_z=90)
+		s.frm=0
 	def update(self):
 		if not st.gproc():
 			s=self
@@ -842,7 +848,6 @@ class LogDanger(Entity):
 						return
 					cc.get_damage(LC.ACTOR,rsn=1)
 
-###################
 ##################
 ## logic objects #
 class FallingZone(Entity):## falling
@@ -955,9 +960,10 @@ class RoomDoor(Entity):## door for start and end room
 
 class BonusPlatform(Entity):## switch -> bonus round
 	def __init__(self,pos):
+		s=self
 		sIN='ev/bonus/bonus'
-		super().__init__(model=omf+sIN+'.ply',texture=omf+sIN+'.tga',collider=b,scale=-.001,rotation_x=90,position=pos)
-		self.start_y=self.y
+		super().__init__(model=omf+sIN+'.ply',texture=omf+sIN+'.tga',collider=b,scale=-.001,rotation_x=90,position=pos,unlit=False)
+		s.start_y=s.y
 	def update(self):
 		if not st.gproc():
 			if st.bonus_solved:
@@ -1018,8 +1024,8 @@ class PseudoGemPlatform(Entity):
 			s.bg_darkness.hide()
 			s.alpha=.5
 
-
-## Switches
+#############
+## Switches #
 class LevelFinish(Entity):## finish level
 	def __init__(self,p):
 		s=self
@@ -1062,7 +1068,6 @@ class IndoorZone(Entity):## disable rain
 		if self.intersects(LC.ACTOR):
 			LC.ACTOR.CMS=3.2
 			LC.ACTOR.indoor=.3
-
 
 ###################
 ## global objects #

@@ -106,7 +106,7 @@ class Fog(Entity):
 class RainFall(Entity):
 	def __init__(self):
 		s=self
-		super().__init__(model='quad',scale=(1.8,1),alpha=0,visible=False,color=c.light_gray,parent=camera.ui,unlit=False)
+		super().__init__(model='quad',scale=(1.8,1),alpha=0,z=4,visible=False,color=c.light_gray,parent=camera.ui,unlit=False)
 		s.tx_r='res/objects/ev/rain/'
 		LC.ACTOR.indoor=.5
 		sound.Rainfall()

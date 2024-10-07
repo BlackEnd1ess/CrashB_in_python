@@ -55,7 +55,6 @@ game_over=False
 level_crystal=False
 level_col_gem=False
 level_cle_gem=False
-level_solved=False
 
 bonus_solved=False
 bonus_round=False
@@ -87,6 +86,6 @@ def p_rst(c):
 		return True
 	return False
 def gproc():
-	if loading or pause or LV_CLEAR_PROCESS or level_solved or game_over:
+	if loading or pause or LV_CLEAR_PROCESS or game_over:
 		return True
 	return False

@@ -106,7 +106,6 @@ def bonus4():
 		o.SewerPipe(pos=(7+swp*13,-34,.6),typ=2)
 		o.SewerPipe(pos=(3+swp*13,-36,.6),typ=0)
 		o.SewerPipe(pos=(6+swp*13,-36,.6),typ=0)
-	#
 	for swl in range(3):
 		o.SewerWall(pos=(-2+swl*13,-38,0))
 		o.SewerWall(pos=(-2+swl*13,-30.8,0))
@@ -116,7 +115,6 @@ def bonus4():
 	o.swr_multi_ptf(p=(3,-35.5,U),cnt=[4,1])
 	o.swr_multi_ptf(p=(5,-34,U),cnt=[7,1])
 	o.swr_multi_ptf(p=(9,-34,U),cnt=[3,1])
-	
 	o.swr_multi_ptf(p=(8.5,-36,U),cnt=[5,1])
 	o.swr_multi_ptf(p=(12,-36,U),cnt=[3,1])
 	o.swr_multi_ptf(p=(14,-35.5,U),cnt=[1,1])
@@ -133,7 +131,7 @@ def bonus4():
 	c.place_crate(ID=12,p=(6.49,-33.74,U))
 	c.place_crate(ID=12,p=(7.45,-33.74,U))
 	c.place_crate(ID=9,p=(10,-33.7,U),m=2)
-	MT.crate_row(ID=13,POS=(6.1,-36,U),CNT=7,WAY=0,m=2,l=3)
+	MT.crate_row(ID=13,POS=(6.1+(.32*3),-36,U),CNT=4,WAY=0,m=2,l=3)
 	MT.crate_row(ID=2,POS=(12.5,-35.74,U),CNT=3,WAY=2)
 	MT.crate_wall(ID=2,POS=(17.47,-34.24,U),CNT=[3,2])
 	c.place_crate(ID=11,p=(21.2,-34.24,U))

@@ -1,12 +1,12 @@
 import status,settings,_core,_loc
 from ursina import *
+se=settings
+cc=_core
 
 VS='res/snd/ambience/'
 SP='res/snd/player/'
 SN='res/snd/misc/'
 SA='res/snd/npc/'
-se=settings
-cc=_core
 
 ##footstep
 def footstep(c):

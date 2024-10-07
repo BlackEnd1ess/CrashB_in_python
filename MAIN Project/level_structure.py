@@ -9,10 +9,11 @@ n=npc
 
 #### DEV-LV STUCT ####
 def dev_object():
-	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass')
+	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass',color=color.green)
 	o.StartRoom(pos=(0,0,-32.2))
+	#Entity(model='quad',color=color.black,position=(0,1,-22.5),scale=(10,2))
 	for gv in range(0,6):
-		item.GemStone(pos=(1+gv/2,.3,-15),c=gv)
+		item.GemStone(pos=(1+gv/2,.6,-23),c=gv)
 		if gv > 0:
 			o.GemPlatform(pos=(1.5+gv,.3,-14),t=gv)
 			o.PseudoGemPlatform(pos=(1.5+gv,.3,-13),t=gv)
@@ -35,7 +36,7 @@ def dev_wumpa():
 	mt.wumpa_row(POS=(0,.3,-20),CNT=20,WAY=0)
 def dev_npc():
 	for np in range(15):
-		n.spawn(mID=np,pos=(-7+np,0,-10),mDirec=1)
+		n.spawn(mID=np,pos=(-7+np,0,0),mDirec=1)
 
 #### LEVEL1 STUCT ####
 def lv1_object():
@@ -232,10 +233,7 @@ def lv2_object():
 	o.WoodLog(pos=(8.2,wlO,2.2))
 	o.Role(pos=(42.2,6.6,31),di=1)
 	o.Role(pos=(42.2,6.6,32),di=0)
-	#rock
-	for ro in range(40):
-		o.Rock(pos=(0+random.uniform(-3,3),-2,-61+ro*2))
-		o.Rock(pos=(0+random.uniform(-4,4),-2,-59+ro*2))
+	#first pass
 	o.mBlock(pos=(0,.8,-59),sca=(3,6))
 	o.mBlock(pos=(0,.8,-41),sca=(3,4))
 	o.mBlock(pos=(0,.8,-20),sca=(3,4))
@@ -447,16 +445,15 @@ def lv3_object():
 	#waterfall
 	o.WaterFall(pos=(0,.2,-1))
 	o.WaterFall(pos=(0,1.2,57))
-	#foam
 	#scene
-	o.SceneWall(pos=(-3.1,.65,-13),s=1)
-	o.SceneWall(pos=(3,.5,-13),s=2)
-	o.SceneWall(pos=(-3.1,1.7,16),s=1)
-	o.SceneWall(pos=(3,1.7,16),s=2)
-	o.SceneWall(pos=(-3.1,1.7,45),s=1)
-	o.SceneWall(pos=(3,1.7,45),s=2)
-	o.SceneWall(pos=(-3.1,2.4,74),s=1)
-	o.SceneWall(pos=(3,2.4,74),s=2)
+	o.SceneWall(pos=(-3.1,.65,-13),typ=1)
+	o.SceneWall(pos=(3,.5,-13),typ=2)
+	o.SceneWall(pos=(-3.1,1.7,16),typ=1)
+	o.SceneWall(pos=(3,1.7,16),typ=2)
+	o.SceneWall(pos=(-3.1,1.7,45),typ=1)
+	o.SceneWall(pos=(3,1.7,45),typ=2)
+	o.SceneWall(pos=(-3.1,2.4,74),typ=1)
+	o.SceneWall(pos=(3,2.4,74),typ=2)
 	#bush
 	for wbu in range(16):
 		o.bush(pos=(-3.2,2.7,-30+wbu*2),sca=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=-35)
@@ -659,7 +656,7 @@ def lv4_object():
 def lv4_crate():
 	#crates
 	mt.crate_wall(ID=1,POS=(.25,.56,-60.54),CNT=[2,1])
-	mt.crate_wall(ID=1,POS=(.62,.16,-54.53),CNT=[1,3])
+	mt.crate_wall(ID=1,POS=(.62,.16,-54.53),CNT=[1,2])
 	mt.crate_wall(ID=2,POS=(0,.16,-44.05),CNT=[2,1])
 	mt.crate_wall(ID=2,POS=(.34,.56,-29.59),CNT=[2,2])
 	mt.crate_wall(ID=2,POS=(.65,.16,-22.05),CNT=[1,2])
@@ -669,15 +666,14 @@ def lv4_crate():
 	c.place_crate(ID=12,p=(5.27,1.9,17))
 	c.place_crate(ID=7,p=(5.27,1.9+.32,17))
 	c.place_crate(ID=3,p=(5.27,4,17))
-	c.place_crate(ID=12,p=(-.58,.16,-56.8))
 	c.place_crate(ID=12,p=(.78,.16,-52.2))
-	c.place_crate(ID=12,p=(.06,.16,-43.4))
+	c.place_crate(ID=14,p=(.06,.16,-43.4))
 	c.place_crate(ID=12,p=(.52,.16,-37.2))
 	c.place_crate(ID=12,p=(-.50,.16,-35.5))
 	c.place_crate(ID=12,p=(.63,.16,-33.3))
 	c.place_crate(ID=12,p=(.46,.56,-29.1))
 	c.place_crate(ID=12,p=(-.65,.56,-22.7))
-	c.place_crate(ID=12,p=(.14,.16,-17.1))
+	c.place_crate(ID=14,p=(.14,.16,-17.1))
 	c.place_crate(ID=12,p=(.99,.16,-15.3))
 	c.place_crate(ID=12,p=(-.21,.16,-9.75))
 	c.place_crate(ID=12,p=(-.72,.16,-6.8))
@@ -699,7 +695,7 @@ def lv4_crate():
 	mt.crate_block(ID=2,POS=(14.7,3.9,58.32),CNT=[2,2,2])
 	mt.crate_block(ID=1,POS=(-.7,.9,2.2),CNT=[2,2,2])
 	mt.crate_block(ID=1,POS=(5.255,1.9,15.6),CNT=[2,2,2])
-	mt.crate_block(ID=1,POS=(5.759,1.9,31.59),CNT=[2,2,2])
+	mt.crate_plane(ID=14,POS=(5.759,1.9,31.59),CNT=[2,2])
 	mt.crate_block(ID=1,POS=(15.257,3.9,72.61),CNT=[2,2,2])
 	#checkpoints
 	c.place_crate(ID=6,p=(-.5,.56,-40.8))
@@ -954,7 +950,7 @@ def lv5_crate():
 	mt.crate_plane(ID=2,POS=(35.6,1.26,9.5),CNT=[2,2])
 	mt.crate_plane(ID=1,POS=(52.1,1.26,15.7),CNT=[3,1])
 	mt.crate_block(ID=2,POS=(29.8,.36,-1),CNT=[2,2,1])
-	mt.crate_block(ID=1,POS=(37.1,1.26,9.6),CNT=[2,2,2])
+	mt.crate_block(ID=14,POS=(37.1,1.26,9.6),CNT=[2,2,2])
 	mt.crate_block(ID=2,POS=(53.6,1.26,16.1),CNT=[2,2,1])
 	mt.crate_wall(ID=1,POS=(43.5,-.34,4.7),CNT=[1,2])
 	mt.crate_wall(ID=2,POS=(46.4,-.34,4.7),CNT=[1,2])

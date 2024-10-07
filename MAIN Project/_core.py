@@ -137,16 +137,17 @@ def cam_follow(c):
 	ftt=time.dt
 	camera.z=lerp(camera.z,c.z-c.CMS,ftt*3)
 	camera.x=lerp(camera.x,c.x,ftt*2)
-	if c.jumping:
-		camera.rotation_x=lerp(camera.rotation_x,10,ftt/2.5)
-	if c.indoor > 0:
-		if c.landed:
+	if not c.jumping:
+		if (c.indoor > 0 and c.landed):
 			camera.y=lerp(camera.y,c.y+1,time.dt*1.5)
-		camera.rotation_x=15
+			camera.rotation_x=15
+			return
+		if (c.landed and not c.freezed):
+			camera.y=lerp(camera.y,c.y+1.6,time.dt)
+			camera.rotation_x=lerp(camera.rotation_x,20,time.dt/2.5)
 		return
-	if (c.landed and not c.freezed):
-		camera.y=lerp(camera.y,c.y+1.6,time.dt)
-		camera.rotation_x=lerp(camera.rotation_x,20,time.dt/2)
+	if c.indoor <= 0:
+		camera.rotation_x=lerp(camera.rotation_x,10,ftt/2)
 def cam_bonus(c):
 	ftt=time.dt*3
 	camera.z=(c.z-3.2)
@@ -239,7 +240,6 @@ def delete_states():
 	st.level_cle_gem=False
 	st.gem_path_solved=False
 	st.is_death_route=False
-	st.level_solved=False
 	st.bonus_solved=False
 	st.bonus_round=False
 	st.LEVEL_CLEAN=False
@@ -281,7 +281,6 @@ def game_pause():
 		return
 	st.pause=False
 def game_over():
-	#ui.BlackScreen()
 	invoke(lambda:ui.GameOverScreen(),delay=2)
 
 ## collisions
@@ -319,11 +318,14 @@ def check_floor(c):
 	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=[c,LC.shdw],debug=False)
 	vp=vj.entity
 	if vj.normal and not (vp.name in LC.item_lst+LC.dangers+LC.trigger_lst):
-		if not c.jumping:
-			landing(c,e=vj.world_point.y,o=vp)
-			spc_floor(c,e=vp)
+		landing(c,e=vj.world_point.y,o=vp)
+		spc_floor(c,e=vp)
 		return
 	c.landed=False
+	fsp={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}
+	c.y-=fsp[c.b_smash]
+	c.fall_time+=time.dt
+	c.anim_fall()
 def landing(c,e,o):
 	c.y=e
 	c.landed=True
