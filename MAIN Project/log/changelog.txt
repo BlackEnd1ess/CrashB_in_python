@@ -187,3 +187,6 @@
 #07.10.2024
 - improved physics
 - fixxed camera indoor
+
+#08.10.2024
+- crash jumps longer by holding jump

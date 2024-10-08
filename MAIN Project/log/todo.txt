@@ -1,4 +1,8 @@
 ## BUGS/ERORRS
 - gem gloss
 - landing on fire
-- aku & invinc stop by freezed or bonus
+- collision items
+- no player collision while st.death event
+- l3 bonus background wood scene
+- l3 bonus checkpoint load to slow
+- npc respawn gorilla
