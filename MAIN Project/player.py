@@ -78,7 +78,7 @@ class CrashB(Entity):
 				sg.FWD_KEY:lambda:setattr(s,'CMS',3.2),
 				sg.BCK_KEY:lambda:setattr(s,'CMS',4.2),
 				#dev inp
-				'u':lambda:setattr(s,'position',(0,4,82)),
+				'u':lambda:setattr(s,'position',(.85,2,.85*8)),
 				'b':lambda:print(s.position),
 				'e':lambda:EditorCamera()}
 	def input(self,key):
@@ -150,7 +150,7 @@ class CrashB(Entity):
 			s.walk_snd=.35
 	def jump_typ(self,t):
 		s=self
-		grv={1:(2.2),2:(2.6),3:(2.8),4:(2.5)}
+		grv={1:(2.4),2:(2.7),3:(2.9),4:(2.6)}
 		jmh={1:s.y+.8,#normal jump
 			2:s.y+1,#crate jump
 			3:s.y+1.1,#bounce jump
@@ -163,13 +163,18 @@ class CrashB(Entity):
 	def jump(self):
 		s=self
 		s.frst_lnd=True
-		s.y=lerp(s.y,s.vpos+.1,(time.dt*s.gravity)*2)
+		hgt={True:.3,False:.1}
+		fgt={True:2.2,False:2}
+		kt=(s.space_time > .09)
+		s.y=lerp(s.y,s.vpos+hgt[kt]+.1,(time.dt*s.gravity)*fgt[kt])
 		if s.walking:
 			s.is_flip=True
 		if not s.is_flip:
 			an.jup(s,sp=16)
-		if s.y >= s.vpos:
+		if (s.y >= s.vpos+hgt[kt]):
+			s.space_time=0
 			s.jumping=False
+			return
 	def check_jump(self):
 		s=self
 		if s.landed and not s.jumping:
@@ -243,6 +248,8 @@ class CrashB(Entity):
 			cc.c_smash(s)
 		if s.is_attack:
 			cc.c_attack(s)
+		if held_keys[settings.JMP_KEY]:
+			s.space_time+=time.dt/2
 	def update(self):
 		if not st.gproc():
 			s=self

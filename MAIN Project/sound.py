@@ -2,6 +2,8 @@ import status,settings,_core,_loc
 from ursina import *
 se=settings
 cc=_core
+st=status
+LC=_loc
 
 VS='res/snd/ambience/'
 SP='res/snd/player/'
@@ -17,7 +19,7 @@ def footstep(c):
 		pc_audio(ID=11,pit=random.uniform(.9,1))
 		return
 	else:
-		if status.level_index == 4:
+		if st.level_index == 4:
 			pc_audio(ID=12)
 			return
 		pc_audio(ID=0)
@@ -126,7 +128,7 @@ class WaterRiver(Audio):
 	def __init__(self):
 		super().__init__(VS+'waterf.wav',volume=0,loop=True)
 	def update(self):
-		if not status.gproc() and not (status.bonus_round or status.is_death_route):
+		if not st.gproc() and not (st.bonus_round or st.is_death_route):
 			self.volume=se.SFX_VOLUME
 			return
 		self.volume=0
@@ -136,21 +138,24 @@ class AmbienceSound(Entity):
 		super().__init__()
 		self.rpt=1
 	def update(self):
-		if not status.gproc():
-			self.rpt=max(self.rpt-time.dt,0)
-			if self.rpt <= 0:
-				self.rpt=1
+		if not st.gproc():
+			s=self
+			s.rpt=max(s.rpt-time.dt,0)
+			if s.rpt <= 0:
+				s.rpt=1
 				fb=Audio(VS+'jungle.wav',pitch=random.uniform(1,1.1),volume=se.SFX_VOLUME)
 				cc.purge_instance(fb)
 
 class Rainfall(Audio):
 	def __init__(self):
 		super().__init__(snd_rain,loop=True,volume=0)
+		s.volume_multiplier=1
 	def update(self):
-		if _loc.ACTOR.indoor > 0 or status.gproc() or not _loc.ACTOR.warped:
-			self.volume=0
-		else:
-			self.volume=settings.SFX_VOLUME
+		s=self
+		if (LC.ACTOR.indoor <= 0 and LC.ACTOR.warped) and not st.gproc():
+			s.volume=settings.SFX_VOLUME
+			return
+		s.volume=0
 
 ## Background Music
 MC='res/snd/music/'
@@ -159,49 +164,59 @@ class LevelMusic(Audio):
 		lM=MC+'lv'+str(T)+'/0.mp3'
 		super().__init__(lM,volume=se.MUSIC_VOLUME,loop=True)
 	def update(self):
-		if (status.bonus_round or status.is_death_route):
-			self.fade_out()
-			cc.purge_instance(self)
-		if status.gproc() or status.aku_hit > 2:
-			self.volume=0
+		s=self
+		if (st.bonus_round or st.is_death_route):
+			s.fade_out()
+			cc.purge_instance(s)
+		if st.gproc() or st.aku_hit > 2:
+			s.volume=0
 			return
-		self.volume=se.MUSIC_VOLUME
+		s.volume=se.MUSIC_VOLUME
 
 class BonusMusic(Audio):
 	def __init__(self,T):
 		lB=MC+'lv'+str(T)+'/0b.mp3'
 		super().__init__(lB,volume=se.MUSIC_VOLUME,loop=True)
 	def update(self):
-		if not status.bonus_round or status.is_death_route:
-			self.fade_out()
-			cc.purge_instance(self)
-			LevelMusic(T=status.level_index)
+		s=self
+		if not st.bonus_round or st.is_death_route:
+			s.fade_out()
+			cc.purge_instance(s)
+			LevelMusic(T=st.level_index)
 			return
-		if status.gproc():
-			self.volume=0
+		if st.gproc():
+			s.volume=0
 			return
-		self.volume=se.MUSIC_VOLUME
+		s.volume=se.MUSIC_VOLUME
 
 class SpecialMusic(Audio):
 	def __init__(self,T):
 		super().__init__(MC+'lv'+str(T)+'/0c.mp3',volume=se.MUSIC_VOLUME,loop=True)
 	def update(self):
-		if not status.is_death_route:
-			self.fade_out()
-			cc.purge_instance(self)
-			LevelMusic(T=status.level_index)
+		s=self
+		if not st.is_death_route:
+			s.fade_out()
+			cc.purge_instance(s)
+			LevelMusic(T=st.level_index)
 
 class AkuMusic(Audio):
 	def __init__(self):
 		super().__init__(MC+'ev/invinc.mp3',volume=se.MUSIC_VOLUME)
+		self.tme=20
 	def update(self):
-		if not status.gproc():
-			if not self.playing or status.death_event:
-				status.aku_hit=2
-				status.is_invincible=False
-				pc_audio(ID=6,pit=.8)
-				self.fade_out()
-				cc.purge_instance(self)
+		s=self
+		if st.gproc():
+			s.pause()
+			return
+		#if s.status == 1:
+		#	s.resume()
+		s.tme=max(s.tme-time.dt,0)
+		if s.tme <= 0 or (st.death_event or st.bonus_round or LC.ACTOR.freezed):
+			st.aku_hit=2
+			st.is_invincible=False
+			pc_audio(ID=6,pit=.8)
+			s.fade_out()
+			cc.purge_instance(s)
 
 class GameOverMusic(Audio):
 	def __init__(self):

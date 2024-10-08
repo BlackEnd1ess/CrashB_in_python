@@ -25,7 +25,7 @@ FOG_COL={'day':c.rgb32(120,140,140),
 
 AMB_COL={'day':c.rgb32(180,180,180),
 		'empty':c.rgb32(140,140,140),#c.rgb32(180,180,180),
-		'evening':c.rgb32(255,215,185),
+		'evening':c.rgb32(240,200,170),
 		'night':c.rgb32(0,0,0),
 		'dark':c.rgb32(0,0,0),
 		'rain':c.rgb32(0,0,0),
@@ -85,23 +85,28 @@ class SkyBox(Sky):
 
 class Fog(Entity):
 	def __init__(self):
+		s=self
 		super().__init__()
-		self.L_DST={0:(3,30),1:(2,20),2:(3,15),3:(17,19),4:(5,30),5:(5,20),6:(15,30)}
-		self.B_DST={0:(0,0),1:(-5,20),2:(0,10),3:(5,20),4:(8,15),5:(10,20),6:(15,30)}
+		sti=st.level_index
+		fgd=LC.fog_distance[sti]
+		s.L_DST={0:(30,fgd),1:(5,fgd),2:(3,fgd),3:(17,fgd),4:(5,fgd),5:(5,fgd),6:(15,fgd)}
+		s.B_DST={0:(0,0),1:(-5,20),2:(0,10),3:(5,20),4:(8,15),5:(10,20),6:(15,30)}
 		scene.fog_color=FOG_COL[st.day_mode]
-		scene.fog_density=self.L_DST[st.level_index]
+		scene.fog_density=s.L_DST[sti]
 	def change_color(self):
 		if st.is_death_route:
 			scene.fog_color=c.rgb32(20,20,40)
 			return
 		scene.fog_color=FOG_COL[st.day_mode]
 	def update(self):
-		if st.bonus_round:
-			scene.fog_density=self.B_DST[st.level_index]
-			return
-		scene.fog_density=self.L_DST[st.level_index]
-		if st.level_index == 1:
-			self.change_color()
+		if not st.gproc():
+			s=self
+			if st.bonus_round:
+				scene.fog_density=s.B_DST[st.level_index]
+				return
+			scene.fog_density=s.L_DST[st.level_index]
+			if st.level_index == 1:
+				s.change_color()
 
 class RainFall(Entity):
 	def __init__(self):

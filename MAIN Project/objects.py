@@ -431,7 +431,7 @@ class MushroomTree(Entity):
 		lbP=omf+'l3/mtree_scn/'
 		if typ == 1:
 			super().__init__(model=lbP+'wtr_BTree1.ply',texture=lbP+'tm_scn.tga',position=pos,scale=.03,rotation=(-90,90,0))
-			Entity(model='cube',color=color.blue,scale=(1.35,.5,.5),position=(s.x+.1,s.y+2.15,s.z-1.1),collider=b,visible=False)
+			Entity(model='cube',color=color.blue,scale=(1.3,.5,.5),position=(s.x-.1,s.y+2.15,s.z-1.1),collider=b,visible=False)
 			Entity(model='cube',position=(s.x,s.y+3,s.z-.6),scale=(1,7,.5),collider=b,visible=False)
 			bush(pos=(s.x+.2,s.y+3.6,s.z-1.3),sca=1,c=color.rgb32(0,160,0),ro_y=-35)
 			bush(pos=(s.x-.6,s.y+3.6,s.z-1.4),sca=1,c=color.rgb32(0,160,0),ro_y=35)
@@ -440,7 +440,7 @@ class MushroomTree(Entity):
 			bush(pos=(s.x-.4,s.y+1.5,s.z-1.6),sca=1.3,c=color.rgb32(0,160,0),ro_y=.1)
 			return
 		super().__init__(model=lbP+'wtr_BTree2.ply',texture=lbP+'tm_scn.tga',position=pos,scale=.06,rotation=(-90,90,0))
-		Entity(model='cube',color=color.blue,scale=(.75,.5,.6),position=(s.x+.05,s.y-.1,s.z),collider=b,visible=False)
+		Entity(model='cube',color=color.blue,scale=(.65,.5,.6),position=(s.x,s.y-.1,s.z),collider=b,visible=False)
 		Entity(model='cube',position=(s.x,s.y+1.5,s.z+.5),scale=(1,3,.5),collider=b,visible=False)
 
 class Foam(Entity):
@@ -927,9 +927,9 @@ class EndRoom(Entity):## finish level
 		CrateScore(pos=(s.x-1.1,s.y-.7,s.z))
 		IndoorZone(pos=(s.x-1,s.y,s.z+1),sca=(5,2,12))
 		if st.level_index == 1 and not 4 in st.COLOR_GEM:
-			item.GemStone(pos=(s.x-1.1,s.y-1,s.z),c=4)
+			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=4)
 		if st.level_index == 2 and not 1 in st.COLOR_GEM:
-			item.GemStone(pos=(s.x-1.1,s.y-1,s.z),c=1)
+			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=1)
 
 class RoomDoor(Entity):## door for start and end room
 	def __init__(self,pos,typ):

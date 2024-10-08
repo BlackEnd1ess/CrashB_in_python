@@ -24,8 +24,18 @@ item_lst=['wmpf','exlf','gems','crys']
 #danger zone
 dangers=['wood_log','role','fllz']
 
+#fog far values
+fog_distance={
+	0:100,
+	1:18,
+	2:14,
+	3:18,
+	4:24,
+	5:20,
+	6:30}
+
 # checkpoint - bonus
-bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,1.5,.85*8),(0,2,3),(12,1,-22),(0,1,-25)]
+bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2,.85*8),(0,2,3),(12,1,-22),(0,1,-25)]
 
 #LOD
 LOD_VAR=['rmd1','rmd2','ctsc']

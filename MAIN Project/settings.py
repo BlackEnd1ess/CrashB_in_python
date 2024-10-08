@@ -2,7 +2,7 @@ from ursina.shaders import *
 import _core,environment,os
 from ursina import *
 
-debg=False
+debg=True
 
 ## keyboard bindings
 MNU_KEY='p'#pause

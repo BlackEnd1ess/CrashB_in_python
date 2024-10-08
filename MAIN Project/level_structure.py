@@ -18,6 +18,9 @@ def dev_object():
 			o.GemPlatform(pos=(1.5+gv,.3,-14),t=gv)
 			o.PseudoGemPlatform(pos=(1.5+gv,.3,-13),t=gv)
 def dev_crate():
+	mt.crate_row(ID=7,POS=(2,.16,-24),CNT=2,WAY=0)
+	mt.crate_row(ID=1,POS=(2,2.5,-24),CNT=1,WAY=0)
+	mt.crate_row(ID=1,POS=(2.32,2.7,-24),CNT=1,WAY=0)
 	mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,3,3])
 	mt.crate_block(ID=1,POS=(-6.5,.16,-18),CNT=[3,3,3])
 	mt.crate_block(ID=2,POS=(-5.5,.16,-18),CNT=[3,3,2])
@@ -504,7 +507,7 @@ def lv3_crate():
 	mt.crate_wall(ID=1,POS=(-.2,1.05+.16,14.5),CNT=[2,2])
 	mt.crate_row(ID=2,POS=(-.85,1.05+.16,40.4),CNT=4,WAY=1)
 	c.place_crate(ID=7,p=(-1,2.04+.16,58.4))
-	mt.crate_row(ID=2,POS=(-1,3.6,58.4),CNT=4,WAY=2)
+	mt.crate_row(ID=1,POS=(-1,4.5,58.4),CNT=4,WAY=2)
 	mt.bounce_twin(POS=(1,2.04+.16,58.4),CNT=1)
 	#aku
 	c.place_crate(ID=5,p=(-.85,1.05+.16,9.3))
@@ -739,7 +742,7 @@ def lv4_wumpa():
 	mt.wumpa_plane(POS=(.6,.2+.2,-12.),CNT=[3,5])
 	mt.wumpa_plane(POS=(.9,.95+.2,2.6),CNT=[3,3])
 	mt.wumpa_plane(POS=(4.0,1.95,39.0),CNT=[7,7])
-	mt.wumpa_plane(POS=(4.5,1.95,42.5),CNT=[3,3])
+	mt.wumpa_plane(POS=(4.5,1.95,42.5),CNT=[4,4])
 def lv4_npc():
 	n.spawn(pos=(0,.25,-53.5),mID=12,mDirec=0)
 	n.spawn(pos=(0,.25,-35.5),mID=12,mDirec=0)

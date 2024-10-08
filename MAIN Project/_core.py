@@ -16,7 +16,7 @@ def set_val(c):
 	for _v in ['aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop','h_lock','b_smash','standup']:
 		setattr(c,_v,False)#flags
 	c.move_speed=2.4
-	c.gravity=2.2
+	c.gravity=2.4
 	c.direc=(0,0,0)
 	c.vpos=c.y
 	c.indoor=.5
@@ -293,7 +293,7 @@ def check_ceiling(c):
 				c.tcr=True
 				ve.destroy()
 				invoke(lambda:setattr(c,'tcr',False),delay=.1)
-			c.y-=.1
+			c.y=c.y
 			c.jumping=False
 def check_wall(c):
 	hT=c.intersects(ignore=[c,LC.shdw])
@@ -678,27 +678,26 @@ class LOD(Entity):
 		super().__init__()
 		si=st.level_index
 		CLW={1:LC.LV1_LOD,2:LC.LV2_LOD,3:LC.LV3_LOD,4:LC.LV4_LOD,5:LC.LV5_LOD,6:LC.LV3_LOD}
-		s.dst_far={1:(18),2:(16),3:(18),4:(22),5:(16),6:(16)}[si]
 		s.dst_bck={1:(2),2:(2),3:(4),4:(3),5:(4),6:(16)}[si]
-		s.dst_cam=8
+		s.dst_far=LC.fog_distance[si]
 		s.MAIN_LOD=CLW[si]
+		s.dst_cam=8
 		s.rt=.5
 	def refr(self):
 		p=LC.ACTOR
 		s=self
-		for v in scene.entities[:]:
+		for v in scene.entities:
 			if isinstance(v,item.WumpaFruit):
 				v.enabled=(distance(p,v) < 6)
-			if is_enemie(v):
-				v.enabled=(v.z < p.z+20 and p.z < v.z+3 and abs(p.x-v.x) < s.dst_cam)
+			kv=(v.z < p.z+s.dst_far and p.z < v.z+s.dst_bck and abs(p.x-v.x) < s.dst_cam)
+			if (is_enemie(v) or v.name in s.MAIN_LOD):
+				v.enabled=kv
 			if is_crate(v):
-				v.visible=(v.z < p.z+20 and p.z < v.z+3 and abs(p.x-v.x) < s.dst_cam)
-			if v.name in s.MAIN_LOD:
-				v.enabled=(v.z < p.z+s.dst_far and p.z < v.z+s.dst_bck and abs(p.x-v.x) < s.dst_cam)
+				v.visible=kv
 	def update(self):
 		s=self
 		if not st.gproc():
 			s.rt=max(s.rt-time.dt,0)
 			if s.rt <= 0:
-				s.rt=.5
+				s.rt=.75
 				s.refr()

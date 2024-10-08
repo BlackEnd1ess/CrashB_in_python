@@ -33,7 +33,7 @@ class WumpaFruit(Entity):
 		cc.wumpa_count(1)
 		if not s.c_purge:
 			st.W_RESET.append(s.position)
-		self.destroy()
+		s.destroy()
 	def update(self):
 		if not st.gproc():
 			ui.wmp_anim(self)
