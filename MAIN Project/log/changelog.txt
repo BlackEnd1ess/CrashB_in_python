@@ -174,7 +174,7 @@
 
 #04.10.2024
 - options volume save/load
-- fixxed LOD
+- better LOD
 
 #06.10.2024
 - new rain (rain cards)
@@ -190,3 +190,7 @@
 
 #08.10.2024
 - crash jumps longer by holding jump
+- bonus level 3 improved design
+
+#09.10.2024
+- crash collects wumpa if nearby pickup
