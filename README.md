@@ -34,4 +34,5 @@ Avocado:   https://github.com/JaCzekanski/Avocado ### This Emulator have a 3D Sc
 i will update weekly the Template Folder, which contains a lot of time saving Mechanics and easy to understand und build in.
 in the script folder you can find a Tool, that makes automatic export.
 
-The Main Project Folder contains my own Version of this Game, which im showing on Youtube.
+The Main Project Folder contains my own Version of this Game, which im showing on Youtube. This is only used to compare a functional version of the game.
+You can modify this Code to make your own System. In Comming Future i will upload Videos with necessary Tutorials.
