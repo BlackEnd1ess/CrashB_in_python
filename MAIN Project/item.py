@@ -8,6 +8,7 @@ b='box'
 st=status
 cc=_core
 sn=sound
+LC=_loc
 r=random
 
 ##place wumpa fruits
@@ -24,19 +25,28 @@ class WumpaFruit(Entity):
 		s.w_pa='res/ui/icon/wumpa_fruit/'
 		super().__init__(model='quad',texture=s.w_pa+'w0.png',name='wmpf',position=(p[0],p[1],p[2]),scale=.22)
 		s.collider=BoxCollider(s,size=Vec3(1,1,1))
+		s.floating=False
 		s.c_purge=c_prg
 		s.frm=0
 	def destroy(self):
 		cc.purge_instance(self)
+	def p_float(self):
+		s=self
+		if distance(s,LC.ACTOR) < .5:
+			s.floating=True
 	def collect(self):
 		s=self
 		cc.wumpa_count(1)
-		if not s.c_purge:
-			st.W_RESET.append(s.position)
 		s.destroy()
 	def update(self):
 		if not st.gproc():
-			ui.wmp_anim(self)
+			s=self
+			if s.floating:
+				q=LC.ACTOR
+				s.position=lerp(s.position,(q.x,q.y+.2,q.z),time.dt*16)
+				return
+			ui.wmp_anim(s)
+			s.p_float()
 
 class ExtraLive(Entity):
 	def __init__(self,pos):
@@ -61,7 +71,7 @@ class GemStone(Entity):
 		s.gemID=c
 		s.gem_visual()
 		if c != 0:
-			_loc.C_GEM=s
+			LC.C_GEM=s
 			if (c == 5 and st.level_index == 3):
 				ui.TrialTimer(t=90)
 				return
@@ -105,7 +115,7 @@ class GemStone(Entity):
 	def purge(self):
 		s=self
 		s.collider=None
-		_loc.C_GEM=None
+		LC.C_GEM=None
 		s.shine.color=color.black
 		cc.purge_instance(s.shine)
 		cc.purge_instance(s)
@@ -119,10 +129,10 @@ class GemStone(Entity):
 		self.purge()
 	def push_gem(self):
 		s=self
-		if not _loc.C_GEM:
+		if not LC.C_GEM:
 			return
-		if abs(s.x-_loc.C_GEM.x) < .5:
-			if (s.y < _loc.C_GEM.y+.2):
+		if abs(s.x-LC.C_GEM.x) < .5:
+			if (s.y < LC.C_GEM.y+.25):
 				s.y+=time.dt
 	def update(self):
 		if not st.gproc():
@@ -147,7 +157,7 @@ class EnergyCrystal(Entity):
 	def update(self):
 		if not st.gproc():
 			s=self
-			s.visible=(distance(s,_loc.ACTOR) < 12)
+			s.visible=(distance(s,LC.ACTOR) < 12)
 			s.rotation_y-=time.dt*70
 
 class TrialClock(Entity):

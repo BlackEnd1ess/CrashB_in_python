@@ -1,4 +1,5 @@
 import crate,item,status,objects,map_tools,npc,random
+from ursina.shaders import *
 from ursina import *
 
 MT=map_tools
@@ -59,6 +60,9 @@ def bonus2():
 	o.BonusPlatform(pos=(16,-37.1,U))
 
 def bonus3():
+	bn_bg='res/background/bg_woods.png'
+	Entity(model='quad',texture=bn_bg,position=(0,-45,34.9),scale=(100,20,.1),color=color.rgb32(100,140,100),texture_scale=(7,1),unlit=False,shader=unlit_shader)
+	Entity(model='quad',texture=bn_bg,position=(0,-60,34.8),scale=(100,40,.1),color=color.rgb32(120,160,120),texture_scale=(7,1),unlit=False,shader=unlit_shader)
 	o.BonusBackground(pos=(10,-40,35),sca=(80,35))
 	MT.wumpa_double_row(POS=(12.8,-35,U),CNT=6)
 	MT.wumpa_double_row(POS=(-.5,-36.5,U),CNT=4)

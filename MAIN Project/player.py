@@ -33,34 +33,30 @@ class pShadow(Entity):## shadow point
 
 class pShield(Entity):
 	def __init__(self):
-		super().__init__(model='cube',collider='box',scale=(4,3,4),position=(0,-5,0),visible=False)
-	def check_block(self):
-		wt=self.intersects(ignore=[LC.ACTOR,LC.shdw])
-		we=wt.entity
-		if wt:
-			if cc.is_enemie(we) and not (we.is_hitten or we.is_purge):
-				if (we.vnum == 1) or (we.vnum == 5 and we.def_mode):
-					cc.get_damage(LC.ACTOR,rsn=1)
-				cc.bash_enemie(we,h=LC.ACTOR)
-				return
-			if str(we) in LC.item_lst:
-				we.collect()
-				return
-			if cc.is_crate(we):
-				if we.vnum in [3,11]:
-					we.empty_destroy()
-				else:
-					we.destroy()
-				return
+		super().__init__()
+		self.wait=.5
+	def refr_func(self):
+		q=LC.ACTOR
+		for rf in scene.entities[:]:
+			if distance(q,rf) < 3:
+				if cc.is_crate(rf) and rf.collider != None:
+					if not rf.vnum in [0,10]:
+						rf.destroy()
+						if (rf.vnum in [9,10,11] and not rf.activ):
+							rf.destroy()
+						if rf.vnum == 14:
+							rf.c_destroy()
+				if cc.is_enemie(rf):
+					cc.bash_enemie(e=rf,h=q)
+				if rf.name in LC.item_lst:
+					rf.collect()
 	def update(self):
-		s=self
 		if st.aku_hit > 2:
-			s.collider='box'
-			fv=LC.ACTOR
-			s.position=(fv.x,fv.y+.5,fv.z)
-			s.check_block()
-			return
-		s.collider=None
+			s=self
+			s.wait=max(s.wait-time.dt,0)
+			if s.wait <= 0:
+				s.wait=.5
+				s.refr_func()
 
 class CrashB(Entity):
 	def __init__(self,pos):
@@ -70,6 +66,7 @@ class CrashB(Entity):
 		cc.set_val(s)
 		an.WarpRingEffect(pos=s.position)
 		pShadow()
+		pShield()
 		s.KEY_ACT={sg.MNU_KEY:lambda:cc.game_pause(),
 				sg.JMP_KEY:lambda:s.check_jump(),
 				sg.IFC_KEY:lambda:cc.show_status_ui(),
@@ -182,10 +179,12 @@ class CrashB(Entity):
 			s.jump_typ(t=1)
 	def anim_fall(self):
 		s=self
+		if st.death_event:
+			return
 		if (s.is_flip or s.is_attack):
 			return
 		if s.b_smash:
-			an.belly(s,sp=12)
+			an.belly_smash(s,sp=12)
 			return
 		an.fall(s,sp=12)
 	def c_camera(self):
@@ -232,6 +231,8 @@ class CrashB(Entity):
 		for vkh in range(7):
 			invoke(lambda:cc.hurt_blink(self),delay=vkh/3)
 	def c_physic(self):
+		if st.death_event:
+			return
 		s=self
 		cc.check_wall(s)
 		cc.various_val(s)

@@ -92,7 +92,7 @@ def flip(d,sp):
 	d.texture=af+'flp/crash.tga'
 	d.model=af+'flp/'+str(int(d.flfr))+'.ply'
 
-def belly(d,sp):
+def belly_smash(d,sp):
 	d.smfr=min(d.smfr+time.dt*sp,2.99)
 	if d.smfr > 2.98:
 		d.smfr=2

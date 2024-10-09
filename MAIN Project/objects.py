@@ -430,7 +430,7 @@ class MushroomTree(Entity):
 		s=self
 		lbP=omf+'l3/mtree_scn/'
 		if typ == 1:
-			super().__init__(model=lbP+'wtr_BTree1.ply',texture=lbP+'tm_scn.tga',position=pos,scale=.03,rotation=(-90,90,0))
+			super().__init__(model=lbP+'wtr_BTree1.ply',texture=lbP+'tm_scn.tga',position=pos,scale=.03,color=color.rgb32(180,180,180),rotation=(-90,90,0))
 			Entity(model='cube',color=color.blue,scale=(1.3,.5,.5),position=(s.x-.1,s.y+2.15,s.z-1.1),collider=b,visible=False)
 			Entity(model='cube',position=(s.x,s.y+3,s.z-.6),scale=(1,7,.5),collider=b,visible=False)
 			bush(pos=(s.x+.2,s.y+3.6,s.z-1.3),sca=1,c=color.rgb32(0,160,0),ro_y=-35)
@@ -438,6 +438,9 @@ class MushroomTree(Entity):
 			bush(pos=(s.x-.1,s.y+3.8,s.z-1.45),sca=1,c=color.rgb32(0,160,0))
 			bush(pos=(s.x+.1,s.y+1.7,s.z-1.75),sca=1.3,c=color.rgb32(0,160,0),ro_y=.1)
 			bush(pos=(s.x-.4,s.y+1.5,s.z-1.6),sca=1.3,c=color.rgb32(0,160,0),ro_y=.1)
+			bush(pos=(s.x-.7,s.y,s.z-1),sca=1.5,c=color.rgb32(0,160,0),ro_y=0)
+			bush(pos=(s.x+.7,s.y,s.z-1.1),sca=1.5,c=color.rgb32(0,160,0),ro_y=0)
+			bush(pos=(s.x,s.y+.3,s.z-1.05),sca=1.5,c=color.rgb32(0,160,0),ro_y=0)
 			return
 		super().__init__(model=lbP+'wtr_BTree2.ply',texture=lbP+'tm_scn.tga',position=pos,scale=.06,rotation=(-90,90,0))
 		Entity(model='cube',color=color.blue,scale=(.65,.5,.6),position=(s.x,s.y-.1,s.z),collider=b,visible=False)
@@ -862,7 +865,7 @@ class FallingZone(Entity):## falling
 
 class WaterHit(Entity):## collider for water
 	def __init__(self,p,sc):
-		super().__init__(model='cube',collider=b,position=p,scale=(sc[0],.2,sc[1]),visible=False)
+		super().__init__(model='cube',name='wtrh',collider=b,position=p,scale=(sc[0],.2,sc[1]),visible=False)
 
 class CrateScore(Entity):## level reward
 	def __init__(self,pos):
@@ -962,7 +965,7 @@ class BonusPlatform(Entity):## switch -> bonus round
 	def __init__(self,pos):
 		s=self
 		sIN='ev/bonus/bonus'
-		super().__init__(model=omf+sIN+'.ply',texture=omf+sIN+'.tga',collider=b,scale=-.001,rotation_x=90,position=pos,unlit=False)
+		super().__init__(model=omf+sIN+'.ply',texture=omf+sIN+'.tga',name='bnpt',collider=b,scale=-.001,rotation_x=90,position=pos,unlit=False)
 		s.start_y=s.y
 	def update(self):
 		if not st.gproc():
@@ -980,9 +983,9 @@ class GemPlatform(Entity):## gem platform
 			s.is_enabled=True
 		L=180
 		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L+20,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
-		super().__init__(model='cube',color=color.green,scale=(.6,.4,.6),position=pos,collider=b,visible=False)
-		s.opt_model=Entity(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=GMC[t],double_sided=True,shader=unlit_shader)
-		s.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),position=(s.x,s.y-.011,s.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
+		super().__init__(model='cube',name='gmpt',color=color.green,scale=(.6,.4,.6),position=pos,collider=b,visible=False)
+		s.opt_model=Entity(model=omf+'ev/'+ne+'/'+ne+'.ply',name=s.name,texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=GMC[t],double_sided=True,shader=unlit_shader)
+		s.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),name=s.name,position=(s.x,s.y-.011,s.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
 		s.org_color=s.color
 		s.start_y=s.y
 		s.typ=t

@@ -11,6 +11,7 @@ n=npc
 def dev_object():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass',color=color.green)
 	o.StartRoom(pos=(0,0,-32.2))
+	o.MushroomTree(pos=(0,1,-25),typ=1)
 	#Entity(model='quad',color=color.black,position=(0,1,-22.5),scale=(10,2))
 	for gv in range(0,6):
 		item.GemStone(pos=(1+gv/2,.6,-23),c=gv)
@@ -38,8 +39,8 @@ def dev_crate():
 def dev_wumpa():
 	mt.wumpa_row(POS=(0,.3,-20),CNT=20,WAY=0)
 def dev_npc():
-	for np in range(15):
-		n.spawn(mID=np,pos=(-7+np,0,0),mDirec=1)
+	return#for np in range(15):
+	#	n.spawn(mID=np,pos=(-7+np,0,0),mDirec=1)
 
 #### LEVEL1 STUCT ####
 def lv1_object():
@@ -727,7 +728,6 @@ def lv4_wumpa():
 	mt.wumpa_row(POS=(5,1.91+.2,44.5),CNT=5,WAY=1)
 	mt.wumpa_row(POS=(14.5,3.91+.2,50.6),CNT=5,WAY=1)
 	mt.wumpa_row(POS=(14.6,3.56+.2,62.7),CNT=5,WAY=1)
-	
 	mt.wumpa_row(POS=(-.5,.56,-60.8),CNT=4,WAY=0)
 	mt.wumpa_row(POS=(0,.6,-30),CNT=4,WAY=0)
 	mt.wumpa_row(POS=(-1,.6,-23.1),CNT=3,WAY=0)
@@ -737,7 +737,6 @@ def lv4_wumpa():
 	mt.wumpa_row(POS=(9,2.45,48.5),CNT=3,WAY=0)
 	mt.wumpa_row(POS=(11.0,2.45,48.5),CNT=3,WAY=0)
 	mt.wumpa_row(POS=(-1,.95,-.6),CNT=8,WAY=0)
-	
 	mt.wumpa_plane(POS=(-.6,.2+.2,-19.),CNT=[3,5])
 	mt.wumpa_plane(POS=(.6,.2+.2,-12.),CNT=[3,5])
 	mt.wumpa_plane(POS=(.9,.95+.2,2.6),CNT=[3,3])

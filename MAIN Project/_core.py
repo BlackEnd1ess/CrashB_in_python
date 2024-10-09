@@ -271,6 +271,14 @@ def reset_audio():
 	st.n_audio=False
 	st.b_audio=False
 def purge_instance(v):
+	if is_crate(v):
+		if not (v.poly == 1 or v.vnum == 16):
+			st.C_RESET.append(v)
+	if is_enemie(v):
+		st.NPC_RESET.append(v)
+	if isinstance(v,item.WumpaFruit):
+		if not v.c_purge:
+			st.W_RESET.append(v.position)
 	v.parent=None
 	scene.entities.remove(v)
 	v.disable()
@@ -361,20 +369,23 @@ def floor_interact(c,e):
 		c.jump_typ(t=2)
 		sn.pc_audio(ID=5)
 def spc_floor(c,e):
-	u=str(e)
+	u=e.name
 	c.is_slippery=(u == 'iceg')
-	if u in ['bonus_platform','gem_platform']:
+	if u in ['bnpt','gmpt']:
 		ptf_up(p=e,c=c)
 		return
 	if u in ['loos','swpt','HPP']:
 		e.active=True
-	if (u == 'plank' and e.typ == 1):
+		return
+	if (u == 'plnk' and e.typ == 1):
 		e.pl_touch()
+		return
 	if (u == 'swpi' and e.typ == 3):
 		get_damage(c,rsn=3)
 		return
-	if u == 'water_hit':
+	if u == 'wtrh':
 		dth_event(c,rsn=2)
+		return
 	if u == 'mptf' and not c.walking:
 		e.mv_player()
 def ptf_up(p,c):
@@ -385,10 +396,8 @@ def ptf_up(p,c):
 	p.y+=time.dt/1.5
 	if p.y > p.start_y+3:
 		p.y=p.start_y
-		if str(p) == 'bonus_platform':
-			load_bonus(c)
-			return
-		load_gem_route(c)
+		go_to={'bnpt':lambda:load_bonus(c),'gmpt':lambda:load_gem_route(c)}
+		go_to[p.name]()
 
 ## interface,collectables
 def wumpa_count(n):
@@ -553,7 +562,6 @@ def npc_purge(m):
 	m.fly_time=0
 	m.scale_z=max(m.scale_z-time.dt/100,0)
 	if m.scale_z <= 0 or m.is_hitten:
-		st.NPC_RESET.append(m)
 		purge_instance(m)
 def npc_walk(m):
 	if status.gproc():
@@ -699,5 +707,5 @@ class LOD(Entity):
 		if not st.gproc():
 			s.rt=max(s.rt-time.dt,0)
 			if s.rt <= 0:
-				s.rt=.75
+				s.rt=.6
 				s.refr()

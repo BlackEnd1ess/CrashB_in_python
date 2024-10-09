@@ -16,7 +16,7 @@ lv_name=['CENTRAL - WARP ROOM',
 dt_act={0:'fall_endl',1:'angel',2:'water',3:'explode',4:'burn',5:'electric',6:'eat_by_plant'}
 
 #triggers
-trigger_lst=['indz','lvfi','elwt']
+trigger_lst=['indz','lvfi','elwt','fthr']
 
 #item/obj name list
 item_lst=['wmpf','exlf','gems','crys']
@@ -35,7 +35,7 @@ fog_distance={
 	6:30}
 
 # checkpoint - bonus
-bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2,.85*8),(0,2,3),(12,1,-22),(0,1,-25)]
+bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(0,1,-25)]
 
 #LOD
 LOD_VAR=['rmd1','rmd2','ctsc']

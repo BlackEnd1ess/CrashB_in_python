@@ -149,7 +149,6 @@ class AmbienceSound(Entity):
 class Rainfall(Audio):
 	def __init__(self):
 		super().__init__(snd_rain,loop=True,volume=0)
-		s.volume_multiplier=1
 	def update(self):
 		s=self
 		if (LC.ACTOR.indoor <= 0 and LC.ACTOR.warped) and not st.gproc():
@@ -201,15 +200,14 @@ class SpecialMusic(Audio):
 
 class AkuMusic(Audio):
 	def __init__(self):
-		super().__init__(MC+'ev/invinc.mp3',volume=se.MUSIC_VOLUME)
+		super().__init__(MC+'ev/invinc'+str(random.randint(0,1))+'.mp3',volume=se.MUSIC_VOLUME,loop=True)
 		self.tme=20
 	def update(self):
 		s=self
 		if st.gproc():
-			s.pause()
+			s.volume=0
 			return
-		#if s.status == 1:
-		#	s.resume()
+		s.volume=se.MUSIC_VOLUME
 		s.tme=max(s.tme-time.dt,0)
 		if s.tme <= 0 or (st.death_event or st.bonus_round or LC.ACTOR.freezed):
 			st.aku_hit=2

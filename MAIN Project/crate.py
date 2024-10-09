@@ -45,8 +45,6 @@ def destroy_event(c):
 	c.hide()
 	if c.vnum in [11,12]:
 		explosion(cr=c)
-	if not c.poly == 1 and not c.vnum == 16:
-		st.C_RESET.append(c)
 	if st.bonus_round:
 		st.crate_bonus+=1
 	else:
@@ -154,6 +152,10 @@ class Bounce(Entity):
 			return
 	def destroy(self):
 		s=self
+		if st.aku_hit > 2:
+			cc.wumpa_count(10)
+			s.empty_destroy()
+			return
 		if s.lf_time > 0 and s.b_cnt < 5:
 			s.bnc_event()
 			return
@@ -259,7 +261,7 @@ class SwitchEmpty(Entity):
 			s.model=cr1
 			s.texture=pp+'0.tga'
 			ccount=0
-			status.C_RESET.append(s)
+			st.C_RESET.append(s)
 			for _air in scene.entities[:]:
 				if isinstance(_air,Air) and _air.mark == s.mark:
 					invoke(_air.destroy,delay=ccount/3.5)
@@ -318,7 +320,7 @@ class TNT(Entity):
 		destroy_event(s)
 	def update(self):
 		s=self
-		if not st.gproc() and s.visible:
+		if not st.gproc():
 			if s.activ:
 				if s.aud.playing:
 					s.aud.volume=settings.SFX_VOLUME
@@ -364,7 +366,6 @@ class Air(Entity):
 		s.c_ID=l
 	def destroy(self):
 		s=self
-		status.C_RESET.append(s)
 		place_crate(p=s.position,ID=s.c_ID,pse=1)
 		sn.crate_audio(ID=13)
 		cc.purge_instance(s)

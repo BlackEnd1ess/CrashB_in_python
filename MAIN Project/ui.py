@@ -384,8 +384,8 @@ class ProjectInfo(Entity):
 		Sky(color=color.black)
 		Audio('res/snd/music/ev/title.mp3',loop=True,volume=settings.MUSIC_VOLUME)
 		super().__init__(model='quad',texture=btv+'disclaim.jpg',scale=(1.6,.8),parent=CU)
-		invoke(lambda:TitleScreen(),delay=5)
-		invoke(lambda:cc.purge_instance(self),delay=5)
+		invoke(lambda:TitleScreen(),delay=7)
+		invoke(lambda:cc.purge_instance(self),delay=7)
 
 ## Loading Screen
 class LoadingScreen(Entity):
@@ -710,11 +710,12 @@ class CollectedGem(Animation):
 ## Time Trial
 class TrialTimer(Entity):
 	def __init__(self,t):
+		s=self
 		tm_str=strftime('%M:%S',gmtime(t))
 		super().__init__()
-		self.disp=Text(tm_str,font=_fnt,scale=3,position=(.7,-.4),parent=CU,color=color.rgb32(200,200,100))
-		self.fin=False
-		self.TME=t
+		s.disp=Text(tm_str,font=_fnt,scale=3,position=(.7,-.4),parent=CU,color=color.rgb32(200,200,100))
+		s.fin=False
+		s.TME=t
 	def trial_fail(self):
 		if st.level_index == 3:
 			st.gem_death=True
@@ -724,12 +725,13 @@ class TrialTimer(Entity):
 		cc.purge_instance(self)
 	def update(self):
 		if not st.gproc():
+			s=self
 			if (st.level_index == 3 and st.level_col_gem):
-				self.trial_interrupt()
+				s.trial_interrupt()
 				return
-			self.disp.text=strftime("%M:%S",gmtime(self.TME))
-			self.TME=max(self.TME-time.dt,0)
-			if self.TME <= 0:
-				if not self.fin:
-					self.fin=True
-					self.trial_fail()
+			s.disp.text=strftime("%M:%S",gmtime(s.TME))
+			s.TME=max(s.TME-time.dt,0)
+			if (s.TME <= 0 or st.bonus_round):
+				if not s.fin:
+					s.fin=True
+					s.trial_fail()
