@@ -278,7 +278,7 @@ def purge_instance(v):
 		st.NPC_RESET.append(v)
 	if isinstance(v,item.WumpaFruit):
 		if not v.c_purge:
-			st.W_RESET.append(v.position)
+			st.W_RESET.append(v.spawn_pos)
 	v.parent=None
 	scene.entities.remove(v)
 	v.disable()
@@ -680,7 +680,7 @@ def load_game():
 	settings.MUSIC_VOLUME=save_data['M_VOL']
 
 ## Level of Detail
-class LOD(Entity):
+class LODSystem(Entity):
 	def __init__(self):
 		s=self
 		super().__init__()

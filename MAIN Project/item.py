@@ -27,12 +27,13 @@ class WumpaFruit(Entity):
 		s.collider=BoxCollider(s,size=Vec3(1,1,1))
 		s.floating=False
 		s.c_purge=c_prg
+		s.spawn_pos=p
 		s.frm=0
 	def destroy(self):
 		cc.purge_instance(self)
 	def p_float(self):
 		s=self
-		if distance(s,LC.ACTOR) < .5:
+		if distance(s,LC.ACTOR) < .6:
 			s.floating=True
 	def collect(self):
 		s=self
@@ -85,7 +86,7 @@ class GemStone(Entity):
 			2:color.rgb32(0,R,0),#green gem
 			3:color.rgb32(R,0,R),#purple gem
 			4:color.rgb32(0,0,R),#blue gem
-			5:color.rgb32(R-20,R-20,0)}#yellow gem
+			5:color.rgb32(R-40,R-40,0)}#yellow gem
 		s.color=ge_c[s.gemID]
 		#s.alpha=.75
 		##scale - info: blue gem and yellow gem are Y scaled

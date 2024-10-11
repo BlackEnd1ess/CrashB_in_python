@@ -38,7 +38,7 @@ class pShield(Entity):
 	def refr_func(self):
 		q=LC.ACTOR
 		for rf in scene.entities[:]:
-			if distance(q,rf) < 3:
+			if distance(q,rf) < 2:
 				if cc.is_crate(rf) and rf.collider != None:
 					if not rf.vnum in [0,10]:
 						rf.destroy()

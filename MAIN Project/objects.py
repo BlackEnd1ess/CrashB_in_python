@@ -907,7 +907,6 @@ class StartRoom(Entity):## game spawn point
 		st.checkpoint=(s.x,s.y+2,s.z)
 		camera.position=(s.x,s.y+2,s.z-3)
 		IndoorZone(pos=(s.x,s.y+1.5,s.z),sca=(3,2,7))
-		cc.LOD()
 
 class EndRoom(Entity):## finish level
 	def __init__(self,pos,c):

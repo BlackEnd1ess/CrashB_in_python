@@ -672,40 +672,56 @@ class PauseMenu(Entity):
 ## Gem/Crytal
 class CollectedGem(Animation):
 	def __init__(self):
+		s=self
 		super().__init__(_icn+'crystal.gif',parent=CU,scale=.15,color=color.magenta,visible=False,position=(0,-.4,-1))
+		cGLI='gem.gif'
 		if st.level_index == 4:
 			cGLI='gem1.gif'
 		elif st.level_index == 5:
 			cGLI='gem2.gif'
-		else:
-			cGLI='gem.gif'
 		cGLO={1:color.rgb32(0,0,O),
 			2:color.rgb32(O,0,0),
 			5:color.rgb32(O,0,O),
 			4:color.rgb32(0,O,0),
 			3:color.rgb32(O,O,0),
 			6:color.rgb32(O,0,0)}
-		self.colored_gem=Animation(_icn+cGLI,parent=CU,position=(self.x-.1,self.y,self.z),scale=self.scale,color=cGLO[st.level_index],visible=False)
-		self.clear_gem=Animation(_icn+'gem.gif',parent=CU,position=(self.x+.1,self.y,self.z),scale=self.scale,color=color.rgb32(100,100,170),visible=False)
+		s.colored_gem=Animation(_icn+cGLI,parent=CU,position=(s.x-.1,s.y,s.z),scale=s.scale,color=cGLO[st.level_index],visible=False)
+		s.clear_gem=Animation(_icn+'gem.gif',parent=CU,position=(s.x+.1,s.y,s.z),scale=s.scale,color=color.rgb32(100,100,170),visible=False)
 		if st.level_index == 3:
-			self.colored_gem.scale_y=.2
+			s.colored_gem.scale_y=.2
 		if st.level_index == 1:
-			self.colored_gem.scale_y=.07
+			s.colored_gem.scale_y=.07
 	def update(self):
 		if not status.gproc():
+			s=self
 			if st.show_gems > 0:
 				status.show_gems-=time.dt
 				if st.level_crystal:
-					self.show()
+					s.show()
 				if st.level_col_gem:
-					self.colored_gem.show()
+					s.colored_gem.show()
 				if st.level_cle_gem:
-					self.clear_gem.show()
+					s.clear_gem.show()
 				return
-			self.colored_gem.visible=False
-			self.clear_gem.visible=False
-			self.hide()
+			s.colored_gem.visible=False
+			s.clear_gem.visible=False
+			s.hide()
 
+## Gem Hint
+class GemHint(Entity):
+	def __init__(self):
+		s=self
+		super().__init__()
+		l_inf={0:'this is a developer test level, place the gem where you want',
+				1:'blue gem - reach the end of this level without breaking boxes',
+				2:'red gem - solve this level without loosing extra lifes.',
+				3:'yellow gem - reach the end of level before time up',
+				4:'green gem - unlock the yellow gem path',
+				5:'purple gem - unlock the green gem path'}
+		s.mText=Text(l_inf[st.level_index],parent=camera.ui,font=_fnt,color=color.orange,scale=2.2,position=(-.6,-.3,.1))
+		invoke(lambda:cc.purge_instance(s.mText),delay=5)
+	def update(self):
+		self.mText.visible=not(st.gproc())
 
 ## Time Trial
 class TrialTimer(Entity):

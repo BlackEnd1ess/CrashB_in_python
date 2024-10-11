@@ -1,4 +1,4 @@
-import item,status,_core,animation,sound,npc,settings,_loc
+import item,status,_core,animation,sound,npc,settings,_loc,ui
 from ursina.shaders import *
 from ursina import *
 
@@ -405,17 +405,11 @@ class LvInfo(Entity):
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
+		s=self
 		if st.level_index == 3:
 			item.GemStone(pos=(-.05,2.75,88),c=5)
-		l_inf={0:'this is a developer test level, place the gem where you want',
-				1:'blue gem - reach the end of this level without breaking boxes',
-				2:'red gem - solve this level without loosing extra lifes.',
-				3:'yellow gem - reach the end of level before time up',
-				4:'green gem - unlock the yellow gem path',
-				5:'purple gem - unlock the green gem path'}
-		mText=Text(text=l_inf[st.level_index],parent=camera.ui,font='res/ui/font.ttf',color=color.orange,scale=2.2,position=(-.6,-.3,.1))
-		invoke(mText.disable,delay=5)
-		destroy_event(self)
+		ui.GemHint()
+		destroy_event(s)
 
 ##crate effects
 class Fireball(Entity):
