@@ -1,0 +1,41 @@
+This is a Tutorial, how you can get some 3D Models, Animations Frames, Textures and Soundfiles.
+
+1: You need a Crash Bandicoot 1-3 .iso, which you can extract with PowerIso or 7zip and you need to extract the Folders S0,S1,S2,S3, that contains NSD/NSF Files.
+2: locate the Level where you want, a List with all Level IDs are aviable here -> https://crash-hacking.fandom.com/wiki/Level_ID
+3: Download CrashEdit and CBExporter. Link in README.md
+4: Start CrashEdit and open your selected Level example: "Crash2 /S1/S00001F.NSF" is "Turtle Woods" or "The Pits". 
+5: in Search input you type as example: "CrR0V" then you will jump to Crash Run animation.
+6: on CrR0V you make a left click and select "deprocess entry", after this step, this Entry change the Color from green to yellow.
+7: on the "+" Icon you can expand the Entry and you will se a List with a lot of "item"
+8: select the first "item" and then you will see in the right Window a lot of HEX Decimals and Offsets.
+9: go into the HEX Window and type "z" to show the compressed 3D Model name. You can see it below the first Byte as "Cr10G"
+10: search for "Cr10G" and deprocess it. 
+11: You will see 4 or 5 Items, where you need to export in a folder named like "cb_run" or something, you need the first frame as 1: item, 2: item1, 3: item2, 4: item3, (5: item4 only if exist) and so on.
+12: go back to Crash Run Animation "CRr0V" and choose one of the the 10 Frames and export it as "frame"
+13: Now you have "item","item1","item2","item3","item4" and "frame". You need the "CBExporter" extract them and move your "cb_run" folder in the same .exe Directory.
+14: start CBExporter and you ask for a folder, type "cb_run" and then you should choose the Crash Bandicoot Version, in my case (Crash Bandicoot 2) then you type "2" and enter.
+15: Now a Window with HEX Values and Colors will appear, press enter and type your Model name and press enter again.
+16: At first the Model will exportet but your must wait, until the .TGA Texture Process is done, that need 30-40 Sec Time. After this Process type ESC and the Window will close without errors.
+17: you habe exportet Crash first Frame as ".ply" Model, now you need make this Step with each Frame until you have exported the last frame and can arrange all 11 different models as a running animation.
+18: We dont have Bones and Rigs, but we can use Model transformation, and make a Sequence from example: "run0.ply" - "run10.ply". Your Game Engine or Blender have such Options.
+
+
+Info:
+I dont know, how this Tool works or how they are put the Data together. 
+Therefore, it can always happen that the models you get out there, 
+the most errors appears by exporting scenes. These can have holes in the vertices 
+or are not displayed completely. If your open a NSF File in HEX Editor, a Chunk begins with "34 12" HEX, 
+there we can see, where the Chunk begins and where it ends. Its not difficult to locate the Data, its more
+difficult, put the Data together. If you have some Ideas, how i can create a Multi Extraction and Exporting tool, 
+Please leave me a message or a comment. 
+
+Dev Info:
+1: scenes without textures you can export simple with left click and export. The same Process works on Soundchunks too.
+    
+2: If you want change Crash's 3D Model in Blender, make sure you export the Vertex colors, Otherwise the 3D model will only be displayed with eyes and shoes and the texture will be white.
+
+3: output Textures have a size by 4 MegaByte or more, you need only open this .tga File in GIMP or another Image Edit tool and export it to ".png", then you will have the same 
+Quality and after export a 53 kbit size Picture.
+
+4: before your wasting time to search for gems or different Sound files: it exist only 3 different Gem 3D Models, the blue and yellow gem a Y scaled, dont search for 4 or 5.
+Those who work with the sound are similar: they often use the same sound source, but they are pitched. Example: "Checkpoint Text disapear" and "Crash Jump" both use the same Sound source.
