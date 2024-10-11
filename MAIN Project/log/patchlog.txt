@@ -1,0 +1,4 @@
+#11.10.2024
+- fixxed wumpa spawn position (was wrong by magnet collect)
+- Purple Crates Info Text disapears while Pause or death event
+- Aku invincible Range decrased
