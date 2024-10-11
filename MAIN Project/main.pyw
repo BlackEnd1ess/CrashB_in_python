@@ -1,11 +1,11 @@
-import settings,ui
 from ursina import *
+import settings,ui
 
-app=Ursina(title='Crezsh Blendikut',icon='res/cb.ico',vsync=False)
+app=Ursina(title='Crezsh Blendikut',icon='res/cb.ico',development_mode=False)
 def game():
 	settings.load()
 	ui.ProjectInfo()
-	#dev_start(1)
+	#dev_start(6)
 
 #def dev_start(idx):
 #	import status,level

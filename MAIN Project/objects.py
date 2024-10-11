@@ -34,6 +34,11 @@ def platform_move(d):
 			if d.z <= d.spawn_pos[2]-1:
 				d.turn=0
 
+def wtr_dist(w,p):
+	if (p.z < w.z+(w.scale_z/2+4)) and (p.z > w.z-w.scale_z/2-4) and (p.x < w.x+(w.scale_x/2+2)) and (p.x > w.x-w.scale_x/2-2):
+		return True
+	return False
+
 ####################
 ##multible objects #
 #lv1
@@ -360,10 +365,11 @@ class WaterFlow(Entity):
 	def update(self):
 		if not st.gproc():
 			s=self
-			s.frm=min(s.frm+time.dt*9,3.99)
-			if s.frm > 3.98:
-				s.frm=0
-			s.texture=s.wtr_t+'water_flow'+str(int(s.frm))+'.tga'
+			if wtr_dist(w=s,p=LC.ACTOR):
+				s.frm=min(s.frm+time.dt*10,3.999)
+				if s.frm > 3.99:
+					s.frm=0
+				s.texture=s.wtr_t+'water_flow'+str(int(s.frm))+'.tga'
 
 class WaterFall(Entity):
 	def __init__(self,pos):
@@ -635,15 +641,16 @@ class EletricWater(Entity):
 		s=self
 		if not st.gproc():
 			s.tme=max(s.tme-time.dt,0)
-			s.refr_func()
-			s.anim()
-			if s.ta.in_water <= 0:
-				s.splash=max(s.splash-time.dt,0)
-			if s.tme <= 0:
-				s.tme=8
-				if s.vnum in [3,4]:
-					s.tme=random.uniform(.1,.2)
-				s.switch_water()
+			if wtr_dist(w=s,p=LC.ACTOR):
+				s.refr_func()
+				s.anim()
+				if s.ta.in_water <= 0:
+					s.splash=max(s.splash-time.dt,0)
+				if s.tme <= 0:
+					s.tme=8
+					if s.vnum in [3,4]:
+						s.tme=random.uniform(.1,.2)
+					s.switch_water()
 
 class DrippingWater(Entity):
 	def __init__(self,pos,sca):
@@ -654,10 +661,11 @@ class DrippingWater(Entity):
 	def update(self):
 		if not st.gproc():
 			s=self
-			s.frm=min(s.frm+(time.dt*10),7.99)
-			if s.frm > 7.98:
-				s.frm=0
-			s.texture=s.dpw+str(int(s.frm))+'.png'
+			if distance(s,LC.ACTOR) < 8:
+				s.frm=min(s.frm+(time.dt*10),7.999)
+				if s.frm > 7.99:
+					s.frm=0
+				s.texture=s.dpw+str(int(s.frm))+'.png'
 
 
 ####################
@@ -983,7 +991,7 @@ class GemPlatform(Entity):## gem platform
 		L=180
 		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L+20,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
 		super().__init__(model='cube',name='gmpt',color=color.green,scale=(.6,.4,.6),position=pos,collider=b,visible=False)
-		s.opt_model=Entity(model=omf+'ev/'+ne+'/'+ne+'.ply',name=s.name,texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=GMC[t],double_sided=True,shader=unlit_shader)
+		s.opt_model=Entity(model=omf+'ev/'+ne+'/'+ne+'.ply',name=s.name,texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=GMC[t],double_sided=True,unlit=False)
 		s.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),name=s.name,position=(s.x,s.y-.011,s.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
 		s.org_color=s.color
 		s.start_y=s.y
@@ -1016,7 +1024,7 @@ class PseudoGemPlatform(Entity):
 			s.is_enabled=True
 		L=180
 		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
-		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,collider=b,position=pos,color=GMC[t],double_sided=True,shader=unlit_shader)
+		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,collider=b,position=pos,color=GMC[t],double_sided=True,unlit=False)
 		s.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),position=(s.x,s.y-.01,s.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
 		s.hitbox=Entity(model='cube',position=(s.x,s.y-.15,s.z),scale=(.6,.4,.6),collider=b,visible=False)
 		if not s.is_enabled:
@@ -1033,11 +1041,11 @@ class LevelFinish(Entity):## finish level
 		s=self
 		trpv=omf+'ev/teleport/warp_effect'
 		super().__init__(model='sphere',name='lvfi',collider=b,scale=1,position=p,visible=False)
-		s.eff_w0=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(s.x,s.y,s.z),scale=.6,alpha=.5,shader=unlit_shader)
-		s.eff_w1=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.orange,rotation_x=90,position=(s.x,s.y+.2,s.z),scale=.7,alpha=.5,shader=unlit_shader)
-		s.eff_w2=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(s.x,s.y+.4,s.z),scale=.8,alpha=.5,shader=unlit_shader)
-		s.eff_w3=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.orange,rotation_x=90,position=(s.x,s.y+.6,s.z),scale=.7,alpha=.5,shader=unlit_shader)
-		s.eff_w4=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(s.x,s.y+.8,s.z),scale=.6,alpha=.5,shader=unlit_shader)
+		s.eff_w0=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(s.x,s.y,s.z),scale=.6,alpha=.5,unlit=False)
+		s.eff_w1=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.orange,rotation_x=90,position=(s.x,s.y+.2,s.z),scale=.7,alpha=.5,unlit=False)
+		s.eff_w2=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(s.x,s.y+.4,s.z),scale=.8,alpha=.5,unlit=False)
+		s.eff_w3=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.orange,rotation_x=90,position=(s.x,s.y+.6,s.z),scale=.7,alpha=.5,unlit=False)
+		s.eff_w4=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(s.x,s.y+.8,s.z),scale=.6,alpha=.5,unlit=False)
 		s.w_audio=Audio('res/snd/misc/portal.wav',volume=0,loop=True)
 	def update(self):
 		s=self
@@ -1077,24 +1085,26 @@ class LevelScene(Entity):
 	def __init__(self,pos,sca):
 		s=self
 		s.vpa='res/background/'
-		super().__init__(model='quad',texture=None,scale=sca,position=pos,texture_scale=(sca[0]/50,1),unlit=False)
+		super().__init__(model='quad',texture=None,scale=sca,position=pos,texture_scale=(sca[0]/50,1))
 		if st.level_index == 1:
 			s.texture=s.vpa+'bg_woods.png'
+			s.unlit=True
+			return
 		if st.level_index == 5:
 			s.texture=s.vpa+'bg_ruins.jpg'
-			s.color=color.rgb32(160,160,170)
+			s.color=color.rgb32(150,150,160)
+			s.shader=unlit_shader
 			s.orginal_tsc=s.texture_scale
 			s.orginal_x=s.x
 			s.orginal_y=s.y
 			s.bonus_y=-70
 			s.bonus_x=170
-			s.unlit=True
-			s.shader=unlit_shader
 			_loc.bgT=s
 	def update(self):
 		if st.level_index == 5:
-			xp={True:lambda:setattr(self,'x',self.bonus_x),False:lambda:setattr(self,'x',self.orginal_x)}
-			yp={True:lambda:setattr(self,'y',self.bonus_y),False:lambda:setattr(self,'y',self.orginal_y)}
+			s=self
+			xp={True:lambda:setattr(s,'x',s.bonus_x),False:lambda:setattr(s,'x',s.orginal_x)}
+			yp={True:lambda:setattr(s,'y',s.bonus_y),False:lambda:setattr(s,'y',s.orginal_y)}
 			xp[st.is_death_route]()
 			yp[st.bonus_round]()
 
@@ -1125,12 +1135,13 @@ class Water(Entity):
 		s.frm=0
 	def update(self):
 		if not st.gproc():
-			s=self
 			if st.level_index != 2:
-				s.frm+=time.dt*15
-				if s.frm > 57.9:
-					s.frm=0
-				s.texture=s.wtfc+str(int(s.frm))+'.tga'
+				s=self
+				if wtr_dist(w=s,p=LC.ACTOR):
+					s.frm=min(s.frm+time.dt*15,57.99)
+					if s.frm > 57.98:
+						s.frm=0
+					s.texture=s.wtfc+str(int(s.frm))+'.tga'
 
 class mTerrain(Entity):
 	def __init__(self,pos,sca,typ):

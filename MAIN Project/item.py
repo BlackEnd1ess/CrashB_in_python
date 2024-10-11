@@ -1,5 +1,4 @@
 import _core,status,sound,ui,_loc
-from ursina.shaders import *
 from ursina import *
 
 i_path='res/item/'
@@ -25,16 +24,16 @@ class WumpaFruit(Entity):
 		s.w_pa='res/ui/icon/wumpa_fruit/'
 		super().__init__(model='quad',texture=s.w_pa+'w0.png',name='wmpf',position=(p[0],p[1],p[2]),scale=.22)
 		s.collider=BoxCollider(s,size=Vec3(1,1,1))
-		s.floating=False
+		s.follow=False
 		s.c_purge=c_prg
 		s.spawn_pos=p
 		s.frm=0
 	def destroy(self):
 		cc.purge_instance(self)
-	def p_float(self):
+	def p_follow(self):
 		s=self
 		if distance(s,LC.ACTOR) < .6:
-			s.floating=True
+			s.follow=True
 	def collect(self):
 		s=self
 		cc.wumpa_count(1)
@@ -42,23 +41,36 @@ class WumpaFruit(Entity):
 	def update(self):
 		if not st.gproc():
 			s=self
-			if s.floating:
+			if s.follow:
 				q=LC.ACTOR
 				s.position=lerp(s.position,(q.x,q.y+.2,q.z),time.dt*16)
 				return
 			ui.wmp_anim(s)
-			s.p_float()
+			s.p_follow()
 
 class ExtraLive(Entity):
 	def __init__(self,pos):
+		s=self
 		super().__init__(model='quad',texture='res/ui/icon/crash_live.tga',name='exlf',position=pos,scale=.3,collider=b)
-		self.collider=BoxCollider(self,size=Vec3(1,1,1))
+		s.collider=BoxCollider(s,size=Vec3(1,1,1))
+		s.follow=False
 	def collect(self):
 		cc.give_extra_live()
 		cc.purge_instance(self)
+	def p_follow(self):
+		s=self
+		if distance(s,LC.ACTOR) < .6:
+			s.follow=True
 	def update(self):
+		s=self
 		if st.death_event:
-			cc.purge_instance(self)
+			cc.purge_instance(s)
+			return
+		if s.follow:
+			q=LC.ACTOR
+			s.position=lerp(s.position,(q.x,q.y+.2,q.z),time.dt*16)
+			return
+		s.p_follow()
 
 class GemStone(Entity):
 	def __init__(self,pos,c):
@@ -80,13 +92,13 @@ class GemStone(Entity):
 	def gem_visual(self):
 		##color
 		s=self
-		R=220
+		R=180
 		ge_c={0:color.rgb32(R-10,R-10,R),#clear gem
 			1:color.rgb32(R,0,0),#red gem
 			2:color.rgb32(0,R,0),#green gem
 			3:color.rgb32(R,0,R),#purple gem
 			4:color.rgb32(0,0,R),#blue gem
-			5:color.rgb32(R-40,R-40,0)}#yellow gem
+			5:color.rgb32(R-20,R-20,0)}#yellow gem
 		s.color=ge_c[s.gemID]
 		#s.alpha=.75
 		##scale - info: blue gem and yellow gem are Y scaled
@@ -148,7 +160,7 @@ class GemStone(Entity):
 class EnergyCrystal(Entity):
 	def __init__(self,pos):
 		CRY='crystal/crystal'
-		super().__init__(model=i_path+CRY+'.ply',texture=i_path+CRY+'.tga',name='crys',scale=.0013,rotation_x=-90,position=pos,double_sided=True,color=color.magenta,shader=unlit_shader,unlit=False)
+		super().__init__(model=i_path+CRY+'.ply',texture=i_path+CRY+'.tga',name='crys',scale=.0013,rotation_x=-90,position=pos,double_sided=True,color=color.magenta,unlit=False)
 		self.collider=b
 	def collect(self):
 		st.level_crystal=True
@@ -174,7 +186,7 @@ class TrialClock(Entity):
 class TimeRelic(Entity):
 	def __init__(self,pos,t):
 		tc={0:color.azure,1:color.gold,2:color.rgb32(150,150,180)}
-		super().__init__(model=i_path+'relic/relic.ply',texture=i_path+'relic/relic.tga',scale=0.004,position=pos,rotation_x=-90,color=tc[t],unlit=False,shader=unlit_shader)
+		super().__init__(model=i_path+'relic/relic.ply',texture=i_path+'relic/relic.tga',scale=0.004,position=pos,rotation_x=-90,color=tc[t],unlit=False)
 	def update(self):
 		if not st.gproc():
 			self.rotation_y-=time.dt*70

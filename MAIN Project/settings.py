@@ -2,7 +2,7 @@ from ursina.shaders import *
 import _core,environment,os
 from ursina import *
 
-debg=True
+#debg=True
 
 ## keyboard bindings
 MNU_KEY='p'#pause
@@ -27,10 +27,10 @@ def load():
 	w.render_mode='default'
 	w.exit_button.visible=False
 	##debug infos
-	w.collider_counter.enabled=debg
-	w.entity_counter.enabled=debg
-	w.fps_counter.enabled=debg
-	w.cog_button.enabled=debg
+	#w.collider_counter.enabled=debg
+	#w.entity_counter.enabled=debg
+	#w.fps_counter.enabled=debg
+	#w.cog_button.enabled=debg
 	w.fullscreen=False
 	w.borderless=False
 	camera.fov=65

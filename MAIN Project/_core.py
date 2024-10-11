@@ -690,13 +690,13 @@ class LODSystem(Entity):
 		s.dst_far=LC.fog_distance[si]
 		s.MAIN_LOD=CLW[si]
 		s.dst_cam=8
-		s.rt=.5
+		s.rt=.6
 	def refr(self):
 		p=LC.ACTOR
 		s=self
 		for v in scene.entities:
 			if isinstance(v,item.WumpaFruit):
-				v.enabled=(distance(p,v) < 6)
+				v.enabled=(distance(p,v) < 7)
 			kv=(v.z < p.z+s.dst_far and p.z < v.z+s.dst_bck and abs(p.x-v.x) < s.dst_cam)
 			if (is_enemie(v) or v.name in s.MAIN_LOD):
 				v.enabled=kv

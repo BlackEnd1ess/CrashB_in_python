@@ -11,8 +11,6 @@ n=npc
 def dev_object():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass',color=color.green)
 	o.StartRoom(pos=(0,0,-32.2))
-	o.MushroomTree(pos=(0,1,-25),typ=1)
-	#Entity(model='quad',color=color.black,position=(0,1,-22.5),scale=(10,2))
 	for gv in range(0,6):
 		item.GemStone(pos=(1+gv/2,.6,-23),c=gv)
 		if gv > 0:
@@ -39,8 +37,8 @@ def dev_crate():
 def dev_wumpa():
 	mt.wumpa_row(POS=(0,.3,-20),CNT=20,WAY=0)
 def dev_npc():
-	return#for np in range(15):
-	#	n.spawn(mID=np,pos=(-7+np,0,0),mDirec=1)
+	for np in range(15):
+		n.spawn(mID=np,pos=(-7+np,0,0),mDirec=1)
 
 #### LEVEL1 STUCT ####
 def lv1_object():
@@ -551,6 +549,7 @@ def lv3_npc():
 #### LEVEL4 STUCT ####
 def lv4_object():
 	sw_tile='res/terrain/l4/sewer_tiles.jpg'
+	Entity(model='quad',color=color.black,scale=(300,200),z=100)
 	o.StartRoom(pos=(0,.3,-64.2))
 	o.FallingZone(pos=(0,-1,0),s=(128,.3,128))
 	o.BonusPlatform(pos=(6.3,2,8))

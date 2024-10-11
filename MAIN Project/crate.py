@@ -1,5 +1,4 @@
 import item,status,_core,animation,sound,npc,settings,_loc,ui
-from ursina.shaders import *
 from ursina import *
 
 ic=(.15,.2)
@@ -222,7 +221,7 @@ class SpringWood(Entity):
 		animation.bnc_animation(self)
 		sn.crate_audio(ID=5)
 	def destroy(self):
-		item.place_wumpa(self.position,cnt=1)
+		item.place_wumpa(self.position,cnt=1,c_prg=True)
 		destroy_event(self)
 
 class SpringIron(Entity):
@@ -306,11 +305,12 @@ class TNT(Entity):
 		s.countdown=0
 	def destroy(self):
 		s=self
-		s.aud.fade_in()
-		s.aud.play()
-		s.activ=True
-		s.countdown=3.99
-		s.shader=unlit_shader
+		if not s.activ:
+			s.activ=True
+			s.unlit=False
+			s.aud.fade_in()
+			s.aud.play()
+			s.countdown=3.99
 	def empty_destroy(self):
 		s=self
 		if s.activ:
@@ -333,27 +333,25 @@ class Nitro(Entity):
 	def __init__(self,pos,pse):
 		s=self
 		s.vnum=12
-		super().__init__(model=cr2)
+		super().__init__(model=cr2,color=color.white,unlit=False)
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		s.start_y=s.y
 		s.acustic=False
 		s.snd_time=1
-		if st.level_index != 2:
-			s.shader=unlit_shader
 	def destroy(self):
 		destroy_event(self)
 	def update(self):
 		s=self
 		if not st.gproc() and s.visible:
-			s.snd_time=max(s.snd_time-time.dt,0)
-			if s.snd_time <= 0:
-				rh=random.uniform(.1,.2)
-				s.snd_time=random.randint(2,3)
-				if distance(LC.ACTOR.position,s.position) <= 2:
+			if distance(LC.ACTOR.position,s.position) <= 3:
+				s.snd_time=max(s.snd_time-time.dt,0)
+				if s.snd_time <= 0:
+					s.snd_time=random.randint(2,3)
 					sn.crate_audio(ID=9,pit=random.uniform(.8,1.1))
-				elif not s.is_stack:
-					s.animate_position((s.x,s.y+rh,s.z),duration=.02)
-					invoke(lambda:s.animate_position((s.x,s.start_y,s.z),duration=.2),delay=.15)
+					if not s.is_stack:
+						rh=random.uniform(.1,.2)
+						s.animate_position((s.x,s.y+rh,s.z),duration=.02)
+						invoke(lambda:s.animate_position((s.x,s.start_y,s.z),duration=.2),delay=.15)
 
 class Air(Entity):
 	def __init__(self,pos,m,l,pse):
@@ -416,8 +414,8 @@ class Fireball(Entity):
 	def __init__(self,C):
 		s=self
 		nC={11:color.red,12:color.green}
-		super().__init__(model='quad',texture=None,position=(C.x,C.y+.1,C.z+random.uniform(-.1,.1)),color=nC[C.vnum],scale=.75,unlit=False,shader=unlit_shader)
-		s.wave=Entity(model=None,texture=pp+'anim/exp_wave/0.tga',position=s.position,scale=.001,rotation_x=-90,color=nC[C.vnum],alpha=.8,unlit=False,shader=unlit_shader)
+		super().__init__(model='quad',texture=None,position=(C.x,C.y+.1,C.z+random.uniform(-.1,.1)),color=nC[C.vnum],scale=.75,unlit=False)
+		s.wave=Entity(model=None,texture=pp+'anim/exp_wave/0.tga',position=s.position,scale=.001,rotation_x=-90,color=nC[C.vnum],alpha=.8,unlit=False)
 		s.e_step=0
 		s.w_step=0
 	def e_wave(self):
@@ -457,7 +455,7 @@ class CheckpointAnimation(Entity):
 			s.wtime=.05
 			_d=1.5
 			letter=s.c_text[s.index]
-			ct=Text(letter,font='res/ui/font.ttf',position=(s.x+s.index/10,s.y,s.z),scale=7,parent=scene,color=color.rgb32(255,255,0))
+			ct=Text(letter,font=ui._fnt,position=(s.x+s.index/10,s.y,s.z),scale=7,parent=scene,color=color.rgb32(255,255,0),unlit=False)
 			invoke(ct.disable,delay=_d)
 			invoke(lambda:sn.pc_audio(ID=1,pit=.9),delay=_d+.1)
 			s.index+=1

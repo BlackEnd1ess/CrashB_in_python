@@ -12,7 +12,8 @@ SKY_COL={'day':c.rgb32(200,230,255),
 		'dark':c.black,
 		'rain':c.rgb32(70,70,80),
 		'snow':c.white,
-		'woods':c.rgb32(70,120,110)}
+		'woods':c.rgb32(70,120,110),
+		'sewer':c.black}
 
 FOG_COL={'day':c.rgb32(120,140,140),
 		'empty':c.black,
@@ -21,7 +22,8 @@ FOG_COL={'day':c.rgb32(120,140,140),
 		'dark':c.rgb32(0,0,0),
 		'rain':c.rgb32(0,0,0),
 		'snow':c.white,
-		'woods':c.rgb32(30,80,60)}
+		'woods':c.rgb32(30,80,60),
+		'sewer':c.rgb32(160,160,0)}
 
 AMB_COL={'day':c.rgb32(180,180,180),
 		'empty':c.rgb32(140,140,140),#c.rgb32(180,180,180),
@@ -30,7 +32,8 @@ AMB_COL={'day':c.rgb32(180,180,180),
 		'dark':c.rgb32(0,0,0),
 		'rain':c.rgb32(0,0,0),
 		'snow':c.rgb32(200,160,210),
-		'woods':c.rgb32(140,150,140)}
+		'woods':c.rgb32(140,150,140),
+		'sewer':c.rgb32(160,180,160)}
 
 def init_amb_light():#called 1 time
 	amv=AmbientLight(color=c.gray)
@@ -46,42 +49,47 @@ def env_switch(idx):
 
 class SkyBox(Sky):
 	def __init__(self):
-		self.bgr='res/background/'
-		super().__init__(texture=self.bgr+'sky.jpg',color=SKY_COL[st.day_mode],unlit=False)
-		self.setting=SKY_COL[st.day_mode]
-		self.thunder_time=3
+		s=self
+		s.bgr='res/background/'
+		super().__init__(texture=s.bgr+'sky.jpg',color=SKY_COL[st.day_mode],unlit=False)
+		s.setting=SKY_COL[st.day_mode]
+		s.thunder_time=3
 	def thunder_bolt(self):
-		self.color=color.white
-		LC.bgT.texture=self.bgr+'bg_ruins_th.jpg'
+		s=self
+		s.color=color.white
+		LC.bgT.texture=s.bgr+'bg_ruins_th.jpg'
 		LC.bgT.texture_scale=LC.bgT.orginal_tsc
 		sound.thu_audio(ID=0,pit=random.uniform(.1,.5))
 		invoke(lambda:sound.thu_audio(ID=random.randint(1,2),pit=random.uniform(.1,.5)),delay=.5)
-		invoke(self.reset_sky,delay=random.uniform(.1,.4))
+		invoke(s.reset_sky,delay=random.uniform(.1,.4))
 	def reset_sky(self):
-		self.color=self.setting
-		LC.bgT.texture=self.bgr+'bg_ruins.jpg'
+		s=self
+		s.color=s.setting
+		LC.bgT.texture=s.bgr+'bg_ruins.jpg'
 		LC.bgT.texture_scale=LC.bgT.orginal_tsc
-		self.thunder_time=random.randint(4,10)
+		s.thunder_time=random.randint(4,10)
 	def weather_sky(self):
+		s=self
 		if st.weather_thunder:
-			self.thunder_time=max(self.thunder_time-time.dt,0)
-			if self.thunder_time <= 0:
-				self.thunder_bolt()
+			s.thunder_time=max(s.thunder_time-time.dt,0)
+			if s.thunder_time <= 0:
+				s.thunder_bolt()
 			return
 		if st.bonus_round:
-			self.color=c.black
+			s.color=c.black
 			return
-		self.color=self.setting
+		s.color=s.setting
 	def update(self):
 		if not st.gproc():
+			s=self
 			if st.level_index == 5:
-				self.weather_sky()
+				s.weather_sky()
 				return
 			if st.level_index == 1:
 				if st.is_death_route:
-					self.color=c.rgb32(30,30,60)
+					s.color=c.rgb32(30,30,60)
 				else:
-					self.color=self.setting
+					s.color=s.setting
 
 class Fog(Entity):
 	def __init__(self):
@@ -89,7 +97,7 @@ class Fog(Entity):
 		super().__init__()
 		sti=st.level_index
 		fgd=LC.fog_distance[sti]
-		s.L_DST={0:(30,fgd),1:(5,fgd),2:(3,fgd),3:(17,fgd),4:(5,fgd),5:(5,fgd),6:(15,fgd)}
+		s.L_DST={0:(30,fgd),1:(5,fgd),2:(3,fgd),3:(17,fgd),4:(10,fgd),5:(5,fgd),6:(15,fgd)}
 		s.B_DST={0:(0,0),1:(-5,20),2:(0,10),3:(5,20),4:(8,15),5:(10,20),6:(15,30)}
 		scene.fog_color=FOG_COL[st.day_mode]
 		scene.fog_density=s.L_DST[sti]

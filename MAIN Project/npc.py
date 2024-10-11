@@ -1,6 +1,5 @@
 import settings,_core,math,animation,status,sound,_loc,effect,objects
 from math import radians,cos,sin
-from ursina.shaders import *
 from ursina import *
 
 npf='res/npc/'
@@ -83,13 +82,13 @@ class Vulture(Entity):
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=p)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(300,600,300))
 		cc.set_val_npc(s,di=d)
-		s.target=LC.ACTOR
 		s.move_speed=1.2
 	def wait_on_player(self):
 		s=self
+		target=LC.ACTOR
 		an.npc_walking(s)
-		if distance_xz(s.target,s) < 2:
-			s.x=s.target.x
+		if distance_xz(target,s) < 2:
+			s.x=lerp(s.x,target.x,time.dt*3)
 	def update(self):
 		if not st.gproc():
 			s=self
@@ -374,7 +373,7 @@ class AkuAkuMask(Entity):
 	def __init__(self,pos):
 		s=self
 		s.tpa='res/npc/akuaku/'
-		super().__init__(model=None,texture=None,scale=.00075,rotation_x=rx,position=pos,unlit=False)
+		super().__init__(model=None,texture=None,scale=.00075,rotation_x=rx,position=pos)
 		s.skin_0=s.tpa+'aku.ply'
 		s.tex_0=s.tpa+'aku.tga'
 		s.skin_1=s.tpa+'aku2.ply'
@@ -389,17 +388,19 @@ class AkuAkuMask(Entity):
 	def change_skin(self):
 		s=self
 		if st.aku_hit > 1:
+			s.unlit=False
 			s.model=s.skin_1
 			s.texture=s.tex_1
 			s.spark()
 			return
+		s.unlit=True
 		s.model=s.skin_0
 		s.texture=s.tex_0
 	def spark(self):
 		s=self
 		s.spt=max(s.spt-time.dt,0)
 		if s.spt <= 0:
-			s.spt=1
+			s.spt=.5
 			s.spkw+=1
 			if s.spkw > 2:
 				effect.Sparkle((s.x+random.uniform(-.1,.1),s.y+random.uniform(-.1,.1),s.z+random.uniform(-.1,.1)))

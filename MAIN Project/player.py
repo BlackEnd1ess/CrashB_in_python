@@ -1,5 +1,4 @@
 import _core,status,animation,sound,_loc,map_tools,settings
-from ursina.shaders import *
 from math import atan2
 from ursina import *
 
@@ -34,20 +33,22 @@ class pShadow(Entity):## shadow point
 class pShield(Entity):
 	def __init__(self):
 		super().__init__()
-		self.wait=.5
+		self.wait=.3
 	def refr_func(self):
 		q=LC.ACTOR
 		for rf in scene.entities[:]:
 			if distance(q,rf) < 2:
 				if cc.is_crate(rf) and rf.collider != None:
-					if not rf.vnum in [0,10]:
-						rf.destroy()
-						if (rf.vnum in [9,10,11] and not rf.activ):
-							rf.destroy()
+					if not (rf.vnum in [0,8]):
+						if rf.vnum == 11:
+							rf.empty_destroy()
 						if rf.vnum == 14:
 							rf.c_destroy()
+						if not (rf.vnum in [9,10] and rf.activ):
+							rf.destroy()
 				if cc.is_enemie(rf):
-					cc.bash_enemie(e=rf,h=q)
+					if not rf.vnum == 13:
+						cc.bash_enemie(e=rf,h=q)
 				if rf.name in LC.item_lst:
 					rf.collect()
 	def update(self):
@@ -55,7 +56,7 @@ class pShield(Entity):
 			s=self
 			s.wait=max(s.wait-time.dt,0)
 			if s.wait <= 0:
-				s.wait=.5
+				s.wait=.3
 				s.refr_func()
 
 class CrashB(Entity):
@@ -75,8 +76,8 @@ class CrashB(Entity):
 				sg.FWD_KEY:lambda:setattr(s,'CMS',3.2),
 				sg.BCK_KEY:lambda:setattr(s,'CMS',4.2),
 				#dev inp
-				'u':lambda:setattr(s,'position',(.85,2,.85*8)),
-				'b':lambda:print(s.position),
+				#'u':lambda:setattr(s,'position',(.85,2,.85*8)),
+				#'b':lambda:print(s.position),
 				'e':lambda:EditorCamera()}
 	def input(self,key):
 		s=self

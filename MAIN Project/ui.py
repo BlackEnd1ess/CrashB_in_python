@@ -510,7 +510,7 @@ class BonusText(Entity):
 				s.text_ch()
 
 K=40
-O=140
+O=180
 ## Pause Menu
 class PauseMenu(Entity):
 	def __init__(self):

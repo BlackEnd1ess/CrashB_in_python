@@ -1,5 +1,4 @@
 import status,_core,_loc,sound
-from ursina.shaders import *
 from ursina import *
 
 npc_anim={0:7,#amadillo
@@ -284,7 +283,7 @@ class WarpRingEffect(Entity): ## spawn animation
 	def __init__(self,pos):
 		s=self
 		s.omf='res/objects/ev/'
-		super().__init__(model=s.omf+'warp_rings/0.ply',texture=s.omf+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.9,unlit=False,shader=unlit_shader)
+		super().__init__(model=s.omf+'warp_rings/0.ply',texture=s.omf+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.9,unlit=False)
 		s.activ=False
 		s.ta=_loc.ACTOR
 		s.rings=0
