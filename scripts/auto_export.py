@@ -1,9 +1,15 @@
+## This Tool works with CBExporter by warenhuis on Git. To export a Model you need item 0-4 or 5 and a frame Data. This Tool can only proceed a Single Frame and this is
+## very time consumpting. To save more time, this Tool will make it 3x faster. The most Time consumpting Process is rename und delete the old Files and switching Directories.
+## If the tool somehow loses control or reacts too quickly/slowly, you can adjust the time there and simply close the process with escape. That's why I wouldn't run the tool 
+## directly on the desktop or in a folder that contains important files, as these could be accidentally marked or overwritten. It's best to run this tool in an empty folder 
+## and set it to the maximum window size, then nothing will happen.
+
 import time,pyautogui,os,shutil
 import pygetwindow as gw
 
-MAIN_S='C:\\Users\\-_-\\Desktop\\evp\\_stored_\\'
-MAIN_P='C:\\Users\\-_-\\Desktop\\evp\\'
-MODEL='gorilla_fall'
+MAIN_S='D:\\evp\\_stored_\\'
+MAIN_P='D:\\evp\\'
+MODEL='my_model'
 
 pv=pyautogui
 t=time
