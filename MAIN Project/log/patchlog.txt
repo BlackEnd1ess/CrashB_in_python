@@ -1,4 +1,18 @@
 #11.10.2024
 - fixxed wumpa spawn position (was wrong by magnet collect)
 - Purple Crates Info Text disapears while Pause or death event
-- Aku invincible Range decrased
+- AkuAku invincible Range/refresh time decrased
+- fixxed multible TNT activation.
+- AkuAku invincible doesnt affect: NPC Sewer Mine, Crate Iron, Crate Spring Iron and active TNT Crate
+- Water in Level 1,3,4 will not play animation, if player outside of visible x/z position to reduce laggs.
+- AkuAku invincible plays 2 different random music
+- Extra Lifes will move to player if distance less than 0.6
+- foam will disabled by LOD System
+- fixxed issue: wumpa fruit where spawned by spring wood crates, doesnt purge after death event.
+- level 4 dripped water, eletric water animate only nearby player
+- Nitro Crate hop only nearby player distance < 3
+- removed Nitro and TNT light shader (unlit only)
+- level 4 changed fog distance and color
+- AkuAku Mask sparkle color to gold
+- fixxed explosion texture
+- decrased sparkle delay
