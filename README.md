@@ -36,3 +36,15 @@ in the script folder you can find a Tool, that makes automatic export.
 
 The Main Project Folder contains my own Version of this Game, which im showing on Youtube. This is only used to compare a functional version of the game.
 You can modify this Code to make your own System. In Comming Future i will upload Videos with necessary Tutorials.
+
+
+INGAME CONTROLS:
+
+WALK= W,A,S,D
+JUMP= SPACE
+ATTK= ALT
+PAUSE= P
+INVENTORY= TAB
+BELLY_SMASH= V (while jump)
+JUMP=KEY_SPACE
+ATTACK=KEY_ALT
