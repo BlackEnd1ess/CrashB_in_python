@@ -40,11 +40,11 @@ You can modify this Code to make your own System. In Comming Future i will uploa
 
 INGAME CONTROLS:
 
-WALK= W,A,S,D
-JUMP= SPACE
-ATTK= ALT
-PAUSE= P
-INVENTORY= TAB
-BELLY_SMASH= V (while jump)
-JUMP=KEY_SPACE
-ATTACK=KEY_ALT
+-WALK= W,A,S,D
+-JUMP= SPACE
+-ATTK= ALT
+-PAUSE= P
+-INVENTORY= TAB
+-BELLY_SMASH= V (while jump)
+-JUMP=KEY_SPACE
+-ATTACK=KEY_ALT
