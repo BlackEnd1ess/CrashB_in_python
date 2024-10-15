@@ -243,7 +243,7 @@ class Pillar(Entity):
 class SnowWall(Entity):
 	def __init__(self,pos):
 		swbo='l2/snow_wall/snow_bonus'
-		super().__init__(model=omf+swbo+'.ply',texture=omf+swbo+'.tga',scale=.02,position=pos,rotation=(-90,-90,0),alpha=.3)
+		super().__init__(model=omf+swbo+'.ply',texture=omf+swbo+'.tga',scale=.02,position=pos,rotation=(-90,-90,0))
 		Entity(model='cube',position=(self.x,self.y+.3,self.z+.3),scale=(5.5,3.5,.5),collider=b,visible=False)
 
 class Rock(Entity):
