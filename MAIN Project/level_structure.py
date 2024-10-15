@@ -9,7 +9,7 @@ n=npc
 
 #### DEV-LV STUCT ####
 def dev_object():
-	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass',color=color.green)
+	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass',color=color.green,visible=False)
 	o.StartRoom(pos=(0,0,-32.2))
 	for gv in range(0,6):
 		item.GemStone(pos=(1+gv/2,.6,-23),c=gv)
@@ -241,16 +241,17 @@ def lv2_object():
 	o.mBlock(pos=(0,.8,-20),sca=(3,4))
 	o.mBlock(pos=(0,.8,0),sca=(3,4))
 	#2d area
-	o.mBlock(pos=(1.5,1.2,2.5),sca=(6,1))
-	o.mBlock(pos=(6,1.5,2.5),sca=(1,1))
-	o.mBlock(pos=(7.5,2,2.5),sca=(2,1))
-	o.mBlock(pos=(10.5,2,2.5),sca=(2,1))
-	o.mBlock(pos=(12,2.5,2.5),sca=(1,1))
-	o.IceGround(pos=(15,2.125,2.5),sca=(5,1))
-	o.mBlock(pos=(19,2.5,2.5),sca=(3,1))
-	o.mBlock(pos=(23,2.5,2.5),sca=(2,1))
+	bz=2.5
+	o.mBlock(pos=(1.5,1.2,bz),sca=(6,1))
+	o.mBlock(pos=(6,1.5,bz),sca=(1,1))
+	o.mBlock(pos=(7.5,2,bz),sca=(2,1))
+	o.mBlock(pos=(10.5,2,bz),sca=(2,1))
+	o.mBlock(pos=(12,2.5,bz),sca=(1,1))
+	o.IceGround(pos=(15,2.125,bz),sca=(5,1))
+	o.mBlock(pos=(19,2.5,bz),sca=(3,1))
+	o.mBlock(pos=(23,2.5,bz),sca=(2,1))
 	o.mBlock(pos=(23,5.25,2.2),sca=(1,1.75))
-	o.mBlock(pos=(24.5,3,2.5),sca=(1,1))
+	o.mBlock(pos=(24.5,3,bz),sca=(1,1))
 	o.mBlock(pos=(23,5.25,5.2),sca=(4,4))
 	o.mBlock(pos=(23,5.25,23),sca=(2,7))
 	o.mBlock(pos=(23.5,5.25,27),sca=(3,1))
@@ -308,11 +309,12 @@ def lv2_object():
 		for ptf2 in range(3):
 			o.SnowPlatform(pos=(34+ptf1*1.5,5.8,27+ptf2*1.5))
 	#walls
+	snz=3
 	for snw in range(7):
-		o.SnowWall(pos=(-5+snw*5.4,.1,2.65))
-		o.SnowWall(pos=(-5+snw*5.4,3.2,2.65))
-	o.SnowWall(pos=(19,6.3,2.65))
-	o.SnowWall(pos=(27,6.3,2.65))
+		o.SnowWall(pos=(-5+snw*5.4,.1,snz))
+		o.SnowWall(pos=(-5+snw*5.4,3.2,snz))
+	o.SnowWall(pos=(19,6.3,snz))
+	o.SnowWall(pos=(27,6.3,snz))
 	o.SnowWall(pos=(30,2,38))
 	for sna in range(2):
 		o.SnowWall(pos=(20+sna*5.4,5,28))

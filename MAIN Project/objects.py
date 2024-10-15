@@ -143,7 +143,7 @@ class MossPlatform(Entity):
 	def dive(self):
 		s=self
 		s.a_tme=max(s.a_tme-time.dt,0)
-		if s.a_tme == 0:
+		if s.a_tme <= 0:
 			s.a_tme=3
 			if s.is_sfc:
 				s.is_sfc=False
@@ -156,8 +156,8 @@ class MossPlatform(Entity):
 			s.animate_y(s.spawn_pos[1],duration=.3)
 			s.opt_model.animate_y(s.spawn_pos[1]+.475,duration=.3)
 	def update(self):
-		s=self
 		if not st.gproc():
+			s=self
 			sp_act={1:lambda:s.dive(),2:lambda:platform_move(s),3:lambda:platform_move(s)}
 			if s.ptm in sp_act:
 				sp_act[s.ptm]()
@@ -242,7 +242,9 @@ class Pillar(Entity):
 
 class SnowWall(Entity):
 	def __init__(self,pos):
-		super().__init__(model=omf+'l2/snow_wall/snow_bonus.ply',texture=omf+'l2/snow_wall/snow_bonus.tga',scale=.02,position=pos,rotation=(-90,-90,0),collider=b)
+		swbo='l2/snow_wall/snow_bonus'
+		super().__init__(model=omf+swbo+'.ply',texture=omf+swbo+'.tga',scale=.02,position=pos,rotation=(-90,-90,0),alpha=.3)
+		Entity(model='cube',position=(self.x,self.y+.3,self.z+.3),scale=(5.5,3.5,.5),collider=b,visible=False)
 
 class Rock(Entity):
 	def __init__(self,pos):
@@ -1000,7 +1002,7 @@ class GemPlatform(Entity):## gem platform
 			s.unlit=False
 			s.collider=None
 			s.bg_darkness.hide()
-			s.alpha=.5
+			s.alpha=.6
 	def update(self):
 		if not st.gproc():
 			s=self

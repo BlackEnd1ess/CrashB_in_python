@@ -159,14 +159,18 @@ class GemStone(Entity):
 
 class EnergyCrystal(Entity):
 	def __init__(self,pos):
+		s=self
 		CRY='crystal/crystal'
-		super().__init__(model=i_path+CRY+'.ply',texture=i_path+CRY+'.tga',name='crys',scale=.0013,rotation_x=-90,position=pos,double_sided=True,color=color.magenta,unlit=False)
-		self.collider=b
+		super().__init__(model=i_path+CRY+'.ply',texture=i_path+CRY+'.tga',name='crys',scale=.0013,rotation_x=-90,position=pos,double_sided=True,color=color.magenta)
+		s.glow=Entity(model='quad',texture=i_path+CRY+'_shine.tga',scale=(.5,.8),position=s.position,color=color.magenta,unlit=False)
+		s.collider=b
 	def collect(self):
+		s=self
 		st.level_crystal=True
 		sn.ui_audio(ID=5)
 		status.show_gems=5
-		cc.purge_instance(self)
+		cc.purge_instance(s.glow)
+		cc.purge_instance(s)
 	def update(self):
 		if not st.gproc():
 			s=self

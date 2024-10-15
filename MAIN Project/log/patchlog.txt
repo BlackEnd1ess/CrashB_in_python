@@ -14,5 +14,11 @@
 - removed Nitro and TNT light shader (unlit only)
 - level 4 changed fog distance and color
 - AkuAku Mask sparkle color to gold
-- fixxed explosion texture
+- fixxed explosion texture (have alpha value instead of black back ground)
 - decrased sparkle delay
+
+#13.10.2024
+- crystal shine on Energy Crystal
+
+#15.10.2024
+- fixxed level 2 ice wall glitch, where transport the player to the top by self.

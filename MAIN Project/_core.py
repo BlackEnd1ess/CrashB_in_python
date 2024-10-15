@@ -314,7 +314,7 @@ def check_wall(c):
 		if xa in LC.item_lst:
 			jV.collect()
 			return
-		if (is_enemie(jV) and not c.is_attack):
+		if is_enemie(jV):
 			R=1
 			if jV.vnum == 7:
 				R=5
