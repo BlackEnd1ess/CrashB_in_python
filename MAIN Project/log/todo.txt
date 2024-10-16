@@ -1,2 +1,4 @@
 ## BUGS/ERORRS
+- improve physics
+- reduce laggs
 - gem gloss

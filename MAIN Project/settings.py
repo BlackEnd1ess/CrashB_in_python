@@ -5,15 +5,15 @@ from ursina import *
 debg=False
 
 ## keyboard bindings
-MNU_KEY='p'#pause
-JMP_KEY='space'#jump
-ATK_KEY='alt'#attack
-IFC_KEY='tab'#show interface
-BLY_KEY='v'#belly smash
-FWD_KEY='w'#'up arrow'#forward
-BCK_KEY='s'#'down arrow'#backward
-RGT_KEY='d'#'right arrow'#right
-LFT_KEY='a'#'left arrow'#left
+MNU_KEY='p'#		pause
+JMP_KEY='space'#	jump
+ATK_KEY='alt'#		attack
+IFC_KEY='tab'#		show interface
+BLY_KEY='v'#		belly smash
+FWD_KEY='w'#		forward
+BCK_KEY='s'#		backward
+RGT_KEY='d'#		right
+LFT_KEY='a'#		left
 
 ## global volume
 MUSIC_VOLUME=1

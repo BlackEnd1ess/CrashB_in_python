@@ -14,23 +14,24 @@ def load_bonus_level(idx):
 
 ##bonus level
 def bonus1():
-	o.BonusPlatform(pos=(11.5,-37,U))
-	o.Water(pos=(0,-39,0),sca=(60,60),c=color.rgb32(100,110,110),a=.9)
+	o.BonusPlatform(pos=(11.8,-36.7,U))
+	o.Water(pos=(0,-38.5,0),sca=(60,60),c=color.rgb32(100,110,110),a=.9)
+	Entity(model='plane',scale=70,position=(0,-40,0),color=color.black)
 	for w in range(2):
 		o.BackgroundWall(p=(0+w*14,-37,2))
-	for bc0 in range(6):
-		c.place_crate(ID=0,p=(0+bc0/3.1,-37,U))
-		c.place_crate(ID=0,p=(3+bc0/3.1,-37,U))
-		c.place_crate(ID=0,p=(6+bc0/3.1,-37,U))
-		c.place_crate(ID=0,p=(9+bc0/3.1,-37,U))
+	o.mBlock(pos=(.35,-37,U),sca=(3,.5))
+	o.mBlock(pos=(4,-37,U),sca=(2,.5))
+	o.mBlock(pos=(6.7,-37,U),sca=(2,.5))
+	o.mBlock(pos=(10,-37,U),sca=(2.5,.5))
 	c.place_crate(ID=8,p=(4,-36.66,U))
 	MT.crate_row(ID=1,POS=(4,-34,U),WAY=2,CNT=4)
-	MT.crate_wall(ID=1,POS=(1,-36.66,U),CNT=[3,3])
-	MT.crate_wall(ID=2,POS=(6,-36.66,U),CNT=[2,2])
-	c.place_crate(ID=4,p=(9,-36.66,U))
+	MT.crate_wall(ID=1,POS=(1,-36.72,U),CNT=[3,3])
+	MT.crate_wall(ID=2,POS=(6,-36.72,U),CNT=[2,2])
+	MT.bounce_twin(POS=(10.9,-36.72,U),CNT=1)
+	c.place_crate(ID=4,p=(9,-36.72,U))
 	MT.wumpa_row(POS=(9,-36,U),CNT=4,WAY=2)
-	MT.wumpa_row(POS=(9.4,-36.6,U),CNT=4,WAY=0)
-	MT.wumpa_row(POS=(1.6,-36,U),CNT=4,WAY=0)
+	MT.wumpa_row(POS=(9.4,-36.72,U),CNT=4,WAY=0)
+	MT.wumpa_row(POS=(2,-36,U),CNT=3,WAY=0)
 
 def bonus2():
 	o.FallingZone(pos=(0,-40,0),s=(64,1,64))

@@ -43,9 +43,9 @@ def wtr_dist(w,p):
 ##multible objects #
 #lv1
 def spawn_tree_wall(pos,cnt,d):
-	tro={0:-45,1:45}
+	tro={0:-50,1:50}
 	for tsp in range(0,cnt):
-		Tree2D(pos=(pos[0]+random.uniform(-.1,.1),pos[1],pos[2]+tsp*2),rot=tro[d])
+		Tree2D(pos=(pos[0]+random.uniform(-.1,.1),pos[1],pos[2]+tsp*3),rot=tro[d])
 
 def bush(pos,sca,c,ro_y=0):
 	BUSH=Entity(model='quad',texture=omf+'l1/bush/bush1.png',name='bush',position=pos,scale=sca,color=c,rotation_y=ro_y)
@@ -67,17 +67,6 @@ def spawn_ice_wall(pos,cnt,d):
 		SnowHill(pos=(pos[0],pos[1],pos[2]+icew*8.2),ro_y=ws[d])
 
 #lv3
-def block_row(p,cnt,way):
-	for sBl in range(cnt):
-		bWlo={0:lambda:SingleBlock(pos=(p[0]+.8*sBl,p[1],p[2])),
-			1:lambda:SingleBlock(pos=(p[0],p[1],p[2]+.8*sBl))}
-		bWlo[way]()
-
-def block_plane(p,cnt):
-	for sbX in range(cnt):
-		for sbZ in range(cnt):
-			SingleBlock(pos=(p[0]+.8*sbX,p[1],p[2]+.8*sbZ))
-
 def side_hills(p,cnt):
 	for sHil in range(cnt):
 		Entity(model='sphere',texture='grass',position=(p[0],p[1],p[2]+sHil),scale=(1,2+random.uniform(.3,.5),1.5),color=color.rgb32(0,120,0),texture_scale=(8,8))
@@ -117,7 +106,7 @@ class PseudoCrash(Entity):
 class Tree2D(Entity):
 	def __init__(self,pos,rot):
 		tCOL=random.choice([color.rgb32(128,128,128),color.rgb32(200,200,200),color.rgb32(255,255,255)])
-		super().__init__(model='quad',texture=omf+'l1/tree/tree'+str(random.randint(1,4))+'.png',name='trd2',scale=2,position=pos,rotation_y=rot,color=tCOL)
+		super().__init__(model='quad',texture=omf+'l1/tree/tree'+str(random.randint(1,4))+'.png',name='trd2',scale=3,position=pos,rotation_y=rot,color=tCOL)
 
 class MossPlatform(Entity):
 	def __init__(self,p,ptm):
@@ -167,12 +156,16 @@ class MossPlatform(Entity):
 
 class BackgroundWall(Entity):
 	def __init__(self,p):
-		super().__init__(model=omf+'l1/wall_0/tW_wall.ply',texture=omf+'l1/wall_0/wall_wood.tga',scale=.02,position=p,rotation=(-90,90,0))
-		self.curtain=Entity(model='quad',texture=omf+'l1/bush/bush1.png',position=(self.x,self.y,self.z+1.5),scale=(20,6),color=color.rgb32(0,50,0))
-		self.inv_wall=Entity(model='cube',scale=(20,6),position=self.position,collider=b,visible=False)
+		s=self
+		super().__init__(model=omf+'l1/wall_0/tW_wall.ply',texture=omf+'l1/wall_0/wall_wood.tga',scale=.02,position=p,rotation=(-90,90,0),color=color.rgb32(160,190,160))
+		s.curtain=Entity(model='quad',texture=omf+'l1/bush/bush1.png',position=(s.x,s.y,s.z+1.5),scale=(20,6),color=color.rgb32(0,50,0))
+		s.inv_wall=Entity(model='cube',scale=(20,6),position=s.position,collider=b,visible=False)
+		bush(pos=(s.x-2.5,s.y-.4,s.z-.7),sca=1.2,c=color.rgb32(170,170,100),ro_y=0)
+		bush(pos=(s.x-1,s.y-.6,s.z-.7),sca=.8,c=color.rgb32(100,170,100),ro_y=0)
+		bush(pos=(s.x-.2,s.y-.6,s.z-.65),sca=.8,c=color.rgb32(100,230,100),ro_y=0)
 		for bu in range(8):
 			aC=random.choice([color.green,color.orange,color.yellow])
-			Entity(model='quad',texture=omf+'l1/bush/bush1.png',position=(self.x-8+bu*2,self.y+2.75,self.z-1+random.uniform(.1,.5)),scale=random.uniform(3,4),color=aC)
+			Entity(model='quad',texture=omf+'l1/bush/bush1.png',position=(s.x-8+bu*2,s.y+2.75,s.z-1+random.uniform(.1,.5)),scale=random.uniform(3,4),color=aC)
 
 class Corridor(Entity):
 	def __init__(self,pos):
@@ -188,9 +181,10 @@ class TreeScene(Entity):
 		s=self
 		sBU=omf+'l1/bush/bush1.png'
 		super().__init__(model=omf+'l1/tree/tree.ply',name='tssn',texture=omf+'l1/tree/wd_scn.tga',rotation_x=-90,scale=sca,position=pos)
-		s.leaf0=Entity(model='quad',name='t2b1',texture=sBU,position=(s.x-.4,s.y+1.2,s.z-.249),scale=1.6,color=color.rgb32(0,120,0),rotation_y=0)
-		s.leaf1=Entity(model='quad',name='t2b2',texture=sBU,position=(s.x+.4,s.y+1.2,s.z-.249),scale=1.6,color=color.rgb32(0,110,0),rotation_y=-1)
-		s.wall0=Entity(model='cube',scale=(1,10,1),position=(s.x+.2,s.y+3.5,s.z),visible=False,collider=b)
+		s.leaf0=Entity(model='quad',name=s.name,texture=sBU,position=(s.x-.4,s.y+1.2,s.z-.249),scale=1.6,color=color.rgb32(0,120,0),rotation_y=0)
+		s.leaf1=Entity(model='quad',name=s.name,texture=sBU,position=(s.x+.4,s.y+1.2,s.z-.248),scale=1.6,color=color.rgb32(0,110,0),rotation_y=-1)
+		s.leaf2=Entity(model='quad',name=s.name,texture=sBU,position=(s.x,s.y+1.4,s.z-.2485),scale=1.6,color=color.rgb32(0,130,0),rotation_y=-1)
+		s.wall0=Entity(model='cube',name=s.name,scale=(1,10,1),position=(s.x+.2,s.y+3.5,s.z),visible=False,collider=b)
 
 class GrassSide(Entity):
 	def __init__(self,pos,ry):
@@ -242,9 +236,10 @@ class Pillar(Entity):
 
 class SnowWall(Entity):
 	def __init__(self,pos):
+		s=self
 		swbo='l2/snow_wall/snow_bonus'
 		super().__init__(model=omf+swbo+'.ply',texture=omf+swbo+'.tga',scale=.02,position=pos,rotation=(-90,-90,0))
-		Entity(model='cube',position=(self.x,self.y+.3,self.z+.3),scale=(5.5,3.5,.5),collider=b,visible=False)
+		Entity(model='cube',position=(s.x,s.y+.3,s.z+.3),scale=(5.5,3.5,.5),collider=b,visible=False)
 
 class Rock(Entity):
 	def __init__(self,pos):
@@ -260,6 +255,7 @@ class WoodLog(Entity):
 		inp=omf+'l2/wood_log/wood_log'
 		super().__init__(model=inp+'.ply',texture=inp+'.tga',name='wdlg',position=pos,scale=(.001,.001,.0015),rotation=(-90,0,0),collider=b)
 		Entity(model='cube',texture='res/terrain/l1/bricks.png',position=(s.x,s.y+.8,s.z-.075),scale=(.5,2,.5),collider=b)
+		Entity(model='cube',texture='res/terrain/l1/bricks.png',position=(s.x,s.y-.1,s.z+.6),scale=(.5,3,.5),texture_scale=(1,2),collider=b)
 		s.danger=True
 		s.or_pos=s.y
 		s.stat=0
@@ -513,13 +509,13 @@ class SewerEscape(Entity):
 		Entity(model='cube',scale=(.3,8,11),position=(s.x+1.8,s.y+3,s.z+2),collider=b,visible=False)
 		if typ == 1:
 			s.color=color.rgb32(255,50,0)
-			s.shader=unlit_shader
+			s.unlit=False
 
 class SewerPlatform(Entity):
 	def __init__(self,pos):
 		s=self
 		pPF=omf+'l4/scn/'
-		super().__init__(model='cube',name='swpl',scale=(.5,.2,.5),collider=b,position=pos,alpha=.7,visible=False)
+		super().__init__(model='cube',name='swpl',scale=(.5,.2,.5),collider=b,position=pos,visible=False)
 		s.vis=Entity(model=pPF+'ptf.ply',texture=pPF+'swr_ptf.tga',name=s.name,position=(s.x,s.y+.05,s.z),scale=.02,rotation_x=-90)
 
 class SewerWall(Entity):
@@ -527,7 +523,7 @@ class SewerWall(Entity):
 		s=self
 		mo=omf+'l4/scn/sewer_wall_b'
 		super().__init__(model=mo+'.ply',texture=mo+'.tga',name='ssww',position=pos,scale=.0175,rotation=(-90,90,0),double_sided=True)
-		s.bgw=Entity(model='cube',name='ssww',color=color.black,scale=(5,8,.1),position=(s.x,s.y,s.z+1))
+		s.bgw=Entity(model='cube',name=s.name,color=color.black,scale=(5,8,.1),position=(s.x,s.y,s.z+1))
 		s.color=color.rgb(.6,.5,.4)
 
 class SwimPlatform(Entity):
@@ -579,16 +575,17 @@ class SewerPipe(Entity):## danger
 			if has_drips == 1:
 				DrippingWater(pos=(s.x,s.y-.75,s.z-.25),sca=(.9,.4))
 		if typ == 2:
-			Entity(model=Circle(16,thickness=1,radius=.5),color=color.black,position=(s.x,s.y+.8,s.z-.7),rotation_x=-30)
+			Entity(model=Circle(16,thickness=1,radius=.5),color=color.black,name=s.name,position=(s.x,s.y+.8,s.z-.7),rotation_x=-30)
 			DrippingWater(pos=(s.x,s.y-.2,s.z-.5),sca=(.9,.4))
 		if typ == 3:
 			s.collider=BoxCollider(s,size=Vec3(.5,.5,5))
 			s.rotation_x=0
 			s.color=color.red
-			s.shader=unlit_shader
+			s.unlit=False
 	def update(self):
-		if not st.gproc() and self.typ == 3:
-			if self.intersects(LC.ACTOR):
+		s=self
+		if not st.gproc() and s.typ == 3:
+			if s.intersects(LC.ACTOR):
 				cc.get_damage(LC.ACTOR,rsn=3)
 
 class EletricWater(Entity):
@@ -615,7 +612,7 @@ class EletricWater(Entity):
 	def switch_water(self):
 		s=self
 		s.color=color.yellow
-		s.shader=unlit_shader
+		s.unlit=False
 		s.alpha=.9
 		s.texture_scale=s.tx
 		s.electric=True
@@ -626,7 +623,7 @@ class EletricWater(Entity):
 	def harmless(self):
 		s=self
 		s.color=color.rgb32(0,180,180)
-		s.shader=None
+		s.unlit=True
 		s.alpha=.95
 		s.texture_scale=s.tx
 		s.electric=False
@@ -640,8 +637,8 @@ class EletricWater(Entity):
 				s.splash=.3
 				sn.pc_audio(ID=10)
 	def update(self):
-		s=self
 		if not st.gproc():
+			s=self
 			s.tme=max(s.tme-time.dt,0)
 			if wtr_dist(w=s,p=LC.ACTOR):
 				s.refr_func()
@@ -1122,18 +1119,13 @@ class InvWall(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model='cube',position=pos,scale=sca,visible=False,collider=b,color=color.red)
 
-class SingleBlock(Entity):
-	def __init__(self,pos):
-		sBL=omf+'l3/sblock/sblock'
-		super().__init__(model=sBL+'.obj',texture=sBL+'.png',scale=(.8,.5,.8),collider=b,position=pos)
-
 class Water(Entity):
 	def __init__(self,pos,sca,c,a):
 		s=self
 		self.wtfc=omf+'ev/water/wtr_srfc/water_'
 		super().__init__(model='plane',texture=s.wtfc+'0.tga',position=pos,scale=(sca[0],.1,sca[1]),color=c,alpha=a)
 		WaterHit(p=(pos[0],pos[1]-.1,pos[2]),sc=sca)
-		s.texture_scale=(sca[0]/4,sca[1]/4)
+		s.texture_scale=(sca[0]/2,sca[1]/2)
 		s.frm=0
 	def update(self):
 		if not st.gproc():

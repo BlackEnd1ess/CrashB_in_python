@@ -1,7 +1,7 @@
 from ursina import *
 import settings,ui
 
-app=Ursina(title='Crezsh Blendikut',icon='res/cb.ico',development_mode=False)
+app=Ursina(title='Crezsh Blendikut',icon='res/cb.ico',vsync=True)
 def game():
 	settings.load()
 	ui.ProjectInfo()

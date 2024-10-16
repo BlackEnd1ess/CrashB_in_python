@@ -64,7 +64,7 @@ def block_destroy(c):
 		c.p_snd=True
 		dpt=1
 		if c.vnum == 14:
-			dpt=.75
+			dpt=.675
 		sn.crate_audio(ID=0,pit=dpt)
 		invoke(lambda:setattr(c,'p_snd',False),delay=.5)
 

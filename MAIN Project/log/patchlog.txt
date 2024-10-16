@@ -9,10 +9,10 @@
 - Extra Lifes will move to player if distance less than 0.6
 - foam will disabled by LOD System
 - fixxed issue: wumpa fruit where spawned by spring wood crates, doesnt purge after death event.
-- level 4 dripped water, eletric water animate only nearby player
+- level 4: dripped water, eletric water animate only nearby player
 - Nitro Crate hop only nearby player distance < 3
 - removed Nitro and TNT light shader (unlit only)
-- level 4 changed fog distance and color
+- level 4: changed fog distance and color
 - AkuAku Mask sparkle color to gold
 - fixxed explosion texture (have alpha value instead of black back ground)
 - decrased sparkle delay
@@ -22,3 +22,21 @@
 
 #15.10.2024
 - fixxed level 2 ice wall glitch, where transport the player to the top by self.
+- hide vertex holes in level 1 background wall (bonus level)
+- invisible ground on level 4 (final area), have black color now to hide the yellow fog.
+- wood log in level 2 have backwall to avoid, that player walk around them.
+
+#16.10.2024
+- level 2: crates in 2D Area position fixxed
+- level 2: bonus round fog density
+- level 1: iron crates floor, replaced with grass platforms
+- level 1: resize trees to reduce entity count
+- level 1: fog distance in bonus level + black floor under water to hide the skybox
+- reduce frame transition-lagg in a lot of Animations, while changing to next frame
+- bugfixx: instant freeze after belly smash on spring crates
+- incrased gravity value by 0.1
+- incrased crash Animations speed
+- Raincards removed duplicate cards
+- Rain color to white, to improve visual frames
+- LODSystem disable all crates without switch states or refresh functions, instead of only hiding it
+- Fog Distance decrased by 2 in each level

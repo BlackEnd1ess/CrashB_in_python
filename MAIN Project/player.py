@@ -13,19 +13,19 @@ cHr='res/pc/'
 class pShadow(Entity):## shadow point
 	def __init__(self):
 		super().__init__(model=Circle(16,thickness=1,radius=.09),color=color.black,rotation_x=90,alpha=.6,origin_z=.01,collider='box')
-		self.ta=LC.ACTOR
 		_loc.shdw=self
 	def flw_p(self):
 		s=self
-		s.x=s.ta.x
-		s.z=s.ta.z
-		vSH=raycast(s.ta.world_position,-Vec3(0,1,0),distance=2,ignore=[self,self.ta],debug=False)
-		if (s.ta.landed and not s.ta.jumping):
-			s.y=(s.ta.y)
-			return
-		if vSH.normal:
+		ta=LC.ACTOR
+		s.x=ta.x
+		s.z=ta.z
+		vSH=raycast(ta.world_position,-Vec3(0,1,0),distance=2,ignore=[s,ta],debug=False)
+		if vSH.hit:
 			if not (str(vSH.entity) in LC.item_lst+LC.trigger_lst):
 				s.y=vSH.world_point.y
+			return
+		if (ta.fall_time <= 0 and ta.landed):
+			s.y=(ta.y)
 	def update(self):
 		if not st.gproc():
 			self.flw_p()
@@ -36,7 +36,7 @@ class pShield(Entity):
 		self.wait=.3
 	def refr_func(self):
 		q=LC.ACTOR
-		for rf in scene.entities[:]:
+		for rf in scene.entities:
 			if distance(q,rf) < 2:
 				if cc.is_crate(rf) and rf.collider != None:
 					if not (rf.vnum in [0,8]):
@@ -52,11 +52,13 @@ class pShield(Entity):
 				if rf.name in LC.item_lst:
 					rf.collect()
 	def update(self):
+		if st.gproc():
+			return
 		if st.aku_hit > 2:
 			s=self
 			s.wait=max(s.wait-time.dt,0)
 			if s.wait <= 0:
-				s.wait=.3
+				s.wait=.4
 				s.refr_func()
 
 class CrashB(Entity):
@@ -68,17 +70,19 @@ class CrashB(Entity):
 		an.WarpRingEffect(pos=s.position)
 		pShadow()
 		pShield()
-		s.KEY_ACT={sg.MNU_KEY:lambda:cc.game_pause(),
+		s.KEY_ACT={
+				sg.MNU_KEY:lambda:cc.game_pause(),
 				sg.JMP_KEY:lambda:s.check_jump(),
 				sg.IFC_KEY:lambda:cc.show_status_ui(),
 				sg.ATK_KEY:lambda:s.spin_attack(),
 				sg.BLY_KEY:lambda:s.belly_smash(),
 				sg.FWD_KEY:lambda:setattr(s,'CMS',3.2),
-				sg.BCK_KEY:lambda:setattr(s,'CMS',4.2),
+				sg.BCK_KEY:lambda:setattr(s,'CMS',4.2)
 				#dev inp
-				#'u':lambda:setattr(s,'position',(.85,2,.85*8)),
-				#'b':lambda:print(s.position),
-				'e':lambda:EditorCamera()}
+				#'u':lambda:setattr(s,'position',(21.4,7,7.7)),
+				#'b':lambda:map_tools.pos_info(s),
+				#'e':lambda:EditorCamera()
+				}
 	def input(self,key):
 		s=self
 		if st.p_rst(s):
@@ -134,7 +138,7 @@ class CrashB(Entity):
 		if not s.landed:
 			return
 		if s.is_slippery:
-			an.run_s(s,sp=16)
+			an.run_s(s,sp=5)
 		else:
 			if s.is_landing:
 				s.is_landing=False
@@ -148,16 +152,18 @@ class CrashB(Entity):
 			s.walk_snd=.35
 	def jump_typ(self,t):
 		s=self
-		grv={1:(2.4),2:(2.7),3:(2.9),4:(2.6)}
-		jmh={1:s.y+.8,#normal jump
-			2:s.y+1,#crate jump
-			3:s.y+1.1,#bounce jump
-			4:s.y+1.5}#spring jump
-		s.gravity=grv[t]#fall speed
-		s.vpos=jmh[t]#jump heigt limit
+		grv={1:(2.5),2:(2.8),3:(3.0),4:(2.7)}
+		jmh={1:s.y+.8,#		normal jump
+			2:s.y+1,#		crate jump
+			3:s.y+1.1,#		bounce jump
+			4:s.y+1.5}#		spring jump
+		s.gravity=grv[t]#	fall speed
+		s.vpos=jmh[t]#		jump heigt limit
 		s.fall_time=0
 		s.frst_lnd=True
 		s.jumping=True
+		if t == 4:
+			s.b_smash=False
 	def jump(self):
 		s=self
 		s.frst_lnd=True
@@ -168,7 +174,7 @@ class CrashB(Entity):
 		if s.walking:
 			s.is_flip=True
 		if not s.is_flip:
-			an.jup(s,sp=16)
+			an.jup(s,sp=20)
 		if (s.y >= s.vpos+hgt[kt]):
 			s.space_time=0
 			s.jumping=False
@@ -185,9 +191,9 @@ class CrashB(Entity):
 		if (s.is_flip or s.is_attack):
 			return
 		if s.b_smash:
-			an.belly_smash(s,sp=12)
+			an.belly_smash(s,sp=14)
 			return
-		an.fall(s,sp=12)
+		an.fall(s,sp=14)
 	def c_camera(self):
 		if not st.death_event:
 			if st.bonus_round:
@@ -208,17 +214,17 @@ class CrashB(Entity):
 	def refr_anim(self):
 		s=self
 		if (s.standup):
-			an.stand_up(s,sp=16)
+			an.stand_up(s,sp=18)
 			return
 		if (s.is_attack):
-			an.spin(s,sp=20)
+			an.spin(s,sp=22)
 			return
 		if s.is_flip and not (s.landed and s.is_attack):
 			an.flip(s,sp=18)
 			return
 		if (s.landed and s.is_landing) and not (s.walking or s.jumping or s.is_attack):
 			if s.b_smash:
-				an.belly_land(s,sp=12)
+				an.belly_land(s,sp=14)
 			else:
 				an.land(s,sp=18)
 			return
@@ -226,7 +232,7 @@ class CrashB(Entity):
 			if s.is_slippery:
 				an.slide_stop(s,sp=8)
 			else:
-				an.idle(s,sp=16)
+				an.idle(s,sp=18)
 			return
 	def hurt_visual(self):
 		for vkh in range(7):

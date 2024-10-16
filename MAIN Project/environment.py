@@ -22,7 +22,7 @@ FOG_COL={'day':c.rgb32(120,140,140),
 		'dark':c.rgb32(0,0,0),
 		'rain':c.rgb32(0,0,0),
 		'snow':c.white,
-		'woods':c.rgb32(30,80,60),
+		'woods':c.rgb32(20,70,50),
 		'sewer':c.rgb32(160,160,0)}
 
 AMB_COL={'day':c.rgb32(180,180,180),
@@ -97,8 +97,8 @@ class Fog(Entity):
 		super().__init__()
 		sti=st.level_index
 		fgd=LC.fog_distance[sti]
-		s.L_DST={0:(30,fgd),1:(5,fgd),2:(3,fgd),3:(17,fgd),4:(10,fgd),5:(5,fgd),6:(15,fgd)}
-		s.B_DST={0:(0,0),1:(-5,20),2:(0,10),3:(5,20),4:(8,15),5:(10,20),6:(15,30)}
+		s.L_DST={0:(30,fgd),1:(8,fgd),2:(3,fgd),3:(14,fgd),4:(13,fgd),5:(8,fgd),6:(15,fgd)}
+		s.B_DST={0:(0,0),1:(6,12),2:(4,4.5),3:(5,20),4:(8,15),5:(10,20),6:(15,30)}
 		scene.fog_color=FOG_COL[st.day_mode]
 		scene.fog_density=s.L_DST[sti]
 	def change_color(self):
@@ -119,22 +119,20 @@ class Fog(Entity):
 class RainFall(Entity):
 	def __init__(self):
 		s=self
-		super().__init__(model='quad',scale=(1.8,1),alpha=0,z=4,visible=False,color=c.light_gray,parent=camera.ui,unlit=False)
+		super().__init__(model='quad',scale=(1.8,1),z=4,visible=False,color=c.white,parent=camera.ui,unlit=False)
 		s.tx_r='res/objects/ev/rain/'
 		LC.ACTOR.indoor=.5
 		sound.Rainfall()
 		s.frm=0
-		s.sp=30
+		s.sp=40
 		if st.level_index == 5:
 			s.sp=50
-		s.dup_rain=Entity(model='quad',scale=(12,6),alpha=s.alpha,visible=False,color=c.white,parent=scene,unlit=False)
 	def refr_rain(self):
 		s=self
-		s.frm=min(s.frm+time.dt*s.sp,58.99)
-		if s.frm > 58.98:
+		s.frm=min(s.frm+time.dt*s.sp,58.999)
+		if s.frm > 58.99:
 			s.frm=0
 		rrt=s.tx_r+str(int(s.frm))+'.png'
-		s.dup_rain.texture=rrt
 		s.texture=rrt
 	def update(self):
 		if not st.gproc():
@@ -142,11 +140,7 @@ class RainFall(Entity):
 			ft=time.dt*2
 			s.refr_rain()
 			if LC.ACTOR.warped and LC.ACTOR.indoor <= 0:
-				s.dup_rain.visible=True
 				s.visible=True
-				s.dup_rain.position=(camera.x,camera.y-.1,camera.z+4)
-				s.dup_rain.alpha=lerp(s.alpha,1,ft)
 				s.alpha=lerp(s.alpha,.6,ft)
 				return
-			s.dup_rain.alpha=lerp(s.alpha,0,ft)
 			s.alpha=lerp(s.alpha,0,ft)

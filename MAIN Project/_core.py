@@ -15,8 +15,8 @@ def set_val(c):
 		setattr(c,_a,0)#animation frames
 	for _v in ['aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','wall_stop','h_lock','b_smash','standup']:
 		setattr(c,_v,False)#flags
-	c.move_speed=2.4
-	c.gravity=2.4
+	c.move_speed=LC.dfsp
+	c.gravity=LC.dfsp
 	c.direc=(0,0,0)
 	c.vpos=c.y
 	c.indoor=.5
@@ -67,9 +67,8 @@ def reset_state(c):
 		st.game_over=True
 		game_over()
 		return
-	if st.fails < 3:
-		st.aku_hit=0
-	else:
+	st.aku_hit=0
+	if st.fails > 2:
 		st.aku_hit=1
 		if not st.aku_exist:
 			sn.crate_audio(ID=14,pit=1.2)
@@ -89,7 +88,7 @@ def various_val(c):
 	c.in_water=max(c.in_water-time.dt,0)
 	c.indoor=max(c.indoor-time.dt,0)
 	if not c.is_slippery:
-		c.move_speed=2.4
+		c.move_speed=LC.dfsp
 	if st.bonus_solved and not st.wait_screen:
 		c.aq_bonus=(st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0)
 def c_slide(c):
@@ -108,21 +107,21 @@ def c_slide(c):
 		if c.move_speed > 0:
 			c.slide_fwd=c.move_speed
 def c_attack(c):
-	for k in scene.entities[:]:
-		if distance(c,k) < .5:
+	for k in scene.entities:
+		if distance(c,k) < .5 and k.collider != None:
 			if is_enemie(k) and not (k.is_hitten or k.is_purge):
 				if (k.vnum in [1,11]) or (k.vnum == 5 and k.def_mode):
 					get_damage(c,rsn=1)
 				bash_enemie(k,h=c)
-			if is_crate(k) and k.collider != None:
+			if is_crate(k):
 				if k.vnum in [3,11]:
 					k.empty_destroy()
 				else:
 					k.destroy()
 def c_smash(c):
-	for wr in scene.entities[:]:
-		if distance(wr,c) < .4:
-			if is_crate(wr) and wr.collider != None:
+	for wr in scene.entities:
+		if distance(wr,c) < .4 and wr.collider != None:
+			if is_crate(wr):
 				if wr.vnum in [3,11]:
 					wr.empty_destroy()
 				if wr.vnum == 14:
@@ -318,7 +317,8 @@ def check_wall(c):
 			R=1
 			if jV.vnum == 7:
 				R=5
-			get_damage(c,rsn=R)
+			if not c.is_attack:
+				get_damage(c,rsn=R)
 			return
 		if not xa in LC.trigger_lst:
 			c.position=lerp(c.position,c.position+hT.normal,time.dt*c.move_speed)
@@ -694,18 +694,22 @@ class LODSystem(Entity):
 	def refr(self):
 		p=LC.ACTOR
 		s=self
-		for v in scene.entities:
+		for v in scene.entities[:]:
 			if isinstance(v,item.WumpaFruit):
-				v.enabled=(distance(p,v) < 7)
+				v.enabled=(distance(p,v) < 6)
 			kv=(v.z < p.z+s.dst_far and p.z < v.z+s.dst_bck and abs(p.x-v.x) < s.dst_cam)
 			if (is_enemie(v) or v.name in s.MAIN_LOD):
 				v.enabled=kv
 			if is_crate(v):
-				v.visible=kv
+				if v.vnum in [3,9,10,11,12,13]:
+					v.visible=kv
+				else:
+					v.enabled=kv
 	def update(self):
 		s=self
-		if not st.gproc():
-			s.rt=max(s.rt-time.dt,0)
-			if s.rt <= 0:
-				s.rt=.6
-				s.refr()
+		if st.pause:
+			return
+		s.rt=max(s.rt-time.dt,0)
+		if s.rt <= 0:
+			s.rt=.6
+			s.refr()

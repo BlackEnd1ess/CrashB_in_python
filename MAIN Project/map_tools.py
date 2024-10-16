@@ -8,24 +8,14 @@ I=item
 ## pos info
 def pos_info(c):
 	sx=f"{c.x:.1f}"
-	#sy=f"{c.y+.16:.2f}"#c
-	sy=f"{c.y+.2:.2f}"#w
+	sy=f"{c.y+.16:.2f}"#c
+	#sy=f"{c.y+.2:.2f}"#w
 	sz=f"{c.z:.1f}"
-	#print(len(scene.entities))
-	#map_tools.pos_info(self)
-	#print('Entities: '+str(len(scene.entities)))
-	#print('CRATE reset: '+str(len(st.C_RESET)))
-	#print(scene.entities[-1])
-	#print(f"c.place_crate(ID=3,p=({sx},{sy},{sz}))")
-	#print(f"mt.crate_plane(ID=1,POS=({sx},{sy},{sz}),CNT=[1,3])")
-	#print(f"mt.crate_block(ID=1,POS=({sx},{sy},{sz}),CNT=[2,2,2])")
-	print(f"mt.wumpa_plane(POS=({sx},{sy},{sz}),CNT=[2,4])")
-	#print(f"mt.wumpa_row(POS=({sx},{sy},{sz}),CNT=5,WAY=0)")
-	#print(f"mt.wumpa_double_row(POS=({sx},{sy},{sz}),CNT=4)")
-	#print(f"mt.bounce_twin(POS=({sx},{sy},{sz}),CNT=1)")
+	print(f"mt.crate_wall(ID=14,POS=({sx},{sy},{sz}),CNT=[1,2])")
+	#print(f"mt.wumpa_plane(POS=({sx},{sy},{sz}),CNT=[2,4])")
 
 ## multible crate spawn
-def bounce_twin(POS,CNT,trs=1.55):
+def bounce_twin(POS,CNT,trs=1.65):
 	for cbt in range(CNT):
 		pO=.32*cbt
 		c.place_crate(ID=3,p=(POS[0]+pO,POS[1],POS[2]))

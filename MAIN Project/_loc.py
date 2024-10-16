@@ -3,6 +3,9 @@
 #player
 ACTOR=None
 
+#default speed for move and gravity
+dfsp=2.5
+
 # display the name in pause menu and loading screen
 lv_name=['CENTRAL - WARP ROOM',
 		'LEVEL 1 - TURTLE WOODS',
@@ -27,11 +30,11 @@ dangers=['wood_log','role','fllz']
 #fog far values
 fog_distance={
 	0:100,
-	1:18,
+	1:14,
 	2:14,
-	3:18,
-	4:18,
-	5:18,
+	3:16,
+	4:15,
+	5:16,
 	6:30}
 
 # checkpoint - bonus
@@ -39,7 +42,7 @@ bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(0,1
 
 #LOD
 LOD_VAR=['rmd1','rmd2','ctsc']
-LV1_LOD=LOD_VAR+['bush','trd2','tssn','t2b1','t2b2','mptf']
+LV1_LOD=LOD_VAR+['bush','trd2','tssn','mptf']
 LV2_LOD=LOD_VAR+['plnk','ickk','wdlg','pilr','icec']
 LV3_LOD=LOD_VAR+['wtfa','mptf','bush','trd2','tile','foam']
 LV4_LOD=LOD_VAR+['swpl','swp2','swpi','drpw','ssww']

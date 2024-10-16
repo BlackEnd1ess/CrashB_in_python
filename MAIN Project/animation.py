@@ -20,56 +20,57 @@ cf='res/crate/anim/'
 nf='res/npc/'
 af='res/pc/'
 mo='model'
+st=status
 sn=sound
 cc=_core
 t=18
 
 ## player animation
 def idle(d,sp):
-	d.idfr=min(d.idfr+time.dt*sp,10.99)
-	if d.idfr > 10.98:
+	d.idfr=min(d.idfr+time.dt*sp,10.999)
+	if d.idfr > 10.99:
 		d.idfr=0
 	d.texture=af+'idle/crash.tga'
 	d.model=af+'idle/'+str(int(d.idfr))+'.ply'
 
 def run(d,sp):
-	d.rnfr=min(d.rnfr+time.dt*sp,10.99)
-	if d.rnfr > 10.98:
+	d.rnfr=min(d.rnfr+time.dt*sp,10.999)
+	if d.rnfr > 10.99:
 		d.rnfr=0
 	d.texture=af+'run/crash.tga'
 	d.model=af+'run/'+str(int(d.rnfr))+'.ply'
 
 def run_s(d,sp):
-	d.srfr=min(d.srfr+time.dt*sp,6.99)
-	if d.srfr > 6.98:
+	d.srfr=min(d.srfr+time.dt*sp,6.999)
+	if d.srfr > 6.99:
 		d.srfr=0
 	d.texture=af+'slide_start/crash.tga'
 	d.model=af+'slide_start/'+str(int(d.srfr))+'.ply'
 
 def slide_stop(d,sp):
-	d.ssfr=min(d.ssfr+time.dt*sp,3.99)
-	if d.ssfr > 3.98:
-		d.ssfr=3
+	d.ssfr=min(d.ssfr+time.dt*sp,3.999)
+	if d.ssfr > 3.99:
+		d.ssfr=0
 	d.texture=af+'slide_stop/crash.tga'
 	d.model=af+'slide_stop/'+str(int(d.ssfr))+'.ply'
 
 def jup(d,sp):
-	d.jmfr=min(d.jmfr+time.dt*sp,2.99)
-	if d.jmfr > 2.98:
+	d.jmfr=min(d.jmfr+time.dt*sp,2.999)
+	if d.jmfr > 2.99:
 		return
 	d.texture=af+'jmup/crash.tga'
 	d.model=af+'jmup/'+str(int(d.jmfr))+'.ply'
 
 def spin(d,sp):
-	d.spfr=min(d.spfr+time.dt*sp,11.99)
-	if d.spfr > 11.98:
+	d.spfr=min(d.spfr+time.dt*sp,11.999)
+	if d.spfr > 11.99:
 		d.spfr=0
 	d.texture=af+'spn/crash.tga'
 	d.model=af+'spn/'+str(int(d.spfr))+'.ply'
 
 def land(d,sp):
-	d.ldfr=min(d.ldfr+time.dt*sp,12.99)
-	if d.ldfr > 12.98:
+	d.ldfr=min(d.ldfr+time.dt*sp,12.999)
+	if d.ldfr > 12.99:
 		d.is_landing=False
 		d.ldfr=0
 		return
@@ -83,8 +84,8 @@ def fall(d,sp):
 	d.model=af+'fall/'+str(int(d.fafr))+'.ply'
 
 def flip(d,sp):
-	d.flfr=min(d.flfr+time.dt*sp,16.99)
-	if d.flfr > 16.98:
+	d.flfr=min(d.flfr+time.dt*sp,16.999)
+	if d.flfr > 16.99:
 		d.is_flip=False
 		d.flfr=0
 		return
@@ -92,16 +93,16 @@ def flip(d,sp):
 	d.model=af+'flp/'+str(int(d.flfr))+'.ply'
 
 def belly_smash(d,sp):
-	d.smfr=min(d.smfr+time.dt*sp,2.99)
-	if d.smfr > 2.98:
+	d.smfr=min(d.smfr+time.dt*sp,2.999)
+	if d.smfr > 2.99:
 		d.smfr=2
 		return
 	d.texture=af+'smash/crash.tga'
 	d.model=af+'smash/'+str(int(d.smfr))+'.ply'
 
 def belly_land(d,sp):
-	d.blfr+=time.dt*sp
-	if d.blfr > 3.9:
+	d.blfr=min(d.blfr+time.dt*sp,3.999)
+	if d.blfr > 3.99:
 		d.blfr=0
 		d.standup=True
 		d.b_smash=False
@@ -110,8 +111,8 @@ def belly_land(d,sp):
 	d.model=af+'smash_land/'+str(int(d.blfr))+'.ply'
 
 def stand_up(d,sp):
-	d.sufr+=time.dt*sp
-	if d.sufr > 8.9:
+	d.sufr=min(d.sufr+time.dt*sp,8.999)
+	if d.sufr > 8.99:
 		d.sufr=0
 		d.blfr=0
 		d.is_landing=False
@@ -261,22 +262,22 @@ def prtc_anim(c):
 
 class CrateBreak(Entity):
 	def __init__(self,cr):
+		bco=color.orange
+		anP=cr.position
 		if cr.vnum in [11,12,15,16]:
 			vco={11:color.red,12:color.green,15:color.gold,16:color.violet}
 			bco=vco[cr.vnum]
-		else:
-			bco=color.orange
-		anP=cr.position
 		super().__init__(model=cf+'brk/0.ply',texture=cf+'brk/break.tga',rotation=(-90,random.randint(0,360),0),scale=.4/1000,color=bco,position=(anP[0],anP[1]-.16,anP[2]),unlit=False,collider=None)
 		self.frame_break=0
 	def update(self):
-		if not status.gproc():
-			self.frame_break+=time.dt*t
-			if self.frame_break > 13.9:
-				self.frame_break=0
-				cc.purge_instance(self)
+		if not st.gproc():
+			s=self
+			s.frame_break=min(s.frame_break+time.dt*t,13.999)
+			if s.frame_break > 13.99:
+				s.frame_break=0
+				cc.purge_instance(s)
 				return
-			self.model=cf+'brk/'+str(int(self.frame_break))+'.ply'
+			s.model=cf+'brk/'+str(int(s.frame_break))+'.ply'
 
 ##warp rings
 class WarpRingEffect(Entity): ## spawn animation
@@ -289,13 +290,13 @@ class WarpRingEffect(Entity): ## spawn animation
 		s.rings=0
 		s.times=0
 	def update(self):
-		if not status.gproc() and cc.level_ready:
+		if not st.gproc() and cc.level_ready:
 			s=self
 			if not s.activ:
 				s.activ=True
 				sn.obj_audio(ID=0)
-			s.rings+=time.dt*30
-			if s.rings > 8.9:
+			s.rings=min(s.rings+time.dt*30,8.999)
+			if s.rings > 8.99:
 				s.rings=0
 				s.times+=1
 				sn.pc_audio(ID=1,pit=.35)
@@ -308,21 +309,21 @@ class WarpRingEffect(Entity): ## spawn animation
 def npc_walking(m):
 	if status.pause:
 		return
-	m.anim_frame+=time.dt*t
-	if m.anim_frame > npc_anim[m.vnum]+.9:
+	m.anim_frame=min(m.anim_frame+time.dt*t,npc_anim[m.vnum]+.999)
+	if m.anim_frame > npc_anim[m.vnum]+.99:
 		m.anim_frame=0
 	m.model=nf+str(m)+'/'+str(int(m.anim_frame))+'.ply'
 
 #plant
 def plant_bite(m):
-	m.atk_frame+=time.dt*t
-	if m.atk_frame > 18.9:
+	m.atk_frame=min(m.atk_frame+time.dt*t,18.999)
+	if m.atk_frame > 18.99:
 		m.atk_frame=0
 	m.texture=nf+str(m)+'/attack/plant.tga'
 	m.model=nf+str(m)+'/attack/'+str(int(m.atk_frame))+'.ply'
 def plant_eat(m):
-	m.eat_frame+=time.dt*t
-	if m.eat_frame > 30.9:
+	m.eat_frame=min(m.eat_frame+time.dt*t,30.999)
+	if m.eat_frame > 30.99:
 		m.eat_frame=0
 		m.eat=False
 		return
@@ -330,46 +331,47 @@ def plant_eat(m):
 
 #hedge
 def hedge_defend(m):
+	m.def_frame=min(m.def_frame+time.dt*t,6.999)
 	m.def_frame+=time.dt*t
-	if m.def_frame > 6.9:
+	if m.def_frame > 6.99:
 		m.def_frame=0
 	m.texture=nf+str(m)+'/attack/attack.tga'
 	m.model=nf+str(m)+'/attack/'+str(int(m.def_frame))+'.ply'
 
 #hippo
 def hippo_wait(m):
-	m.a_frame+=time.dt*18
-	if m.a_frame > 23.9:
+	m.a_frame=min(m.a_frame+time.dt*t,23.999)
+	if m.a_frame > 23.99:
 		m.a_frame=0
 		return
 	m.model=nf+'hippo/'+str(int(m.a_frame))+'.ply'
 def hippo_dive(m):
-	m.a_frame+=time.dt*18
-	if m.a_frame > 57.9:
+	m.a_frame=min(m.a_frame+time.dt*t,57.999)
+	if m.a_frame > 57.99:
 		m.a_frame=0
 		return
 	m.model=nf+'hippo/'+str(int(m.a_frame))+'.ply'
 
 #gorilla
-gsp=30
+gp=20
 def gorilla_take(m):
-	m.anim_frame+=time.dt*20
-	if m.anim_frame > 32.9:
+	m.anim_frame=min(m.anim_frame+time.dt*gp,32.999)
+	if m.anim_frame > 32.99:
 		m.anim_frame=0
 		m.t_mode=1
 		m.throw_log()
 		return
 	m.model=nf+str(m)+'/'+str(int(m.anim_frame))+'.ply'
 def gorilla_throw(m):
-	m.t_frame+=time.dt*20
-	if m.t_frame > 10.9:
+	m.t_frame=min(m.t_frame+time.dt*gp,10.999)
+	if m.t_frame > 10.99:
 		m.t_frame=0
 		m.t_mode=0
 		return
 	m.model=nf+str(m)+'/act/'+str(int(m.t_frame))+'.ply'
 def gorilla_fall(m):
-	m.f_frame+=time.dt*20
-	if m.f_frame > 10.9:
+	m.f_frame=min(m.f_frame+time.dt*gp,10.999)
+	if m.f_frame > 10.99:
 		m.f_frame=0
 		cc.purge_instance(m)
 		return
@@ -399,6 +401,3 @@ def door_close(d):
 	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d0.ply'),delay=3/t)
 	d.door_part.collider='box'
 	d.collider='box'
-
-def warp_vortex(d):
-	print(d)
