@@ -43,9 +43,18 @@ def env_switch(idx):
 	st.day_mode=LC.day_m[idx]
 	SkyBox()
 	LC.AMBIENT_LIGHT.color=AMB_COL[st.day_mode]
-	Fog()
+	set_fog(idx)
 	if idx in [1,5]:#rain in level 1 and 5
 		RainFall()
+
+L_DST={0:(30,100),1:(8,16),2:(3,14),3:(14,20),4:(13,18),5:(8,20),6:(10,20)}
+B_DST={0:(0,0),1:(6,12),2:(4,4.5),3:(5,20),4:(8,15),5:(10,20),6:(15,30)}
+def set_fog(idx):
+	scene.fog_color=FOG_COL[st.day_mode]
+	scene.fog_density=L_DST[idx]
+	if st.bonus_round:
+		scene.fog_density=B_DST[idx]
+	del idx
 
 class SkyBox(Sky):
 	def __init__(self):
@@ -53,7 +62,12 @@ class SkyBox(Sky):
 		s.bgr='res/background/'
 		super().__init__(texture=s.bgr+'sky.jpg',color=SKY_COL[st.day_mode],unlit=False)
 		s.setting=SKY_COL[st.day_mode]
-		s.thunder_time=3
+		if st.level_index == 1:
+			Sequence(s.wood_sky,Wait(1),loop=True)()
+			return
+		if st.level_index == 5:
+			s.thunder_time=3
+			Sequence(s.weather_sky,loop=True)()
 	def thunder_bolt(self):
 		s=self
 		s.color=color.white
@@ -79,42 +93,12 @@ class SkyBox(Sky):
 			s.color=c.black
 			return
 		s.color=s.setting
-	def update(self):
-		if not st.gproc():
-			s=self
-			if st.level_index == 5:
-				s.weather_sky()
-				return
-			if st.level_index == 1:
-				if st.is_death_route:
-					s.color=c.rgb32(30,30,60)
-				else:
-					s.color=s.setting
-
-class Fog(Entity):
-	def __init__(self):
+	def wood_sky(self):
 		s=self
-		super().__init__()
-		sti=st.level_index
-		fgd=LC.fog_distance[sti]
-		s.L_DST={0:(30,fgd),1:(8,fgd),2:(3,fgd),3:(14,fgd),4:(13,fgd),5:(8,fgd),6:(15,fgd)}
-		s.B_DST={0:(0,0),1:(6,12),2:(4,4.5),3:(5,20),4:(8,15),5:(10,20),6:(15,30)}
-		scene.fog_color=FOG_COL[st.day_mode]
-		scene.fog_density=s.L_DST[sti]
-	def change_color(self):
 		if st.is_death_route:
-			scene.fog_color=c.rgb32(20,20,40)
+			s.color=c.rgb32(30,30,60)
 			return
-		scene.fog_color=FOG_COL[st.day_mode]
-	def update(self):
-		if not st.gproc():
-			s=self
-			if st.bonus_round:
-				scene.fog_density=s.B_DST[st.level_index]
-				return
-			scene.fog_density=s.L_DST[st.level_index]
-			if st.level_index == 1:
-				s.change_color()
+		s.color=s.setting
 
 class RainFall(Entity):
 	def __init__(self):
@@ -129,11 +113,10 @@ class RainFall(Entity):
 			s.sp=50
 	def refr_rain(self):
 		s=self
-		s.frm=min(s.frm+time.dt*s.sp,58.999)
-		if s.frm > 58.99:
+		s.frm=min(s.frm+time.dt*s.sp,16.1)
+		if s.frm > 16:
 			s.frm=0
-		rrt=s.tx_r+str(int(s.frm))+'.png'
-		s.texture=rrt
+		s.texture=s.tx_r+f'{str(int(s.frm))}.png'
 	def update(self):
 		if not st.gproc():
 			s=self
@@ -141,6 +124,6 @@ class RainFall(Entity):
 			s.refr_rain()
 			if LC.ACTOR.warped and LC.ACTOR.indoor <= 0:
 				s.visible=True
-				s.alpha=lerp(s.alpha,.6,ft)
+				s.alpha=lerp(s.alpha,.75,ft)
 				return
 			s.alpha=lerp(s.alpha,0,ft)

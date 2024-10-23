@@ -9,7 +9,7 @@ npc_anim={0:7,#amadillo
 		5:12,#hedgehog
 		6:14,#seal
 		7:13,#eating plant
-		8:10,#rat
+		8:8,#rat
 		9:11,#lizard
 		10:3,#scrubber
 		11:8,#mouse
@@ -50,7 +50,7 @@ def run_s(d,sp):
 def slide_stop(d,sp):
 	d.ssfr=min(d.ssfr+time.dt*sp,3.999)
 	if d.ssfr > 3.99:
-		d.ssfr=0
+		d.ssfr=3
 	d.texture=af+'slide_stop/crash.tga'
 	d.model=af+'slide_stop/'+str(int(d.ssfr))+'.ply'
 
@@ -225,7 +225,7 @@ def eat_by_plant(c):
 	invoke(lambda:cc.reset_state(c),delay=3)
 
 ## crate animation
-bT=40
+bT=50
 def bnc_animation(c):
 	invoke(lambda:setattr(c,'model',cf+'bn/0.ply'),delay=0)
 	invoke(lambda:setattr(c,'model',cf+'bn/1.ply'),delay=1/bT)
@@ -307,53 +307,62 @@ class WarpRingEffect(Entity): ## spawn animation
 
 ## npc animation
 def npc_walking(m):
-	if status.pause:
-		return
 	m.anim_frame=min(m.anim_frame+time.dt*t,npc_anim[m.vnum]+.999)
 	if m.anim_frame > npc_anim[m.vnum]+.99:
 		m.anim_frame=0
 	m.model=nf+str(m)+'/'+str(int(m.anim_frame))+'.ply'
 
-#plant
+#plant attack
+plt=nf+'eating_plant/'
 def plant_bite(m):
 	m.atk_frame=min(m.atk_frame+time.dt*t,18.999)
 	if m.atk_frame > 18.99:
 		m.atk_frame=0
-	m.texture=nf+str(m)+'/attack/plant.tga'
-	m.model=nf+str(m)+'/attack/'+str(int(m.atk_frame))+'.ply'
+	m.texture=plt+'attack/plant.tga'
+	m.model=plt+'attack/'+str(int(m.atk_frame))+'.ply'
 def plant_eat(m):
 	m.eat_frame=min(m.eat_frame+time.dt*t,30.999)
 	if m.eat_frame > 30.99:
 		m.eat_frame=0
-		m.eat=False
+		m.eat,m.atk=False,False
 		return
-	m.model=nf+str(m)+'/eat/'+str(int(m.eat_frame))+'.ply'
+	m.model=plt+'eat/'+str(int(m.eat_frame))+'.ply'
 
-#hedge
+#hedge def
+hdg=nf+'hedgehog/'
 def hedge_defend(m):
 	m.def_frame=min(m.def_frame+time.dt*t,6.999)
-	m.def_frame+=time.dt*t
 	if m.def_frame > 6.99:
 		m.def_frame=0
-	m.texture=nf+str(m)+'/attack/attack.tga'
-	m.model=nf+str(m)+'/attack/'+str(int(m.def_frame))+'.ply'
+	m.texture=hdg+'attack/attack.tga'
+	m.model=hdg+'attack/'+str(int(m.def_frame))+'.ply'
+
+#rat idle
+rti=nf+'rat/idle/'
+def rat_idle(m):
+	m.idl_frm=min(m.idl_frm+time.dt*t,10.999)
+	if m.idl_frm > 10.99:
+		m.idl_frm=0
+	m.model=rti+str(int(m.idl_frm))+'.ply'
 
 #hippo
+hpo=nf+'hippo/'
 def hippo_wait(m):
 	m.a_frame=min(m.a_frame+time.dt*t,23.999)
 	if m.a_frame > 23.99:
 		m.a_frame=0
 		return
-	m.model=nf+'hippo/'+str(int(m.a_frame))+'.ply'
+	m.model=hpo+str(int(m.a_frame))+'.ply'
 def hippo_dive(m):
 	m.a_frame=min(m.a_frame+time.dt*t,57.999)
 	if m.a_frame > 57.99:
 		m.a_frame=0
 		return
-	m.model=nf+'hippo/'+str(int(m.a_frame))+'.ply'
+	m.model=hpo+str(int(m.a_frame))+'.ply'
 
 #gorilla
 gp=20
+go=nf+'gorilla/'
 def gorilla_take(m):
 	m.anim_frame=min(m.anim_frame+time.dt*gp,32.999)
 	if m.anim_frame > 32.99:
@@ -361,21 +370,21 @@ def gorilla_take(m):
 		m.t_mode=1
 		m.throw_log()
 		return
-	m.model=nf+str(m)+'/'+str(int(m.anim_frame))+'.ply'
+	m.model=go+str(int(m.anim_frame))+'.ply'
 def gorilla_throw(m):
 	m.t_frame=min(m.t_frame+time.dt*gp,10.999)
 	if m.t_frame > 10.99:
 		m.t_frame=0
 		m.t_mode=0
 		return
-	m.model=nf+str(m)+'/act/'+str(int(m.t_frame))+'.ply'
+	m.model=go+'/act/'+str(int(m.t_frame))+'.ply'
 def gorilla_fall(m):
 	m.f_frame=min(m.f_frame+time.dt*gp,10.999)
 	if m.f_frame > 10.99:
 		m.f_frame=0
 		cc.purge_instance(m)
 		return
-	m.model=nf+str(m)+'/fall/'+str(int(m.f_frame))+'.ply'
+	m.model=go+'/fall/'+str(int(m.f_frame))+'.ply'
 
 ## object animations
 def door_open(d):
@@ -389,7 +398,6 @@ def door_open(d):
 	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d3.ply'),delay=3/t)
 	d.door_part.collider=None
 	d.collider=None
-
 def door_close(d):
 	invoke(lambda:setattr(d,'model',d.dPA+'u3.ply'),delay=0/t)
 	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d3.ply'),delay=0/t)

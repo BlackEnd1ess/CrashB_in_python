@@ -40,3 +40,31 @@
 - Rain color to white, to improve visual frames
 - LODSystem disable all crates without switch states or refresh functions, instead of only hiding it
 - Fog Distance decrased by 2 in each level
+
+#17.10.2024
+- removed unlit flag from npc's
+- backface culling disabled on models
+
+#20.10.2024
+- changed LOD and c_shield function
+- Credits after solve level 5 and 5 collected crystals
+- developer game start and debugging info from player (settings DEBG -> True)
+- new texture on player shadow
+- player shadow hide on gem platform
+
+#22.10.2024
+- changed Fog refresh: trigger by enter level/bonus
+- dev keybind input by toggle (settings.debg -> True)
+- moss platform and NPC's have better custom options like platform speed in arguments.
+- fixxed TNT sound, where plays on already destroyed crates by akuaku
+- on npc jump, dust effect appears, enemy disables without shrinking phase.
+- npc vulture rotate to player in x direction
+- npc rat have now options between idle and walking + new animation frames
+- circle move can optimized with NPC mov range argument
+- npc move direction possible in x,y,z by set m direc to 0-2
+- changed name for level 1 and level 3
+
+#23.10.2024
+- changed sewer_tunnel.collider to simple invisble walls
+- level 3 moss platforms moving slower
+- fixxed fly time in new npc settings.

@@ -27,8 +27,8 @@ def load_interface():
 
 ## Interface 2D Animations
 def wmp_anim(w):
-	w.frm=min(w.frm+time.dt*18,13.99)
-	if w.frm > 13.98:
+	w.frm=min(w.frm+time.dt*18,13.999)
+	if w.frm > 13.99:
 		w.frm=0
 	w.texture=w_pa+str(int(w.frm))+'.png'
 
@@ -394,7 +394,7 @@ class LoadingScreen(Entity):
 		super().__init__(model=q,color=color.black,scale=(16,10),visible=False,parent=CU,z=-1,eternal=True)
 		s.ltext=Text('LOADING...',font=_fnt,scale=3.5,position=(-.15,.1,-1.1),color=color.orange,visible=False,parent=CU,eternal=True)
 		s.lname=Text('',font=_fnt,scale=2,position=(-.25,-.05,-1.1),color=color.azure,visible=False,parent=CU,eternal=True)
-		s.uds={0:(-.21),1:(-.25),2:(-.25),3:(-.2),4:(-.25),5:(-.185),6:(-.2)}
+		s.uds={0:(-.21),1:(-.23),2:(-.25),3:(-.25),4:(-.25),5:(-.175),6:(-.2)}
 	def update(self):
 		s=self
 		si=st.level_index
@@ -751,3 +751,15 @@ class TrialTimer(Entity):
 				if not s.fin:
 					s.fin=True
 					s.trial_fail()
+
+class CreditText(Entity):
+	def __init__(self,t,d):
+		s=self
+		super().__init__()
+		s.ctext=Text(t,font=_fnt,scale=2.5,parent=CU,color=color.orange,position=(-.7,-.6,-.1))
+		s.wait=True
+		invoke(lambda:setattr(s,'wait',False),delay=d/2)
+	def update(self):
+		s=self
+		if not s.wait:
+			s.ctext.y+=time.dt/10

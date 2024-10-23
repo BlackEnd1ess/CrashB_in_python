@@ -1,16 +1,19 @@
+import settings,ui,status,level
 from ursina import *
-import settings,ui
 
-app=Ursina(title='Crezsh Blendikut',icon='res/cb.ico',vsync=True)
+app=Ursina(title='Cresh B',icon='res/cb.ico',vsync=True)
 def game():
 	settings.load()
+	if settings.debg:
+		print('SELECT LEVEL: type level number')
+		iv=input('')
+		dev_start(int(iv))
+		return
 	ui.ProjectInfo()
-	#dev_start(6)
 
-#def dev_start(idx):
-#	import status,level
-#	ui.LoadingScreen()
-#	status.level_index=idx
-#	level.main_instance(idx)
+def dev_start(idx):
+	ui.LoadingScreen()
+	status.level_index=idx
+	level.main_instance(idx)
 game()
 app.run()

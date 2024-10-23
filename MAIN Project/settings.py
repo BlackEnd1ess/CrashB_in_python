@@ -1,5 +1,5 @@
 from ursina.shaders import *
-import _core,environment,os
+import environment,os
 from ursina import *
 
 debg=False
@@ -15,9 +15,14 @@ BCK_KEY='s'#		backward
 RGT_KEY='d'#		right
 LFT_KEY='a'#		left
 
+DEV_WARP='u'#		dev warp
+DEV_INFO='b'#		map tools info
+DEV_ECAM='e'#		edior camera
+
+
 ## global volume
-MUSIC_VOLUME=1
-SFX_VOLUME=1
+MUSIC_VOLUME=.5
+SFX_VOLUME=.5
 
 ## window
 def load():

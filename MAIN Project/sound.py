@@ -93,8 +93,13 @@ SND_CRT={0:'steel',
 		13:'air',
 		14:'aku'}
 def crate_audio(ID,pit=1):
+	if ID in [2,11]:
+		if st.block_audio:
+			return
+		st.block_audio=True
 	ca=Audio(SN+SND_CRT[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME*2)
 	cc.purge_instance(ca)
+	invoke(lambda:setattr(st,'block_audio',False),delay=.1)
 
 ## NPC SFX
 SND_NPC={0:'plant_bite',

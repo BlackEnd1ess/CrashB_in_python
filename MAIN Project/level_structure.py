@@ -1,4 +1,4 @@
-import objects,map_tools,crate,npc,status,item
+import objects,map_tools,crate,npc,status
 from ursina import *
 
 mt=map_tools
@@ -11,34 +11,29 @@ n=npc
 def dev_object():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass',color=color.green,visible=True)
 	o.StartRoom(pos=(0,0,-32.2))
-	for gv in range(0,6):
-		item.GemStone(pos=(1+gv/2,.6,-23),c=gv)
-		if gv > 0:
-			o.GemPlatform(pos=(1.5+gv,.3,-14),t=gv)
-			o.PseudoGemPlatform(pos=(1.5+gv,.3,-13),t=gv)
 def dev_crate():
-	mt.crate_row(ID=7,POS=(2,.16,-24),CNT=2,WAY=0)
-	mt.crate_row(ID=1,POS=(2,2.5,-24),CNT=1,WAY=0)
-	mt.crate_row(ID=1,POS=(2.32,2.7,-24),CNT=1,WAY=0)
-	mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,3,3])
+	mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,1,1])
+	mt.crate_block(ID=0,POS=(-7.5,.16,-18+.32),CNT=[3,2,2])
+	mt.crate_block(ID=0,POS=(-7.5,.16,-18+.64),CNT=[3,1,3])
 	mt.crate_block(ID=1,POS=(-6.5,.16,-18),CNT=[3,3,3])
 	mt.crate_block(ID=2,POS=(-5.5,.16,-18),CNT=[3,3,2])
 	mt.crate_block(ID=3,POS=(-4.5,.16,-18),CNT=[3,3,1])
-	mt.crate_block(ID=4,POS=(-3.5,.16,-18),CNT=[3,1,1])
+	mt.crate_block(ID=4,POS=(-3.5,.16,-18),CNT=[3,3,1])
 	mt.crate_block(ID=5,POS=(-2.5,.16,-18),CNT=[3,1,1])
 	mt.crate_block(ID=6,POS=(-1.5+.32,.16,-18),CNT=[1,1,1])
 	mt.crate_block(ID=7,POS=(-.5,.16,-18),CNT=[3,3,1])
 	mt.crate_block(ID=8,POS=(.5,.16,-18),CNT=[3,3,1])
 	mt.crate_block(ID=9,POS=(1.5+.32,.16,-18),CNT=[1,1,1])
 	mt.crate_block(ID=10,POS=(2.5+.32,.16,-18),CNT=[1,1,1])
-	mt.crate_block(ID=11,POS=(3.5+.32,.16,-18),CNT=[1,1,1])
-	mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,1])
-	mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,1])
+	mt.crate_block(ID=11,POS=(3.5+.32,.16,-18),CNT=[1,1,2])
+	mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,4])
+	mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,3])
+	mt.crate_block(ID=14,POS=(6.5,.16,-18),CNT=[3,3,3])
+	mt.crate_row(ID=1,POS=(0,.16,-25),CNT=7,WAY=2)
 def dev_wumpa():
 	mt.wumpa_row(POS=(0,.3,-20),CNT=20,WAY=0)
 def dev_npc():
-	for np in range(15):
-		n.spawn(mID=np,pos=(-7+np,0,0),mDirec=1)
+	n.spawn(ID=0,POS=(0,0,-10))
 
 #### LEVEL1 STUCT ####
 def lv1_object():
@@ -72,9 +67,9 @@ def lv1_object():
 	o.TreeScene(pos=(0,1.7,-26.4),sca=.0175)
 	o.TreeScene(pos=(-1.4,1.5,10.6),sca=.02)
 	o.spawn_tree_wall(pos=(-3.7,2,-63),cnt=30,d=0)
-	o.spawn_tree_wall(pos=(-5.3,2.4,-62),cnt=30,d=0)
-	o.spawn_tree_wall(pos=(6.3,2,-62),cnt=30,d=1)
-	o.spawn_tree_wall(pos=(4,2,-63),cnt=30,d=1)
+	o.spawn_tree_wall(pos=(-5.3,1.8,-62),cnt=30,d=0)
+	o.spawn_tree_wall(pos=(3.8,2,-63),cnt=30,d=1)
+	o.spawn_tree_wall(pos=(5.4,1.8,-62),cnt=30,d=1)
 	o.bush(pos=(.37,1.3,-26.5),sca=2,c=color.orange)
 	o.bush(pos=(1.5,1.4,-14.2),sca=2,c=cG)
 	o.bush(pos=(-1.5,1.4,-14.2),sca=2,c=color.orange)
@@ -145,7 +140,7 @@ def lv1_object():
 	o.MossPlatform(p=(0,.5,13.5),ptm=0)
 	o.MossPlatform(p=(0,.5,15),ptm=0)
 	o.Corridor(pos=(0,.975,-13))
-	o.EndRoom(pos=(1,2.4,28.2),c=color.rgb32(80,100,80))
+	o.EndRoom(pos=(1,2.4,28.2),c=color.rgb32(160,180,160))
 def lv1_crate():
 	CRP=1.16
 	if not 4 in status.COLOR_GEM:
@@ -189,9 +184,9 @@ def lv1_wumpa():
 	mt.wumpa_plane(POS=(1.3,wu_h,-1.5),CNT=[3,3])
 	mt.wumpa_plane(POS=(0,wu_h,16.3),CNT=[3,3])
 def lv1_npc():
-	n.spawn(mID=0,pos=(0,1.1,-52),mDirec=0)
-	n.spawn(mID=0,pos=(0,1.1,-38),mDirec=0)
-	n.spawn(mID=1,pos=(0,1.1,-15),mDirec=0)
+	n.spawn(ID=0,POS=(0,1.1,-52))
+	n.spawn(ID=0,POS=(0,1.1,-38))
+	n.spawn(ID=1,POS=(0,1.1,-15))
 
 #### LEVEL2 STUCT ####
 def lv2_object():
@@ -319,7 +314,7 @@ def lv2_object():
 	for sna in range(2):
 		o.SnowWall(pos=(20+sna*5.4,5,28))
 		o.SnowWall(pos=(20+sna*5.4,8.2,28))
-	o.EndRoom(pos=(43,8,44),c=color.rgb32(80,80,120))
+	o.EndRoom(pos=(43,8,44),c=color.rgb32(160,160,180))
 def lv2_crate():
 	h1=.75+.16
 	h2=.925+.16
@@ -380,10 +375,10 @@ def lv2_wumpa():
 	mt.wumpa_double_row(POS=(25,5.6,27),CNT=16)
 	mt.wumpa_wall(POS=(22.7,5.55,18.9),CNT=[2,3])
 def lv2_npc():
-	n.spawn(pos=(23,5.375,24.3),mID=4,mDirec=1)
-	n.spawn(pos=(0,.92,1),mID=5,mDirec=0)
-	n.spawn(pos=(14.5,2.65,2.4),mID=6,mDirec=0)
-	n.spawn(pos=(31.7,5.35,26.9),mID=5,mDirec=0)
+	n.spawn(ID=4,POS=(23,5.375,24.3),DRC=2)
+	n.spawn(ID=5,POS=(0,.92,1))
+	n.spawn(ID=6,POS=(14.5,2.65,2.4))
+	n.spawn(ID=5,POS=(31.7,5.35,26.9))
 
 #### LEVEL3 STUCT ####
 def lv3_object():
@@ -409,7 +404,8 @@ def lv3_object():
 	o.WoodStage(pos=(0,.2,-10))
 	o.WoodStage(pos=(0,2,60))
 	#platforms
-	o.MossPlatform(p=(0,-.3,-24.5),ptm=3)
+	o.MossPlatform(p=(0,-.3,-24.8),ptm=2)
+	o.MossPlatform(p=(0,-.3,-23.25),ptm=1)
 	o.MossPlatform(p=(0,-.1,-1.3),ptm=0)
 	o.MossPlatform(p=(0,.5,0),ptm=0)
 	o.MossPlatform(p=(0,-.3,-7),ptm=0)
@@ -545,14 +541,14 @@ def lv3_wumpa():
 	mt.wumpa_plane(POS=(-.2,.15,-5.2),CNT=[2,3])
 	mt.wumpa_plane(POS=(-.3,1.25,40.5),CNT=[5,5])
 def lv3_npc():
-	n.Hippo(pos=(0,1.8,64.7))
-	n.Hippo(pos=(0,1.8,63))
-	n.spawn(mID=7,pos=(-.85,1.05,29),mDirec=0)
-	n.spawn(mID=7,pos=(.85,1.05,25.8),mDirec=0)
-	n.spawn(mID=7,pos=(-.85,1.05,23),mDirec=0)
-	n.spawn(mID=7,pos=(0,1.05,41.4),mDirec=0)
-	n.spawn(mID=7,pos=(0,1.95,74.1),mDirec=0)
-	n.spawn(mID=2,pos=(0,1.05,4.2),mDirec=0)
+	n.Hippo(POS=(0,1.8,64.7))
+	n.Hippo(POS=(0,1.8,63))
+	n.spawn(ID=7,POS=(-.85,1.05,29))
+	n.spawn(ID=7,POS=(.85,1.05,25.8))
+	n.spawn(ID=7,POS=(-.85,1.05,23))
+	n.spawn(ID=7,POS=(0,1.05,41.4))
+	n.spawn(ID=7,POS=(0,1.95,74.1))
+	n.spawn(ID=2,POS=(0,1.05,4.2))
 
 #### LEVEL4 STUCT ####
 def lv4_object():
@@ -566,7 +562,7 @@ def lv4_object():
 	o.EletricWater(pos=(14.5,3.5,83),sca=(8,64),ID=1)
 	o.Water(pos=(10,1,40),sca=(20,23),c=color.rgb32(100,255,0),a=1)
 	o.Water(pos=(0,-1,6),sca=(30,10),c=color.rgb32(100,255,0),a=1)
-	o.EndRoom(pos=(15.65,5.5,78.5),c=color.rgb32(180,180,180))
+	o.EndRoom(pos=(15.65,5.5,78.5),c=color.rgb32(200,200,200))
 	o.SewerTunnel(pos=(0,.4,-53))
 	o.SewerTunnel(pos=(0,.4,-44))
 	o.SewerTunnel(pos=(0,.4,-35))
@@ -750,18 +746,18 @@ def lv4_wumpa():
 	mt.wumpa_plane(POS=(4.0,1.95,39.0),CNT=[7,7])
 	mt.wumpa_plane(POS=(4.5,1.95,42.5),CNT=[4,4])
 def lv4_npc():
-	n.spawn(pos=(0,.25,-53.5),mID=12,mDirec=0)
-	n.spawn(pos=(0,.25,-35.5),mID=12,mDirec=0)
-	n.spawn(pos=(0,.25,-16),mID=12,mDirec=0)
-	n.spawn(pos=(.75,.75,8),mID=11,mDirec=0,ro_mode=0)
-	n.spawn(pos=(5.2,2.6,17),mID=10,mDirec=0,ro_mode=2)
-	n.spawn(pos=(5.3,1.75,10.1),mID=11,mDirec=1,ro_mode=0)
-	n.spawn(pos=(14.5,3.7,61.5),mID=12,mDirec=0)
-	n.spawn(pos=(14.5,3.75,52),mID=10,mDirec=0,ro_mode=1)
-	n.spawn(pos=(4.9,1.75,36),mID=11,mDirec=0,ro_mode=0)
-	n.spawn(pos=(4.9,1.75,40),mID=11,mDirec=0,ro_mode=1)
-	n.spawn(pos=(5,2,12.5),mID=13,mDirec=0)
-	n.spawn(pos=(5.5,2,12.5),mID=13,mDirec=0)
+	n.spawn(ID=12,POS=(0,.25,-53.5))
+	n.spawn(ID=12,POS=(0,.25,-35.5))
+	n.spawn(ID=12,POS=(0,.25,-16))
+	n.spawn(ID=11,POS=(.75,.75,8),RTYP=0)
+	n.spawn(ID=10,POS=(5.2,2.6,17),RTYP=2)
+	n.spawn(ID=11,POS=(5.3,1.75,10.1),DRC=2,RTYP=0)
+	n.spawn(ID=12,POS=(14.5,3.7,61.5))
+	n.spawn(ID=10,POS=(14.5,3.75,52),RTYP=1)
+	n.spawn(ID=11,POS=(4.9,1.75,36),RTYP=0)
+	n.spawn(ID=11,POS=(4.9,1.75,40),RTYP=1)
+	n.spawn(ID=13,POS=(5,2,12.5),DRC=1)
+	n.spawn(ID=13,POS=(5.5,2,12.5),DRC=1)
 
 #### LEVEL5 STUCT ####
 def lv5_object():
@@ -928,7 +924,7 @@ def lv5_object():
 	o.RuinRuins(pos=(16,-.8,-24),ro_y=90,typ=3)
 	o.RuinRuins(pos=(16,-.8,-9),ro_y=90,typ=3)
 	o.RuinRuins(pos=(9,-1,-9),ro_y=90,typ=3)
-	o.EndRoom(pos=(56.5,2.8,31.6),c=color.rgb32(180,180,180))
+	o.EndRoom(pos=(56.5,2.8,31.6),c=color.rgb32(180,200,200))
 def lv5_crate():
 	mt.crate_row(ID=2,POS=(5.3,.36,-56),CNT=2,WAY=2)
 	mt.crate_row(ID=4,POS=(5.3+.32,.36,-56),CNT=1,WAY=2)
@@ -1009,14 +1005,14 @@ def lv5_wumpa():
 	mt.wumpa_row(POS=(49.4,1.4,5.5),CNT=8,WAY=0)
 	mt.wumpa_row(POS=(52.4,1.4,21),CNT=8,WAY=0)
 def lv5_npc():
-	n.spawn(mID=8,pos=(2.7,.2,-50.5),mDirec=0)
-	n.spawn(mID=8,pos=(2.7,.2,-35.7),mDirec=0)
-	n.spawn(mID=8,pos=(6.5,.25,-32.9),mDirec=0)
-	n.spawn(mID=8,pos=(11.9,.2,-23.5),mDirec=0)
-	n.spawn(mID=9,pos=(2.7,.2,-38.8),mDirec=0)
-	n.spawn(mID=9,pos=(24.2,.2,-1),mDirec=0)
-	n.spawn(mID=8,pos=(13.1,.2,-1),mDirec=0)
-	n.spawn(mID=9,pos=(34.5,1.1,6.5),mDirec=1)
-	n.spawn(mID=9,pos=(39,1.1,6.5),mDirec=1)
-	n.spawn(mID=8,pos=(53.2,1.1,8.3),mDirec=0)
-	n.spawn(mID=8,pos=(55.4,1.1,24),mDirec=0)
+	n.spawn(ID=8,POS=(2.7,.2,-50.5),CMV=False)
+	n.spawn(ID=8,POS=(2.7,.2,-35.7),CMV=False)
+	n.spawn(ID=8,POS=(6.5,.25,-32.9),CMV=False)
+	n.spawn(ID=8,POS=(11.9,.2,-23.5),CMV=False)
+	n.spawn(ID=9,POS=(2.7,.2,-38.8))
+	n.spawn(ID=8,POS=(24.2,.2,-1),DRC=0,CMV=True)
+	n.spawn(ID=8,POS=(13.1,.2,-1),CMV=False)
+	n.spawn(ID=9,POS=(34.5,1.1,6.5),DRC=2)
+	n.spawn(ID=9,POS=(39,1.1,6.5),DRC=2)
+	n.spawn(ID=8,POS=(53.2,1.1,8.3),CMV=False)
+	n.spawn(ID=8,POS=(55.4,1.1,24),DRC=2,CMV=True)

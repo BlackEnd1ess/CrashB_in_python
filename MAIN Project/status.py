@@ -50,6 +50,7 @@ show_gems=0
 ## level processing
 LV_CLEAR_PROCESS=False
 LEVEL_CLEAN=False
+block_audio=False
 game_over=False
 
 level_crystal=False
@@ -64,15 +65,12 @@ gem_path_solved=False
 is_death_route=False
 is_time_trial=False
 
-b_audio=False
-e_audio=False
-n_audio=False
-
 is_invincible=False
 wait_screen=False
 death_event=False
 aku_exist=False
 gem_death=False
+crd_seen=False
 loading=False
 pause=False
 

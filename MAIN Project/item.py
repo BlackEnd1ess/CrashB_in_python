@@ -30,23 +30,21 @@ class WumpaFruit(Entity):
 		s.frm=0
 	def destroy(self):
 		cc.purge_instance(self)
-	def p_follow(self):
-		s=self
-		if distance(s,LC.ACTOR) < .6:
-			s.follow=True
 	def collect(self):
 		s=self
 		cc.wumpa_count(1)
 		s.destroy()
 	def update(self):
-		if not st.gproc():
-			s=self
-			if s.follow:
-				q=LC.ACTOR
-				s.position=lerp(s.position,(q.x,q.y+.2,q.z),time.dt*16)
-				return
-			ui.wmp_anim(s)
-			s.p_follow()
+		if st.gproc():
+			return
+		s=self
+		if s.follow:
+			q=LC.ACTOR
+			s.position=lerp(s.position,(q.x,q.y+.2,q.z),time.dt*16)
+			return
+		ui.wmp_anim(s)
+		if (distance(s,LC.ACTOR) < .6):
+			s.follow=True
 
 class ExtraLive(Entity):
 	def __init__(self,pos):
@@ -80,7 +78,7 @@ class GemStone(Entity):
 			ge=i_path+'gemstone/gem1'
 		elif c == 3:
 			ge=i_path+'gemstone/gem2'
-		super().__init__(model=ge+'.ply',texture=ge+'.tga',name='gems',scale=.0011,position=pos,rotation_x=-90,collider=b,double_sided=False)
+		super().__init__(model=ge+'.ply',texture=ge+'.tga',name='gems',scale=.0011,position=pos,rotation_x=-90,collider=b)
 		s.gemID=c
 		s.gem_visual()
 		if c != 0:
@@ -180,7 +178,7 @@ class EnergyCrystal(Entity):
 class TrialClock(Entity):
 	def __init__(self,pos):
 		Clk='clock/clock'
-		super().__init__(model=i_path+Clk+'.obj',texture=i_path+Clk+'.png',position=pos,scale=.003,unlit=False,double_sided=True)
+		super().__init__(model=i_path+Clk+'.obj',texture=i_path+Clk+'.png',position=pos,scale=.003)
 	def collect(self):
 		cc.purge_instance(self)
 		status.is_time_trial=True
@@ -190,7 +188,7 @@ class TrialClock(Entity):
 class TimeRelic(Entity):
 	def __init__(self,pos,t):
 		tc={0:color.azure,1:color.gold,2:color.rgb32(150,150,180)}
-		super().__init__(model=i_path+'relic/relic.ply',texture=i_path+'relic/relic.tga',scale=0.004,position=pos,rotation_x=-90,color=tc[t],unlit=False)
+		super().__init__(model=i_path+'relic/relic.ply',texture=i_path+'relic/relic.tga',scale=0.004,position=pos,rotation_x=-90,color=tc[t])
 	def update(self):
 		if not st.gproc():
 			self.rotation_y-=time.dt*70

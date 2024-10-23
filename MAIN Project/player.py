@@ -12,54 +12,24 @@ LC=_loc
 cHr='res/pc/'
 class pShadow(Entity):## shadow point
 	def __init__(self):
-		super().__init__(model=Circle(16,thickness=1,radius=.09),color=color.black,rotation_x=90,alpha=.6,origin_z=.01,collider='box')
+		super().__init__(model='quad',texture=cHr+'shdw.png',color=color.black,rotation_x=90,scale=.25,origin_z=.01,alpha=.9,collider='box')
 		_loc.shdw=self
 	def flw_p(self):
 		s=self
 		ta=LC.ACTOR
 		s.x=ta.x
 		s.z=ta.z
+		s.visible=not(ta.freezed)
 		vSH=raycast(ta.world_position,-Vec3(0,1,0),distance=2,ignore=[s,ta],debug=False)
 		if vSH.hit:
 			if not (str(vSH.entity) in LC.item_lst+LC.trigger_lst):
 				s.y=vSH.world_point.y
 			return
-		if (ta.fall_time <= 0 and ta.landed):
+		if ta.landed and not (ta.falling or ta.jumping):
 			s.y=(ta.y)
 	def update(self):
 		if not st.gproc():
 			self.flw_p()
-
-class pShield(Entity):
-	def __init__(self):
-		super().__init__()
-		self.wait=.3
-	def refr_func(self):
-		q=LC.ACTOR
-		for rf in scene.entities:
-			if distance(q,rf) < 2:
-				if cc.is_crate(rf) and rf.collider != None:
-					if not (rf.vnum in [0,8]):
-						if rf.vnum == 11:
-							rf.empty_destroy()
-						if rf.vnum == 14:
-							rf.c_destroy()
-						if not (rf.vnum in [9,10] and rf.activ):
-							rf.destroy()
-				if cc.is_enemie(rf):
-					if not rf.vnum == 13:
-						cc.bash_enemie(e=rf,h=q)
-				if rf.name in LC.item_lst:
-					rf.collect()
-	def update(self):
-		if st.gproc():
-			return
-		if st.aku_hit > 2:
-			s=self
-			s.wait=max(s.wait-time.dt,0)
-			if s.wait <= 0:
-				s.wait=.4
-				s.refr_func()
 
 class CrashB(Entity):
 	def __init__(self,pos):
@@ -68,8 +38,9 @@ class CrashB(Entity):
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(200,200,600))
 		cc.set_val(s)
 		an.WarpRingEffect(pos=s.position)
+		Sequence(cc.c_shield,Wait(.25),loop=True)()
+		Sequence(cc.c_attack,Wait(.1),loop=True)()
 		pShadow()
-		pShield()
 		s.KEY_ACT={
 				sg.MNU_KEY:lambda:cc.game_pause(),
 				sg.JMP_KEY:lambda:s.check_jump(),
@@ -77,18 +48,22 @@ class CrashB(Entity):
 				sg.ATK_KEY:lambda:s.spin_attack(),
 				sg.BLY_KEY:lambda:s.belly_smash(),
 				sg.FWD_KEY:lambda:setattr(s,'CMS',3.2),
-				sg.BCK_KEY:lambda:setattr(s,'CMS',4.2)
-				#dev inp
-				#'u':lambda:setattr(s,'position',(21.4,7,7.7)),
-				#'b':lambda:map_tools.pos_info(s),
-				#'e':lambda:EditorCamera()
-				}
+				sg.BCK_KEY:lambda:setattr(s,'CMS',4.2)}
+		if sg.debg:
+			cc.PlayerDBG()
+			s.dev_act={
+					sg.DEV_WARP:lambda:setattr(s,'position',(0,0,0)),
+					sg.DEV_INFO:lambda:map_tools.pos_info(s),
+					sg.DEV_ECAM:lambda:EditorCamera()}
 	def input(self,key):
 		s=self
 		if st.p_rst(s):
 			return
 		if key in s.KEY_ACT:
 			s.KEY_ACT[key]()
+		if sg.debg:
+			if key in s.dev_act:
+				s.dev_act[key]()
 	def belly_smash(self):
 		s=self
 		if s.jumping or not s.landed:
@@ -97,15 +72,17 @@ class CrashB(Entity):
 				s.landing=False
 				s.jumping=False
 				s.is_flip=False
-				s.animate_y(s.y+.4,.3)
+				s.animate_y(s.y+.45,.2)
 	def spin_attack(self):
 		s=self
-		if not s.is_attack:
+		if not (s.is_attack or s.atk_ctm):
+			s.atk_ctm=True
 			s.is_attack=True
 			s.standup=False
 			s.is_landing=False
 			sn.pc_audio(ID=3)
-			invoke(lambda:setattr(s,'is_attack',False),delay=.6)
+			invoke(lambda:setattr(s,'is_attack',False),delay=.5)
+			invoke(lambda:setattr(s,'atk_ctm',False),delay=.75)
 			return
 		sn.pc_audio(ID=4)
 	def move(self):
@@ -122,7 +99,7 @@ class CrashB(Entity):
 			me=mc.entity
 			mn=str(me)
 			if not mc or (mc and mn in LC.item_lst+LC.trigger_lst):
-				s.position=lerp(s.position,(s.position+s.direc),time.dt*s.move_speed)
+				s.position+=mvD*(time.dt*s.move_speed)
 			if (mn == 'fthr'):
 				cc.get_damage(s,rsn=3)
 			if (cc.is_crate(me) and me.vnum == 12):
@@ -138,7 +115,7 @@ class CrashB(Entity):
 		if not s.landed:
 			return
 		if s.is_slippery:
-			an.run_s(s,sp=5)
+			an.run_s(s,sp=14)
 		else:
 			if s.is_landing:
 				s.is_landing=False
@@ -174,14 +151,14 @@ class CrashB(Entity):
 		if s.walking:
 			s.is_flip=True
 		if not s.is_flip:
-			an.jup(s,sp=20)
+			an.jup(s,sp=16)
 		if (s.y >= s.vpos+hgt[kt]):
 			s.space_time=0
 			s.jumping=False
 			return
 	def check_jump(self):
 		s=self
-		if s.landed and not s.jumping:
+		if s.landed and not (s.jumping or s.falling):
 			sn.pc_audio(ID=1)
 			s.jump_typ(t=1)
 	def anim_fall(self):
@@ -224,13 +201,13 @@ class CrashB(Entity):
 			return
 		if (s.landed and s.is_landing) and not (s.walking or s.jumping or s.is_attack):
 			if s.b_smash:
-				an.belly_land(s,sp=14)
+				an.belly_land(s,sp=16)
 			else:
 				an.land(s,sp=18)
 			return
 		if st.p_idle(s) or self.freezed:
 			if s.is_slippery:
-				an.slide_stop(s,sp=8)
+				an.slide_stop(s,sp=16)
 			else:
 				an.idle(s,sp=18)
 			return
@@ -254,8 +231,6 @@ class CrashB(Entity):
 			s.jump()
 		if s.b_smash:
 			cc.c_smash(s)
-		if s.is_attack:
-			cc.c_attack(s)
 		if held_keys[settings.JMP_KEY]:
 			s.space_time+=time.dt/2
 	def update(self):

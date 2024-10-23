@@ -22,6 +22,17 @@ class Sparkle(Entity):
 			if s.scale_x <= 0:
 				cc.purge_instance(s)
 
+class JumpDust(Entity):
+	def __init__(self,pos):
+		super().__init__(model='quad',texture=ef+'fire_ball.png',position=pos,scale=.1,color=color.gray)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.scale+=(time.dt,time.dt)
+		if s.scale_x > .6:
+			cc.purge_instance(s)
+
 class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
 		s=self

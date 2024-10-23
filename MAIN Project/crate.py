@@ -41,22 +41,19 @@ def place_crate(p,ID,m=0,l=1,pse=None,tm=None):
 
 def destroy_event(c):
 	c.collider=None
-	c.hide()
+	sn.crate_audio(ID=2)
 	if c.vnum in [11,12]:
 		explosion(cr=c)
+	if c.visible:
+		animation.CrateBreak(cr=c)
 	if st.bonus_round:
 		st.crate_bonus+=1
 	else:
-		if not c.vnum in [15,16]:
+		if c.vnum != 16:
 			st.crate_to_sv+=1
 			st.crate_count+=1
 			st.show_crates=5
-	if not st.b_audio:
-		st.b_audio=True
-		sn.crate_audio(ID=2)
-		invoke(cc.reset_audio,delay=.1)
 	cc.check_crates_over(c)
-	animation.CrateBreak(cr=c)
 	cc.purge_instance(c)
 
 def block_destroy(c):
@@ -76,26 +73,23 @@ def spawn_ico(c):
 	invoke(lambda:cc.purge_instance(ico),delay=3)
 
 def explosion(cr):
-	Fireball(C=cr)
-	if not st.e_audio:
-		st.e_audio=True
-		sn.crate_audio(ID=10)
-	if cr.vnum == 12 and not st.n_audio:
-		st.n_audio=True
-		invoke(lambda:sn.crate_audio(ID=11,pit=1.9),delay=.1)
-	invoke(cc.reset_audio,delay=.2)
-	for exR in scene.entities[:]:
-		if distance(cr,exR) < 1 and exR.collider != None:
-			if cc.is_crate(exR):
-				if exR.vnum in [3,11]:
-					exR.empty_destroy()
-				else:
-					exR.destroy()
-			if cc.is_enemie(exR):
-				if not exR.is_hitten:
-					cc.bash_enemie(e=exR,h=cr)
-			if exR == LC.ACTOR:
-				cc.get_damage(exR,rsn=3)
+	if cr.visible:
+		Fireball(C=cr)
+	sn.crate_audio(ID=10)
+	if cr.vnum == 12:
+		invoke(lambda:sn.crate_audio(ID=11,pit=1.4),delay=.1)
+	rk=[tt for tt in scene.entities if (distance(cr,tt) < 1)]
+	for exR in rk:
+		if cc.is_crate(exR) and exR.collider:
+			if exR.vnum in [3,11]:
+				exR.empty_destroy()
+			else:
+				exR.destroy()
+		if cc.is_enemie(exR):
+			if not exR.is_hitten:
+				cc.bash_enemie(e=exR,h=cr)
+		if exR == LC.ACTOR:
+			cc.get_damage(exR,rsn=3)
 
 ##Crate Logics
 class Iron(Entity):
@@ -289,9 +283,10 @@ class SwitchNitro(Entity):
 			s.texture=pp+'0.tga'
 			spawn_ico(s)
 			st.C_RESET.append(s)
-			for ni in scene.entities[:]:
-				if isinstance(ni,Nitro) and ni.collider != None:
-					ni.destroy()
+			ni=[nt for nt in scene.entities if (isinstance(nt,Nitro))]
+			for nd in ni:
+				if nd.collider:
+					nd.destroy()
 
 class TNT(Entity):
 	def __init__(self,pos,pse):
@@ -307,9 +302,9 @@ class TNT(Entity):
 		s=self
 		if not s.activ:
 			s.activ=True
-			s.unlit=False
-			s.aud.fade_in()
-			s.aud.play()
+			if st.aku_hit < 3:
+				s.aud.fade_in()
+				s.aud.play()
 			s.countdown=3.99
 	def empty_destroy(self):
 		s=self
@@ -320,20 +315,21 @@ class TNT(Entity):
 		destroy_event(s)
 	def update(self):
 		s=self
-		if not st.gproc():
-			if s.activ:
-				if s.aud.playing:
-					s.aud.volume=settings.SFX_VOLUME
-				s.countdown=max(s.countdown-time.dt/1.15,0)
-				s.texture=s.tx+str(int(s.countdown))+'.tga'
-				if s.countdown <= 0:
-					s.empty_destroy()
+		if st.gproc():
+			return
+		if s.activ:
+			if s.aud.playing:
+				s.aud.volume=settings.SFX_VOLUME
+			s.countdown=max(s.countdown-time.dt/1.15,0)
+			s.texture=s.tx+str(int(s.countdown))+'.tga'
+			if s.countdown <= 0:
+				s.empty_destroy()
 
 class Nitro(Entity):
 	def __init__(self,pos,pse):
 		s=self
 		s.vnum=12
-		super().__init__(model=cr2,color=color.white,unlit=False)
+		super().__init__(model=cr2,color=color.white)
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		s.start_y=s.y
 		s.acustic=False
@@ -342,22 +338,23 @@ class Nitro(Entity):
 		destroy_event(self)
 	def update(self):
 		s=self
-		if not st.gproc() and s.visible:
-			if distance(LC.ACTOR.position,s.position) <= 3:
-				s.snd_time=max(s.snd_time-time.dt,0)
-				if s.snd_time <= 0:
-					s.snd_time=random.randint(2,3)
-					sn.crate_audio(ID=9,pit=random.uniform(.8,1.1))
-					if not s.is_stack:
-						rh=random.uniform(.1,.2)
-						s.animate_position((s.x,s.y+rh,s.z),duration=.02)
-						invoke(lambda:s.animate_position((s.x,s.start_y,s.z),duration=.2),delay=.15)
+		if (st.gproc() or not s.visible):
+			return
+		if distance(LC.ACTOR.position,s.position) <= 3:
+			s.snd_time=max(s.snd_time-time.dt,0)
+			if s.snd_time <= 0:
+				s.snd_time=random.randint(2,3)
+				sn.crate_audio(ID=9,pit=random.uniform(.8,1.1))
+				if not s.is_stack:
+					rh=random.uniform(.1,.2)
+					s.animate_position((s.x,s.y+rh,s.z),duration=.02)
+					invoke(lambda:s.animate_position((s.x,s.start_y,s.z),duration=.2),delay=.15)
 
 class Air(Entity):
 	def __init__(self,pos,m,l,pse):
 		s=self
 		s.vnum=13
-		super().__init__(model=cr1,double_sided=True)
+		super().__init__(model=cr1)
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		s.collider=None
 		s.mark=m
