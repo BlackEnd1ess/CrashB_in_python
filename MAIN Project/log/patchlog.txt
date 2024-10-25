@@ -73,3 +73,4 @@
 - improved crate fall physic
 - LOD disables Start Room, Endroom, Temple Walls and side Scenes to reduce Polygons
 - Rain 2D Animation refresh by built-in Sprite Animator
+- Player Debugger shows CPU and RAM Usage and have CB Font and customizable color in settings.py
