@@ -107,9 +107,10 @@ class Normal(Entity):
 		super().__init__(model=cr1)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
-		wuPo=self.position
-		item.place_wumpa(self.position,cnt=1,c_prg=True)
-		destroy_event(self)
+		s=self
+		wuPo=s.position
+		item.place_wumpa(s.position,cnt=1,c_prg=True)
+		destroy_event(s)
 
 class QuestionMark(Entity):
 	def __init__(self,pos,pse):
@@ -117,8 +118,9 @@ class QuestionMark(Entity):
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 	def destroy(self):
-		item.place_wumpa(self.position,cnt=5,c_prg=True)
-		destroy_event(self)
+		s=self
+		item.place_wumpa(s.position,cnt=5,c_prg=True)
+		destroy_event(s)
 
 class Bounce(Entity):
 	def __init__(self,pos,pse):
@@ -345,10 +347,9 @@ class Nitro(Entity):
 			if s.snd_time <= 0:
 				s.snd_time=random.randint(2,3)
 				sn.crate_audio(ID=9,pit=random.uniform(.8,1.1))
-				if not s.is_stack:
-					rh=random.uniform(.1,.2)
-					s.animate_position((s.x,s.y+rh,s.z),duration=.02)
-					invoke(lambda:s.animate_position((s.x,s.start_y,s.z),duration=.2),delay=.15)
+				rh=random.uniform(.1,.2)
+				s.animate_position((s.x,s.y+rh,s.z),duration=.02)
+				invoke(lambda:s.animate_position((s.x,s.start_y,s.z),duration=.2),delay=.15)
 
 class Air(Entity):
 	def __init__(self,pos,m,l,pse):

@@ -2,7 +2,9 @@ from ursina.shaders import *
 import environment,os
 from ursina import *
 
-debg=False
+## debug options
+debg_color=color.rgb32(255,128,0)
+debg=True
 
 ## keyboard bindings
 MNU_KEY='p'#		pause

@@ -76,14 +76,10 @@ pause=False
 
 ## global funcs
 def p_idle(c):
-	if c.landed and not (c.jumping or c.is_attack or c.walking or c.is_landing):
-		return True
-	return False
+	return (c.landed and not any([c.jumping,c.is_attack,c.walking,c.is_landing]))
+
 def p_rst(c):
-	if not c.warped or (c.standup or c.freezed or death_event):
-		return True
-	return False
+	return (not c.warped or any([c.standup,c.freezed,death_event]))
+
 def gproc():
-	if loading or pause or LV_CLEAR_PROCESS or game_over:
-		return True
-	return False
+	return any([loading,pause,LV_CLEAR_PROCESS,game_over])

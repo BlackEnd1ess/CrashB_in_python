@@ -47,8 +47,8 @@ class CrashB(Entity):
 				sg.IFC_KEY:lambda:cc.show_status_ui(),
 				sg.ATK_KEY:lambda:s.spin_attack(),
 				sg.BLY_KEY:lambda:s.belly_smash(),
-				sg.FWD_KEY:lambda:setattr(s,'CMS',3.2),
-				sg.BCK_KEY:lambda:setattr(s,'CMS',4.2)}
+				sg.FWD_KEY:lambda:setattr(s,'CMS',2.75),
+				sg.BCK_KEY:lambda:setattr(s,'CMS',4)}
 		if sg.debg:
 			cc.PlayerDBG()
 			s.dev_act={
@@ -57,13 +57,12 @@ class CrashB(Entity):
 					sg.DEV_ECAM:lambda:EditorCamera()}
 	def input(self,key):
 		s=self
-		if st.p_rst(s):
-			return
-		if key in s.KEY_ACT:
-			s.KEY_ACT[key]()
-		if sg.debg:
-			if key in s.dev_act:
-				s.dev_act[key]()
+		if not st.p_rst(s):
+			if key in s.KEY_ACT:
+				s.KEY_ACT[key]()
+			if sg.debg:
+				if key in s.dev_act:
+					s.dev_act[key]()
 	def belly_smash(self):
 		s=self
 		if s.jumping or not s.landed:
@@ -76,10 +75,8 @@ class CrashB(Entity):
 	def spin_attack(self):
 		s=self
 		if not (s.is_attack or s.atk_ctm):
-			s.atk_ctm=True
-			s.is_attack=True
-			s.standup=False
-			s.is_landing=False
+			s.atk_ctm,s.is_attack=True,True
+			s.standup,s.is_landing=False,False
 			sn.pc_audio(ID=3)
 			invoke(lambda:setattr(s,'is_attack',False),delay=.5)
 			invoke(lambda:setattr(s,'atk_ctm',False),delay=.75)
@@ -87,13 +84,13 @@ class CrashB(Entity):
 		sn.pc_audio(ID=4)
 	def move(self):
 		s=self
-		if s.b_smash or st.p_rst(s):
+		if (s.b_smash or st.p_rst(s)):
 			return
 		mvD=Vec3(held_keys[sg.RGT_KEY]-held_keys[sg.LFT_KEY],0,held_keys[sg.FWD_KEY]-held_keys[sg.BCK_KEY]).normalized()
 		s.direc=mvD
 		if s.is_slippery:
 			cc.c_slide(s)
-		if mvD.length() > 0:
+		if (mvD.length() > 0):
 			st.p_last_direc=mvD
 			mc=raycast(s.world_position+(0,.1,0),s.direc,distance=.2,ignore=[s,LC.shdw],debug=False)
 			me=mc.entity
@@ -115,7 +112,7 @@ class CrashB(Entity):
 		if not s.landed:
 			return
 		if s.is_slippery:
-			an.run_s(s,sp=14)
+			an.run_s(s,sp=16)
 		else:
 			if s.is_landing:
 				s.is_landing=False
@@ -210,7 +207,6 @@ class CrashB(Entity):
 				an.slide_stop(s,sp=16)
 			else:
 				an.idle(s,sp=18)
-			return
 	def hurt_visual(self):
 		for vkh in range(7):
 			invoke(lambda:cc.hurt_blink(self),delay=vkh/3)
@@ -227,10 +223,8 @@ class CrashB(Entity):
 		s=self
 		s.move()
 		s.c_camera()
-		if s.jumping:
-			s.jump()
-		if s.b_smash:
-			cc.c_smash(s)
+		if s.jumping:s.jump()
+		if s.b_smash:cc.c_smash(s)
 		if held_keys[settings.JMP_KEY]:
 			s.space_time+=time.dt/2
 	def update(self):

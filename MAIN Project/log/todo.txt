@@ -2,5 +2,4 @@
 - improve physics
 - reduce laggs
 - gem gloss
-- crate fall physic
-- crystal gem collider
+- Roomdoor fixx

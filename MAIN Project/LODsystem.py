@@ -6,7 +6,7 @@ cc=_core
 LC=_loc
 
 ## short names from objects (entity.name)
-LOD_VAR=['rmd1','ctsc']
+LOD_VAR=['rmdr','ctsc']
 LV1=LOD_VAR+['bush','trd2','tssn','mptf']
 LV2=LOD_VAR+['plnk','ickk','wdlg','pilr','icec','snwa']
 LV3=LOD_VAR+['wtfa','mptf','bush','trd2','tile','foam','wdst']
@@ -15,38 +15,50 @@ LV5=LOD_VAR+['mnks','loos','rnsp','rubl','rncr']
 LL={1:LV1,2:LV2,3:LV3,4:LV4,5:LV5,6:LV5}
 
 ##level decoration (side)
-BGSO={1:['grsi','mblo'],
-	2:['snhi','mblo'],
-	3:['scwa'],
-	4:['swec','swtu'],
-	5:['ruin'],
+PLO=['strm','enrm']
+BGSO={1:PLO+['grsi','mblo','tmpw'],
+	2:PLO+['snhi','mblo'],
+	3:PLO+['scwa','tmpw','wafl'],
+	4:PLO+['swec','swtu'],
+	5:PLO+['ruin'],
 	6:[]}
+
+## BSGO distance
+LD={0:0,
+	1:32,
+	2:24,
+	3:48,
+	4:32,
+	5:32,
+	6:16}
 
 ## init lod
 def start():
-	Sequence(refr,Wait(.5),loop=True)()
+	Sequence(refr,Wait(.6),loop=True)()
 
 ## check distance
 def check_dst(p,v,dz):
-	if v.z < p.z+dz and p.z < v.z+3 and abs(p.x-v.x) < 8:
-		return True
-	return False
+	return (v.z < p.z+dz and p.z < v.z+3 and abs(p.x-v.x) < 8)
+
+def check_dynamic(o):
+	return any([(cc.is_enemie(o) and not (o.is_hitten or o.is_purge)),(o.name in LL[st.level_index])])
 
 def refr():
 	if st.gproc():
 		return
 	for v in scene.entities[:]:
 		far_dst=int(scene.fog_density[1])
+		hq=st.level_index
 		p=LC.ACTOR
-		if isinstance(v,item.WumpaFruit):
+		u=check_dst(p,v,dz=far_dst)
+		if v.name == 'wmpf':
 			v.enabled=check_dst(p,v,dz=6)
+		if v.name in BGSO[hq]:
+			v.enabled=(distance_xz(p,v) < LD[hq])
 		if cc.is_crate(v):
-			u=check_dst(p,v,dz=far_dst)
-			if v.vnum in [0,1,2]:
+			if (v.vnum in [0,1,2]):
 				v.enabled=u
-			if v.vnum in [3,11,12]:
+			elif (v.vnum in [3,11,12]):
 				v.visible=u
-		if (cc.is_enemie(v) and not (v.is_hitten or v.is_purge)) or (v.name in LL[st.level_index]):
-			v.enabled=check_dst(p,v,dz=far_dst)
-		if v.name in BGSO[st.level_index]:
-			v.enabled=(p.z < v.z+16)
+		if check_dynamic(v):
+			v.enabled=u

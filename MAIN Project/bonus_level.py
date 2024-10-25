@@ -366,7 +366,7 @@ def gem_route1():
 def gem_route4():
 	Entity(model='cube',scale=(16,1,96),position=(200,-1.2,-16),collider='box',color=color.black)
 	o.swr_multi_ptf(p=(199.75,-.4,-3.25),cnt=[2,2])
-	o.EletricWater(pos=(200,-.5,22),sca=(8,64),ID=3)
+	o.EletricWater(pos=(200,-.5,22),sca=(8,64))
 	o.SewerTunnel(pos=(200,-.3,5),c=color.rgb32(0,200,180))
 	o.SewerTunnel(pos=(200,-.3,15),c=color.rgb32(0,200,180))
 	o.SewerTunnel(pos=(200,-.3,25),c=color.rgb32(0,200,180))

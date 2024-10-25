@@ -100,30 +100,24 @@ class SkyBox(Sky):
 			return
 		s.color=s.setting
 
-class RainFall(Entity):
+class RainFall(Animation):
 	def __init__(self):
 		s=self
-		super().__init__(model='quad',scale=(1.8,1),z=4,visible=False,color=c.white,parent=camera.ui,unlit=False)
-		s.tx_r='res/objects/ev/rain/'
+		super().__init__('res/ui/misc/rain/',scale=(1.8,1),fps=40,parent=camera.ui,z=1,visible=False,loop=True)
 		LC.ACTOR.indoor=.5
 		sound.Rainfall()
-		s.frm=0
-		s.sp=40
+		s.fps=40
 		if st.level_index == 5:
-			s.sp=50
-	def refr_rain(self):
-		s=self
-		s.frm=min(s.frm+time.dt*s.sp,16.1)
-		if s.frm > 16:
-			s.frm=0
-		s.texture=s.tx_r+f'{str(int(s.frm))}.png'
+			s.fps=50
 	def update(self):
-		if not st.gproc():
-			s=self
-			ft=time.dt*2
-			s.refr_rain()
-			if LC.ACTOR.warped and LC.ACTOR.indoor <= 0:
-				s.visible=True
-				s.alpha=lerp(s.alpha,.75,ft)
-				return
-			s.alpha=lerp(s.alpha,0,ft)
+		s=self
+		if st.pause:
+			s.pause()
+			return
+		ft=time.dt*2
+		if LC.ACTOR.warped and LC.ACTOR.indoor <= 0:
+			s.resume()
+			s.visible=True
+			s.alpha=lerp(s.alpha,1,ft)
+			return
+		s.alpha=lerp(s.alpha,0,ft)

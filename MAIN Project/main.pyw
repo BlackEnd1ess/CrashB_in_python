@@ -1,7 +1,7 @@
-import settings,ui,status,level
+import settings,ui,status,level,cProfile
 from ursina import *
 
-app=Ursina(title='Cresh B',icon='res/cb.ico',vsync=True)
+app=Ursina(title='Cresh B',icon='res/cb.ico',asset_folder='res/',vsync=True)
 def game():
 	settings.load()
 	if settings.debg:

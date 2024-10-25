@@ -68,3 +68,8 @@
 - changed sewer_tunnel.collider to simple invisble walls
 - level 3 moss platforms moving slower
 - fixxed fly time in new npc settings.
+
+#25.10.2024
+- improved crate fall physic
+- LOD disables Start Room, Endroom, Temple Walls and side Scenes to reduce Polygons
+- Rain 2D Animation refresh by built-in Sprite Animator

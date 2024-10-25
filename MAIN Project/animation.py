@@ -387,25 +387,14 @@ def gorilla_fall(m):
 	m.model=go+'/fall/'+str(int(m.f_frame))+'.ply'
 
 ## object animations
+dpw='res/objects/ev/door/'
 def door_open(d):
-	invoke(lambda:setattr(d,'model',d.dPA+'u0.ply'),delay=0/t)
-	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d0.ply'),delay=0/t)
-	invoke(lambda:setattr(d,'model',d.dPA+'u1.ply'),delay=1/t)
-	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d1.ply'),delay=1/t)
-	invoke(lambda:setattr(d,'model',d.dPA+'u2.ply'),delay=2/t)
-	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d2.ply'),delay=2/t)
-	invoke(lambda:setattr(d,'model',d.dPA+'u3.ply'),delay=3/t)
-	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d3.ply'),delay=3/t)
-	d.door_part.collider=None
-	d.collider=None
+	if d.door_frame < 3.999:
+		d.door_frame=min(d.door_frame+time.dt*15,3.99)
+	d.door_part.model=dpw+'u'+str(int(d.door_frame))+'.ply'
+	d.model=dpw+'d'+str(int(d.door_frame))+'.ply'
 def door_close(d):
-	invoke(lambda:setattr(d,'model',d.dPA+'u3.ply'),delay=0/t)
-	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d3.ply'),delay=0/t)
-	invoke(lambda:setattr(d,'model',d.dPA+'u2.ply'),delay=1/t)
-	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d2.ply'),delay=1/t)
-	invoke(lambda:setattr(d,'model',d.dPA+'u1.ply'),delay=2/t)
-	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d1.ply'),delay=2/t)
-	invoke(lambda:setattr(d,'model',d.dPA+'u0.ply'),delay=3/t)
-	invoke(lambda:setattr(d.door_part,'model',d.dPA+'d0.ply'),delay=3/t)
-	d.door_part.collider='box'
-	d.collider='box'
+	if d.door_frame > 0:
+		d.door_frame=max(d.door_frame-time.dt*15,3.99)
+	d.door_part.model=dpw+'u'+str(int(d.door_frame))+'.ply'
+	d.model=dpw+'d'+str(int(d.door_frame))+'.ply'

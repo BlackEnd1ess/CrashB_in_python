@@ -2,6 +2,7 @@ import _core,status,item,sound,animation,player,_loc,settings,effect,npc
 from ursina.shaders import *
 from ursina import *
 
+an=animation
 st=status
 sn=sound
 cc=_core
@@ -12,9 +13,7 @@ m='mesh'
 b='box'
 
 def wtr_dist(w,p):
-	if (p.z < w.z+(w.scale_z/2+4)) and (p.z > w.z-w.scale_z/2-4) and (p.x < w.x+(w.scale_x/2+2)) and (p.x > w.x-w.scale_x/2-2):
-		return True
-	return False
+	return ((p.z < w.z+(w.scale_z/2)+4) and (p.z > w.z-(w.scale_z/2)-4) and (p.x < w.x+(w.scale_x/2)+2) and (p.x > w.x-w.scale_x/2-2))
 
 ####################
 ##multible objects #
@@ -176,6 +175,7 @@ class GrassSide(Entity):
 		gr=omf+'l1/grass_side/grass_side'
 		super().__init__(model=gr+'1.ply',texture=gr+'.jpg',name='grsi',position=pos,scale=(1,2,1.4),rotation=(-90,ry,0))
 
+
 ####################
 ## level 2 objects #
 class Plank(Entity):
@@ -336,13 +336,14 @@ class Role(Entity):
 			s.is_rolling=False
 			s.danger=False
 
+
 ####################
 ## level 3 objects #
 class WaterFlow(Entity):
 	def __init__(self,pos,sca):
 		self.wtr_t=omf+'l3/water_flow/'
-		super().__init__(model='plane',texture=self.wtr_t+'water_flow0.tga',scale=(sca[0],.1,sca[1]),texture_scale=(1,11),position=pos,color=color.rgb32(170,170,170),alpha=.8)
-		self.cbst=Entity(model='cube',name='CBst',texture='res/terrain/l3/cobble_stone.png',position=(pos[0],pos[1]-.7,pos[2]+.05),scale=(10,.1,sca[1]),texture_scale=(10,sca[1]))
+		super().__init__(model='plane',texture=self.wtr_t+'water_flow0.tga',name='wafl',scale=(sca[0],.1,sca[1]),texture_scale=(1,11),position=pos,color=color.rgb32(170,170,170),alpha=.8)
+		self.cbst=Entity(model='cube',texture='res/terrain/l3/cobble_stone.png',name=self.name,position=(pos[0],pos[1]-.7,pos[2]+.05),scale=(10,.1,sca[1]),texture_scale=(10,sca[1]))
 		WaterHit(p=(pos[0],pos[1]-.1,pos[2]),sc=sca)
 		self.frm=0
 	def update(self):
@@ -392,7 +393,7 @@ class TempleWall(Entity):
 			bush(pos=(s.x-.4,s.y+2.5,s.z-.87),sca=(1,1),c=color.green,ro_y=0)
 			bush(pos=(s.x,s.y+2.5,s.z-1),sca=(1,1),c=color.green,ro_y=0)
 			return
-		Entity(model='plane',texture='grass',position=(s.x+.36,s.y+2.38,s.z),scale=(1.3,0,2.7),color=color.green)
+		Entity(model='plane',texture='grass',name=s.name,position=(s.x+.36,s.y+2.38,s.z),scale=(1.3,0,2.7),color=color.green)
 		bush(pos=(s.x+.3,s.y+2.7,s.z),sca=(2,1),c=color.green,ro_y=45)
 		bush(pos=(s.x+.3,s.y+2.7,s.z),sca=(2,1),c=color.green,ro_y=-45)
 		bush(pos=(s.x+.2,s.y+2.6,s.z-.8),sca=(1,1),c=color.green,ro_y=0)
@@ -474,6 +475,7 @@ class BonusScene(Entity):
 	def __init__(self,pos):
 		bcnn=omf+'l3/mtree_scn/'
 		super().__init__(model=bcnn+'wtr_bSCN.ply',texture=bcnn+'tm_scn.tga',position=pos,scale=.035,rotation=(-90,90,0))
+
 
 ####################
 ## level 4 objects #
@@ -574,67 +576,67 @@ class SewerPipe(Entity):## danger
 				cc.get_damage(LC.ACTOR,rsn=3)
 
 class EletricWater(Entity):
-	def __init__(self,pos,sca,ID):
+	def __init__(self,pos,sca):
 		s=self
 		self.wtt=omf+'l4/wtr/'
-		super().__init__(model='cube',texture=s.wtt+'0.png',name='elwt',position=pos,scale=(sca[0],.1,sca[1]),texture_scale=(sca[0],sca[1]),color=color.rgb32(0,180,180),alpha=.9,collider=b)
+		super().__init__(model='cube',texture=s.wtt+'0.png',name='elwt',position=pos,scale=(sca[0],.1,sca[1]),texture_scale=(sca[0],sca[1]),color=color.rgb32(0,180,180),alpha=.8,collider=b)
 		s.tx=(sca[0],sca[1])
 		s.electric=False
-		s.ta=LC.ACTOR
+		s.nr=False
 		s.splash=0
-		s.vnum=ID
 		s.frm=0
 		s.tme=8
-		if ID == 3:
+		if s.x > 150:
 			s.tme=random.uniform(.1,.2)
-		s.switch_water()
-	def anim(self):
+	def wtr_anim(self):
 		s=self
-		s.frm=min(s.frm+time.dt*8,31.99)
-		if s.frm > 31.98:
+		s.frm=min(s.frm+time.dt*8,31.999)
+		if s.frm > 31.99:
 			s.frm=0
-		s.texture=s.wtt+str(int(s.frm))+'.png'
-	def switch_water(self):
+		s.texture=s.wtt+f'{int(s.frm)}.png'
+	def wtr_danger(self):
 		s=self
-		s.color=color.yellow
-		s.unlit=False
-		s.alpha=.9
-		s.texture_scale=s.tx
-		s.electric=True
-		if (s.vnum == 0 and s.ta.z < 3 and s.ta.z > -60) or (s.vnum == 1 and s.ta.z > 50 and s.ta.z < 80):
-			if (s.ta.warped and not st.bonus_round):
-				sn.obj_audio(ID=7)
-		invoke(s.harmless,delay=1.5)
-	def harmless(self):
+		if not s.electric:
+			s.electric=True
+			s.color=color.yellow
+			s.unlit=False
+			if (LC.ACTOR.warped and not st.bonus_round):
+				if s.nr:
+					sn.obj_audio(ID=7)
+			invoke(s.wtr_normal,delay=1.5)
+	def wtr_normal(self):
 		s=self
-		s.unlit=True
-		s.color=color.rgb32(0,120,120)
-		s.alpha=.95
-		s.texture_scale=s.tx
 		s.electric=False
-	def refr_func(self):
+		s.color=color.rgb32(0,125,125)
+		s.unlit=True
+	def check_p(self):
 		s=self
-		if s.intersects(LC.ACTOR):
-			s.ta.in_water=.3
+		ta=LC.ACTOR
+		if ta.in_water <= 0:
+			s.splash=max(s.splash-time.dt,0)
+		if s.intersects(ta):
+			ta.in_water=.3
 			if s.electric:
-				cc.get_damage(s.ta,rsn=4)
+				cc.get_damage(ta,rsn=4)
 			if s.splash <= 0:
 				s.splash=.3
 				sn.pc_audio(ID=10)
 	def update(self):
-		if not st.gproc():
-			s=self
+		if st.gproc():
+			return
+		s=self
+		s.nr=wtr_dist(w=s,p=LC.ACTOR)
+		if s.nr:
+			s.check_p()
+			s.wtr_anim()
 			s.tme=max(s.tme-time.dt,0)
-			if wtr_dist(w=s,p=LC.ACTOR):
-				s.refr_func()
-				s.anim()
-				if s.ta.in_water <= 0:
-					s.splash=max(s.splash-time.dt,0)
-				if s.tme <= 0:
+			if s.tme <= 0:
+				print(time.dt)
+				if s.x > 150:
 					s.tme=8
-					if s.vnum in [3,4]:
-						s.tme=random.uniform(.1,.2)
-					s.switch_water()
+				else:
+					s.tme=8
+				s.wtr_danger()
 
 class DrippingWater(Entity):
 	def __init__(self,pos,sca):
@@ -643,13 +645,13 @@ class DrippingWater(Entity):
 		super().__init__(model='quad',texture=s.dpw+'0.png',name='drpw',position=pos,scale=sca,rotation_z=90)
 		s.frm=0
 	def update(self):
-		if not st.gproc():
-			s=self
-			if distance(s,LC.ACTOR) < 8:
-				s.frm=min(s.frm+(time.dt*10),7.999)
-				if s.frm > 7.99:
-					s.frm=0
-				s.texture=s.dpw+str(int(s.frm))+'.png'
+		s=self
+		if st.gproc() or (distance(s,LC.ACTOR) > 8):
+			return
+		s.frm=min(s.frm+(time.dt*10),7.999)
+		if s.frm > 7.99:
+			s.frm=0
+		s.texture=s.dpw+f'{int(s.frm)}.png'
 
 
 ####################
@@ -882,16 +884,16 @@ class CrateScore(Entity):## level reward
 class StartRoom(Entity):## game spawn point
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=omf+'ev/s_room/room1.ply',texture=omf+'ev/s_room/room.tga',position=pos,scale=(.07,.07,.08),rotation=(270,90),color=color.white)
-		s.floor0=Entity(model='cube',collider=b,position=(s.x,s.y+.6,s.z-.2),scale=(1.7,.5,1.7),visible=False)
-		s.floor1=Entity(model='cube',collider=b,position=(s.x,s.y+.2,s.z+1.7),scale=(2,.5,2),visible=False)
-		s.wall0=Entity(model='cube',collider=b,position=(s.x-1,s.y+1.5,s.z),scale=(.4,13,6),visible=False)
-		s.wall1=Entity(model='cube',collider=b,position=(s.x+1,s.y+1.5,s.z),scale=(.4,13,6),visible=False)
-		s.bck0=Entity(model='cube',collider=b,position=(s.x,s.y+1.5,s.z-1),scale=(5,13,.6),visible=False)
-		s.ceil=Entity(model='cube',name='clr1',collider=b,position=(s.x,s.y+2.6,s.z-.2),scale=(6,1,6),visible=False,alpha=.4)
-		s.curt=Entity(model='plane',position=(s.x,s.y+0.01,s.z),color=color.black,scale=3)
-		Entity(model='quad',color=color.black,scale=(6,.5),position=(s.x,s.y+2.3,s.z+2.4))
-		RoomDoor(pos=(s.x,s.y+1.9,s.z+2.3),typ=0)
+		super().__init__(model=omf+'ev/s_room/room1.ply',texture=omf+'ev/s_room/room.tga',name='strm',position=pos,scale=(.07,.07,.08),rotation=(270,90),color=color.white)
+		s.floor0=Entity(model='cube',name=s.name,collider=b,position=(s.x,s.y+.6,s.z-.2),scale=(1.7,.5,1.7),visible=False)
+		s.floor1=Entity(model='cube',name=s.name,collider=b,position=(s.x,s.y+.2,s.z+1.7),scale=(2,.5,2),visible=False)
+		s.wall0=Entity(model='cube',name=s.name,collider=b,position=(s.x-1,s.y+1.5,s.z),scale=(.4,13,6),visible=False)
+		s.wall1=Entity(model='cube',name=s.name,collider=b,position=(s.x+1,s.y+1.5,s.z),scale=(.4,13,6),visible=False)
+		s.bck0=Entity(model='cube',name=s.name,collider=b,position=(s.x,s.y+1.5,s.z-1),scale=(5,13,.6),visible=False)
+		s.ceil=Entity(model='cube',name=s.name,collider=b,position=(s.x,s.y+2.6,s.z-.2),scale=(6,1,6),visible=False,alpha=.4)
+		s.curt=Entity(model='plane',name=s.name,position=(s.x,s.y+0.01,s.z),color=color.black,scale=3)
+		Entity(model='quad',name=s.name,color=color.black,scale=(6,.5),position=(s.x,s.y+2.3,s.z+2.4))
+		RoomDoor(pos=(s.x,s.y+1.9,s.z+2.3))
 		player.CrashB(pos=(s.x,s.y+.85,s.z-.1))
 		if st.aku_hit > 0:
 			npc.AkuAkuMask(pos=(s.x-.3,s.y+1,s.z+.5))
@@ -903,20 +905,20 @@ class EndRoom(Entity):## finish level
 	def __init__(self,pos,c):
 		s=self
 		eR=omf+'ev/e_room/e_room'
-		super().__init__(model=eR+'.ply',texture=eR+'.tga',scale=.025,rotation=(-90,90,0),position=pos,color=c,unlit=False)
-		s.curt=Entity(model='plane',color=color.black,scale=(4,1,16),position=(s.x-1,s.y-1.8,s.z+3))
-		s.grnd=Entity(model='cube',scale=(4,1,16),position=(s.x-1,s.y-2,s.z+3),collider=b,visible=False)
-		s.wa_l=Entity(model='cube',scale=(1,3,16),position=(s.x-2.2,s.y,s.z+3),collider=b,visible=False)
-		s.wa_r=Entity(model='cube',scale=(1,3,16),position=(s.x,s.y,s.z+3),collider=b,visible=False)
-		s.ceil=Entity(model='cube',name='clr2',scale=(5,3,16),position=(s.x-1,s.y+1.4,s.z+3),collider=b,visible=False)
-		s.bck=Entity(model='cube',scale=(6,4,2),position=(s.x,s.y,s.z+9),collider=b,visible=False)
-		s.pod1=Entity(model='cube',scale=(6,1,2.5),position=(s.x-1,s.y-1.85,s.z+.45),collider=b,visible=False)
-		s.pod2=Entity(model='cube',scale=(.85,1,.85),position=(s.x-1.1,s.y-1.6,s.z+.3),collider=b,visible=False)
-		s.pod3=Entity(model='cube',scale=(1.6,1,1),position=(s.x-1.1,s.y-1.51,s.z+6.5),collider=b,visible=False)
+		super().__init__(model=eR+'.ply',texture=eR+'.tga',scale=.025,name='enrm',rotation=(-90,90,0),position=pos,color=c,unlit=False)
+		s.curt=Entity(model='plane',name=s.name,color=color.black,scale=(4,1,16),position=(s.x-1,s.y-1.8,s.z+3))
+		s.grnd=Entity(model='cube',name=s.name,scale=(4,1,16),position=(s.x-1,s.y-2,s.z+3),collider=b,visible=False)
+		s.wa_l=Entity(model='cube',name=s.name,scale=(1,3,16),position=(s.x-2.2,s.y,s.z+3),collider=b,visible=False)
+		s.wa_r=Entity(model='cube',name=s.name,scale=(1,3,16),position=(s.x,s.y,s.z+3),collider=b,visible=False)
+		s.ceil=Entity(model='cube',name=s.name,scale=(5,3,16),position=(s.x-1,s.y+1.4,s.z+3),collider=b,visible=False)
+		s.bck=Entity(model='cube',name=s.name,scale=(6,4,2),position=(s.x,s.y,s.z+9),collider=b,visible=False)
+		s.pod1=Entity(model='cube',name=s.name,scale=(6,1,2.5),position=(s.x-1,s.y-1.85,s.z+.45),collider=b,visible=False)
+		s.pod2=Entity(model='cube',name=s.name,scale=(.85,1,.85),position=(s.x-1.1,s.y-1.6,s.z+.3),collider=b,visible=False)
+		s.pod3=Entity(model='cube',name=s.name,scale=(1.6,1,1),position=(s.x-1.1,s.y-1.51,s.z+6.5),collider=b,visible=False)
 		if st.level_index != 5:
-			Entity(model='cube',scale=(20,10,.1),position=(s.x,s.y-5,s.z+16),color=color.black)
+			Entity(model='cube',scale=(20,10,.1),name=s.name,position=(s.x,s.y-5,s.z+16),color=color.black)
 		LevelFinish(p=(s.x-1.1,s.y-1.1,s.z+7))
-		RoomDoor(pos=(s.x-1.1,s.y+.25,s.z-4.78),typ=1)
+		RoomDoor(pos=(s.x-1.1,s.y+.25,s.z-4.78))
 		if st.crates_in_level > 0:
 			if not (st.level_index == 5 and s.x > 150):
 				CrateScore(pos=(s.x-1.1,s.y-.7,s.z))
@@ -927,31 +929,22 @@ class EndRoom(Entity):## finish level
 			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=1)
 
 class RoomDoor(Entity):## door for start and end room
-	def __init__(self,pos,typ):
+	def __init__(self,pos):
 		s=self
 		s.dPA=omf+'ev/door/'
 		super().__init__(model=s.dPA+'u0.ply',texture=s.dPA+'u_door.tga',name='rmdr',position=pos,scale=.001,rotation_x=90,collider=b)
 		s.door_part=Entity(model=s.dPA+'d0.ply',name=s.name,texture=s.dPA+'d_door.tga',position=(s.x,s.y+.1,s.z),scale=.001,rotation_x=90,collider=b)
-		s.DS={0:2,1:3}
-		s.d_open=False
-		s.typ=typ
+		s.door_open=False
+		s.door_frame=0
 	def update(self):
 		if not st.gproc():
 			s=self
-			if distance(s,LC.ACTOR) < s.DS[s.typ]:
-				if not s.d_open:
-					s.d_open=True
-					animation.door_open(s)
-					sn.obj_audio(ID=1)
+			if (distance(LC.ACTOR,s) < 2.5):
+				s.door_open=True
+			if s.door_open:
+				an.door_open(s)
 				return
-			if s.d_open:
-				s.d_open=False
-				if s.typ == 0:
-					cc.purge_instance(s.door_part)
-					cc.purge_instance(s)
-					return
-				animation.door_close(s)
-				sn.obj_audio(ID=1,pit=.9)
+			an.door_close(s)
 
 class BonusPlatform(Entity):## switch -> bonus round
 	def __init__(self,pos):

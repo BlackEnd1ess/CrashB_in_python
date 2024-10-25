@@ -13,7 +13,6 @@ def free_level():
 	LODsystem.start()
 	st.loading=False
 	cc.spawn_level_crystal(st.level_index)
-	cc.check_cstack()
 	st.fails=0
 	sn.LevelMusic(T=st.level_index)
 	if st.level_index == 3:

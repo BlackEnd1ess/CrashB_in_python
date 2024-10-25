@@ -1,4 +1,4 @@
-import objects,map_tools,crate,npc,status
+import objects,map_tools,crate,npc,status,item
 from ursina import *
 
 mt=map_tools
@@ -10,6 +10,7 @@ n=npc
 #### DEV-LV STUCT ####
 def dev_object():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass',color=color.green,visible=True)
+	item.GemStone(pos=(2,.4,-20),c=1)
 	o.StartRoom(pos=(0,0,-32.2))
 def dev_crate():
 	mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,1,1])
@@ -29,7 +30,11 @@ def dev_crate():
 	mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,4])
 	mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,3])
 	mt.crate_block(ID=14,POS=(6.5,.16,-18),CNT=[3,3,3])
+	
 	mt.crate_row(ID=1,POS=(0,.16,-25),CNT=7,WAY=2)
+	
+	mt.crate_row(ID=1,POS=(2,.16,-25),CNT=2,WAY=2)
+	mt.crate_row(ID=1,POS=(2,1.6,-25),CNT=2,WAY=2)
 def dev_wumpa():
 	mt.wumpa_row(POS=(0,.3,-20),CNT=20,WAY=0)
 def dev_npc():
@@ -413,7 +418,7 @@ def lv3_object():
 	o.MossPlatform(p=(-.85,.5,52.5),ptm=3)
 	o.MossPlatform(p=(.85,.5,52.5),ptm=0)
 	o.MossPlatform(p=(0,1,56.5),ptm=0)
-	o.MossPlatform(p=(0,1.5,77),ptm=3)
+	o.MossPlatform(p=(0,1.5,77.3),ptm=3)
 	#blocks
 	tH=-.2
 	#e0
@@ -558,8 +563,8 @@ def lv4_object():
 	o.FallingZone(pos=(0,-1,0),s=(128,.3,128))
 	o.BonusPlatform(pos=(6.3,2,8))
 	o.GemPlatform(pos=(4.2,2,31.7),t=5)
-	o.EletricWater(pos=(0,.2,-48),sca=(8,96),ID=0)
-	o.EletricWater(pos=(14.5,3.5,83),sca=(8,64),ID=1)
+	o.EletricWater(pos=(0,.2,-48),sca=(8,96))
+	o.EletricWater(pos=(14.5,3.5,83),sca=(8,64))
 	o.Water(pos=(10,1,40),sca=(20,23),c=color.rgb32(100,255,0),a=1)
 	o.Water(pos=(0,-1,6),sca=(30,10),c=color.rgb32(100,255,0),a=1)
 	o.EndRoom(pos=(15.65,5.5,78.5),c=color.rgb32(200,200,200))

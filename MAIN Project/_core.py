@@ -1,6 +1,7 @@
-import json,ui,crate,item,status,sound,npc,settings,_loc,math,warproom,environment
+import json,ui,crate,item,status,sound,npc,settings,_loc,math,warproom,environment,psutil
 from math import atan2,sqrt
 from ursina import *
+
 
 level_ready=False
 env=environment
@@ -16,41 +17,60 @@ class PlayerDBG(Entity):
 	def __init__(self):
 		CV=camera.ui
 		sx=-.875
-		fw=1
+		fw=1.5
+		hg=-.065
 		s=self
+		fn='res/ui/font.ttf'
 		super().__init__()
-		s.fal_state=Text(None,position=(sx,-.1-.375),parent=CV,scale=fw)
-		s.frz_state=Text(None,position=(sx,-.1-.35),parent=CV,scale=fw)
-		s.run_state=Text(None,position=(sx,-.1-.325),parent=CV,scale=fw)
-		s.slp_state=Text(None,position=(sx,-.1-.3),parent=CV,scale=fw)
-		s.jmp_state=Text(None,position=(sx,-.1-.275),parent=CV,scale=fw)
-		s.flp_state=Text(None,position=(sx,-.1-.25),parent=CV,scale=fw)
-		s.frl_state=Text(None,position=(sx,-.1-.225),parent=CV,scale=fw)
-		s.gnd_state=Text(None,position=(sx,-.1-.2),parent=CV,scale=fw)
-		s.lnd_state=Text(None,position=(sx,-.1-.175),parent=CV,scale=fw)
-		s.sta_state=Text(None,position=(sx,-.1-.15),parent=CV,scale=fw)
-		s.atk_state=Text(None,position=(sx,-.1-.125),parent=CV,scale=fw)
-		s.inj_state=Text(None,position=(sx,-.1-.1),parent=CV,scale=fw)
-		s.bly_state=Text(None,position=(sx,-.1-.075),parent=CV,scale=fw)
-		s.aku_cnter=Text(None,position=(sx,-.1-.05),parent=CV,scale=fw)
+		tct=settings.debg_color
+		Entity(model='quad',position=(-.775,-.275),color=color.black,alpha=.75,scale=(.4,.6),parent=CV)
+		s.cpu_state=Text(color=tct,font=fn,position=(sx,-hg-.525),parent=CV,scale=fw)
+		s.mem_state=Text(color=tct,font=fn,position=(sx,-hg-.5),parent=CV,scale=fw)
+		s.aku_state=Text(color=tct,font=fn,position=(sx,-hg-.475),parent=CV,scale=fw)
+		s.ind_state=Text(color=tct,font=fn,position=(sx,-hg-.45),parent=CV,scale=fw)
+		s.inw_state=Text(color=tct,font=fn,position=(sx,-hg-.425),parent=CV,scale=fw)
+		s.slp_state=Text(color=tct,font=fn,position=(sx,-hg-.4),parent=CV,scale=fw)
+		s.bns_state=Text(color=tct,font=fn,position=(sx,-hg-.375),parent=CV,scale=fw)
+		s.idl_state=Text(color=tct,font=fn,position=(sx,-hg-.35),parent=CV,scale=fw)
+		s.run_state=Text(color=tct,font=fn,position=(sx,-hg-.325),parent=CV,scale=fw)
+		s.fal_state=Text(color=tct,font=fn,position=(sx,-hg-.3),parent=CV,scale=fw)
+		s.lnd_state=Text(color=tct,font=fn,position=(sx,-hg-.275),parent=CV,scale=fw)
+		s.jmp_state=Text(color=tct,font=fn,position=(sx,-hg-.25),parent=CV,scale=fw)
+		s.flp_state=Text(color=tct,font=fn,position=(sx,-hg-.225),parent=CV,scale=fw)
+		s.bly_state=Text(color=tct,font=fn,position=(sx,-hg-.2),parent=CV,scale=fw)
+		s.atk_state=Text(color=tct,font=fn,position=(sx,-hg-.175),parent=CV,scale=fw)
+		s.frl_state=Text(color=tct,font=fn,position=(sx,-hg-.15),parent=CV,scale=fw)
+		s.gnd_state=Text(color=tct,font=fn,position=(sx,-hg-.125),parent=CV,scale=fw)
+		s.sta_state=Text(color=tct,font=fn,position=(sx,-hg-.1),parent=CV,scale=fw)
+		s.inj_state=Text(color=tct,font=fn,position=(sx,-hg-.075),parent=CV,scale=fw)
+		s.frz_state=Text(color=tct,font=fn,position=(sx,-hg-.05),parent=CV,scale=fw)
+		s.process=psutil.Process()
+		s.cpu_usage=s.process.cpu_percent()
 	def update(self):
 		if not st.gproc():
 			s=self
 			rv=LC.ACTOR
-			s.fal_state.text=f'is falling:  {rv.falling}'
-			s.frl_state.text=f'first land:  {rv.frst_lnd}'
-			s.sta_state.text=f'stand up:    {rv.standup}'
-			s.slp_state.text=f'is slippery: {rv.is_slippery}'
-			s.run_state.text=f'is running:  {rv.walking}'
-			s.jmp_state.text=f'is jumping:   {rv.jumping}'
-			s.lnd_state.text=f'is landing:  {rv.is_landing}'
-			s.gnd_state.text=f'on ground:   {rv.landed}'
-			s.bly_state.text=f'belly_smash: {rv.b_smash}'
-			s.atk_state.text=f'is attack:   {rv.is_attack}'
-			s.flp_state.text=f'is flip:     {rv.is_flip}'
-			s.aku_cnter.text=f'aku mask:    {st.aku_hit}'
-			s.inj_state.text=f'injured:     {rv.injured}'
-			s.frz_state.text=f'freezed:     {rv.freezed}'
+			mem_usage=s.process.memory_info().rss/(1024*1024)
+			s.cpu_state.text=f'STATUS CPU  : {s.cpu_usage}%'
+			s.mem_state.text=f'STATUS MEM  : {mem_usage:.0f} MB'
+			s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'
+			s.ind_state.text=f'INDOOR ZONE : {(rv.indoor > 0)}'
+			s.inw_state.text=f'WATER ZONE  : {(rv.in_water > 0)}'
+			s.slp_state.text=f'IS SLIPPERY : {rv.is_slippery}'
+			s.bns_state.text=f'BONUS ROUND : {st.bonus_round}'
+			s.idl_state.text=f'IDLE STATUS : {st.p_idle(LC.ACTOR)}'
+			s.run_state.text=f'WALK STATUS : {rv.walking}'
+			s.fal_state.text=f'FALL STATUS : {rv.falling}'
+			s.lnd_state.text=f'LAND STATUS : {rv.is_landing}'
+			s.jmp_state.text=f'JUMP STATUS : {rv.jumping}'
+			s.flp_state.text=f'FLIP STATUS : {rv.is_flip}'
+			s.bly_state.text=f'BELLY SMASH : {rv.b_smash}'
+			s.atk_state.text=f'IS ATTACK   : {rv.is_attack}'
+			s.frl_state.text=f'FIRST LAND  : {rv.frst_lnd}'
+			s.gnd_state.text=f'IS LANDED   : {rv.landed}'
+			s.sta_state.text=f'STAND UP    : {rv.standup}'
+			s.inj_state.text=f'INJURED     : {rv.injured}'
+			s.frz_state.text=f'FREEZED     : {rv.freezed}'
 
 def set_val(c):
 	for _a in ['rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','walk_snd','fall_time','slide_fwd','in_water','space_time']:
@@ -119,7 +139,6 @@ def reset_state(c):
 	rmv_wumpas()
 	reset_wumpas()
 	reset_npc()
-	check_cstack()
 	c.position=status.checkpoint
 	camera.position=c.position
 	camera.rotation=(15,0,0)
@@ -166,14 +185,15 @@ def c_attack():
 	c=LC.ACTOR
 	if not c.is_attack or st.gproc():
 		return
-	for qd in scene.entities[:]:
-		if (distance(qd,c) < .5 and qd.collider):
-			if (is_crate(qd) and qd.vnum != 13):
+	kp=[b for b in scene.entities if (b.collider and (is_crate(b) or is_enemie(b)))]
+	for qd in kp:
+		if (distance(qd,c) < .5) and not (qd.vnum == 13):
+			if is_crate(qd):
 				if qd.vnum in [3,11]:
 					qd.empty_destroy()
 				else:
 					qd.destroy()
-			if (is_enemie(qd) and qd.vnum != 13):
+			if is_enemie(qd):
 				if not (qd.is_purge or qd.is_hitten):
 					if (qd.vnum in [1,11]) or (qd.vnum == 5 and qd.def_mode):
 						get_damage(c,rsn=1)
@@ -358,12 +378,13 @@ def game_over():
 def check_ceiling(c):
 	vc=c.intersects(ignore=[c,LC.shdw])
 	ve=vc.entity
-	if vc and vc.normal == Vec3(0,-1,0):
+	if vc.normal == Vec3(0,-1,0):
 		if not (ve.name in LC.item_lst+LC.trigger_lst):
-			if is_crate(ve) and not c.tcr:
-				c.tcr=True
-				ve.destroy()
-				invoke(lambda:setattr(c,'tcr',False),delay=.1)
+			if is_crate(ve):
+				if not c.tcr:
+					c.tcr=True
+					ve.destroy()
+					invoke(lambda:setattr(c,'tcr',False),delay=.1)
 			c.y=c.y
 			c.jumping=False
 def check_wall(c):
@@ -404,28 +425,25 @@ def landing(c,e,o):
 	c.landed=True
 	if c.frst_lnd:
 		floor_interact(c,o)
-		c.frst_lnd=False
-		c.is_flip=False
-		c.flfr=0
-		c.ldfr=0
-		c.jmfr=0
+		c.frst_lnd,c.is_flip=False,False
+		c.flfr,c.ldfr,c.jmfr=0,0,0
 		c.is_landing=True
-		c.space_time=0
-		c.fall_time=0
+		c.space_time,c.fall_time=0,0
 		sn.landing_sound(c,o)
 def floor_interact(c,e):
-	if is_crate(e) and not ((e.vnum == 0) or (e.vnum in [9,10,11] and e.activ)) and c.fall_time > .05:
-		if e.vnum in [7,8]:
-			c.jump_typ(t=4)
-			e.c_action()
+	if (is_crate(e) and c.fall_time > .05):
+		if not ((e.vnum == 0) or (e.vnum in [9,10,11] and e.activ)):
+			if e.vnum in [7,8]:
+				c.jump_typ(t=4)
+				e.c_action()
+				return
+			if e.vnum == 3:
+				c.jump_typ(t=3)
+			else:
+				if not e.vnum == 14:
+					c.jump_typ(t=2)
+			e.destroy()
 			return
-		if e.vnum == 3:
-			c.jump_typ(t=3)
-		else:
-			if not e.vnum == 14:
-				c.jump_typ(t=2)
-		e.destroy()
-		return
 	if is_enemie(e) and not (e.is_hitten or e.is_purge):
 		if (e.vnum in [2,9]) or (e.vnum == 5 and e.def_mode):
 			get_damage(c,rsn=1)
@@ -498,36 +516,25 @@ def crate_set_val(cR,Cpos,Cpse):
 	if cR.vnum == 15:
 		cR.texture='res/crate/crate_t'+str(cR.time_stop)+'.tga'
 	cR.org_tex=cR.texture
-	cR.is_stack=False
 	cR.spawn_pos=Cpos
 	cR.position=Cpos
 	cR.collider='box'
 	cR.poly=Cpse
 	cR.scale=.16
+def check_crates_over(c):
+	crf=[pk for pk in scene.entities if (is_crate(pk) and (pk.x == c.x and pk.z == c.z) and pk.vnum != 3)]
+	sdi=0
+	for wm in crf:
+		sdi+=1
+		if (wm.y > c.y) and (wm.y-c.y) <= .32*sdi:
+			wm.animate_y((wm.y-.32),duration=.2)
+	sdi=0
+	del sdi,c,crf
 def is_crate(e):
 	cck=[C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
 		C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,C.SwitchEmpty,
 		C.SwitchNitro,C.TNT,C.Nitro,C.Air,C.Protected,C.cTime,C.LvInfo]
-	if any(isinstance(e,crate_class) for crate_class in cck):
-		return True
-	return False
-def check_cstack():
-	for cSD in scene.entities[:]:
-		if is_crate(cSD) and not cSD.vnum == 3:
-			for cST in scene.entities[:]:
-				if is_crate(cST) and not cST.vnum == 3:
-					if cST.x == cSD.x and cST.z == cSD.z:
-						dsta=round(abs(cST.y-(cSD.y-cSD.scale_y*2)),2)
-						if dsta == 0:
-							cST.is_stack=True
-							cSD.is_stack=True
-def check_crates_over(c):
-	if c.vnum in [3,7,8]:
-		return
-	crf=[pk for pk in scene.entities if ((is_crate(pk) and pk.is_stack) and (pk.x == c.x and pk.z == c.z))]
-	for co in crf:
-		if co.y > (co.y-.32):
-			co.animate_y((co.y-.32),duration=.1)
+	return any(isinstance(e,crate_class) for crate_class in cck)
 
 ## bonus level
 def load_b_ui():
@@ -551,8 +558,7 @@ def enter_bonus(c):
 	c.position=(0,-35,-3)
 	env.set_fog(st.level_index)
 	camera.y=-35
-	st.loading=False
-	c.freezed=False
+	st.loading,c.freezed=False,False
 def back_to_level(c):
 	ui.BlackScreen()
 	if st.is_death_route:
@@ -584,21 +590,17 @@ def load_droute(c):
 	st.is_death_route=True
 	c.position=(200,1,-3)
 	camera.position=(200,.5,-3)
-	st.loading=False
-	c.freezed=False
+	st.loading,c.freezed=False,False
 	sn.SpecialMusic(T=st.level_index)
 
 ## npc
 def set_val_npc(m,drc,rng):
+	m.anim_frame,m.fly_time,m.turn=0,0,0
+	m.is_hitten,m.is_purge=False,False
 	m.spawn_pos=m.position
-	m.is_hitten=False
-	m.is_purge=False
 	m.fly_direc=None
 	m.mov_range=rng
 	m.mov_direc=drc
-	m.anim_frame=0
-	m.fly_time=0
-	m.turn=0
 def circle_move_xz(m):
 	m.angle-=time.dt*2
 	m.angle%=(2*math.pi)
@@ -617,9 +619,8 @@ def circle_move_y(m):
 	m.rotation_x=rot
 	m.rotation_y=-90
 def rotate_to_crash(m):
-	relative_position=LC.ACTOR.position-m.position
-	angle=atan2(relative_position.x,relative_position.z)*(180/pi)+180
-	m.rotation_y=angle
+	rtp=(LC.ACTOR.position-m.position)
+	m.rotation_y=atan2(rtp.x,rtp.z)*(180/pi)+180
 	m.rotation_x=-90
 def fly_away(n):
 	if n.collider == None:
@@ -647,9 +648,7 @@ def is_enemie(n):
 		N.EatingPlant,N.Rat,N.Lizard,
 		N.Eel,N.Scrubber,N.Mouse,N.SewerMine,
 		N.Vulture,N.Gorilla]
-	if any(isinstance(n,npc_class) for npc_class in nnk):
-		return True
-	return False
+	return any(isinstance(n,npc_class) for npc_class in nnk)
 def bash_enemie(e,h):
 	e.is_hitten=True
 	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)
