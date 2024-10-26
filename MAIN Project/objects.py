@@ -82,14 +82,14 @@ class PseudoCrash(Entity):
 class Tree2D(Entity):
 	def __init__(self,pos,rot):
 		tCOL=random.choice([color.rgb32(128,128,128),color.rgb32(200,200,200),color.rgb32(255,255,255)])
-		super().__init__(model='quad',texture=omf+'l1/tree/tree'+str(random.randint(1,4))+'.png',name='trd2',scale=3,position=pos,rotation_y=rot,color=tCOL)
+		super().__init__(model='quad',texture=omf+'l1/tree/tree'+str(random.randint(1,4))+'.png',name='trd2',scale=3,position=pos,rotation_y=rot,color=tCOL,enabled=False)
 
 class MossPlatform(Entity):
 	def __init__(self,p,ptm,pts=.5,ptw=3):
 		s=self
 		MVP=omf+'l1/p_moss/moss'
-		super().__init__(model='cube',name='mptf',texture=None,position=p,scale=(.6,1,.6),collider=b,visible=False)
-		s.opt_model=Entity(model=MVP+'.ply',name=s.name,texture=MVP+'.tga',scale=.75/1000,position=(p[0],p[1]+.475,p[2]),rotation_x=-90)
+		super().__init__(model='cube',name='mptf',texture=None,position=p,scale=(.6,1,.6),collider=b,visible=False,enabled=False)
+		s.opt_model=Entity(model=MVP+'.ply',name=s.name,texture=MVP+'.tga',scale=.75/1000,position=(p[0],p[1]+.475,p[2]),rotation_x=-90,enabled=False)
 		s.spawn_pos=p
 		s.ptm=ptm
 		s.pts=pts
@@ -164,16 +164,16 @@ class TreeScene(Entity):
 	def __init__(self,pos,sca):
 		s=self
 		sBU=omf+'l1/bush/bush1.png'
-		super().__init__(model=omf+'l1/tree/tree.ply',name='tssn',texture=omf+'l1/tree/wd_scn.tga',rotation_x=-90,scale=sca,position=pos)
-		s.leaf0=Entity(model='quad',name=s.name,texture=sBU,position=(s.x-.4,s.y+1.2,s.z-.249),scale=1.6,color=color.rgb32(0,120,0),rotation_y=0)
-		s.leaf1=Entity(model='quad',name=s.name,texture=sBU,position=(s.x+.4,s.y+1.2,s.z-.248),scale=1.6,color=color.rgb32(0,110,0),rotation_y=-1)
-		s.leaf2=Entity(model='quad',name=s.name,texture=sBU,position=(s.x,s.y+1.4,s.z-.2485),scale=1.6,color=color.rgb32(0,130,0),rotation_y=-1)
-		s.wall0=Entity(model='cube',name=s.name,scale=(1,10,1),position=(s.x+.2,s.y+3.5,s.z),visible=False,collider=b)
+		super().__init__(model=omf+'l1/tree/tree.ply',name='tssn',texture=omf+'l1/tree/wd_scn.tga',rotation_x=-90,scale=sca,position=pos,enabled=False)
+		s.leaf0=Entity(model='quad',name=s.name,texture=sBU,position=(s.x-.4,s.y+1.2,s.z-.249),scale=1.6,color=color.rgb32(0,120,0),rotation_y=0,enabled=False)
+		s.leaf1=Entity(model='quad',name=s.name,texture=sBU,position=(s.x+.4,s.y+1.2,s.z-.248),scale=1.6,color=color.rgb32(0,110,0),rotation_y=-1,enabled=False)
+		s.leaf2=Entity(model='quad',name=s.name,texture=sBU,position=(s.x,s.y+1.4,s.z-.2485),scale=1.6,color=color.rgb32(0,130,0),rotation_y=-1,enabled=False)
+		s.wall0=Entity(model='cube',name=s.name,scale=(1,10,1),position=(s.x+.2,s.y+3.5,s.z),visible=False,collider=b,enabled=False)
 
 class GrassSide(Entity):
 	def __init__(self,pos,ry):
 		gr=omf+'l1/grass_side/grass_side'
-		super().__init__(model=gr+'1.ply',texture=gr+'.jpg',name='grsi',position=pos,scale=(1,2,1.4),rotation=(-90,ry,0))
+		super().__init__(model=gr+'1.ply',texture=gr+'.jpg',name='grsi',position=pos,scale=(1,2,1.4),rotation=(-90,ry,0),enabled=False)
 
 
 ####################
@@ -893,7 +893,7 @@ class StartRoom(Entity):## game spawn point
 		s.ceil=Entity(model='cube',name=s.name,collider=b,position=(s.x,s.y+2.6,s.z-.2),scale=(6,1,6),visible=False,alpha=.4)
 		s.curt=Entity(model='plane',name=s.name,position=(s.x,s.y+0.01,s.z),color=color.black,scale=3)
 		Entity(model='quad',name=s.name,color=color.black,scale=(6,.5),position=(s.x,s.y+2.3,s.z+2.4))
-		RoomDoor(pos=(s.x,s.y+1.9,s.z+2.3))
+		RoomDoor(pos=(s.x,s.y+1.875,s.z+2.3))
 		player.CrashB(pos=(s.x,s.y+.85,s.z-.1))
 		if st.aku_hit > 0:
 			npc.AkuAkuMask(pos=(s.x-.3,s.y+1,s.z+.5))
@@ -934,17 +934,13 @@ class RoomDoor(Entity):## door for start and end room
 		s.dPA=omf+'ev/door/'
 		super().__init__(model=s.dPA+'u0.ply',texture=s.dPA+'u_door.tga',name='rmdr',position=pos,scale=.001,rotation_x=90,collider=b)
 		s.door_part=Entity(model=s.dPA+'d0.ply',name=s.name,texture=s.dPA+'d_door.tga',position=(s.x,s.y+.1,s.z),scale=.001,rotation_x=90,collider=b)
-		s.door_open=False
 		s.door_frame=0
 	def update(self):
 		if not st.gproc():
 			s=self
-			if (distance(LC.ACTOR,s) < 2.5):
-				s.door_open=True
-			if s.door_open:
-				an.door_open(s)
-				return
-			an.door_close(s)
+			qf=(distance(LC.ACTOR,s) < 2.5)
+			ptw={True:0,False:1}
+			an.door_act(s,a=ptw[qf])
 
 class BonusPlatform(Entity):## switch -> bonus round
 	def __init__(self,pos):

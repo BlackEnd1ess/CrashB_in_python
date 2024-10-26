@@ -386,15 +386,16 @@ def gorilla_fall(m):
 		return
 	m.model=go+'/fall/'+str(int(m.f_frame))+'.ply'
 
-## object animations
+## door animation
 dpw='res/objects/ev/door/'
-def door_open(d):
-	if d.door_frame < 3.999:
-		d.door_frame=min(d.door_frame+time.dt*15,3.99)
-	d.door_part.model=dpw+'u'+str(int(d.door_frame))+'.ply'
-	d.model=dpw+'d'+str(int(d.door_frame))+'.ply'
-def door_close(d):
-	if d.door_frame > 0:
-		d.door_frame=max(d.door_frame-time.dt*15,3.99)
-	d.door_part.model=dpw+'u'+str(int(d.door_frame))+'.ply'
-	d.model=dpw+'d'+str(int(d.door_frame))+'.ply'
+def door_act(d,a):
+	kw={0:min(d.door_frame+time.dt*15,3.9),1:max(d.door_frame-time.dt*15,0)}
+	fk=int(d.door_frame)
+	d.door_frame=kw[a]
+	if d.door_frame == kw[a]:
+		d.do_frame={0:3,1:0}[a]
+		tf={0:None,1:'box'}
+		d.collider,d.door_part.collider=tf[a],tf[a]
+	fk=str(fk)+'.ply'
+	d.model=dpw+'u'+fk
+	d.door_part.model=dpw+'d'+fk

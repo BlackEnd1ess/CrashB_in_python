@@ -4,7 +4,7 @@ from ursina import *
 
 ## debug options
 debg_color=color.rgb32(255,128,0)
-debg=True
+debg=False
 
 ## keyboard bindings
 MNU_KEY='p'#		pause
