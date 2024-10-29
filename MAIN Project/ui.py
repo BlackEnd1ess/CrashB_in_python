@@ -1,4 +1,4 @@
-from ursina import Animation,Entity,Sky,Audio,Text,camera,color,scene,invoke
+from ursina import Animation,Sequence,Entity,Sky,Audio,Text,camera,color,scene,invoke
 import status,_core,_loc,sound,settings,warproom,level,time
 from time import strftime,gmtime
 
