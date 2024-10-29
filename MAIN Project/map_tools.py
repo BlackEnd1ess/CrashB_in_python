@@ -1,6 +1,4 @@
 import crate,item,objects
-from ursina import *
-
 c=crate
 o=objects
 I=item

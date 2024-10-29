@@ -1,6 +1,6 @@
-import settings,_core,math,animation,status,sound,_loc,effect,objects
+import settings,_core,math,animation,status,sound,_loc,effect,objects,time,random
+from ursina import BoxCollider,Vec3,Entity,Audio,distance,lerp,invoke
 from math import radians,cos,sin
-from ursina import *
 
 di={0:'x',1:'y',2:'z'}
 npf='res/npc/'

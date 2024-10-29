@@ -1,5 +1,5 @@
-import ui,_core,status,environment,bonus_level,_loc,sound,level_structure,LODsystem
-from ursina import *
+import ui,_core,status,environment,bonus_level,sound,level_structure,LODsystem
+from ursina import camera,invoke
 
 lvs=level_structure
 bn=bonus_level
@@ -10,6 +10,7 @@ sn=sound
 ## start level
 def free_level():
 	camera.rotation_x=15
+	cc.check_nitro_stack()
 	LODsystem.start()
 	st.loading=False
 	cc.spawn_level_crystal(st.level_index)
@@ -18,8 +19,8 @@ def free_level():
 	if st.level_index == 3:
 		sn.AmbienceSound()
 		sn.WaterRiver()
-	cc.level_ready=True
 	ui.load_interface()
+	cc.level_ready=True
 
 ## level settings
 def main_instance(idx):

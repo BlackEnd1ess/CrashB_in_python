@@ -1,5 +1,5 @@
-import _core,status,sound,ui,_loc
-from ursina import *
+from ursina import Entity,BoxCollider,Vec3,SpotLight,color,distance,lerp
+import _core,status,sound,ui,_loc,random,time
 
 i_path='res/item/'
 b='box'
@@ -175,20 +175,20 @@ class EnergyCrystal(Entity):
 			s.visible=(distance(s,LC.ACTOR) < 12)
 			s.rotation_y-=time.dt*70
 
-class TrialClock(Entity):
-	def __init__(self,pos):
-		Clk='clock/clock'
-		super().__init__(model=i_path+Clk+'.obj',texture=i_path+Clk+'.png',position=pos,scale=.003)
-	def collect(self):
-		cc.purge_instance(self)
-		status.is_time_trial=True
-	def update(self):
-		self.rotation_y+=time.dt*120
+#class TrialClock(Entity):
+#	def __init__(self,pos):
+#		Clk='clock/clock'
+#		super().__init__(model=i_path+Clk+'.obj',texture=i_path+Clk+'.png',position=pos,scale=.003)
+#	def collect(self):
+#		cc.purge_instance(self)
+#		status.is_time_trial=True
+#	def update(self):
+#		self.rotation_y+=time.dt*120
 
-class TimeRelic(Entity):
-	def __init__(self,pos,t):
-		tc={0:color.azure,1:color.gold,2:color.rgb32(150,150,180)}
-		super().__init__(model=i_path+'relic/relic.ply',texture=i_path+'relic/relic.tga',scale=0.004,position=pos,rotation_x=-90,color=tc[t])
-	def update(self):
-		if not st.gproc():
-			self.rotation_y-=time.dt*70
+#class TimeRelic(Entity):
+#	def __init__(self,pos,t):
+#		tc={0:color.azure,1:color.gold,2:color.rgb32(150,150,180)}
+#		super().__init__(model=i_path+'relic/relic.ply',texture=i_path+'relic/relic.tga',scale=0.004,position=pos,rotation_x=-90,color=tc[t])
+#	def update(self):
+#		if not st.gproc():
+#			self.rotation_y-=time.dt*70

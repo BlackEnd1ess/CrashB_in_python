@@ -47,10 +47,14 @@ show_crates=0
 show_lives=0
 show_gems=0
 
+## crate audio limit
+br_sn=False
+ex_sn=False
+ni_sn=False
+
 ## level processing
 LV_CLEAR_PROCESS=False
 LEVEL_CLEAN=False
-block_audio=False
 game_over=False
 
 level_crystal=False

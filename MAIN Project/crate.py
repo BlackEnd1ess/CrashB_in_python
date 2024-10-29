@@ -1,5 +1,5 @@
-import item,status,_core,animation,sound,npc,settings,_loc,ui
-from ursina import *
+import item,status,_core,animation,sound,npc,settings,_loc,ui,random,time
+from ursina import Entity,Text,Audio,color,scene,invoke,distance
 
 ic=(.15,.2)
 cc=_core
@@ -333,23 +333,25 @@ class Nitro(Entity):
 		s.vnum=12
 		super().__init__(model=cr2,color=color.white)
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
-		s.start_y=s.y
 		s.acustic=False
+		s.can_jmp=True
 		s.snd_time=1
 	def destroy(self):
 		destroy_event(self)
+	def c_action(self):
+		s=self
+		s.snd_time=max(s.snd_time-time.dt,0)
+		if s.snd_time <= 0:
+			s.snd_time=random.randint(2,3)
+			sn.crate_audio(ID=9,pit=random.uniform(.8,1.1))
+			if s.can_jmp:
+				s.animate_position((s.x,s.y+random.uniform(.1,.2),s.z),duration=.025)
+				invoke(lambda:s.animate_position((s.x,s.spawn_pos[1],s.z),duration=.2),delay=.15)
 	def update(self):
 		s=self
-		if (st.gproc() or not s.visible):
-			return
-		if distance(LC.ACTOR.position,s.position) <= 3:
-			s.snd_time=max(s.snd_time-time.dt,0)
-			if s.snd_time <= 0:
-				s.snd_time=random.randint(2,3)
-				sn.crate_audio(ID=9,pit=random.uniform(.8,1.1))
-				rh=random.uniform(.1,.2)
-				s.animate_position((s.x,s.y+rh,s.z),duration=.02)
-				invoke(lambda:s.animate_position((s.x,s.start_y,s.z),duration=.2),delay=.15)
+		if not st.gproc() and s.visible:
+			if (distance(LC.ACTOR,s) <= 3):
+				s.c_action()
 
 class Air(Entity):
 	def __init__(self,pos,m,l,pse):

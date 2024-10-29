@@ -1,6 +1,6 @@
 import crate,item,status,objects,map_tools,npc,random
+from ursina import Entity,color
 from ursina.shaders import *
-from ursina import *
 
 MT=map_tools
 st=status
@@ -360,7 +360,7 @@ def gem_route1():
 	N.spawn(ID=2,POS=(200,2.125,24.3),DRC=0)
 	N.spawn(ID=2,POS=(201.15,3.125,31),DRC=0)
 	N.spawn(ID=1,POS=(201,3.125,34),DRC=0)
-	N.spawn(ID=2,POS=(202,3.125,38.8587),DRC=1)
+	N.spawn(ID=2,POS=(202,3.125,38.8587),DRC=2)
 	o.GemPlatform(pos=(202,3.3,51.2),t=4)
 
 def gem_route4():

@@ -1,6 +1,6 @@
-import status,_core,_loc,sound,settings,warproom,level
+from ursina import Animation,Entity,Sky,Audio,Text,camera,color,scene,invoke
+import status,_core,_loc,sound,settings,warproom,level,time
 from time import strftime,gmtime
-from ursina import *
 
 w_pa='res/ui/icon/wumpa_fruit/w'
 wmpf='res/ui/digit_wumpa/'
@@ -512,7 +512,7 @@ class BonusText(Entity):
 K=40
 O=180
 ## Pause Menu
-class PauseMenu(Entity):
+class PauseMenu(Entity):####pause without update
 	def __init__(self):
 		s=self
 		e='res/ui/pause/'
@@ -549,6 +549,7 @@ class PauseMenu(Entity):
 		s.check_collected()
 		s.opt_menu=False
 		s.sel_opt=0
+		LC.p_menu=self
 	def input(self,key):
 		s=self
 		if not st.pause:
@@ -567,9 +568,15 @@ class PauseMenu(Entity):
 			if key == 'enter':
 				sn.ui_audio(ID=1)
 				if s.choose == 0:
-					st.pause=False
+					cc.game_pause()
 					return
 				if s.choose == 1:
+					s.music_vol.visible=True
+					s.sound_vol.visible=True
+					s.opt_exit.visible=True
+					s.select_0.visible=False
+					s.select_1.visible=False
+					s.select_2.visible=False
 					s.opt_menu=True
 				if s.choose == 2:
 					if not st.LEVEL_CLEAN:
@@ -587,6 +594,8 @@ class PauseMenu(Entity):
 			elif s.sel_opt == 0:
 				if settings.MUSIC_VOLUME < 1:
 					settings.MUSIC_VOLUME+=.1
+					if settings.MUSIC_VOLUME > 1:
+						settings.MUSIC_VOLUME=1
 			sn.ui_audio(ID=1)
 		if key in ['-','a','left arrow']:
 			if s.sel_opt == 1:
@@ -598,6 +607,12 @@ class PauseMenu(Entity):
 			sn.ui_audio(ID=1)
 		if key == 'enter':
 			s.opt_menu=False
+			s.music_vol.visible=False
+			s.sound_vol.visible=False
+			s.opt_exit.visible=False
+			s.select_0.visible=True
+			s.select_1.visible=True
+			s.select_2.visible=True
 	def check_collected(self):
 		s=self
 		gems_total=st.color_gems+st.clear_gems
@@ -626,47 +641,16 @@ class PauseMenu(Entity):
 				text_blink(M=s,t=ot)
 			else:
 				ot.color=s.font_color
-	def refr_ui(self):
-		s=self
-		pa=(s.visible)
-		s.music_vol.text='MUSIC VOLUME '+str(int(settings.MUSIC_VOLUME*100))+'%'
-		s.sound_vol.text='SOUND VOLUME '+str(int(settings.SFX_VOLUME*100))+'%'
-		s.crystal_counter.visible=(pa)
-		s.game_progress.visible=(pa)
-		s.gem_counter.visible=(pa)
-		s.lvl_name.visible=(pa)
-		s.music_vol.visible=(s.opt_menu)
-		s.sound_vol.visible=(s.opt_menu)
-		s.opt_exit.visible=(s.opt_menu)
-		s.select_0.visible=(pa and not s.opt_menu)
-		s.select_1.visible=(pa and not s.opt_menu)
-		s.select_2.visible=(pa and not s.opt_menu)
-		s.add_text.visible=(pa)
-		s.cry_anim.visible=(pa)
-		s.col_gem1.visible=(pa)
-		s.col_gem2.visible=(pa)
-		s.col_gem3.visible=(pa)
-		s.col_gem4.visible=(pa)
-		s.col_gem5.visible=(pa)
-		s.cleargem.visible=(pa)
-		s.p_name.visible=(pa)
-		s.ppt.visible=(pa)
-		s.visible=(pa)
 	def update(self):
 		s=self
-		if (st.loading or st.game_over):
-			return
-		s.refr_ui()
 		if st.pause:
-			s.visible=True
+			s.music_vol.text=f'MUSIC VOLUME {int(settings.MUSIC_VOLUME*100)}%'
+			s.sound_vol.text=f'SOUND VOLUME {int(settings.SFX_VOLUME*100)}%'
 			s.blink_time=max(s.blink_time-time.dt,0)
 			if s.blink_time <= 0:
-				if s.opt_menu:
-					s.select_option()
-				else:
-					s.select_menu()
+				opv={True:lambda:s.select_option(),False:lambda:s.select_menu()}
+				opv[s.opt_menu]()
 			return
-		s.visible=False
 		s.opt_menu=False
 
 ## Gem/Crytal

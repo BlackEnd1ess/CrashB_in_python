@@ -1,9 +1,10 @@
-import objects,map_tools,crate,npc,status,item
-from ursina import *
+import objects,map_tools,crate,npc,status,item,random
+from ursina import Entity,color
 
 mt=map_tools
 st=status
 o=objects
+r=random
 c=crate
 n=npc
 
@@ -30,11 +31,7 @@ def dev_crate():
 	mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,4])
 	mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,3])
 	mt.crate_block(ID=14,POS=(6.5,.16,-18),CNT=[3,3,3])
-	
-	mt.crate_row(ID=1,POS=(0,.16,-25),CNT=7,WAY=2)
-	
-	mt.crate_row(ID=1,POS=(2,.16,-25),CNT=2,WAY=2)
-	mt.crate_row(ID=1,POS=(2,1.6,-25),CNT=2,WAY=2)
+	mt.crate_row(ID=2,POS=(0,.16,-25),CNT=10,WAY=2)
 def dev_wumpa():
 	mt.wumpa_row(POS=(0,.3,-20),CNT=20,WAY=0)
 def dev_npc():
@@ -208,15 +205,15 @@ def lv2_object():
 	#invisible walls
 	o.InvWall(pos=(16.5,9,1.75),sca=(30,15,.5))
 	for i_ch in range(50):
-		o.IceChunk(pos=(-4-random.uniform(-.5,-1),1.8,-63+i_ch*1.5),rot=(-90,30,0),typ=1)
+		o.IceChunk(pos=(-4-r.uniform(-.5,-1),1.8,-63+i_ch*1.5),rot=(-90,30,0),typ=1)
 		if i_ch < 38:
-			o.IceChunk(pos=(2.9+random.uniform(.5,1),1.8,-63+i_ch*1.5),rot=(-90,-30,0),typ=1)
+			o.IceChunk(pos=(2.9+r.uniform(.5,1),1.8,-63+i_ch*1.5),rot=(-90,-30,0),typ=1)
 	for u_ch in range(20):
-		o.IceChunk(pos=(18.2-random.uniform(-.5,-1),6.3,3.7+u_ch*1.5),rot=(-90,30,0),typ=1)
+		o.IceChunk(pos=(18.2-r.uniform(-.5,-1),6.3,3.7+u_ch*1.5),rot=(-90,30,0),typ=1)
 		if u_ch < 11:
-			o.IceChunk(pos=(26.5+random.uniform(.5,1),6.3,3.7+u_ch*1.5),rot=(-90,-30,0),typ=1)
+			o.IceChunk(pos=(26.5+r.uniform(.5,1),6.3,3.7+u_ch*1.5),rot=(-90,-30,0),typ=1)
 	for e_ch in range(20):
-		o.IceChunk(pos=(45.4+random.uniform(.5,1),6.3,26+e_ch*1.5),rot=(-90,-30,0),typ=1)
+		o.IceChunk(pos=(45.4+r.uniform(.5,1),6.3,26+e_ch*1.5),rot=(-90,-30,0),typ=1)
 	o.IceChunk(pos=(21.7,6,2.6),typ=1,rot=(-180,-90,0))
 	o.IceChunk(pos=(24.4,6,2.6),typ=1,rot=(0,-90,0))
 	o.IceChunk(pos=(21.2,5.3,3.2),typ=1,rot=(260,-90,0))
@@ -467,13 +464,13 @@ def lv3_object():
 	o.SceneWall(pos=(3,2.4,74),typ=2)
 	#bush
 	for wbu in range(16):
-		o.bush(pos=(-3.2,2.7,-30+wbu*2),sca=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=-35)
-		o.bush(pos=(3.2,3,-31+wbu*2),sca=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=35)
-		o.bush(pos=(-3.2,3.5,1+wbu*2),sca=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=-35)
-		o.bush(pos=(3.2,3.5,1+wbu*2),sca=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=35)
-	for wba in range(32):
-		o.bush(pos=(-3.2,4.2,31+wba*2),sca=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=-35)
-		o.bush(pos=(3.2,3.6,31+wba*2),sca=(2,2+random.uniform(.5,2.5),2),c=color.rgb32(0,100+random.uniform(20,100),0),ro_y=35)
+		o.bush(pos=(-3.2,2.7,-30+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),c=color.rgb32(0,100+r.uniform(20,100),0),ro_y=-35)
+		o.bush(pos=(3.2,3,-31+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),c=color.rgb32(0,100+r.uniform(20,100),0),ro_y=35)
+		o.bush(pos=(-3.2,3.5,1+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),c=color.rgb32(0,100+r.uniform(20,100),0),ro_y=-35)
+		o.bush(pos=(3.2,3.5,1+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),c=color.rgb32(0,100+r.uniform(20,100),0),ro_y=35)
+	for wba in range(34):
+		o.bush(pos=(-3.2,4.2,31+wba*2),sca=(2,2+r.uniform(.5,2.5),2),c=color.rgb32(0,100+r.uniform(20,100),0),ro_y=-35)
+		o.bush(pos=(3.2,3.6,31+wba*2),sca=(2,2+r.uniform(.5,2.5),2),c=color.rgb32(0,100+r.uniform(20,100),0),ro_y=35)
 	o.EndRoom(pos=(1,3.7,88),c=color.rgb32(200,210,200))
 	Entity(model='quad',color=color.black,scale=(100,20),position=(0,-10,95))
 def lv3_crate():
@@ -495,8 +492,11 @@ def lv3_crate():
 	mt.crate_wall(ID=14,POS=(.7,.125,-17),CNT=[1,2])
 	mt.crate_block(ID=14,POS=(-1,1.21,1.8),CNT=[2,2,1])
 	c.place_crate(ID=1,p=(0,u0,24.5))
+	c.place_crate(ID=3,p=(0,u0+.32,24.5))
 	c.place_crate(ID=2,p=(0,u0,27.5))
+	c.place_crate(ID=3,p=(0,u0+.32,27.5))
 	c.place_crate(ID=1,p=(0,u0,30.5))
+	c.place_crate(ID=2,p=(0,u0+.32,30.5))
 	c.place_crate(ID=3,p=(0,u0,34.5))
 	c.place_crate(ID=3,p=(0,u0,35.5))
 	c.place_crate(ID=1,p=(-1,u0,35.5))
@@ -978,7 +978,7 @@ def lv5_crate():
 	c.place_crate(ID=9,p=(43,1.6,-2.8),m=102)
 	for ffc_x in range(5):
 		for ffc_z in range(5):
-			c.place_crate(ID=13,p=(64+.32*ffc_x,1.1+.16,16+.32*ffc_z),m=102,l=random.choice([1,2,7]))
+			c.place_crate(ID=13,p=(64+.32*ffc_x,1.1+.16,16+.32*ffc_z),m=102,l=r.choice([1,2,7]))
 	mt.crate_plane(ID=2,POS=(44.2,-.5+.16,-1.6),CNT=[2,2])
 	#aku
 	c.place_crate(ID=5,p=(4.8,.36,-56))

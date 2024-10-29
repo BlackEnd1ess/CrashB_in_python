@@ -1,5 +1,5 @@
-import status,_core,_loc,sound
-from ursina import *
+import status,_core,_loc,sound,time,random
+from ursina import Entity,color,invoke
 
 npc_anim={0:7,#amadillo
 		1:12,#turtle
@@ -30,42 +30,36 @@ def idle(d,sp):
 	d.idfr=min(d.idfr+time.dt*sp,10.999)
 	if d.idfr > 10.99:
 		d.idfr=0
-	d.texture=af+'idle/crash.tga'
 	d.model=af+'idle/'+str(int(d.idfr))+'.ply'
 
 def run(d,sp):
 	d.rnfr=min(d.rnfr+time.dt*sp,10.999)
 	if d.rnfr > 10.99:
 		d.rnfr=0
-	d.texture=af+'run/crash.tga'
 	d.model=af+'run/'+str(int(d.rnfr))+'.ply'
 
 def run_s(d,sp):
 	d.srfr=min(d.srfr+time.dt*sp,6.999)
 	if d.srfr > 6.99:
 		d.srfr=0
-	d.texture=af+'slide_start/crash.tga'
 	d.model=af+'slide_start/'+str(int(d.srfr))+'.ply'
 
 def slide_stop(d,sp):
 	d.ssfr=min(d.ssfr+time.dt*sp,3.999)
 	if d.ssfr > 3.99:
 		d.ssfr=3
-	d.texture=af+'slide_stop/crash.tga'
 	d.model=af+'slide_stop/'+str(int(d.ssfr))+'.ply'
 
 def jup(d,sp):
 	d.jmfr=min(d.jmfr+time.dt*sp,2.999)
 	if d.jmfr > 2.99:
 		return
-	d.texture=af+'jmup/crash.tga'
 	d.model=af+'jmup/'+str(int(d.jmfr))+'.ply'
 
 def spin(d,sp):
 	d.spfr=min(d.spfr+time.dt*sp,11.999)
 	if d.spfr > 11.99:
 		d.spfr=0
-	d.texture=af+'spn/crash.tga'
 	d.model=af+'spn/'+str(int(d.spfr))+'.ply'
 
 def land(d,sp):
@@ -74,13 +68,11 @@ def land(d,sp):
 		d.is_landing=False
 		d.ldfr=0
 		return
-	d.texture=af+'lnd/crash.tga'
 	d.model=af+'lnd/'+str(int(d.ldfr))+'.ply'
 
 def fall(d,sp):
 	if d.fafr < 7.99:
 		d.fafr=min(d.fafr+time.dt*sp,7.99)
-	d.texture=af+'fall/crash.tga'
 	d.model=af+'fall/'+str(int(d.fafr))+'.ply'
 
 def flip(d,sp):
@@ -89,7 +81,6 @@ def flip(d,sp):
 		d.is_flip=False
 		d.flfr=0
 		return
-	d.texture=af+'flp/crash.tga'
 	d.model=af+'flp/'+str(int(d.flfr))+'.ply'
 
 def belly_smash(d,sp):
@@ -97,7 +88,6 @@ def belly_smash(d,sp):
 	if d.smfr > 2.99:
 		d.smfr=2
 		return
-	d.texture=af+'smash/crash.tga'
 	d.model=af+'smash/'+str(int(d.smfr))+'.ply'
 
 def belly_land(d,sp):
@@ -107,7 +97,6 @@ def belly_land(d,sp):
 		d.standup=True
 		d.b_smash=False
 		return
-	d.texture=af+'smash_land/crash.tga'
 	d.model=af+'smash_land/'+str(int(d.blfr))+'.ply'
 
 def stand_up(d,sp):
@@ -118,7 +107,6 @@ def stand_up(d,sp):
 		d.is_landing=False
 		d.standup=False
 		return
-	d.texture=af+'stand_up/crash.tga'
 	d.model=af+'stand_up/'+str(int(d.sufr))+'.ply'
 
 ## crash death animationsa
@@ -270,14 +258,15 @@ class CrateBreak(Entity):
 		super().__init__(model=cf+'brk/0.ply',texture=cf+'brk/break.tga',rotation=(-90,random.randint(0,360),0),scale=.4/1000,color=bco,position=(anP[0],anP[1]-.16,anP[2]),unlit=False,collider=None)
 		self.frame_break=0
 	def update(self):
-		if not st.gproc():
-			s=self
-			s.frame_break=min(s.frame_break+time.dt*t,13.999)
-			if s.frame_break > 13.99:
-				s.frame_break=0
-				cc.purge_instance(s)
-				return
-			s.model=cf+'brk/'+str(int(s.frame_break))+'.ply'
+		if st.gproc():
+			return
+		s=self
+		s.frame_break=min(s.frame_break+time.dt*t,13.999)
+		if s.frame_break > 13.99:
+			s.frame_break=0
+			cc.purge_instance(s)
+			return
+		s.model=cf+'brk/'+str(int(s.frame_break))+'.ply'
 
 ##warp rings
 class WarpRingEffect(Entity): ## spawn animation
@@ -318,7 +307,6 @@ def plant_bite(m):
 	m.atk_frame=min(m.atk_frame+time.dt*t,18.999)
 	if m.atk_frame > 18.99:
 		m.atk_frame=0
-	m.texture=plt+'attack/plant.tga'
 	m.model=plt+'attack/'+str(int(m.atk_frame))+'.ply'
 def plant_eat(m):
 	m.eat_frame=min(m.eat_frame+time.dt*t,30.999)
@@ -334,7 +322,7 @@ def hedge_defend(m):
 	m.def_frame=min(m.def_frame+time.dt*t,6.999)
 	if m.def_frame > 6.99:
 		m.def_frame=0
-	m.texture=hdg+'attack/attack.tga'
+	#m.texture=hdg+'attack/attack.tga'
 	m.model=hdg+'attack/'+str(int(m.def_frame))+'.ply'
 
 #rat idle
@@ -388,14 +376,27 @@ def gorilla_fall(m):
 
 ## door animation
 dpw='res/objects/ev/door/'
-def door_act(d,a):
-	kw={0:min(d.door_frame+time.dt*15,3.9),1:max(d.door_frame-time.dt*15,0)}
-	fk=int(d.door_frame)
-	d.door_frame=kw[a]
-	if d.door_frame == kw[a]:
-		d.do_frame={0:3,1:0}[a]
-		tf={0:None,1:'box'}
-		d.collider,d.door_part.collider=tf[a],tf[a]
-	fk=str(fk)+'.ply'
-	d.model=dpw+'u'+fk
-	d.door_part.model=dpw+'d'+fk
+def door_open(d):
+	if not d.d_opn:
+		d.d_frm=min(d.d_frm+time.dt*15,3.9)
+		if d.d_frm >= 3.9:
+			d.d_opn=True
+			d.door_part.collider=None
+			d.collider=None
+			d.d_frm=3
+			sn.obj_audio(ID=1)
+		fk=str(int(d.d_frm))+'.ply'
+		d.model=dpw+'u'+fk
+		d.door_part.model=dpw+'d'+fk
+def door_close(d):
+	if d.d_opn:
+		d.d_frm=max(d.d_frm-time.dt*15,0)
+		if d.d_frm <= 0:
+			d.d_opn=False
+			d.door_part.collider='box'
+			d.collider='box'
+			d.d_frm=0
+			sn.obj_audio(ID=1,pit=.85)
+		fk=str(int(d.d_frm))+'.ply'
+		d.model=dpw+'u'+fk
+		d.door_part.model=dpw+'d'+fk

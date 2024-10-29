@@ -1,5 +1,5 @@
 import status,_loc,level,sound,settings,ui,_core,objects
-from ursina import *
+from ursina import Audio,Text,Entity,camera,scene,color
 cu=camera.ui
 st=status
 sn=sound

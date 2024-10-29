@@ -1,6 +1,5 @@
-from ursina.shaders import *
+from ursina import color,window,camera
 import environment,os
-from ursina import *
 
 ## debug options
 debg_color=color.rgb32(255,128,0)

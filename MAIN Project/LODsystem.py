@@ -1,5 +1,5 @@
+from ursina import Sequence,Wait,scene,distance,distance_xz
 import _core,_loc,status,item
-from ursina import *
 
 st=status
 cc=_core

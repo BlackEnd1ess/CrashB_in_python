@@ -77,3 +77,15 @@
 
 #26.10.2024
 - improved Room Door Function, where open both doors with the same resources
+
+#28.10.2024
+- pause menu doesnt refresh visiblity anymore. this function was replaced by switch on/off
+- player textures changes only 1 times to save resources
+- Background Music checks all 5 Seconds the current Zone
+- reduces crate fall time to 0.15
+- Level 3 River Background Sound doesn't spam instantly new Audio Instances and uses one in loop instead.
+- player debugger shows player position
+
+#29.10.2024
+- fixxed overlapping sounds after breaking or exploding crates in same time
+- nitro crates, where placed under a other crate, doesnt jump anymore

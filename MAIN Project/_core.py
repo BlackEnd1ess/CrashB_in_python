@@ -1,7 +1,6 @@
-import json,ui,crate,item,status,sound,npc,settings,_loc,math,warproom,environment,psutil
-from math import atan2,sqrt
-from ursina import *
-
+import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,psutil,os,time,random,json,math
+from ursina import Entity,Text,camera,scene,invoke,Vec3,color,distance,boxcast,raycast
+from math import atan2,sqrt,pi
 
 level_ready=False
 env=environment
@@ -16,35 +15,37 @@ N=npc
 class PlayerDBG(Entity):
 	def __init__(self):
 		CV=camera.ui
-		sx=-.875
+		sx=-.87
 		fw=1.5
-		hg=-.065
+		hg=.225
 		s=self
 		fn='res/ui/font.ttf'
 		super().__init__()
 		tct=settings.debg_color
-		Entity(model='quad',position=(-.775,-.275),color=color.black,alpha=.75,scale=(.4,.6),parent=CV)
-		s.cpu_state=Text(color=tct,font=fn,position=(sx,-hg-.525),parent=CV,scale=fw)
-		s.mem_state=Text(color=tct,font=fn,position=(sx,-hg-.5),parent=CV,scale=fw)
-		s.aku_state=Text(color=tct,font=fn,position=(sx,-hg-.475),parent=CV,scale=fw)
-		s.ind_state=Text(color=tct,font=fn,position=(sx,-hg-.45),parent=CV,scale=fw)
-		s.inw_state=Text(color=tct,font=fn,position=(sx,-hg-.425),parent=CV,scale=fw)
-		s.slp_state=Text(color=tct,font=fn,position=(sx,-hg-.4),parent=CV,scale=fw)
-		s.bns_state=Text(color=tct,font=fn,position=(sx,-hg-.375),parent=CV,scale=fw)
-		s.idl_state=Text(color=tct,font=fn,position=(sx,-hg-.35),parent=CV,scale=fw)
-		s.run_state=Text(color=tct,font=fn,position=(sx,-hg-.325),parent=CV,scale=fw)
-		s.fal_state=Text(color=tct,font=fn,position=(sx,-hg-.3),parent=CV,scale=fw)
-		s.lnd_state=Text(color=tct,font=fn,position=(sx,-hg-.275),parent=CV,scale=fw)
-		s.jmp_state=Text(color=tct,font=fn,position=(sx,-hg-.25),parent=CV,scale=fw)
-		s.flp_state=Text(color=tct,font=fn,position=(sx,-hg-.225),parent=CV,scale=fw)
-		s.bly_state=Text(color=tct,font=fn,position=(sx,-hg-.2),parent=CV,scale=fw)
-		s.atk_state=Text(color=tct,font=fn,position=(sx,-hg-.175),parent=CV,scale=fw)
-		s.frl_state=Text(color=tct,font=fn,position=(sx,-hg-.15),parent=CV,scale=fw)
-		s.gnd_state=Text(color=tct,font=fn,position=(sx,-hg-.125),parent=CV,scale=fw)
-		s.sta_state=Text(color=tct,font=fn,position=(sx,-hg-.1),parent=CV,scale=fw)
-		s.inj_state=Text(color=tct,font=fn,position=(sx,-hg-.075),parent=CV,scale=fw)
-		s.frz_state=Text(color=tct,font=fn,position=(sx,-hg-.05),parent=CV,scale=fw)
-		s.process=psutil.Process()
+		Entity(model='quad',position=(-.76,-.25),color=color.black,alpha=.75,scale=(.4,.8),z=1,parent=CV)
+		s.frz_state=Text(color=tct,font=fn,position=(sx,hg-.075),parent=CV,scale=fw)
+		s.sta_state=Text(color=tct,font=fn,position=(sx,hg-.1),parent=CV,scale=fw)
+		s.gnd_state=Text(color=tct,font=fn,position=(sx,hg-.125),parent=CV,scale=fw)
+		s.frl_state=Text(color=tct,font=fn,position=(sx,hg-.15),parent=CV,scale=fw)
+		s.atk_state=Text(color=tct,font=fn,position=(sx,hg-.175),parent=CV,scale=fw)
+		s.bly_state=Text(color=tct,font=fn,position=(sx,hg-.2),parent=CV,scale=fw)
+		s.flp_state=Text(color=tct,font=fn,position=(sx,hg-.225),parent=CV,scale=fw)
+		s.jmp_state=Text(color=tct,font=fn,position=(sx,hg-.25),parent=CV,scale=fw)
+		s.lnd_state=Text(color=tct,font=fn,position=(sx,hg-.275),parent=CV,scale=fw)
+		s.fal_state=Text(color=tct,font=fn,position=(sx,hg-.3),parent=CV,scale=fw)
+		s.run_state=Text(color=tct,font=fn,position=(sx,hg-.325),parent=CV,scale=fw)
+		s.idl_state=Text(color=tct,font=fn,position=(sx,hg-.35),parent=CV,scale=fw)
+		s.bns_state=Text(color=tct,font=fn,position=(sx,hg-.375),parent=CV,scale=fw)
+		s.slp_state=Text(color=tct,font=fn,position=(sx,hg-.4),parent=CV,scale=fw)
+		s.inw_state=Text(color=tct,font=fn,position=(sx,hg-.425),parent=CV,scale=fw)
+		s.ind_state=Text(color=tct,font=fn,position=(sx,hg-.45),parent=CV,scale=fw)
+		s.inj_state=Text(color=tct,font=fn,position=(sx,hg-.475),parent=CV,scale=fw)
+		s.aku_state=Text(color=tct,font=fn,position=(sx,hg-.5),parent=CV,scale=fw)
+		s.mem_state=Text(color=tct,font=fn,position=(sx,hg-.55),parent=CV,scale=fw)
+		s.cpu_state=Text(color=tct,font=fn,position=(sx,hg-.575),parent=CV,scale=fw)
+		s.dscr_text=Text('player pos:',color=color.azure,font=fn,position=(sx+.05,hg-.625),parent=CV,scale=fw)
+		s.ppo_state=Text(color=tct,font=fn,position=(sx,hg-.665),parent=CV,scale=fw)
+		s.process=psutil.Process(os.getpid())
 		s.cpu_usage=s.process.cpu_percent()
 	def update(self):
 		if not st.gproc():
@@ -53,6 +54,7 @@ class PlayerDBG(Entity):
 			mem_usage=s.process.memory_info().rss/(1024*1024)
 			s.cpu_state.text=f'STATUS CPU  : {s.cpu_usage}%'
 			s.mem_state.text=f'STATUS MEM  : {mem_usage:.0f} MB'
+			s.ppo_state.text=f'x{rv.x:.1f}  y{rv.y:.1f}  z{rv.z:.1f}'
 			s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'
 			s.ind_state.text=f'INDOOR ZONE : {(rv.indoor > 0)}'
 			s.inw_state.text=f'WATER ZONE  : {(rv.in_water > 0)}'
@@ -74,12 +76,13 @@ class PlayerDBG(Entity):
 
 def set_val(c):
 	for _a in ['rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','walk_snd','fall_time','slide_fwd','in_water','space_time']:
-		setattr(c,_a,0)#animation frames
+		setattr(c,_a,0)#values
 	for _v in ['aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','atk_ctm']:
 		setattr(c,_v,False)#flags
 	c.move_speed=LC.dfsp
 	c.gravity=LC.dfsp
 	c.direc=(0,0,0)
+	c.cur_tex=None
 	c.vpos=c.y
 	c.indoor=.5
 	c.CMS=3
@@ -139,6 +142,7 @@ def reset_state(c):
 	rmv_wumpas()
 	reset_wumpas()
 	reset_npc()
+	check_nitro_stack()
 	c.position=status.checkpoint
 	camera.position=c.position
 	camera.rotation=(15,0,0)
@@ -369,11 +373,30 @@ def purge_instance(v):
 def game_pause():
 	if not st.pause:
 		st.pause=True
-		return
-	st.pause=False
+	else:
+		st.pause=False
+	pa=st.pause
+	pm=LC.p_menu
+	pm.crystal_counter.visible=(pa)
+	pm.game_progress.visible=(pa)
+	pm.gem_counter.visible=(pa)
+	pm.lvl_name.visible=(pa)
+	pm.add_text.visible=(pa)
+	pm.cry_anim.visible=(pa)
+	pm.select_0.visible=(pa)
+	pm.select_1.visible=(pa)
+	pm.select_2.visible=(pa)
+	pm.col_gem1.visible=(pa)
+	pm.col_gem2.visible=(pa)
+	pm.col_gem3.visible=(pa)
+	pm.col_gem4.visible=(pa)
+	pm.col_gem5.visible=(pa)
+	pm.cleargem.visible=(pa)
+	pm.p_name.visible=(pa)
+	pm.ppt.visible=(pa)
+	pm.visible=(pa)
 def game_over():
 	invoke(lambda:ui.GameOverScreen(),delay=2)
-
 ## collisions
 def check_ceiling(c):
 	vc=c.intersects(ignore=[c,LC.shdw])
@@ -527,9 +550,16 @@ def check_crates_over(c):
 	for wm in crf:
 		sdi+=1
 		if (wm.y > c.y) and (wm.y-c.y) <= .32*sdi:
-			wm.animate_y((wm.y-.32),duration=.2)
+			wm.animate_y((wm.y-.32),duration=.175)
 	sdi=0
 	del sdi,c,crf
+def check_nitro_stack():
+	nit_crt=[ct for ct in scene.entities if is_crate(ct) and ct.vnum == 12 and ct.can_jmp]
+	all_crt=[ct for ct in scene.entities if is_crate(ct)]
+	for ni in nit_crt:
+		for cra in all_crt:
+			if abs(cra.x-ni.x) < .1 and abs(cra.z-ni.z) < .1 and ni.y <= cra.y and not ni is cra:
+				ni.can_jmp=False
 def is_crate(e):
 	cck=[C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
 		C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,C.SwitchEmpty,

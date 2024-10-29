@@ -10,6 +10,9 @@ st=status
 LC=_loc
 
 cHr='res/pc/'
+atp=cHr+'/spn/crash.tga'
+dtp=cHr+'crash.tga'
+
 class pShadow(Entity):## shadow point
 	def __init__(self):
 		super().__init__(model='quad',texture=cHr+'shdw.png',color=color.black,rotation_x=90,scale=.25,origin_z=.01,alpha=.9,collider='box')
@@ -60,6 +63,8 @@ class CrashB(Entity):
 		if not st.p_rst(s):
 			if key in s.KEY_ACT:
 				s.KEY_ACT[key]()
+			if key == 'f':
+				camera.rotation_x+=1
 			if sg.debg:
 				if key in s.dev_act:
 					s.dev_act[key]()
@@ -185,6 +190,14 @@ class CrashB(Entity):
 			dca[rsn]()
 			return
 		invoke(lambda:cc.reset_state(s),delay=2)
+	def refr_tex(self):
+		s=self
+		if s.texture == s.cur_tex:
+			return
+		if s.is_attack:
+			s.texture,s.cur_tex=atp,atp
+			return
+		s.texture,s.cur_tex=dtp,dtp
 	def refr_anim(self):
 		s=self
 		if (s.standup):
@@ -234,4 +247,5 @@ class CrashB(Entity):
 			if not st.p_rst(s):
 				s.c_interact()
 			if not st.death_event:
+				s.refr_tex()
 				s.refr_anim()

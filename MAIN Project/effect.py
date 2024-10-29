@@ -1,5 +1,5 @@
-import status,_core,_loc
-from ursina import *
+import status,_core,_loc,time,random
+from ursina import Entity,Vec3,color
 
 st=status
 cc=_core

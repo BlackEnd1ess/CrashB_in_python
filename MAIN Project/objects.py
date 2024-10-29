@@ -175,7 +175,6 @@ class GrassSide(Entity):
 		gr=omf+'l1/grass_side/grass_side'
 		super().__init__(model=gr+'1.ply',texture=gr+'.jpg',name='grsi',position=pos,scale=(1,2,1.4),rotation=(-90,ry,0),enabled=False)
 
-
 ####################
 ## level 2 objects #
 class Plank(Entity):
@@ -225,10 +224,6 @@ class SnowWall(Entity):
 		swbo='l2/snow_wall/snow_bonus'
 		super().__init__(model=omf+swbo+'.ply',texture=omf+swbo+'.tga',scale=.02,name='snwa',position=pos,rotation=(-90,-90,0))
 		Entity(model='cube',position=(s.x,s.y+.3,s.z+.3),scale=(5.5,3.5,.5),name=s.name,collider=b,visible=False)
-
-class Rock(Entity):
-	def __init__(self,pos):
-		super().__init__(model=omf+'l2/rock/rock.ply',color=color.rgb32(40,40,0),rotation_x=-90,position=pos,scale=.5)
 
 class IceCrystal(Entity):
 	def __init__(self,pos):
@@ -631,7 +626,6 @@ class EletricWater(Entity):
 			s.wtr_anim()
 			s.tme=max(s.tme-time.dt,0)
 			if s.tme <= 0:
-				print(time.dt)
 				if s.x > 150:
 					s.tme=8
 				else:
@@ -669,9 +663,10 @@ class RuinsPlatform(Entity):##big platform
 
 class RuinsBlock(Entity):## small platform
 	def __init__(self,pos):
+		s=self
 		rnb=omf+'l5/ruins_scn/'
 		super().__init__(model='cube',collider=b,scale=(.75,1,.75),name='rubl',position=pos,visible=False)
-		self.opt_model=Entity(model=rnb+'ruins_ptf02.ply',name=self.name,texture=rnb+'ruins_scn.tga',position=(self.x,self.y+.5,self.z-.025),scale=.03,rotation=(-90,90,0))
+		s.opt_model=Entity(model=rnb+'ruins_ptf02.ply',name=s.name,texture=rnb+'ruins_scn.tga',position=(s.x,s.y+.5,s.z-.025),scale=.03,rotation=(-90,90,0))
 
 class RuinsCorridor(Entity):## corridor
 	def __init__(self,pos):
@@ -934,13 +929,14 @@ class RoomDoor(Entity):## door for start and end room
 		s.dPA=omf+'ev/door/'
 		super().__init__(model=s.dPA+'u0.ply',texture=s.dPA+'u_door.tga',name='rmdr',position=pos,scale=.001,rotation_x=90,collider=b)
 		s.door_part=Entity(model=s.dPA+'d0.ply',name=s.name,texture=s.dPA+'d_door.tga',position=(s.x,s.y+.1,s.z),scale=.001,rotation_x=90,collider=b)
-		s.door_frame=0
+		s.d_opn=False
+		s.d_frm=0
 	def update(self):
 		if not st.gproc():
 			s=self
 			qf=(distance(LC.ACTOR,s) < 2.5)
-			ptw={True:0,False:1}
-			an.door_act(s,a=ptw[qf])
+			ptw={True:lambda:an.door_open(s),False:lambda:an.door_close(s)}
+			ptw[qf]()
 
 class BonusPlatform(Entity):## switch -> bonus round
 	def __init__(self,pos):
@@ -1110,11 +1106,6 @@ class Water(Entity):
 				if s.frm > 57.99:
 					s.frm=0
 				s.texture=s.wtfc+str(int(s.frm))+'.tga'
-
-class mTerrain(Entity):
-	def __init__(self,pos,sca,typ):
-		terra='res/terrain/l'+str(st.level_index)+'/'
-		super().__init__(model='cube',position=pos,collider=b,scale=sca,texture=terra+typ,texture_scale=(sca[0],sca[2]))
 
 class mBlock(Entity):
 	def __init__(self,pos,sca):

@@ -1,5 +1,5 @@
-import status,settings,_core,_loc
-from ursina import *
+from ursina import Entity,Audio,Sequence,Wait,invoke
+import status,settings,_core,_loc,random,time
 se=settings
 cc=_core
 st=status
@@ -93,13 +93,22 @@ SND_CRT={0:'steel',
 		13:'air',
 		14:'aku'}
 def crate_audio(ID,pit=1):
-	if ID in [2,11]:
-		if st.block_audio:
-			return
-		st.block_audio=True
+	if (ID == 2 and st.br_sn) or (ID == 10 and st.ex_sn) or (ID == 11 and st.ni_sn):
+		return
+	if ID == 2:
+		if not st.br_sn:
+			st.br_sn=True
+			invoke(lambda:setattr(st,'br_sn',False),delay=.1)
+	if ID == 10:
+		if not st.ex_sn:
+			st.ex_sn=True
+			invoke(lambda:setattr(st,'ex_sn',False),delay=.1)
+	if ID == 11:
+		if not st.ni_sn:
+			st.ni_sn=True
+			invoke(lambda:setattr(st,'ni_sn',False),delay=.1)
 	ca=Audio(SN+SND_CRT[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME*2)
 	cc.purge_instance(ca)
-	invoke(lambda:setattr(st,'block_audio',False),delay=.1)
 
 ## NPC SFX
 SND_NPC={0:'plant_bite',
@@ -132,29 +141,29 @@ def obj_audio(ID,pit=1):
 class WaterRiver(Audio):
 	def __init__(self):
 		super().__init__(VS+'waterf.wav',volume=0,loop=True)
-	def update(self):
+		invoke(lambda:Sequence(self.check_z,Wait(.5),loop=True)(),delay=1)
+	def check_z(self):
 		if not st.gproc() and not (st.bonus_round or st.is_death_route):
 			self.volume=se.SFX_VOLUME
 			return
 		self.volume=0
 
-class AmbienceSound(Entity):
+class AmbienceSound(Audio):
 	def __init__(self):
-		super().__init__()
-		self.rpt=1
+		super().__init__(VS+'jungle.wav',loop=True,volume=0)
+		self.vlm=se.SFX_VOLUME
 	def update(self):
-		if not st.gproc():
-			s=self
-			s.rpt=max(s.rpt-time.dt,0)
-			if s.rpt <= 0:
-				s.rpt=1
-				fb=Audio(VS+'jungle.wav',pitch=random.uniform(1,1.1),volume=se.SFX_VOLUME)
-				cc.purge_instance(fb)
+		s=self
+		if st.gproc():
+			s.volume=0
+			return
+		s.volume=s.vlm
 
 class Rainfall(Audio):
 	def __init__(self):
 		super().__init__(snd_rain,loop=True,volume=0)
-	def update(self):
+		Sequence(self.check_z,Wait(.5),loop=True)()
+	def check_z(self):
 		s=self
 		if (LC.ACTOR.indoor <= 0 and LC.ACTOR.warped) and not st.gproc():
 			s.volume=settings.SFX_VOLUME
