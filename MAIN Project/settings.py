@@ -1,5 +1,5 @@
 from ursina import color,window,camera
-import environment,os
+import environment
 
 ## debug options
 debg_color=color.rgb32(255,128,0)
@@ -28,7 +28,6 @@ SFX_VOLUME=.5
 ## window
 def load():
 	w=window
-	os.system('cls')
 	w.windowed_size=(1600,900)
 	w.render_mode='default'
 	w.exit_button.visible=False

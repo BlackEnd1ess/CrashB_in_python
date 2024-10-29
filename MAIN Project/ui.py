@@ -1,4 +1,4 @@
-from ursina import Animation,Sequence,Entity,Sky,Wait.Audio,Text,camera,color,scene,invoke
+from ursina import Animation,Sequence,Wait,Entity,Sky,Audio,Text,camera,color,scene,invoke
 import status,_core,_loc,sound,settings,warproom,level,time
 from time import strftime,gmtime
 
@@ -75,6 +75,7 @@ class WumpaCounter(Entity):
 		s.digit_0=Entity(model=q,parent=CU,position=(s.x+.075,s.y),scale=.06,visible=False)
 		s.digit_1=Entity(model=q,parent=CU,position=(s.digit_0.x+.06,s.digit_0.y),scale=.06,visible=False)
 		s.frm=0
+		Sequence(s.refr,Wait(.01),loop=True)()
 	def digits(self):
 		s=self
 		n=f'{st.wumpa_fruits}'
@@ -90,7 +91,7 @@ class WumpaCounter(Entity):
 		if st.wumpa_fruits > 99:
 			st.wumpa_fruits=0
 			cc.give_extra_live()
-	def update(self):
+	def refr(self):
 		if not st.gproc():
 			s=self
 			s.wumpa_max()

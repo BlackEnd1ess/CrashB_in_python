@@ -1,3 +1,4 @@
 ## BUGS/ERORRS
 - reduce laggs
 - gem gloss
+- fall zone doesnt work

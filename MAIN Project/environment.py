@@ -1,5 +1,5 @@
 from ursina import Sky,AmbientLight,Sequence,Wait,Animation,color,invoke,scene,camera
-import status,_loc,sound,time
+import status,_loc,sound,time,random
 
 st=status
 LC=_loc
