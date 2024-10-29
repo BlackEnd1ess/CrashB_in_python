@@ -359,7 +359,7 @@ def collect_rewards():
 	invoke(lambda:warproom.level_select(),delay=2)
 def purge_instance(v):
 	if is_crate(v):
-		if not (v.poly == 1 or v.vnum == 16):
+		if not v.poly == 1:
 			st.C_RESET.append(v)
 	if is_enemie(v):
 		st.NPC_RESET.append(v)
@@ -397,6 +397,7 @@ def game_pause():
 	pm.visible=(pa)
 def game_over():
 	invoke(lambda:ui.GameOverScreen(),delay=2)
+
 ## collisions
 def check_ceiling(c):
 	vc=c.intersects(ignore=[c,LC.shdw])

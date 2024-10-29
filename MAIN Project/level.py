@@ -1,5 +1,5 @@
 import ui,_core,status,environment,bonus_level,sound,level_structure,LODsystem
-from ursina import camera,invoke
+from ursina import camera,invoke,Sequence,Wait
 
 lvs=level_structure
 bn=bonus_level
@@ -7,6 +7,7 @@ env=environment
 st=status
 cc=_core
 sn=sound
+
 ## start level
 def free_level():
 	camera.rotation_x=15

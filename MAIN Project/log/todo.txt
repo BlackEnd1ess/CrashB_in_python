@@ -1,4 +1,6 @@
 ## BUGS/ERORRS
+- while death event, air crate activation cant interrupt.
+  this cause continued activation after player respawn
 - reduce laggs
 - gem gloss
-- fall zone doesnt work
+- decrase camera range

@@ -33,7 +33,7 @@ def dev_crate():
 	mt.crate_block(ID=14,POS=(6.5,.16,-18),CNT=[3,3,3])
 	mt.crate_row(ID=2,POS=(0,.16,-25),CNT=10,WAY=2)
 def dev_wumpa():
-	mt.wumpa_row(POS=(0,.3,-20),CNT=20,WAY=0)
+	mt.wumpa_plane(POS=(0,.3,-20),CNT=[10,10])
 def dev_npc():
 	n.spawn(ID=0,POS=(0,0,-10))
 
@@ -394,10 +394,10 @@ def lv3_object():
 	o.TempleWall(pos=(-2.55,.65,56.4),side=2)
 	o.TempleWall(pos=(2.7,.65,56.4),side=1)
 	#tree
-	o.TreeScene(pos=(-2.3,2.2,82.5),sca=.02)
-	o.TreeScene(pos=(2.3,2.2,82.5),sca=.02)
-	o.TreeScene(pos=(-3,2.8,84),sca=.02)
-	o.TreeScene(pos=(2.4,2.8,84),sca=.02)
+	o.TreeScene(pos=(-2.3,2.2,82.5),sca=.0175)
+	o.TreeScene(pos=(2.3,2.2,82.5),sca=.0175)
+	o.TreeScene(pos=(-3,2.8,84),sca=.0175)
+	o.TreeScene(pos=(2.4,2.8,84),sca=.0175)
 	o.bush(pos=(-1,4.2,82),sca=2,c=color.green)
 	o.bush(pos=(0,4.5,82.1),sca=2,c=color.green)
 	o.bush(pos=(1,4.2,82.11),sca=2,c=color.green)

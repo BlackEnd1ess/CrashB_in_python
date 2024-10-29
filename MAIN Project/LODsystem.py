@@ -1,5 +1,5 @@
 from ursina import Sequence,Wait,scene,distance,distance_xz
-import _core,_loc,status,item
+import _core,_loc,status,item,gc
 
 st=status
 cc=_core
@@ -34,6 +34,7 @@ LD={0:0,
 
 ## init lod
 def start():
+	gc.collect()
 	Sequence(refr,Wait(.6),loop=True)()
 
 ## check distance

@@ -2,11 +2,11 @@ import _core,status,animation,sound,_loc,map_tools,settings
 from math import atan2
 from ursina import *
 
-sg=settings
 an=animation
+sg=settings
+st=status
 sn=sound
 cc=_core
-st=status
 LC=_loc
 
 cHr='res/pc/'
@@ -63,9 +63,9 @@ class CrashB(Entity):
 		if not st.p_rst(s):
 			if key in s.KEY_ACT:
 				s.KEY_ACT[key]()
-			if key == 'f':
-				camera.rotation_x+=1
 			if sg.debg:
+				#if key == 'f':
+				#	print(scene.entities[-5:])
 				if key in s.dev_act:
 					s.dev_act[key]()
 	def belly_smash(self):
@@ -165,9 +165,7 @@ class CrashB(Entity):
 			s.jump_typ(t=1)
 	def anim_fall(self):
 		s=self
-		if st.death_event:
-			return
-		if (s.is_flip or s.is_attack):
+		if st.death_event or (s.is_flip or s.is_attack):
 			return
 		if s.b_smash:
 			an.belly_smash(s,sp=14)
@@ -215,7 +213,7 @@ class CrashB(Entity):
 			else:
 				an.land(s,sp=18)
 			return
-		if st.p_idle(s) or self.freezed:
+		if st.p_idle(s) or s.freezed:
 			if s.is_slippery:
 				an.slide_stop(s,sp=16)
 			else:

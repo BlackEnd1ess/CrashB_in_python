@@ -89,3 +89,7 @@
 #29.10.2024
 - fixxed overlapping sounds after breaking or exploding crates in same time
 - nitro crates, where placed under a other crate, doesnt jump anymore
+- fixxed missed tree on level 3 end
+- function: wumpa fruits move from screen to wumpa counter icon, was changed
+- SFX Audio will not append in Entity List anymore, to save more Resources
+- 

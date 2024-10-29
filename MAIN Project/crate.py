@@ -345,8 +345,8 @@ class Nitro(Entity):
 			s.snd_time=random.randint(2,3)
 			sn.crate_audio(ID=9,pit=random.uniform(.8,1.1))
 			if s.can_jmp:
-				s.animate_position((s.x,s.y+random.uniform(.1,.2),s.z),duration=.025)
-				invoke(lambda:s.animate_position((s.x,s.spawn_pos[1],s.z),duration=.2),delay=.15)
+				s.animate_y(s.y+random.uniform(.1,.2),duration=.025)
+				invoke(lambda:s.animate_y(s.spawn_pos[1],duration=.2),delay=.15)
 	def update(self):
 		s=self
 		if not st.gproc() and s.visible:

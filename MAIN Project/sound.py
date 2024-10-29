@@ -39,8 +39,7 @@ SND_THU={0:'thunder_start',
 		1:'thunder0',
 		2:'thunder1'}
 def thu_audio(ID,pit=1):
-	pth=Audio(VS+SND_THU[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
-	cc.purge_instance(pth)
+	pth=Audio(VS+SND_THU[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 
 ## INTERFACE SFX
 SND_UI={0:'select',
@@ -51,10 +50,9 @@ SND_UI={0:'select',
 		5:'gem'}
 def ui_audio(ID,pit=1):
 	if ID == 1:
-		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME/2)
+		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME/2,add_to_scene_entities=False)
 	else:
-		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
-	cc.purge_instance(ua)
+		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 
 ## PLAYER SFX
 SND_PC={0:'walk',
@@ -73,8 +71,7 @@ SND_PC={0:'walk',
 		13:'land_metal',
 		14:'fall_death'}
 def pc_audio(ID,pit=1):
-	pc=Audio(SP+SND_PC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
-	cc.purge_instance(pc)
+	pc=Audio(SP+SND_PC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 
 ## CRATE SFX
 SND_CRT={0:'steel',
@@ -95,20 +92,16 @@ SND_CRT={0:'steel',
 def crate_audio(ID,pit=1):
 	if (ID == 2 and st.br_sn) or (ID == 10 and st.ex_sn) or (ID == 11 and st.ni_sn):
 		return
-	if ID == 2:
-		if not st.br_sn:
-			st.br_sn=True
-			invoke(lambda:setattr(st,'br_sn',False),delay=.1)
-	if ID == 10:
-		if not st.ex_sn:
-			st.ex_sn=True
-			invoke(lambda:setattr(st,'ex_sn',False),delay=.1)
-	if ID == 11:
-		if not st.ni_sn:
-			st.ni_sn=True
-			invoke(lambda:setattr(st,'ni_sn',False),delay=.1)
-	ca=Audio(SN+SND_CRT[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME*2)
-	cc.purge_instance(ca)
+	if ID == 2 and not st.br_sn:
+		st.br_sn=True
+		invoke(lambda:setattr(st,'br_sn',False),delay=.1)
+	if ID == 10 and not st.ex_sn:
+		st.ex_sn=True
+		invoke(lambda:setattr(st,'ex_sn',False),delay=.1)
+	if ID == 11 and not st.ni_sn:
+		st.ni_sn=True
+		invoke(lambda:setattr(st,'ni_sn',False),delay=.1)
+	ca=Audio(SN+SND_CRT[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME*2,add_to_scene_entities=False)
 
 ## NPC SFX
 SND_NPC={0:'plant_bite',
@@ -117,8 +110,7 @@ SND_NPC={0:'plant_bite',
 		3:'seal',
 		4:'rat_idle'}
 def npc_audio(ID,pit=1):
-	np=Audio(SA+SND_NPC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
-	cc.purge_instance(np)
+	np=Audio(SA+SND_NPC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 
 ## OBJECTS/ITEM SFX
 SND_OBJ={0:'spawn',
@@ -134,13 +126,12 @@ SND_OBJ={0:'spawn',
 		10:'fire_throw',
 		11:'log_hit'}
 def obj_audio(ID,pit=1):
-	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME)
-	cc.purge_instance(ob)
+	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 
 ## Background Sounds
 class WaterRiver(Audio):
 	def __init__(self):
-		super().__init__(VS+'waterf.wav',volume=0,loop=True)
+		super().__init__(VS+'waterf.wav',volume=0,loop=True,add_to_scene_entities=False)
 		invoke(lambda:Sequence(self.check_z,Wait(.5),loop=True)(),delay=1)
 	def check_z(self):
 		if not st.gproc() and not (st.bonus_round or st.is_death_route):
@@ -150,7 +141,7 @@ class WaterRiver(Audio):
 
 class AmbienceSound(Audio):
 	def __init__(self):
-		super().__init__(VS+'jungle.wav',loop=True,volume=0)
+		super().__init__(VS+'jungle.wav',loop=True,volume=0,add_to_scene_entities=False)
 		self.vlm=se.SFX_VOLUME
 	def update(self):
 		s=self
@@ -161,7 +152,7 @@ class AmbienceSound(Audio):
 
 class Rainfall(Audio):
 	def __init__(self):
-		super().__init__(snd_rain,loop=True,volume=0)
+		super().__init__(snd_rain,loop=True,volume=0,add_to_scene_entities=False)
 		Sequence(self.check_z,Wait(.5),loop=True)()
 	def check_z(self):
 		s=self

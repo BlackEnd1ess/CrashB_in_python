@@ -1,4 +1,4 @@
-from ursina import Animation,Sequence,Wait,Entity,Sky,Audio,Text,camera,color,scene,invoke
+from ursina import Animation,Sequence,Wait,Entity,Sky,Audio,Text,camera,color,scene,invoke,lerp,distance,curve
 import status,_core,_loc,sound,settings,warproom,level,time
 from time import strftime,gmtime
 
@@ -47,24 +47,18 @@ def live_get_anim():
 
 class WumpaCollectAnim(Entity):
 	def __init__(self,pos):
-		wsca={False:.075,True:.06}
-		super().__init__(model=q,texture=w_pa+'0.png',scale=wsca[st.bonus_round],parent=CU,position=pos)
+		s=self
+		super().__init__(model=q,texture=w_pa+'0.png',scale={False:.075,True:.06}[st.bonus_round],parent=CU,position=pos,add_to_scene_entities=False)
+		s.tdirec=(-.75,.43,0)
+		if st.bonus_round:
+			s.tdirec=(-.25,-.5,0)
+		s.animate_position(s.tdirec,duration=.4,curve=curve.linear)
+		invoke(s.disable,delay=.4)
 	def update(self):
 		if not st.gproc():
 			s=self
-			if st.bonus_round:
-				dta_x=-.25-s.x
-				dta_y=-.5-s.y
-				anp=time.dt*4
-			else:
-				dta_x=-.75-s.x
-				dta_y=.43-s.y
-				anp=time.dt*8
-			if abs(dta_x) > .05 and abs(dta_y) > .05:
-				s.x+=dta_x*anp
-				s.y+=dta_y*anp
-				return
-			cc.purge_instance(s)
+			if distance(s.position,s.tdirec) < .025:
+				s.disable()
 
 ## Main Counter ##
 class WumpaCounter(Entity):
@@ -92,18 +86,19 @@ class WumpaCounter(Entity):
 			st.wumpa_fruits=0
 			cc.give_extra_live()
 	def refr(self):
-		if not st.gproc():
-			s=self
-			s.wumpa_max()
-			if st.show_wumpas > 0:
-				wmp_anim(s)
-				s.digits()
-				st.show_wumpas=max(st.show_wumpas-time.dt,0)
-				if st.show_wumpas <= 0:
-					s.frm=0
-					s.digit_0.visible=False
-					s.digit_1.visible=False
-					s.visible=False
+		if st.gproc():
+			return
+		s=self
+		s.wumpa_max()
+		if st.show_wumpas > 0:
+			wmp_anim(s)
+			s.digits()
+			st.show_wumpas=max(st.show_wumpas-time.dt,0)
+			if st.show_wumpas <= 0:
+				s.frm=0
+				s.digit_0.visible=False
+				s.digit_1.visible=False
+				s.visible=False
 
 class CrateCounter(Entity):
 	def __init__(self):
@@ -658,7 +653,7 @@ class PauseMenu(Entity):####pause without update
 class CollectedGem(Animation):
 	def __init__(self):
 		s=self
-		super().__init__(_icn+'crystal.gif',parent=CU,scale=.15,color=color.magenta,visible=False,position=(0,-.4,-1))
+		super().__init__(_icn+'crystal.gif',parent=CU,scale=.15,color=color.rgb32(180,0,180),visible=False,position=(0,-.4,-1))
 		cGLI='gem.gif'
 		if st.level_index == 4:
 			cGLI='gem1.gif'
@@ -677,20 +672,17 @@ class CollectedGem(Animation):
 		if st.level_index == 1:
 			s.colored_gem.scale_y=.07
 	def update(self):
-		if not status.gproc():
+		if not st.gproc():
 			s=self
 			if st.show_gems > 0:
-				status.show_gems-=time.dt
-				if st.level_crystal:
-					s.show()
-				if st.level_col_gem:
-					s.colored_gem.show()
-				if st.level_cle_gem:
-					s.clear_gem.show()
+				st.show_gems=max(st.show_gems-time.dt,0)
+				s.visible=(st.level_crystal)
+				s.colored_gem.visible=(st.level_col_gem)
+				s.clear_gem.visible=(st.level_cle_gem)
 				return
 			s.colored_gem.visible=False
 			s.clear_gem.visible=False
-			s.hide()
+			s.visible=False
 
 ## Gem Hint
 class GemHint(Entity):

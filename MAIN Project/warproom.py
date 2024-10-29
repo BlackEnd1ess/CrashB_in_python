@@ -1,5 +1,5 @@
+from ursina import Audio,Text,Entity,camera,scene,color,invoke
 import status,_loc,level,sound,settings,ui,_core,objects
-from ursina import Audio,Text,Entity,camera,scene,color
 cu=camera.ui
 st=status
 sn=sound
@@ -103,7 +103,7 @@ class Credits(Entity):
 	def t3(self):
 		s=self
 		crd_text3=[
-		'in comming futute i will work with a new',
+		'in comming future i will work with a new',
 		'game engine. i will choose unity and i will',
 		'create more professional assets and resources.',
 		'all physics and dynamics will work cleaner and faster.',

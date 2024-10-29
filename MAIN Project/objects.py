@@ -164,7 +164,7 @@ class TreeScene(Entity):
 	def __init__(self,pos,sca):
 		s=self
 		sBU=omf+'l1/bush/bush1.png'
-		super().__init__(model=omf+'l1/tree/tree.ply',name='tssn',texture=omf+'l1/tree/wd_scn.tga',rotation_x=-90,scale=sca,position=pos,enabled=False)
+		super().__init__(model=omf+'l1/tree/tree.ply',name='tssn',texture=omf+'l1/tree/wd_scn.tga',rotation_x=-90,scale=sca,position=pos)
 		s.leaf0=Entity(model='quad',name=s.name,texture=sBU,position=(s.x-.4,s.y+1.2,s.z-.249),scale=1.6,color=color.rgb32(0,120,0),rotation_y=0,enabled=False)
 		s.leaf1=Entity(model='quad',name=s.name,texture=sBU,position=(s.x+.4,s.y+1.2,s.z-.248),scale=1.6,color=color.rgb32(0,110,0),rotation_y=-1,enabled=False)
 		s.leaf2=Entity(model='quad',name=s.name,texture=sBU,position=(s.x,s.y+1.4,s.z-.2485),scale=1.6,color=color.rgb32(0,130,0),rotation_y=-1,enabled=False)
