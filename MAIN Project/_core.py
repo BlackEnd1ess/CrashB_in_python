@@ -188,10 +188,10 @@ def c_attack():
 	c=LC.ACTOR
 	if not c.is_attack or st.gproc():
 		return
-	kp=[b for b in scene.entities if ((b.collider and b.enabled) and (is_crate(b) or is_enemie(b)))]
+	kp={b for b in scene.entities if (is_crate(b) or is_enemie(b))}
 	for qd in kp:
 		if (distance(qd.position,c.position) < .5) and not (qd.vnum == 13):
-			if is_crate(qd):
+			if is_crate(qd) and qd.collider:
 				if qd.vnum in {3,11}:
 					qd.empty_destroy()
 				else:
