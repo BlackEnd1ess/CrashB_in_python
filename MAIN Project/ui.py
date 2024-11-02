@@ -54,11 +54,6 @@ class WumpaCollectAnim(Entity):
 			s.tdirec=(-.25,-.5,0)
 		s.animate_position(s.tdirec,duration=.4,curve=curve.linear)
 		invoke(s.disable,delay=.4)
-	def update(self):
-		if not st.gproc():
-			s=self
-			if distance(s.position,s.tdirec) < .025:
-				s.disable()
 
 ## Main Counter ##
 class WumpaCounter(Entity):
@@ -335,7 +330,7 @@ class GameOverScreen(Entity):
 		st.game_over=False
 	def input(self,key):
 		s=self
-		if key in ['w','s','down arrow','up arrow']:
+		if key in {'w','s','down arrow','up arrow'}:
 			sn.ui_audio(ID=0,pit=.125)
 			if s.opt_select == 0:
 				s.opt_select=1
@@ -377,7 +372,6 @@ class TitleScreen(Entity):
 class ProjectInfo(Entity):
 	def __init__(self):
 		LoadingScreen()
-		Sky(color=color.black)
 		Audio('res/snd/music/ev/title.mp3',loop=True,volume=settings.MUSIC_VOLUME)
 		super().__init__(model='quad',texture=btv+'disclaim.jpg',scale=(1.6,.8),parent=CU)
 		invoke(lambda:TitleScreen(),delay=7)

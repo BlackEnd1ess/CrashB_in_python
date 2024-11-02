@@ -25,7 +25,7 @@ class pShadow(Entity):## shadow point
 		s.visible=not(ta.freezed)
 		vSH=raycast(ta.world_position,-Vec3(0,1,0),distance=2,ignore=[s,ta],debug=False)
 		if vSH.hit:
-			if not (str(vSH.entity) in LC.item_lst+LC.trigger_lst):
+			if not (str(vSH.entity) in LC.item_lst|LC.trigger_lst):
 				s.y=vSH.world_point.y
 			return
 		if ta.landed and not (ta.falling or ta.jumping):
@@ -51,7 +51,7 @@ class CrashB(Entity):
 				sg.ATK_KEY:lambda:s.spin_attack(),
 				sg.BLY_KEY:lambda:s.belly_smash(),
 				sg.FWD_KEY:lambda:setattr(s,'CMS',2.75),
-				sg.BCK_KEY:lambda:setattr(s,'CMS',4)}
+				sg.BCK_KEY:lambda:setattr(s,'CMS',3.5)}
 		if sg.debg:
 			cc.PlayerDBG()
 			s.dev_act={
@@ -64,8 +64,8 @@ class CrashB(Entity):
 			if key in s.KEY_ACT:
 				s.KEY_ACT[key]()
 			if sg.debg:
-				#if key == 'f':
-				#	print(scene.entities[-5:])
+				if key == 'f':
+					print(scene.entities[-5:])
 				if key in s.dev_act:
 					s.dev_act[key]()
 	def belly_smash(self):
@@ -100,7 +100,7 @@ class CrashB(Entity):
 			mc=raycast(s.world_position+(0,.1,0),s.direc,distance=.2,ignore=[s,LC.shdw],debug=False)
 			me=mc.entity
 			mn=str(me)
-			if not mc or (mc and mn in LC.item_lst+LC.trigger_lst):
+			if not mc or (mc and mn in LC.item_lst|LC.trigger_lst):
 				s.position+=mvD*(time.dt*s.move_speed)
 			if (mn == 'fthr'):
 				cc.get_damage(s,rsn=3)
@@ -172,11 +172,15 @@ class CrashB(Entity):
 			return
 		an.fall(s,sp=14)
 	def c_camera(self):
+		s=self
 		if not st.death_event:
 			if st.bonus_round:
-				cc.cam_bonus(self)
+				cc.cam_bonus(s)
 				return
-			cc.cam_follow(self)
+			if s.indoor > 0:
+				cc.cam_indoor(s)
+				return
+			cc.cam_level(s)
 	def death_action(self,rsn):
 		s=self
 		if rsn > 0:#0 is falling

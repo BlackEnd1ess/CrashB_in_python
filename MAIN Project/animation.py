@@ -252,11 +252,12 @@ class CrateBreak(Entity):
 	def __init__(self,cr):
 		bco=color.orange
 		anP=cr.position
-		if cr.vnum in [11,12,15,16]:
+		if cr.vnum in {11,12,15,16}:
 			vco={11:color.red,12:color.green,15:color.gold,16:color.violet}
 			bco=vco[cr.vnum]
 		super().__init__(model=cf+'brk/0.ply',texture=cf+'brk/break.tga',rotation=(-90,random.randint(0,360),0),scale=.4/1000,color=bco,position=(anP[0],anP[1]-.16,anP[2]),unlit=False,collider=None)
 		self.frame_break=0
+		del cr
 	def update(self):
 		if st.gproc():
 			return
@@ -278,6 +279,7 @@ class WarpRingEffect(Entity): ## spawn animation
 		s.ta=_loc.ACTOR
 		s.rings=0
 		s.times=0
+		del pos
 	def update(self):
 		if not st.gproc() and cc.level_ready:
 			s=self
@@ -322,7 +324,6 @@ def hedge_defend(m):
 	m.def_frame=min(m.def_frame+time.dt*t,6.999)
 	if m.def_frame > 6.99:
 		m.def_frame=0
-	#m.texture=hdg+'attack/attack.tga'
 	m.model=hdg+'attack/'+str(int(m.def_frame))+'.ply'
 
 #rat idle

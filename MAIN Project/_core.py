@@ -1,5 +1,5 @@
 import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,psutil,os,time,random,json,math
-from ursina import Entity,Text,camera,scene,invoke,Vec3,color,distance,boxcast,raycast
+from ursina import Entity,Text,camera,scene,invoke,Vec3,color,distance,boxcast,raycast,Sequence,Wait
 from math import atan2,sqrt,pi
 
 level_ready=False
@@ -47,37 +47,37 @@ class PlayerDBG(Entity):
 		s.ppo_state=Text(color=tct,font=fn,position=(sx,hg-.665),parent=CV,scale=fw)
 		s.process=psutil.Process(os.getpid())
 		s.cpu_usage=s.process.cpu_percent()
-	def update(self):
-		if not st.gproc():
-			s=self
-			rv=LC.ACTOR
-			mem_usage=s.process.memory_info().rss/(1024*1024)
-			s.cpu_state.text=f'STATUS CPU  : {s.cpu_usage}%'
-			s.mem_state.text=f'STATUS MEM  : {mem_usage:.0f} MB'
-			s.ppo_state.text=f'x{rv.x:.1f}  y{rv.y:.1f}  z{rv.z:.1f}'
-			s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'
-			s.ind_state.text=f'INDOOR ZONE : {(rv.indoor > 0)}'
-			s.inw_state.text=f'WATER ZONE  : {(rv.in_water > 0)}'
-			s.slp_state.text=f'IS SLIPPERY : {rv.is_slippery}'
-			s.bns_state.text=f'BONUS ROUND : {st.bonus_round}'
-			s.idl_state.text=f'IDLE STATUS : {st.p_idle(LC.ACTOR)}'
-			s.run_state.text=f'WALK STATUS : {rv.walking}'
-			s.fal_state.text=f'FALL STATUS : {rv.falling}'
-			s.lnd_state.text=f'LAND STATUS : {rv.is_landing}'
-			s.jmp_state.text=f'JUMP STATUS : {rv.jumping}'
-			s.flp_state.text=f'FLIP STATUS : {rv.is_flip}'
-			s.bly_state.text=f'BELLY SMASH : {rv.b_smash}'
-			s.atk_state.text=f'IS ATTACK   : {rv.is_attack}'
-			s.frl_state.text=f'FIRST LAND  : {rv.frst_lnd}'
-			s.gnd_state.text=f'IS LANDED   : {rv.landed}'
-			s.sta_state.text=f'STAND UP    : {rv.standup}'
-			s.inj_state.text=f'INJURED     : {rv.injured}'
-			s.frz_state.text=f'FREEZED     : {rv.freezed}'
+		Sequence(s.refr,Wait(.1),loop=True)()
+	def refr(self):
+		s=self
+		rv=LC.ACTOR
+		mem_usage=s.process.memory_info().rss/(1024*1024)
+		s.cpu_state.text=f'entities    : {len(scene.entities)}'
+		s.mem_state.text=f'STATUS MEM  : {mem_usage:.0f} MB'
+		s.ppo_state.text=f'x{rv.x:.1f}  y{rv.y:.1f}  z{rv.z:.1f}'
+		s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'
+		s.ind_state.text=f'INDOOR ZONE : {(rv.indoor > 0)}'
+		s.inw_state.text=f'WATER ZONE  : {(rv.in_water > 0)}'
+		s.slp_state.text=f'IS SLIPPERY : {rv.is_slippery}'
+		s.bns_state.text=f'BONUS ROUND : {st.bonus_round}'
+		s.idl_state.text=f'IDLE STATUS : {st.p_idle(LC.ACTOR)}'
+		s.run_state.text=f'WALK STATUS : {rv.walking}'
+		s.fal_state.text=f'FALL STATUS : {rv.falling}'
+		s.lnd_state.text=f'LAND STATUS : {rv.is_landing}'
+		s.jmp_state.text=f'JUMP STATUS : {rv.jumping}'
+		s.flp_state.text=f'FLIP STATUS : {rv.is_flip}'
+		s.bly_state.text=f'BELLY SMASH : {rv.b_smash}'
+		s.atk_state.text=f'IS ATTACK   : {rv.is_attack}'
+		s.frl_state.text=f'FIRST LAND  : {rv.frst_lnd}'
+		s.gnd_state.text=f'IS LANDED   : {rv.landed}'
+		s.sta_state.text=f'STAND UP    : {rv.standup}'
+		s.inj_state.text=f'INJURED     : {rv.injured}'
+		s.frz_state.text=f'FREEZED     : {rv.freezed}'
 
 def set_val(c):
-	for _a in ['rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','walk_snd','fall_time','slide_fwd','in_water','space_time']:
+	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','walk_snd','fall_time','slide_fwd','in_water','space_time'}:
 		setattr(c,_a,0)#values
-	for _v in ['aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','atk_ctm']:
+	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','atk_ctm'}:
 		setattr(c,_v,False)#flags
 	c.move_speed=LC.dfsp
 	c.gravity=LC.dfsp
@@ -98,7 +98,6 @@ def get_damage(c,rsn):
 			sn.pc_audio(ID=6,pit=.8)
 			invoke(lambda:setattr(c,'injured',False),delay=2)
 			invoke(lambda:setattr(c,'alpha',1),delay=2)
-			del rsn
 			return
 		dth_event(c,rsn=rsn)
 def hurt_blink(c):
@@ -173,11 +172,11 @@ def c_slide(c):
 		if c.move_speed > 0:
 			c.slide_fwd=c.move_speed
 def c_smash(c):
-	k=[dp for dp in scene.entities if (distance(c,dp) < .4 and dp.collider and (is_crate(dp) or is_enemie(dp)))]
+	k=[dp for dp in scene.entities if (distance(c.position,dp.position) < .4 and dp.collider and (is_crate(dp) or is_enemie(dp)))]
 	if len(k) > 0:
 		wr=k[0]
 		if is_crate(wr):
-			if wr.vnum in [3,11]:
+			if wr.vnum in {3,11}:
 				wr.empty_destroy()
 			if wr.vnum == 14:
 				wr.c_destroy()
@@ -189,17 +188,17 @@ def c_attack():
 	c=LC.ACTOR
 	if not c.is_attack or st.gproc():
 		return
-	kp=[b for b in scene.entities if (b.collider and (is_crate(b) or is_enemie(b)))]
+	kp=[b for b in scene.entities if ((b.collider and b.enabled) and (is_crate(b) or is_enemie(b)))]
 	for qd in kp:
-		if (distance(qd,c) < .5) and not (qd.vnum == 13):
+		if (distance(qd.position,c.position) < .5) and not (qd.vnum == 13):
 			if is_crate(qd):
-				if qd.vnum in [3,11]:
+				if qd.vnum in {3,11}:
 					qd.empty_destroy()
 				else:
 					qd.destroy()
 			if is_enemie(qd):
 				if not (qd.is_purge or qd.is_hitten):
-					if (qd.vnum in [1,11]) or (qd.vnum == 5 and qd.def_mode):
+					if (qd.vnum in {1,11}) or (qd.vnum == 5 and qd.def_mode):
 						get_damage(c,rsn=1)
 					bash_enemie(qd,h=c)
 def c_shield():
@@ -207,47 +206,56 @@ def c_shield():
 		return
 	q=LC.ACTOR
 	for rf in scene.entities[:]:
-		if (distance(rf,q) < 1.5 and rf.collider):
-			if (rf.name in LC.item_lst):
-				rf.collect()
-			if (is_enemie(rf) and rf.vnum != 13):
-				bash_enemie(e=rf,h=q)
-			if (is_crate(rf) and not rf.vnum in [0,8,13]):
-				if rf.vnum == 11:
-					rf.empty_destroy()
-				if rf.vnum == 14:
-					rf.c_destroy()
-				if not (rf.vnum in [9,10] and rf.activ):
-					rf.destroy()
+		if (rf.collider and rf.enabled):
+			if distance(rf.position,q.position) < 1.5:
+				if (rf.name in LC.item_lst):
+					rf.collect()
+				if (is_enemie(rf) and rf.vnum != 13):
+					bash_enemie(e=rf,h=q)
+				if (is_crate(rf) and not rf.vnum in {0,8,13}):
+					if rf.vnum == 11:
+						rf.empty_destroy()
+					if rf.vnum == 14:
+						rf.c_destroy()
+					if not (rf.vnum in {9,10} and rf.activ):
+						rf.destroy()
 
 ## camera actor
-def cam_follow(c):
+def cam_indoor(c):
+	ftt=time.dt*2
+	cm=camera
+	cm.fov=lerp(cm.fov,57.5,ftt)
+	cm.z=lerp(cm.z,c.z-3,ftt)
+	cm.x=lerp(cm.x,c.x,ftt)
+	cm.rotation_x=lerp(cm.rotation_x,14,ftt)
+	if (c.landed and c.walking):
+		cm.y=lerp(cm.y,c.y+1,ftt)
+def cam_level(c):
 	ftt=time.dt
-	camera.z=lerp(camera.z,c.z-c.CMS,ftt*3)
-	camera.x=lerp(camera.x,c.x,ftt*2)
-	if not c.jumping:
-		if (c.indoor > 0 and c.landed):
-			camera.y=lerp(camera.y,c.y+1,time.dt*2)
-			camera.rotation_x=15
-			return
-		if not (c.falling or c.freezed):
-			camera.y=lerp(camera.y,c.y+1.6,time.dt)
-			camera.rotation_x=lerp(camera.rotation_x,20,time.dt/2.5)
+	cm=camera
+	cm.z=lerp(cm.z,c.z-c.CMS,ftt*3)
+	cm.x=lerp(cm.x,c.x,ftt*2.5)
+	camera.fov=cm.fov=lerp(cm.fov,64,ftt)
+	if (c.jumping or c.falling):
+		if cm.rotation_x > 20:
+			cm.rotation_x=lerp(cm.rotation_x,c.y,ftt/5)
 		return
-	if c.indoor <= 0:
-		camera.rotation_x=lerp(camera.rotation_x,15,ftt/2.3)
+	if c.landed and not (c.jumping or c.freezed):
+		cm.rotation_x=lerp(cm.rotation_x,25,ftt)
+		cm.y=lerp(cm.y,c.y+1.8,time.dt*2)
 def cam_bonus(c):
 	ftt=time.dt*3
 	camera.z=(c.z-3.2)
 	camera.x=lerp(camera.x,c.x,ftt)
 	camera.y=lerp(camera.y,c.y+1.4,time.dt*1.5)
-	camera.rotation_x=16
+	camera.rotation_x=15
 
 ## world, misc
 def spawn_level_crystal(idx):
 	cry_pos={0:(0,0,0),1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7),6:(0,.3,-15)}
 	if not idx in st.CRYSTAL:
 		item.EnergyCrystal(pos=cry_pos[idx])
+	del cry_pos
 def collect_reset():
 	st.C_RESET.clear()
 	st.W_RESET.clear()
@@ -265,7 +273,7 @@ def reset_crates():
 			if ca.poly == 1:
 				purge_instance(ca)
 	for cv in st.C_RESET[:]:
-		if cv.vnum in [9,10]:
+		if cv.vnum in {9,10}:
 			cv.c_reset()
 		elif cv.vnum == 13:
 			if not cv.c_ID == 0:
@@ -287,9 +295,10 @@ def rmv_wumpas():
 	for wu in scene.entities[:]:
 		if isinstance(wu,item.WumpaFruit) and wu.c_purge:
 			wu.destroy()
+	del wu
 def reset_npc():
 	for NP in st.NPC_RESET[:]:
-		if NP.vnum in [10,11]:
+		if NP.vnum in {10,11}:
 			npc.spawn(ID=NP.vnum,POS=NP.spawn_pos,DRC=NP.mov_direc,RTYP=NP.ro_mode)
 		else:
 			if NP.vnum == 8:
@@ -363,10 +372,10 @@ def purge_instance(v):
 			st.C_RESET.append(v)
 	if is_enemie(v):
 		st.NPC_RESET.append(v)
-	if isinstance(v,item.WumpaFruit):
+	if v.name == 'wmpf':
 		if not v.c_purge:
 			st.W_RESET.append(v.spawn_pos)
-	v.parent=None
+	v.parent,v.texture=None,None
 	scene.entities.remove(v)
 	v.disable()
 	del v
@@ -403,7 +412,7 @@ def check_ceiling(c):
 	vc=c.intersects(ignore=[c,LC.shdw])
 	ve=vc.entity
 	if vc.normal == Vec3(0,-1,0):
-		if not (ve.name in LC.item_lst+LC.trigger_lst):
+		if not (ve.name in LC.item_lst|LC.trigger_lst):
 			if is_crate(ve):
 				if not c.tcr:
 					c.tcr=True
@@ -415,8 +424,8 @@ def check_wall(c):
 	hT=c.intersects(ignore=[c,LC.shdw])
 	jV=hT.entity
 	xa=str(jV)
-	if hT.hit and not (hT.normal in [Vec3(0,1,0),Vec3(0,-1,0)]):
-		if isinstance(jV,crate.Nitro):
+	if hT.hit and not (hT.normal in {Vec3(0,1,0),Vec3(0,-1,0)}):
+		if xa == 'nitro':
 			jV.destroy()
 			return
 		if xa in LC.item_lst:
@@ -434,7 +443,7 @@ def check_wall(c):
 def check_floor(c):
 	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=[c,LC.shdw],debug=False)
 	vp=vj.entity
-	if vj.normal and not (vp.name in LC.item_lst+LC.dangers+LC.trigger_lst):
+	if vj.normal and not (str(vp) in LC.item_lst|LC.dangers|LC.trigger_lst):
 		c.falling=False
 		landing(c,e=vj.world_point.y,o=vp)
 		spc_floor(c,e=vp)
@@ -456,8 +465,8 @@ def landing(c,e,o):
 		sn.landing_sound(c,o)
 def floor_interact(c,e):
 	if (is_crate(e) and c.fall_time > .05):
-		if not ((e.vnum == 0) or (e.vnum in [9,10,11] and e.activ)):
-			if e.vnum in [7,8]:
+		if not ((e.vnum == 0) or (e.vnum in {9,10,11} and e.activ)):
+			if e.vnum in {7,8}:
 				c.jump_typ(t=4)
 				e.c_action()
 				return
@@ -469,7 +478,7 @@ def floor_interact(c,e):
 			e.destroy()
 			return
 	if is_enemie(e) and not (e.is_hitten or e.is_purge):
-		if (e.vnum in [2,9]) or (e.vnum == 5 and e.def_mode):
+		if (e.vnum in {2,9}) or (e.vnum == 5 and e.def_mode):
 			get_damage(c,rsn=1)
 		e.is_purge=True
 		c.jump_typ(t=2)
@@ -477,10 +486,10 @@ def floor_interact(c,e):
 def spc_floor(c,e):
 	u=e.name
 	c.is_slippery=(u == 'iceg')
-	if u in ['bnpt','gmpt']:
+	if u in {'bnpt','gmpt'}:
 		ptf_up(p=e,c=c)
 		return
-	if u in ['loos','swpt','HPP']:
+	if u in {'loos','swpt','HPP'}:
 		e.active=True
 		return
 	if (u == 'plnk' and e.typ == 1):
@@ -546,25 +555,28 @@ def crate_set_val(cR,Cpos,Cpse):
 	cR.poly=Cpse
 	cR.scale=.16
 def check_crates_over(c):
-	crf=[pk for pk in scene.entities if (is_crate(pk) and (pk.x == c.x and pk.z == c.z) and pk.vnum != 3)]
+	crf={pk for pk in scene.entities if (is_crate(pk) and (pk.x == c.x and pk.z == c.z) and pk.vnum != 3)}
+	cdd=[]
 	sdi=0
 	for wm in crf:
 		sdi+=1
 		if (wm.y > c.y) and (wm.y-c.y) <= .32*sdi:
-			wm.animate_y((wm.y-.32),duration=.175)
+			cdd.append(wm)
+	for uc in cdd:
+		uc.animate_y((uc.y-.32),duration=.175)
+	cdd.clear()
 	sdi=0
-	del sdi,c,crf
 def check_nitro_stack():
-	nit_crt=[ct for ct in scene.entities if is_crate(ct) and ct.vnum == 12 and ct.can_jmp]
-	all_crt=[ct for ct in scene.entities if is_crate(ct)]
+	nit_crt={ct for ct in scene.entities if is_crate(ct) and ct.vnum == 12 and ct.can_jmp}
+	all_crt={ct for ct in scene.entities if is_crate(ct)}
 	for ni in nit_crt:
 		for cra in all_crt:
 			if abs(cra.x-ni.x) < .1 and abs(cra.z-ni.z) < .1 and ni.y <= cra.y and not ni is cra:
 				ni.can_jmp=False
 def is_crate(e):
-	cck=[C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
+	cck={C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
 		C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,C.SwitchEmpty,
-		C.SwitchNitro,C.TNT,C.Nitro,C.Air,C.Protected,C.cTime,C.LvInfo]
+		C.SwitchNitro,C.TNT,C.Nitro,C.Air,C.Protected,C.cTime,C.LvInfo}
 	return any(isinstance(e,crate_class) for crate_class in cck)
 
 ## bonus level
@@ -619,7 +631,7 @@ def load_droute(c):
 		c.back_to_level(c)
 		return
 	st.is_death_route=True
-	c.position=(200,1,-3)
+	c.position=(200,2,-3)
 	camera.position=(200,.5,-3)
 	st.loading,c.freezed=False,False
 	sn.SpecialMusic(T=st.level_index)
@@ -632,6 +644,7 @@ def set_val_npc(m,drc,rng):
 	m.fly_direc=None
 	m.mov_range=rng
 	m.mov_direc=drc
+	del m,drc,rng
 def circle_move_xz(m):
 	m.angle-=time.dt*2
 	m.angle%=(2*math.pi)
@@ -654,7 +667,7 @@ def rotate_to_crash(m):
 	m.rotation_y=atan2(rtp.x,rtp.z)*(180/pi)+180
 	m.rotation_x=-90
 def fly_away(n):
-	if n.collider == None:
+	if not n.collider:
 		return
 	n.position+=n.fly_direc*(time.dt*40)
 	n.fly_time=min(n.fly_time+time.dt,5.01)
@@ -663,7 +676,7 @@ def fly_away(n):
 		purge_instance(n)
 		return
 	if (is_crate(ke) and ke.vnum != 6):
-		if ke.vnum in [3,11]:
+		if ke.vnum in {3,11}:
 			ke.empty_destroy()
 		else:
 			ke.destroy()

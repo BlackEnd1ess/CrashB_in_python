@@ -92,4 +92,12 @@
 - fixxed missed tree on level 3 end
 - function: wumpa fruits move from screen to wumpa counter icon, was changed
 - SFX Audio will not append in Entity List anymore, to save more Resources
-- 
+
+#01.11.2024
+- reduces wumpa fruits in level 1
+- debug mode can unlock gem platforms
+
+#02.11.2024
+- removed skybox, reduces wumpa fruits in any level
+- changed level system by loading level-files. make easier for incomming level editor
+- roomdoor keeps open, if player.z is over door.z

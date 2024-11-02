@@ -27,7 +27,7 @@ def footstep(c):
 ##landing sound material
 def landing_sound(c,o):
 	fn=o.name
-	if fn in ['swpt','swpl']:
+	if fn in {'swpt','swpl'}:
 		pc_audio(ID=13)
 		return
 	if not cc.is_crate(o):
@@ -39,7 +39,7 @@ SND_THU={0:'thunder_start',
 		1:'thunder0',
 		2:'thunder1'}
 def thu_audio(ID,pit=1):
-	pth=Audio(VS+SND_THU[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
+	pth=Audio(VS+SND_THU[ID]+'.wav',pitch=random.uniform(.1,.5),volume=se.SFX_VOLUME,add_to_scene_entities=False)
 
 ## INTERFACE SFX
 SND_UI={0:'select',
@@ -131,7 +131,7 @@ def obj_audio(ID,pit=1):
 ## Background Sounds
 class WaterRiver(Audio):
 	def __init__(self):
-		super().__init__(VS+'waterf.wav',volume=0,loop=True,add_to_scene_entities=False)
+		super().__init__(VS+'waterf.wav',volume=0,loop=True)
 		invoke(lambda:Sequence(self.check_z,Wait(.5),loop=True)(),delay=1)
 	def check_z(self):
 		if not st.gproc() and not (st.bonus_round or st.is_death_route):

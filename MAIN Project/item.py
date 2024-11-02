@@ -17,6 +17,7 @@ def place_wumpa(pos,cnt,c_prg=False):
 		if cnt > 1:
 			vpu=pos+(r.uniform(-.1,.1),r.uniform(0,.1),r.uniform(-.1,.1))
 		WumpaFruit(p=vpu,c_prg=c_prg)
+	del pos,cnt,c_prg,vpu,wpo
 
 class WumpaFruit(Entity):
 	def __init__(self,p,c_prg):
@@ -28,6 +29,7 @@ class WumpaFruit(Entity):
 		s.c_purge=c_prg
 		s.spawn_pos=p
 		s.frm=0
+		del p,c_prg
 	def destroy(self):
 		cc.purge_instance(self)
 	def collect(self):
@@ -38,13 +40,15 @@ class WumpaFruit(Entity):
 		if st.gproc():
 			return
 		s=self
+		fp=distance(s,LC.ACTOR)
 		if s.follow:
 			q=LC.ACTOR
 			s.position=lerp(s.position,(q.x,q.y+.2,q.z),time.dt*16)
 			return
-		ui.wmp_anim(s)
-		if (distance(s,LC.ACTOR) < .6):
-			s.follow=True
+		if fp < 5:
+			ui.wmp_anim(s)
+			if fp < .6:
+				s.follow=True
 
 class ExtraLive(Entity):
 	def __init__(self,pos):
@@ -100,7 +104,7 @@ class GemStone(Entity):
 		s.color=ge_c[s.gemID]
 		#s.alpha=.75
 		##scale - info: blue gem and yellow gem are Y scaled
-		if s.gemID in [4,5]:
+		if s.gemID in {4,5}:
 			gSC={4:s.scale_z/2,5:s.scale_z*1.5}
 			s.scale_z=gSC[s.gemID]
 		##light reflection
@@ -174,21 +178,3 @@ class EnergyCrystal(Entity):
 			s=self
 			s.visible=(distance(s,LC.ACTOR) < 12)
 			s.rotation_y-=time.dt*70
-
-#class TrialClock(Entity):
-#	def __init__(self,pos):
-#		Clk='clock/clock'
-#		super().__init__(model=i_path+Clk+'.obj',texture=i_path+Clk+'.png',position=pos,scale=.003)
-#	def collect(self):
-#		cc.purge_instance(self)
-#		status.is_time_trial=True
-#	def update(self):
-#		self.rotation_y+=time.dt*120
-
-#class TimeRelic(Entity):
-#	def __init__(self,pos,t):
-#		tc={0:color.azure,1:color.gold,2:color.rgb32(150,150,180)}
-#		super().__init__(model=i_path+'relic/relic.ply',texture=i_path+'relic/relic.tga',scale=0.004,position=pos,rotation_x=-90,color=tc[t])
-#	def update(self):
-#		if not st.gproc():
-#			self.rotation_y-=time.dt*70

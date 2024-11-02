@@ -12,7 +12,7 @@ cr1=pp+'cr_t0.ply'# single texture
 cr2=pp+'cr_t1.ply'# double texture
 
 ##spawn, destroy event
-def place_crate(p,ID,m=0,l=1,pse=None,tm=None):
+def place_crate(p,ID,m=0,l=1,pse=None):
 	CRATES={0:lambda:Iron(pos=p,pse=pse),
 			1:lambda:Normal(pos=p,pse=pse),
 			2:lambda:QuestionMark(pos=p,pse=pse),
@@ -28,21 +28,21 @@ def place_crate(p,ID,m=0,l=1,pse=None,tm=None):
 			12:lambda:Nitro(pos=p,pse=pse),
 			13:lambda:Air(pos=p,m=m,l=l,pse=pse),
 			14:lambda:Protected(pos=p,pse=pse),
-			15:lambda:cTime(pos=p,pse=pse,tm=tm),
+			15:lambda:cTime(pos=p,pse=pse),
 			16:lambda:LvInfo(pos=p,pse=pse)}
 	CRATES[ID]()
-	if not ID in [0,8,9,10,15,16] and not pse == 1:
+	if not ID in {0,8,9,10,15,16} and not pse == 1:
 		st.crates_in_level+=1
 		if p[1] < -20:
 			st.crates_in_bonus+=1
-		if ID == 13 and l in [0,8]:
+		if ID == 13 and l in {0,8}:
 			st.crates_in_level-=1
-	del p,ID,m,l,pse,tm
+	del p,ID,m,l,pse
 
 def destroy_event(c):
 	c.collider=None
 	sn.crate_audio(ID=2)
-	if c.vnum in [11,12]:
+	if c.vnum in {11,12}:
 		explosion(cr=c)
 	if c.visible:
 		animation.CrateBreak(cr=c)
@@ -55,6 +55,7 @@ def destroy_event(c):
 			st.show_crates=5
 	cc.check_crates_over(c)
 	cc.purge_instance(c)
+	del c
 
 def block_destroy(c):
 	if not c.p_snd:
@@ -78,10 +79,10 @@ def explosion(cr):
 	sn.crate_audio(ID=10)
 	if cr.vnum == 12:
 		invoke(lambda:sn.crate_audio(ID=11,pit=1.4),delay=.1)
-	rk=[tt for tt in scene.entities if (distance(cr,tt) < 1)]
+	rk=[tt for tt in scene.entities if (distance(cr.position,tt.position) < 1)]
 	for exR in rk:
 		if cc.is_crate(exR) and exR.collider:
-			if exR.vnum in [3,11]:
+			if exR.vnum in {3,11}:
 				exR.empty_destroy()
 			else:
 				exR.destroy()
@@ -90,6 +91,7 @@ def explosion(cr):
 				cc.bash_enemie(e=exR,h=cr)
 		if exR == LC.ACTOR:
 			cc.get_damage(exR,rsn=3)
+	del cr
 
 ##Crate Logics
 class Iron(Entity):
@@ -106,6 +108,7 @@ class Normal(Entity):
 		self.vnum=1
 		super().__init__(model=cr1)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		del pos,pse
 	def destroy(self):
 		s=self
 		wuPo=s.position
@@ -117,6 +120,7 @@ class QuestionMark(Entity):
 		self.vnum=2
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		del pos,pse
 	def destroy(self):
 		s=self
 		item.place_wumpa(s.position,cnt=5,c_prg=True)
@@ -131,6 +135,7 @@ class Bounce(Entity):
 		s.is_bounc=False
 		s.lf_time=5
 		s.b_cnt=0
+		del pos,pse
 	def empty_destroy(self):
 		destroy_event(self)
 	def bnc_event(self):
@@ -171,6 +176,7 @@ class ExtraLife(Entity):
 		self.vnum=4
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		del pos,pse
 	def destroy(self):
 		s=self
 		item.ExtraLive(pos=(s.x,s.y+.1,s.z))
@@ -388,7 +394,7 @@ class Protected(Entity):
 		destroy_event(self)
 
 class cTime(Entity):
-	def __init__(self,pos,tm,pse):
+	def __init__(self,pos,tm=1):
 		s=self
 		s.vnum=15
 		super().__init__(model=cr2)
@@ -410,7 +416,7 @@ class LvInfo(Entity):
 		destroy_event(s)
 
 ##crate effects
-class Fireball(Entity):
+class Fireball(Entity):#bug
 	def __init__(self,C):
 		s=self
 		nC={11:color.red,12:color.green}

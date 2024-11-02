@@ -3,7 +3,7 @@ import environment
 
 ## debug options
 debg_color=color.rgb32(255,128,0)
-debg=False
+debg=True
 
 ## keyboard bindings
 MNU_KEY='p'#		pause

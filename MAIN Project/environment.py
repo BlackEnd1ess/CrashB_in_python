@@ -1,19 +1,9 @@
-from ursina import Sky,AmbientLight,Sequence,Wait,Animation,color,invoke,scene,camera
+from ursina import Sky,Entity,PointLight,AmbientLight,Sequence,Wait,Animation,color,invoke,scene,camera
 import status,_loc,sound,time,random
 
 st=status
 LC=_loc
 c=color
-
-SKY_COL={'day':c.rgb32(200,230,255),
-		'empty':c.black,
-		'evening':c.rgb32(255,110,90),
-		'night':c.rgb32(0,0,85),
-		'dark':c.black,
-		'rain':c.rgb32(70,70,80),
-		'snow':c.white,
-		'woods':c.rgb32(70,120,110),
-		'sewer':c.black}
 
 FOG_COL={'day':c.rgb32(120,140,140),
 		'empty':c.black,
@@ -39,67 +29,26 @@ def init_amb_light():#called 1 time
 	amv=AmbientLight(color=c.gray)
 	LC.AMBIENT_LIGHT=amv
 
+##start environment
 def env_switch(idx):
 	st.day_mode=LC.day_m[idx]
-	SkyBox()
 	LC.AMBIENT_LIGHT.color=AMB_COL[st.day_mode]
 	set_fog(idx)
-	if idx in [1,5]:#rain in level 1 and 5
+	if idx in {1,5}:#rain in level 1 and 5
+		if idx == 5:
+			Thunderbolt()
 		RainFall()
 
-L_DST={0:(30,100),1:(8,16),2:(3,14),3:(14,20),4:(13,18),5:(8,20),6:(10,20)}
+##Fog Distance
+L_DST={0:(30,100),1:(10,14),2:(3,12),3:(16,20),4:(13,16),5:(8,18),6:(10,20)}
 B_DST={0:(0,0),1:(6,12),2:(4,4.5),3:(5,20),4:(8,15),5:(10,20),6:(15,30)}
 def set_fog(idx):
 	scene.fog_color=FOG_COL[st.day_mode]
 	scene.fog_density=L_DST[idx]
 	if st.bonus_round:
 		scene.fog_density=B_DST[idx]
-	del idx
 
-class SkyBox(Sky):
-	def __init__(self):
-		s=self
-		s.bgr='res/background/'
-		super().__init__(texture=s.bgr+'sky.jpg',color=SKY_COL[st.day_mode],unlit=False)
-		s.setting=SKY_COL[st.day_mode]
-		if st.level_index == 1:
-			Sequence(s.wood_sky,Wait(1),loop=True)()
-			return
-		if st.level_index == 5:
-			s.thunder_time=3
-			Sequence(s.weather_sky,loop=True)()
-	def thunder_bolt(self):
-		s=self
-		s.color=color.white
-		LC.bgT.texture=s.bgr+'bg_ruins_th.jpg'
-		LC.bgT.texture_scale=LC.bgT.orginal_tsc
-		sound.thu_audio(ID=0,pit=random.uniform(.1,.5))
-		invoke(lambda:sound.thu_audio(ID=random.randint(1,2),pit=random.uniform(.1,.5)),delay=.5)
-		invoke(s.reset_sky,delay=random.uniform(.1,.4))
-	def reset_sky(self):
-		s=self
-		s.color=s.setting
-		LC.bgT.texture=s.bgr+'bg_ruins.jpg'
-		LC.bgT.texture_scale=LC.bgT.orginal_tsc
-		s.thunder_time=random.randint(4,10)
-	def weather_sky(self):
-		s=self
-		if st.weather_thunder:
-			s.thunder_time=max(s.thunder_time-time.dt,0)
-			if s.thunder_time <= 0:
-				s.thunder_bolt()
-			return
-		if st.bonus_round:
-			s.color=c.black
-			return
-		s.color=s.setting
-	def wood_sky(self):
-		s=self
-		if st.is_death_route:
-			s.color=c.rgb32(30,30,60)
-			return
-		s.color=s.setting
-
+##Rainfall Func
 class RainFall(Animation):
 	def __init__(self):
 		s=self
@@ -121,3 +70,35 @@ class RainFall(Animation):
 			s.alpha=lerp(s.alpha,1,ft)
 			return
 		s.alpha=lerp(s.alpha,0,ft)
+
+##Thunder SFX/SKY
+class Thunderbolt(Entity):
+	def __init__(self):
+		s=self
+		s.bgr='res/background/'
+		super().__init__()
+		s.flash=PointLight(position=s.position,color=color.black)
+		s.thnt=3
+	def thunder_bolt(self):
+		s=self
+		AC=LC.ACTOR
+		LC.bgT.texture=s.bgr+'bg_ruins_th.jpg'
+		LC.bgT.texture_scale=LC.bgT.orginal_tsc
+		s.flash.position=(AC.x,AC.y+3,AC.z)
+		s.flash.color=color.white
+		sound.thu_audio(ID=0,pit=random.uniform(.1,.5))
+		invoke(lambda:sound.thu_audio(ID=random.randint(1,2),pit=random.uniform(.1,.5)),delay=.5)
+		invoke(s.reset_sky,delay=random.uniform(.1,.4))
+	def reset_sky(self):
+		s=self
+		LC.bgT.texture=s.bgr+'bg_ruins.jpg'
+		LC.bgT.texture_scale=LC.bgT.orginal_tsc
+		s.flash.color=color.black
+		s.thnt=random.randint(4,10)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.thnt=max(s.thnt-time.dt,0)
+		if s.thnt <= 0:
+			s.thunder_bolt()

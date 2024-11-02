@@ -1,6 +1,6 @@
+from ursina import BoxCollider,Vec3,Entity,Audio,distance,lerp,invoke,Sequence,Wait
 import settings,_core,math,animation,status,sound,_loc,effect,objects,time,random
-from ursina import BoxCollider,Vec3,Entity,Audio,distance,lerp,invoke
-from math import radians,cos,sin
+from math import radians,cos,sin,pi
 
 di={0:'x',1:'y',2:'z'}
 npf='res/npc/'
@@ -62,7 +62,7 @@ def npc_action(m):
 			cc.purge_instance(m)
 			return
 		an.npc_walking(m)
-		if m.vnum in [10,11]:
+		if m.vnum in {10,11}:
 			rma={0:lambda:npc_walk(m),
 				1:lambda:cc.circle_move_xz(m),
 				2:lambda:cc.circle_move_y(m)}
@@ -80,6 +80,7 @@ class Amadillo(Entity):
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1
+		del pos,rng,drc
 	def update(self):
 		npc_action(self)
 
@@ -92,6 +93,7 @@ class Turtle(Entity):
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(300,600,300))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=.7
+		del pos,rng,drc
 	def update(self):
 		npc_action(self)
 
@@ -105,6 +107,7 @@ class SawTurtle(Entity):
 		cc.set_val_npc(s,drc,rng)
 		s.def_mode=True
 		s.move_speed=1
+		del pos,rng,drc
 	def update(self):
 		npc_action(self)
 
@@ -420,6 +423,7 @@ class AkuAkuMask(Entity):
 		s.flt_di=0
 		s.spt=.5
 		s.change_skin()
+		Sequence(s.check_dist_player,Wait(3),loop=True)()
 		s.spkw=0
 	def change_skin(self):
 		s=self
@@ -458,22 +462,22 @@ class AkuAkuMask(Entity):
 		s.position=(mask_pos.x,s.ta.y+.5,mask_pos.z)
 	def check_dist_player(self):
 		s=self
-		if distance(s,s.ta) > 2:
+		if not (LC.ACTOR or st.gproc()):
+			return
+		if distance(s.position,s.ta.position) > 2:
 			s.position=s.ta.position
 	def floating(self):
 		s=self
-		if s.flt_di == 0:
-			s.y+=time.dt/10
-			if s.y >= s.last_y+.2:
-				s.flt_di=1
-			return
-		s.y-=time.dt/10
-		if s.y <= s.last_y-.2:
+		tt=time.dt/10
+		ddi={0:lambda:setattr(s,'y',s.y+tt),1:lambda:setattr(s,'y',s.y-tt)}
+		ddi[s.flt_di]()
+		if (s.flt_di == 0 and s.y >= s.last_y+.2):
+			s.flt_di=1
+		if (s.flt_di == 1 and s.y <= s.last_y-.2):
 			s.flt_di=0
 	def update(self):
-		s=self
-		if not st.gproc() and LC.ACTOR != None:
-			s.check_dist_player()
+		if not st.gproc():
+			s=self
 			s.follow_player()
 			s.change_skin()
 			if st.aku_hit < 1:

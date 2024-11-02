@@ -39,13 +39,13 @@ dt_act={0:'fall_endl',
 		6:'eat_by_plant'}
 
 #triggers
-trigger_lst=['indz','lvfi','elwt','fthr']
+trigger_lst={'indz','lvfi','elwt','fthr'}
 
 #item/obj name list
-item_lst=['wmpf','exlf','gems','crys']
+item_lst={'wmpf','exlf','gems','crys'}
 
 #danger zone
-dangers=['wood_log','role','fllz']
+dangers={'wood_log','role','fllz'}
 
 # checkpoint - bonus
 bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(0,1,-25)]

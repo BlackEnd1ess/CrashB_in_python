@@ -37,10 +37,10 @@ class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
 		s=self
 		super().__init__(model='quad',name='fthr',texture=ef+'fire_ball.png',position=(pos[0],pos[1]+.25,pos[2]),scale=.2,collider='box',unlit=False,color=random.choice([color.orange,color.red]))
-		s.life_time=.5
+		s.life_time=.4
 		s.direc=ro_y
 		s.mvs=4
-		if ro_y in [90,-90]:
+		if ro_y in {90,-90}:
 			s.z=s.z+random.uniform(-.1,.1)
 	def fly_away(self):
 		s=self

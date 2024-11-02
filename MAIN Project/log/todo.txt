@@ -4,3 +4,4 @@
 - reduce laggs
 - gem gloss
 - decrase camera range
+- level 2 crate counter end level?
