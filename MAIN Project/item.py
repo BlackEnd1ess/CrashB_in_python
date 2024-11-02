@@ -22,7 +22,7 @@ def place_wumpa(pos,cnt,c_prg=False):
 class WumpaFruit(Entity):
 	def __init__(self,p,c_prg):
 		s=self
-		s.w_pa='res/ui/icon/wumpa_fruit/'
+		s.w_pa='res/ui/icon/wumpa/'
 		super().__init__(model='quad',texture=s.w_pa+'w0.png',name='wmpf',position=(p[0],p[1],p[2]),scale=.22)
 		s.collider=BoxCollider(s,size=Vec3(1,1,1))
 		s.follow=False

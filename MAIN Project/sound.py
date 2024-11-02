@@ -39,6 +39,7 @@ SND_THU={0:'thunder_start',
 		1:'thunder0',
 		2:'thunder1'}
 def thu_audio(ID,pit=1):
+	print(ID)
 	pth=Audio(VS+SND_THU[ID]+'.wav',pitch=random.uniform(.1,.5),volume=se.SFX_VOLUME,add_to_scene_entities=False)
 
 ## INTERFACE SFX
@@ -134,21 +135,21 @@ class WaterRiver(Audio):
 		super().__init__(VS+'waterf.wav',volume=0,loop=True)
 		invoke(lambda:Sequence(self.check_z,Wait(.5),loop=True)(),delay=1)
 	def check_z(self):
-		if not st.gproc() and not (st.bonus_round or st.is_death_route):
-			self.volume=se.SFX_VOLUME
+		s=self
+		if st.gproc() or st.bonus_round:
+			s.volume=0
 			return
-		self.volume=0
+		s.volume=settings.SFX_VOLUME
 
 class AmbienceSound(Audio):
 	def __init__(self):
-		super().__init__(VS+'jungle.wav',loop=True,volume=0,add_to_scene_entities=False)
-		self.vlm=se.SFX_VOLUME
+		super().__init__(VS+'jungle.wav',loop=True,volume=0)
 	def update(self):
 		s=self
 		if st.gproc():
 			s.volume=0
 			return
-		s.volume=s.vlm
+		s.volume=settings.SFX_VOLUME
 
 class Rainfall(Audio):
 	def __init__(self):

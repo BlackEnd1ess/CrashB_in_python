@@ -1,16 +1,20 @@
-from ursina import Animation,Sequence,Wait,Entity,Sky,Audio,Text,camera,color,scene,invoke,lerp,distance,curve
+from ursina import Animation,Sequence,Wait,Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,curve
 import status,_core,_loc,sound,settings,warproom,level,time
 from time import strftime,gmtime
 
-w_pa='res/ui/icon/wumpa_fruit/w'
+cr_i='res/ui/icon/crystal/cry'
+w_pa='res/ui/icon/wumpa/w'
 wmpf='res/ui/digit_wumpa/'
 crtf='res/ui/digit_crate/'
-crti='res/ui/crate_icon/'
+crti='res/ui/icon/crate/'
 lvtf='res/ui/digit_live/'
+ivy_='res/ui/misc/ivy'
 _fnt='res/ui/font.ttf'
 btxt='res/ui/bonus/'
 _icn='res/ui/icon/'
 q='quad'
+
+sf=.003
 
 CU=camera.ui
 st=status
@@ -373,9 +377,10 @@ class ProjectInfo(Entity):
 	def __init__(self):
 		LoadingScreen()
 		Audio('res/snd/music/ev/title.mp3',loop=True,volume=settings.MUSIC_VOLUME)
+		Entity(model='quad',color=color.black,scale=(4,4),parent=CU)
 		super().__init__(model='quad',texture=btv+'disclaim.jpg',scale=(1.6,.8),parent=CU)
-		invoke(lambda:TitleScreen(),delay=7)
-		invoke(lambda:cc.purge_instance(self),delay=7)
+		invoke(lambda:TitleScreen(),delay=5)
+		invoke(lambda:cc.purge_instance(self),delay=5)
 
 ## Loading Screen
 class LoadingScreen(Entity):
@@ -424,29 +429,27 @@ class BlackScreen(Entity):
 					cc.purge_instance(s)
 
 ## Warp Room Interface
-class LevelInfo(Entity):
+class LevelSelector(Entity):
 	def __init__(self,idx,pos):
 		s=self
 		sf=.1
-		cgs={1:'gem',2:'gem',3:'gem',4:'gem1',5:'gem2'}
 		gcsa={1:sf/1.8,2:sf,3:sf*1.4,4:sf,5:sf}
 		icb='res/ui/misc/icon_box.png'
 		req_col=color.rgb32(25,25,25)
 		super().__init__(position=pos,parent=CU)
-		s.lv_crystal=Animation(_icn+'crystal.gif',position=(self.x+.8,self.y,self.z),scale=sf,parent=CU,color=req_col)
-		s.lv_col_gem=Animation(cgs[idx]+'.gif',position=(s.x+.945,s.y,s.z),scale=sf,parent=CU,color=req_col)
-		s.lv_clr_gem=Animation(_icn+'gem.gif',position=(s.x+1.09,s.y,s.z),scale=sf,parent=CU,color=req_col)
-		s.lv_name=Text(_loc.lv_name[idx],font=_fnt,position=(s.x,s.y+.04,s.z),scale=2.5,color=color.orange,parent=CU)
-		Entity(model='quad',texture='res/background/wroom.png',scale=(40,20),color=color.rgb32(140,160,140),position=(0,0,4))
-		#2d leaf
-		Entity(parent=CU,model='quad',texture='res/ui/misc/ivy_m.png',scale=.2,position=(-.8,.4,.1))
-		Entity(parent=CU,model='quad',texture='res/ui/misc/ivy_m.png',scale=.2,position=(-.8,-.4,.1),rotation_z=-90)
-		Entity(parent=CU,model='quad',texture='res/ui/misc/ivy.png',scale=.2,position=(.8,.4,.1))
-		Entity(parent=CU,model='quad',texture='res/ui/misc/ivy.png',scale=.2,position=(.8,-.4,.1),rotation_z=90)
+		s.lv_crystal=Entity(model=q,texture=cr_i+'0.png',position=(s.x+.945,s.y,s.z),scale=sf,parent=CU,color=req_col)
+		s.lv_col_gem=Entity(model=q,texture=LC.fdc[idx]+'0.png',position=(s.x+.8,s.y,s.z),scale=sf,parent=CU,color=req_col)
+		s.lv_clr_gem=Entity(model=q,texture=LC.ge_0+'0.png',position=(s.x+1.09,s.y,s.z),scale=sf,parent=CU,color=req_col)
+		s.lv_name=Text(LC.lv_name[idx],font=_fnt,position=(s.x,s.y+.04,s.z),scale=2.5,color=color.orange,parent=CU)
+		s.bgd=Entity(model=q,texture='res/background/wroom.png',scale=(40,20),position=(0,0,4),color=color.rgb32(140,160,140))
+		s.lf0=Entity(model=q,texture=ivy_+'_m.png',scale=.2,position=(-.8,.4,.1),parent=CU)
+		s.lf1=Entity(model=q,texture=ivy_+'_m.png',scale=.2,position=(-.8,-.4,.1),rotation_z=-90,parent=CU)
+		s.lf2=Entity(model=q,texture=ivy_+'.png',scale=.2,position=(.8,.4,.1),parent=CU)
+		s.lf3=Entity(model=q,texture=ivy_+'.png',scale=.2,position=(.8,-.4,.1),rotation_z=90,parent=CU)
 		s.lv_col_gem.scale_y=gcsa[idx]
 		s.lvID=idx
 		for iwb in range(3):
-			Entity(model=q,texture=icb,position=(s.lv_crystal.x+iwb/7,s.y,1),scale=.16,parent=CU,color=color.rgb32(120,140,120))
+			Entity(model=q,texture=icb,position=(s.lv_col_gem.x+iwb/7,s.y,1),scale=.16,parent=CU,color=color.rgb32(120,140,120))
 		if idx in st.CRYSTAL:
 			s.lv_crystal.color=color.magenta
 		if idx in st.CLEAR_GEM:
@@ -461,11 +464,23 @@ class LevelInfo(Entity):
 			s.lv_col_gem.color=color.rgb32(0,180,0)
 		if idx == 5 and 3 in st.COLOR_GEM:
 			s.lv_col_gem.color=color.rgb32(140,0,160)
+		s.frm=0
+	def refr(self):
+		s=self
+		s.frm=min(s.frm+time.dt*30,89.999)
+		if s.frm > 89.99:
+			s.frm=0
+		kg=f'{int(s.frm)}.png'
+		s.lv_crystal.texture=cr_i+kg
+		s.lv_col_gem.texture=LC.fdc[s.lvID]+kg
+		s.lv_clr_gem.texture=LC.ge_0+kg
 	def update(self):
-		if st.selected_level == self.lvID:
-			self.lv_name.color=color.white
+		s=self
+		s.refr()
+		if st.selected_level == s.lvID:
+			s.lv_name.color=color.white
 			return
-		self.lv_name.color=color.orange
+		s.lv_name.color=color.orange
 
 ## Bonusround Text
 class BonusText(Entity):
@@ -525,13 +540,13 @@ class PauseMenu(Entity):####pause without update
 		s.game_progress=Text('Progress 0%',font=_fnt,scale=3,position=(vF+.325,vF-.35,s.z-1),color=color.gold,parent=CU,visible=False)
 		##animation
 		ric='res/ui/icon/'
-		s.cry_anim=Animation(ric+'crystal.gif',position=(vF+.6,vF+.26,s.z-1),scale=.15,fps=12,parent=CU,color=color.magenta,visible=False)
-		s.col_gem1=Animation(ric+'gem.gif',position=(vF+.25,vF+.075,s.z-1),scale=.15,fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		s.col_gem2=Animation(ric+'gem1.gif',position=(vF+.37,vF+.075,s.z-1),scale=.15,fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		s.col_gem3=Animation(ric+'gem2.gif',position=(vF+.49,vF+.075,s.z-1),scale=.15,fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		s.col_gem4=Animation(ric+'gem.gif',position=(vF+.61,vF+.075,s.z-1),scale=(.15,.075),fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		s.col_gem5=Animation(ric+'gem.gif',position=(vF+.73,vF+.075,s.z-1),scale=(.15,.19),fps=12,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		s.cleargem=Animation(ric+'gem.gif',position=(vF+.6,vF-.03,s.z-1),scale=.2,fps=12,parent=CU,color=color.rgb32(130,130,190),visible=False)
+		s.cry_anim=Entity(model=q,texture=cr_i+'0.png',position=(vF+.6,vF+.26,s.z-1),scale=.15,parent=CU,color=color.magenta,visible=False)
+		s.col_gem1=Entity(model=q,texture=LC.ge_0+'0.png',position=(vF+.25,vF+.075,s.z-1),scale=.15,parent=CU,color=color.rgb32(K,K,K),visible=False)
+		s.col_gem2=Entity(model=q,texture=LC.ge_0+'0.png',position=(vF+.37,vF+.075,s.z-1),scale=.15,parent=CU,color=color.rgb32(K,K,K),visible=False)
+		s.col_gem3=Entity(model=q,texture=LC.ge_0+'0.png',position=(vF+.49,vF+.075,s.z-1),scale=.15,parent=CU,color=color.rgb32(K,K,K),visible=False)
+		s.col_gem4=Entity(model=q,texture=LC.ge_1+'0.png',position=(vF+.61,vF+.075,s.z-1),scale=(.15,.075),parent=CU,color=color.rgb32(K,K,K),visible=False)
+		s.col_gem5=Entity(model=q,texture=LC.ge_2+'0.png',position=(vF+.73,vF+.075,s.z-1),scale=(.15,.19),parent=CU,color=color.rgb32(K,K,K),visible=False)
+		s.cleargem=Entity(model=q,texture=LC.ge_0+'0.png',position=(vF+.55,vF-.03,s.z-1),scale=.16,parent=CU,color=color.rgb32(130,130,190),visible=False)
 		##options
 		s.music_vol=Text('SOUND VOLUME '+str(settings.SFX_VOLUME*10),tag=0,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.2,s.z-1),visible=False)
 		s.sound_vol=Text('MUSIC VOLUME '+str(settings.MUSIC_VOLUME*10),tag=1,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.275,s.z-1),visible=False)
@@ -539,6 +554,7 @@ class PauseMenu(Entity):####pause without update
 		s.check_collected()
 		s.opt_menu=False
 		s.sel_opt=0
+		s.frm=0
 		LC.p_menu=self
 	def input(self,key):
 		s=self
@@ -631,9 +647,23 @@ class PauseMenu(Entity):####pause without update
 				text_blink(M=s,t=ot)
 			else:
 				ot.color=s.font_color
+	def refr_ico(self):
+		s=self
+		s.frm=min(s.frm+time.dt*30,89.999)
+		if s.frm > 89.99:
+			s.frm=0
+		kw=f'{int(s.frm)}.png'
+		s.cry_anim.texture=cr_i+kw
+		s.cleargem.texture=LC.ge_0+kw
+		s.col_gem1.texture=LC.ge_0+kw
+		s.col_gem2.texture=LC.ge_1+kw
+		s.col_gem3.texture=LC.ge_2+kw
+		s.col_gem4.texture=LC.ge_0+kw
+		s.col_gem5.texture=LC.ge_0+kw
 	def update(self):
 		s=self
 		if st.pause:
+			s.refr_ico()
 			s.music_vol.text=f'MUSIC VOLUME {int(settings.MUSIC_VOLUME*100)}%'
 			s.sound_vol.text=f'SOUND VOLUME {int(settings.SFX_VOLUME*100)}%'
 			s.blink_time=max(s.blink_time-time.dt,0)
@@ -644,39 +674,46 @@ class PauseMenu(Entity):####pause without update
 		s.opt_menu=False
 
 ## Gem/Crytal
-class CollectedGem(Animation):
+class CollectedGem(Entity):
 	def __init__(self):
 		s=self
-		super().__init__(_icn+'crystal.gif',parent=CU,scale=.15,color=color.rgb32(180,0,180),visible=False,position=(0,-.4,-1))
-		cGLI='gem.gif'
-		if st.level_index == 4:
-			cGLI='gem1.gif'
-		elif st.level_index == 5:
-			cGLI='gem2.gif'
-		cGLO={1:color.rgb32(0,0,O),
-			2:color.rgb32(O,0,0),
-			5:color.rgb32(O,0,O),
-			4:color.rgb32(0,O,0),
-			3:color.rgb32(O,O,0),
-			6:color.rgb32(O,0,0)}
-		s.colored_gem=Animation(_icn+cGLI,parent=CU,position=(s.x-.1,s.y,s.z),scale=s.scale,color=cGLO[st.level_index],visible=False)
-		s.clear_gem=Animation(_icn+'gem.gif',parent=CU,position=(s.x+.1,s.y,s.z),scale=s.scale,color=color.rgb32(100,100,170),visible=False)
-		if st.level_index == 3:
-			s.colored_gem.scale_y=.2
-		if st.level_index == 1:
-			s.colored_gem.scale_y=.07
+		idx=st.level_index
+		kk=LC.cGLO[idx]
+		super().__init__(position=(0,0),parent=CU,scale=.14)
+		s.crystal=Entity(model=q,texture=cr_i+'0.png',scale=s.scale,position=(s.x,s.y-.4),color=color.rgb32(200,0,200),visible=False,parent=CU)
+		s.clear_gem=Entity(model=q,texture=LC.ge_0+'0.png',position=(s.x-.1,s.y-.4),scale=s.scale,color=color.rgb32(128,128,180),visible=False,parent=CU)
+		s.color_gem=Entity(model=q,texture=LC.fdc[idx]+'0.png',position=(s.x+.1,s.y-.4),scale=s.scale,color=color.rgb32(kk[0],kk[1],kk[2]),visible=False,parent=CU)
+		if idx == 3:
+			s.color_gem.scale_y=.2
+		if idx == 1:
+			s.color_gem.scale_y=.07
+		s.cry_frm=0
+	def refr_frm(self):
+		s=self
+		s.cry_frm=min(s.cry_frm+time.dt*40,89.999)
+		if s.cry_frm > 89.99:
+			s.cry_frm=0
+		fm=f'{int(s.cry_frm)}.png'
+		if s.crystal.visible:
+			s.crystal.texture=cr_i+fm
+		if s.clear_gem.visible:
+			s.clear_gem.texture=LC.ge_0+fm
+		if s.color_gem.visible:
+			s.color_gem.texture=LC.fdc[st.level_index]+fm
 	def update(self):
-		if not st.gproc():
-			s=self
-			if st.show_gems > 0:
-				st.show_gems=max(st.show_gems-time.dt,0)
-				s.visible=(st.level_crystal)
-				s.colored_gem.visible=(st.level_col_gem)
-				s.clear_gem.visible=(st.level_cle_gem)
-				return
-			s.colored_gem.visible=False
-			s.clear_gem.visible=False
-			s.visible=False
+		if st.gproc():
+			return
+		s=self
+		if st.show_gems > 0:
+			st.show_gems=max(st.show_gems-time.dt,0)
+			s.crystal.visible=(st.level_crystal)
+			s.clear_gem.visible=(st.level_cle_gem)
+			s.color_gem.visible=(st.level_col_gem)
+			s.refr_frm()
+			return
+		s.color_gem.visible=False
+		s.clear_gem.visible=False
+		s.crystal.visible=False
 
 ## Gem Hint
 class GemHint(Entity):

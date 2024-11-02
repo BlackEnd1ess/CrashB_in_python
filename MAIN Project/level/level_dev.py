@@ -37,9 +37,8 @@ def load_crate():
 	mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,4])
 	mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,3])
 	mt.crate_block(ID=14,POS=(6.5,.16,-18),CNT=[3,3,3])
-	#mt.crate_row(ID=2,POS=(0,.16,-25),CNT=10,WAY=2)
 def load_wumpa():
-	mt.wumpa_plane(POS=(0,.3,-20),CNT=[10,10])
+	mt.wumpa_plane(POS=(0,.3,-14),CNT=[5,5])
 def load_npc():
 	n.spawn(ID=7,POS=(0,0,-24))
 

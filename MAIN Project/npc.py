@@ -225,7 +225,7 @@ class EatingPlant(Entity):
 			if not (ta.is_attack or ta.jumping):
 				if ta.y <= s.y+.2:
 					cc.get_damage(ta,rsn=5)
-					if st.aku_hit < 1:
+					if st.aku_hit == 0 and not s.eat:
 						s.eat=True
 	def npc_anim(self):
 		s=self

@@ -148,9 +148,9 @@ def load_crate():
 	h1=.75+.16
 	h2=.925+.16
 	h3=5.375+.16
-	mt.crate_block(ID=1,POS=(.5,h2,-58),CNT=[2,2,2])
+	mt.crate_plane(ID=1,POS=(.5,h2,-58),CNT=[1,2])
 	mt.crate_plane(ID=2,POS=(-.7,h2,-57),CNT=[2,2])
-	mt.crate_wall(ID=12,POS=(-.3,h2,-18.6),CNT=[3,3])
+	mt.crate_wall(ID=12,POS=(-.3,h2,-18.6),CNT=[3,2])
 	c.place_crate(ID=1,p=(0,h1,-54))
 	c.place_crate(ID=3,p=(0,h1,-51))
 	c.place_crate(ID=2,p=(-.2,h1,-48))
@@ -166,7 +166,7 @@ def load_crate():
 	mt.crate_row(ID=3,POS=(21,2.6,2.5),CNT=3,WAY=0)
 	c.place_crate(ID=8,p=(24.5,3.3,2.5))
 	c.place_crate(ID=8,p=(23.7,4.2,2.5))
-	mt.crate_plane(ID=1,POS=(21.6,h3,5.4),CNT=[3,3])
+	mt.crate_plane(ID=1,POS=(21.6,h3,5.4),CNT=[1,3])
 	c.place_crate(ID=3,p=(23.2,5.45+.16,13))
 	c.place_crate(ID=10,p=(37,h3+.48,30.4))
 	c.place_crate(ID=5,p=(7.2,2.125+.16,2.5))
@@ -184,7 +184,7 @@ def load_crate():
 	mt.crate_plane(ID=14,POS=(22.7,5.54,21.1),CNT=[2,2])
 	mt.crate_wall(ID=4,POS=(37,5.96,27),CNT=[1,1])
 	mt.crate_wall(ID=1,POS=(38.4,5.96,30),CNT=[1,1])
-	mt.crate_block(ID=1,POS=(42.6,5.88,28.9),CNT=[3,3,3])
+	mt.crate_block(ID=1,POS=(42.6,5.88,28.9),CNT=[2,2,2])
 def load_wumpa():
 	whl=1.2
 	mt.wumpa_wall(POS=(0,1.13,-58.7),CNT=[3,2])

@@ -100,4 +100,7 @@
 #02.11.2024
 - removed skybox, reduces wumpa fruits in any level
 - changed level system by loading level-files. make easier for incomming level editor
-- roomdoor keeps open, if player.z is over door.z
+- room door keeps open, if player.z is over door.z
+- 2D UI: gems,crystals doesnt lagg at last Frame anymore
+- reduce massive RAM Usage from 700MB to 200-300MB per Level
+- debug Mode shows Entity Count for ALL Entities where loaded in Engine

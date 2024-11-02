@@ -49,23 +49,30 @@ def set_fog(idx):
 		scene.fog_density=B_DST[idx]
 
 ##Rainfall Func
-class RainFall(Animation):
+class RainFall(Entity):
 	def __init__(self):
 		s=self
-		super().__init__('res/ui/misc/rain/',scale=(1.8,1),fps=40,parent=camera.ui,z=1,visible=False,loop=True)
+		s.rnf='res/ui/misc/rain/'
+		super().__init__(model='quad',texture=None,scale=(1.8,1),parent=camera.ui,z=1,visible=False)
 		LC.ACTOR.indoor=.5
 		sound.Rainfall()
-		s.fps=40
+		s.frm=0
+		s.fp=40
 		if st.level_index == 5:
-			s.fps=50
+			s.fp=50
+	def refr_tex(self):
+		s=self
+		s.frm=min(s.frm+time.dt*s.fp,58.999)
+		if s.frm > 58.99:
+			s.frm=0
+		s.texture=s.rnf+f'{int(s.frm)}.png'
 	def update(self):
 		s=self
 		if st.pause:
-			s.pause()
 			return
-		ft=time.dt*2
+		ft=time.dt*2.3
+		s.refr_tex()
 		if LC.ACTOR.warped and LC.ACTOR.indoor <= 0:
-			s.resume()
 			s.visible=True
 			s.alpha=lerp(s.alpha,1,ft)
 			return

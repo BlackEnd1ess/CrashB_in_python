@@ -581,7 +581,7 @@ class EletricWater(Entity):
 	def __init__(self,pos,sca):
 		s=self
 		self.wtt=omf+'l4/wtr/'
-		super().__init__(model='cube',texture=s.wtt+'0.png',name='elwt',position=pos,scale=(sca[0],.1,sca[1]),texture_scale=(sca[0],sca[1]),color=color.rgb32(0,180,180),alpha=.8,collider=b)
+		super().__init__(model='cube',texture=s.wtt+'0.png',name='elwt',position=pos,scale=(sca[0],.1,sca[1]),texture_scale=(sca[0],sca[1]),color=color.rgb32(0,180,180),alpha=.9,collider=b)
 		s.tx=(sca[0],sca[1])
 		s.electric=False
 		s.nr=False
@@ -602,6 +602,7 @@ class EletricWater(Entity):
 			s.electric=True
 			s.color=color.yellow
 			s.unlit=False
+			s.alpha=.9
 			if (LC.ACTOR.warped and not st.bonus_round):
 				if s.nr:
 					sn.obj_audio(ID=7)
@@ -611,6 +612,7 @@ class EletricWater(Entity):
 		s.electric=False
 		s.color=color.rgb32(0,125,125)
 		s.unlit=True
+		s.alpha=.9
 	def check_p(self):
 		s=self
 		ta=LC.ACTOR

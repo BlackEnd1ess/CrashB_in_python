@@ -1,5 +1,5 @@
 from ursina import Sequence,Wait,scene,distance,distance_xz
-import _core,_loc,status,item
+import _core,_loc,status,item,settings
 
 st=status
 cc=_core
@@ -24,18 +24,13 @@ BGSO={1:PLO+['grsi','mblo','tmpw','trrw','cori'],
 	6:[]}
 
 ## BSGO distance
-LD={0:0,
-	1:28,
-	2:24,
-	3:10,
-	4:32,
-	5:32,
-	6:16}
+LD={0:0,1:30,2:20,3:16,4:28,5:32,6:16}
 
 ## init lod
 def start():
 	Sequence(lambda:refr(st.level_index),Wait(.6),loop=True)()
-	cwu()
+	if settings.debg:
+		cwu()
 def cwu():
 	j=0
 	for k in scene.entities[:]:
@@ -50,10 +45,15 @@ def check_dst(p,v,dz):
 def check_dynamic(o):
 	return any([(cc.is_enemie(o) and not (o.is_hitten or o.is_purge)),(o.name in LL[st.level_index])])
 
+#for e in range(0,3):
+#	print(e)
+#	for v in gc.get_objects(generation=e):
+#		print(v)
+
 def refr(idx):
 	if st.gproc():
 		return
-	bc={r for r in scene.entities if (r.parent == scene and hasattr(r,'texture'))}
+	bc={r for r in scene.entities if r.parent == scene}
 	p=LC.ACTOR.position
 	for v in bc:
 		u=check_dst(p,v.position,dz=int(scene.fog_density[1]))

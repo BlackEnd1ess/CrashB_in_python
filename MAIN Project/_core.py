@@ -42,7 +42,7 @@ class PlayerDBG(Entity):
 		s.inj_state=Text(color=tct,font=fn,position=(sx,hg-.475),parent=CV,scale=fw)
 		s.aku_state=Text(color=tct,font=fn,position=(sx,hg-.5),parent=CV,scale=fw)
 		s.mem_state=Text(color=tct,font=fn,position=(sx,hg-.55),parent=CV,scale=fw)
-		s.cpu_state=Text(color=tct,font=fn,position=(sx,hg-.575),parent=CV,scale=fw)
+		s.ent_state=Text(color=tct,font=fn,position=(sx,hg-.575),parent=CV,scale=fw)
 		s.dscr_text=Text('player pos:',color=color.azure,font=fn,position=(sx+.05,hg-.625),parent=CV,scale=fw)
 		s.ppo_state=Text(color=tct,font=fn,position=(sx,hg-.665),parent=CV,scale=fw)
 		s.process=psutil.Process(os.getpid())
@@ -52,7 +52,7 @@ class PlayerDBG(Entity):
 		s=self
 		rv=LC.ACTOR
 		mem_usage=s.process.memory_info().rss/(1024*1024)
-		s.cpu_state.text=f'entities    : {len(scene.entities)}'
+		s.ent_state.text=f'instances   : {len(scene.entities)}'
 		s.mem_state.text=f'STATUS MEM  : {mem_usage:.0f} MB'
 		s.ppo_state.text=f'x{rv.x:.1f}  y{rv.y:.1f}  z{rv.z:.1f}'
 		s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'

@@ -309,6 +309,7 @@ def plant_bite(m):
 	m.atk_frame=min(m.atk_frame+time.dt*t,18.999)
 	if m.atk_frame > 18.99:
 		m.atk_frame=0
+		m.atk=False
 	m.model=plt+'attack/'+str(int(m.atk_frame))+'.ply'
 def plant_eat(m):
 	m.eat_frame=min(m.eat_frame+time.dt*t,30.999)

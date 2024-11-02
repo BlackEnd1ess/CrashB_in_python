@@ -133,6 +133,5 @@ def level_select():
 	Memorycard()
 	LvSelect()
 	for lvs in {1,2,3,4,5}:
-		ui.LevelInfo(idx=lvs,pos=(-.8,.5-lvs/6))
-	gc.collect()
+		ui.LevelSelector(idx=lvs,pos=(-.8,.5-lvs/6))
 	st.loading=False

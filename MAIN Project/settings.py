@@ -2,8 +2,8 @@ from ursina import color,window,camera
 import environment
 
 ## debug options
-debg_color=color.rgb32(255,128,0)
-debg=True
+debg_color=color.rgb32(180,180,180)
+debg=False
 
 ## keyboard bindings
 MNU_KEY='p'#		pause
@@ -35,7 +35,8 @@ def load():
 	w.collider_counter.enabled=debg
 	w.entity_counter.enabled=debg
 	w.fps_counter.enabled=debg
-	w.cog_button.enabled=debg
+	w.cog_button.enabled=False
+	w.cog_menu.enabled=False
 	w.fullscreen=False
 	w.borderless=False
 	camera.fov=65
