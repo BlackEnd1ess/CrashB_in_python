@@ -2,7 +2,7 @@ Information: This Project is a Crash Bandicoot inspired Game written in Python3 
 # temporary no Assets and Ressources aviable, need to renamed and encrypted! please keep patience :/ #
 # in meanwhile i will check, how i can make it more easier for you, to get the most of them #
 
-# Functional Status: not playable, on slower Devices. This Problem will fixxed and optimized in meanwhile
+# Functional Status: Reduces a lot of RAM Usage, but runs on faster PC's and Laptops with 200-400MB, more optimizions in work.
 
 required Modules:
 - ursina
