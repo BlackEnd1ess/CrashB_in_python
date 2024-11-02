@@ -39,7 +39,6 @@ SND_THU={0:'thunder_start',
 		1:'thunder0',
 		2:'thunder1'}
 def thu_audio(ID,pit=1):
-	print(ID)
 	pth=Audio(VS+SND_THU[ID]+'.wav',pitch=random.uniform(.1,.5),volume=se.SFX_VOLUME,add_to_scene_entities=False)
 
 ## INTERFACE SFX

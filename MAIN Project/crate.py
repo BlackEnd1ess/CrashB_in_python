@@ -412,7 +412,8 @@ class LvInfo(Entity):
 		s=self
 		if st.level_index == 3:
 			item.GemStone(pos=(-.05,2.75,88),c=5)
-		ui.GemHint()
+		if distance(s,LC.ACTOR) < 3:
+			ui.GemHint()
 		destroy_event(s)
 
 ##crate effects

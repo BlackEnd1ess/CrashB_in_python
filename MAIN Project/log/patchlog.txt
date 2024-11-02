@@ -104,3 +104,5 @@
 - 2D UI: gems,crystals doesnt lagg at last Frame anymore
 - reduce massive RAM Usage from 700MB to 200-300MB per Level
 - debug Mode shows Entity Count for ALL Entities where loaded in Engine
+- level 5 thunder with flash light
+- clean looped water sound in level 3

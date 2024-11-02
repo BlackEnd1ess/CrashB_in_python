@@ -24,7 +24,7 @@ def spawn_tree_wall(pos,cnt,d):
 		Tree2D(pos=(pos[0]+random.uniform(-.1,.1),pos[1],pos[2]+tsp*3),rot=tro[d])
 
 def bush(pos,sca,ro_y=0):
-	BUSH=Entity(model='quad',texture=omf+'l1/bush/bush1.png',name='bush',position=pos,scale=sca,rotation_y=ro_y)
+	BUSH=Entity(model='quad',texture=omf+'l1/bush/bush1.png',name='bush',position=pos,scale=sca,rotation_y=ro_y,color=color.rgb32(0,170,0))
 
 #lv2
 def plank_bridge(pos,typ,cnt,ro_y,DST):
@@ -927,7 +927,7 @@ class EndRoom(Entity):## finish level
 		if st.level_index != 5:
 			Entity(model='cube',scale=(20,10,.1),name=s.name,position=(s.x,s.y-5,s.z+16),color=color.black)
 		if st.crates_in_level > 0:
-			if not (st.level_index == 5 and s.x < 180):# pos_x 200 is death zone in lv 5
+			if s.x < 180:# pos_x 190 is death zone in lv 5
 				CrateScore(pos=(s.x-1.1,s.y-.7,s.z))
 		if st.level_index == 1 and not 4 in st.COLOR_GEM:
 			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=4)

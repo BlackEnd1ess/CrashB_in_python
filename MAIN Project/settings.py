@@ -29,7 +29,6 @@ SFX_VOLUME=.5
 def load():
 	w=window
 	w.windowed_size=(1600,900)
-	w.render_mode='default'
 	w.exit_button.visible=False
 	##debug infos
 	w.collider_counter.enabled=debg

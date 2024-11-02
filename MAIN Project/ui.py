@@ -55,7 +55,7 @@ class WumpaCollectAnim(Entity):
 		super().__init__(model=q,texture=w_pa+'0.png',scale={False:.075,True:.06}[st.bonus_round],parent=CU,position=pos,add_to_scene_entities=False)
 		s.tdirec=(-.75,.43,0)
 		if st.bonus_round:
-			s.tdirec=(-.25,-.5,0)
+			s.tdirec=(-.25,-.475,0)
 		s.animate_position(s.tdirec,duration=.4,curve=curve.linear)
 		invoke(s.disable,delay=.4)
 

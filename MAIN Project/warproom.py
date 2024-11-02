@@ -1,5 +1,5 @@
 from ursina import Audio,Text,Entity,camera,scene,color,invoke
-import status,_loc,level,sound,settings,ui,_core,objects,gc
+import status,_loc,level,sound,settings,ui,_core,objects
 cu=camera.ui
 st=status
 sn=sound
