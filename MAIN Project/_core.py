@@ -404,6 +404,7 @@ def game_pause():
 	pm.p_name.visible=(pa)
 	pm.ppt.visible=(pa)
 	pm.visible=(pa)
+	del pm
 def game_over():
 	invoke(lambda:ui.GameOverScreen(),delay=2)
 
@@ -554,18 +555,16 @@ def crate_set_val(cR,Cpos,Cpse):
 	cR.collider='box'
 	cR.poly=Cpse
 	cR.scale=.16
+	del cR,Cpos,Cpse
 def check_crates_over(c):
 	crf={pk for pk in scene.entities if (is_crate(pk) and (pk.x == c.x and pk.z == c.z) and pk.vnum != 3)}
-	cdd=[]
 	sdi=0
 	for wm in crf:
 		sdi+=1
 		if (wm.y > c.y) and (wm.y-c.y) <= .32*sdi:
-			cdd.append(wm)
-	for uc in cdd:
-		uc.animate_y((uc.y-.32),duration=.175)
-	cdd.clear()
+			wm.animate_y(wm.y-.32,duration=.175)
 	sdi=0
+	del crf,c,sdi
 def check_nitro_stack():
 	nit_crt={ct for ct in scene.entities if is_crate(ct) and ct.vnum == 12 and ct.can_jmp}
 	all_crt={ct for ct in scene.entities if is_crate(ct)}
