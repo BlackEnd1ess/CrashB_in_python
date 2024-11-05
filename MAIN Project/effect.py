@@ -11,16 +11,17 @@ class Sparkle(Entity):
 		super().__init__(model='quad',texture=ef+'sparkle.tga',position=pos,scale=.04,color=color.gold,unlit=False)
 		self.mode=0
 	def update(self):
-		if not st.gproc():
-			s=self
-			if s.mode == 0:
-				s.scale+=Vec3(time.dt/2,time.dt/2,0)
-				if s.scale_x > .1:
-					s.mode=1
-				return
-			s.scale-=Vec3(time.dt/2,time.dt/2,0)
-			if s.scale_x <= 0:
-				cc.purge_instance(s)
+		if st.gproc():
+			return
+		s=self
+		if s.mode == 0:
+			s.scale+=Vec3(time.dt/2,time.dt/2,0)
+			if s.scale_x > .1:
+				s.mode=1
+			return
+		s.scale-=Vec3(time.dt/2,time.dt/2,0)
+		if s.scale_x <= 0:
+			cc.purge_instance(s)
 
 class JumpDust(Entity):
 	def __init__(self,pos):
@@ -49,14 +50,15 @@ class FireThrow(Entity):
 			180:lambda:setattr(s,'z',s.z+mt),0:lambda:setattr(s,'z',s.z-mt)}
 		ddi[s.direc]()
 	def update(self):
-		if not st.gproc():
-			s=self
-			tdf=time.dt*1.1
-			s.life_time=max(s.life_time-time.dt,0)
-			if s.intersects(LC.ACTOR):
-				cc.get_damage(LC.ACTOR,rsn=3)
-			if s.life_time <= 0:
-				cc.purge_instance(s)
-				return
-			s.scale+=(tdf,tdf,tdf)
-			s.fly_away()
+		if st.gproc():
+			return
+		s=self
+		tdf=time.dt*1.1
+		s.life_time=max(s.life_time-time.dt,0)
+		if s.intersects(LC.ACTOR):
+			cc.get_damage(LC.ACTOR,rsn=3)
+		if s.life_time <= 0:
+			cc.purge_instance(s)
+			return
+		s.scale+=(tdf,tdf,tdf)
+		s.fly_away()

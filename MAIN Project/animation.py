@@ -255,9 +255,9 @@ class CrateBreak(Entity):
 		if cr.vnum in {11,12,15,16}:
 			vco={11:color.red,12:color.green,15:color.gold,16:color.violet}
 			bco=vco[cr.vnum]
-		super().__init__(model=cf+'brk/0.ply',texture=cf+'brk/break.tga',rotation=(-90,random.randint(0,360),0),scale=.4/1000,color=bco,position=(anP[0],anP[1]-.16,anP[2]),unlit=False,collider=None)
+		super().__init__(model=cf+'brk/0.ply',texture=cf+'brk/break.tga',rotation=(-90,random.randint(0,360),0),scale=.4/1000,color=bco,position=(anP[0],anP[1]-.16,anP[2]))
 		self.frame_break=0
-		del cr
+		del cr,bco,anP
 	def update(self):
 		if st.gproc():
 			return
@@ -276,7 +276,6 @@ class WarpRingEffect(Entity): ## spawn animation
 		s.omf='res/objects/ev/'
 		super().__init__(model=s.omf+'warp_rings/0.ply',texture=s.omf+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.9,unlit=False)
 		s.activ=False
-		s.ta=_loc.ACTOR
 		s.rings=0
 		s.times=0
 		del pos
@@ -293,7 +292,7 @@ class WarpRingEffect(Entity): ## spawn animation
 				sn.pc_audio(ID=1,pit=.35)
 			s.model=s.omf+'warp_rings/'+str(int(s.rings))+'.ply'
 			if s.times > 7:
-				s.ta.warped=True
+				_loc.ACTOR.warped=True
 				cc.purge_instance(s)
 
 ## npc animation

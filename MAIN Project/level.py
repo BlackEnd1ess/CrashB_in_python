@@ -34,6 +34,7 @@ def main_instance(idx):
 		6:lambda:test()}
 	goto[idx]()
 	environment.env_switch(idx)
+	del idx
 
 ## levels to load
 def test():# test level

@@ -23,9 +23,6 @@ def spawn_tree_wall(pos,cnt,d):
 	for tsp in range(0,cnt):
 		Tree2D(pos=(pos[0]+random.uniform(-.1,.1),pos[1],pos[2]+tsp*3),rot=tro[d])
 
-def bush(pos,sca,ro_y=0):
-	BUSH=Entity(model='quad',texture=omf+'l1/bush/bush1.png',name='bush',position=pos,scale=sca,rotation_y=ro_y,color=color.rgb32(0,170,0))
-
 #lv2
 def plank_bridge(pos,typ,cnt,ro_y,DST):
 	for wP in range(cnt):
@@ -84,10 +81,10 @@ class Tree2D(Entity):
 		tCOL=random.choice([color.rgb32(128,128,128),color.rgb32(200,200,200),color.rgb32(255,255,255)])
 		super().__init__(model='quad',texture=omf+'l1/tree/tree'+str(random.randint(1,4))+'.png',name='trd2',scale=3,position=pos,rotation_y=rot,color=tCOL,enabled=False)
 
+MVP=omf+'l1/p_moss/moss'
 class MossPlatform(Entity):
 	def __init__(self,p,ptm,pts=.5,ptw=3):
 		s=self
-		MVP=omf+'l1/p_moss/moss'
 		super().__init__(model='cube',name='mptf',texture=None,position=p,scale=(.6,1,.6),collider=b,visible=False,enabled=False)
 		s.opt_model=Entity(model=MVP+'.ply',name=s.name,texture=MVP+'.tga',scale=.75/1000,position=(p[0],p[1]+.475,p[2]),rotation_x=-90,enabled=False)
 		s.spawn_pos=p
@@ -102,6 +99,7 @@ class MossPlatform(Entity):
 			if ptm == 3:
 				ca='z'
 			Sequence(lambda:s.ptf_move(di=ca),loop=True)()
+		del p,ptm,pts,ptw
 	def ptf_move(self,di):
 		s=self
 		pdv={2:s.spawn_pos[0],3:s.spawn_pos[2]}
@@ -113,6 +111,7 @@ class MossPlatform(Entity):
 			s.turn=1
 		if (s.turn == 1 and kv <= pdv[s.ptm]-1):
 			s.turn=0
+		del pmd,spd,kv,pdv
 	def mv_player(self):
 		s=self
 		if s.ptm < 2:
@@ -141,15 +140,8 @@ class MossPlatform(Entity):
 class BackgroundWall(Entity):
 	def __init__(self,p):
 		s=self
-		super().__init__(model=omf+'l1/wall_0/tW_wall.ply',texture=omf+'l1/wall_0/wall_wood.tga',scale=.02,position=p,rotation=(-90,90,0),color=color.rgb32(160,190,160))
-		s.curtain=Entity(model='quad',texture=omf+'l1/bush/bush1.png',position=(s.x,s.y,s.z+1.5),scale=(20,6),color=color.rgb32(0,50,0))
-		s.inv_wall=Entity(model='cube',scale=(20,6),position=s.position,collider=b,visible=False)
-		bush(pos=(s.x-2.5,s.y-.4,s.z-.7),sca=1.2,ro_y=0)
-		bush(pos=(s.x-1,s.y-.6,s.z-.7),sca=.8,ro_y=0)
-		bush(pos=(s.x-.2,s.y-.6,s.z-.65),sca=.8,ro_y=0)
-		for bu in range(8):
-			aC=random.choice([color.green,color.orange,color.yellow])
-			Entity(model='quad',texture=omf+'l1/bush/bush1.png',position=(s.x-8+bu*2,s.y+2.75,s.z-1+random.uniform(.1,.5)),scale=random.uniform(3,4),color=aC)
+		super().__init__(model=omf+'l1/wall_0/tr_wall.ply',texture=omf+'l1/wall_0/wall_wood.tga',scale=.02,position=p,rotation=(-90,90,0),color=color.rgb32(160,190,160))
+		del p
 
 class Corridor(Entity):
 	def __init__(self,pos):
@@ -163,22 +155,27 @@ class Corridor(Entity):
 class TreeScene(Entity):
 	def __init__(self,pos,sca):
 		s=self
-		sBU=omf+'l1/bush/bush1.png'
-		super().__init__(model=omf+'l1/tree/tree.ply',name='tssn',texture=omf+'l1/tree/wd_scn.tga',rotation_x=-90,scale=sca,position=pos)
-		s.leaf0=Entity(model='quad',name=s.name,texture=sBU,position=(s.x-.4,s.y+1.2,s.z-.249),scale=1.6,color=color.rgb32(0,120,0),rotation_y=0,enabled=False)
-		s.leaf1=Entity(model='quad',name=s.name,texture=sBU,position=(s.x+.4,s.y+1.2,s.z-.248),scale=1.6,color=color.rgb32(0,110,0),rotation_y=-1,enabled=False)
-		s.leaf2=Entity(model='quad',name=s.name,texture=sBU,position=(s.x,s.y+1.4,s.z-.2485),scale=1.6,color=color.rgb32(0,130,0),rotation_y=-1,enabled=False)
+		super().__init__(model=omf+'l1/tree/tree_w.ply',name='tssn',texture=omf+'l1/tree/wd_scn.tga',rotation_x=-90,scale=sca,position=pos)
 		s.wall0=Entity(model='cube',name=s.name,scale=(1,10,1),position=(s.x+.2,s.y+3.5,s.z),visible=False,collider=b,enabled=False)
+		del pos,sca
 
 class TreeRow(Entity):
 	def __init__(self,pos,sca):
 		trf=omf+'l1/tree/'
 		super().__init__(model=trf+'multi_tree.ply',texture=trf+'tree_texture.png',name='trrw',position=pos,scale=sca,rotation_x=-90,color=color.rgb32(180,180,180))
+		del pos,sca
 
+gr=omf+'l1/grass_side/grass_side'
 class GrassSide(Entity):
 	def __init__(self,pos,ry):
-		gr=omf+'l1/grass_side/grass_side'
 		super().__init__(model=gr+'1.ply',texture=gr+'.jpg',name='grsi',position=pos,scale=(1,2,1.4),rotation=(-90,ry,0),enabled=False)
+		del pos,ry
+
+btt=omf+'l1/bush/bush1.png'
+class Bush(Entity):
+	def __init__(self,pos,sca,ro_y=0):
+		super().__init__(model='quad',texture=btt,position=pos,scale=sca,rotation_y=ro_y,color=color.rgb32(0,170,0),enabled=False)
+		del pos,sca,ro_y
 
 ####################
 ## level 2 objects #
@@ -213,9 +210,10 @@ class Plank(Entity):
 
 class Ropes(Entity):
 	def __init__(self,pos,le):
+		s=self
 		rpt=omf+'l2/rope/rope_pce.jpg'
-		super().__init__(model='cube',scale=(.03,.03,le),texture=rpt,position=pos,texture_scale=(1,le*8),origin_z=-.5)
-		self.dup=Entity(model='cube',scale=self.scale,position=(self.x+1,self.y,self.z),texture=rpt,texture_scale=(1,le*8),origin_z=self.origin_z)
+		super().__init__(model='cube',scale=(.03,.03,le),name='snrp',texture=rpt,position=pos,texture_scale=(1,le*8),origin_z=-.5)
+		s.dup=Entity(model='cube',scale=s.scale,name=s.name,position=(s.x+1,s.y,s.z),texture=rpt,texture_scale=(1,le*8),origin_z=s.origin_z)
 
 class Pillar(Entity):
 	def __init__(self,pos):
@@ -288,9 +286,10 @@ class IceChunk(Entity):
 
 class SnowPlatform(Entity):
 	def __init__(self,pos):
+		s=self
 		snPL='l2/snow_platform/snow_platform'
-		super().__init__(model=omf+snPL+'.ply',texture=omf+snPL+'.tga',position=pos,scale=.0075,rotation_x=-90)
-		Entity(model='cube',scale=(.85,1,.85),position=(self.x,self.y-.5,self.z),collider=b,visible=False)
+		super().__init__(model=omf+snPL+'.ply',texture=omf+snPL+'.tga',name='sngg',position=pos,scale=.0075,rotation_x=-90)
+		s.co=Entity(model='cube',scale=(.85,1,.85),name=s.name,position=(s.x,s.y-.5,s.z),collider=b,visible=False)
 
 class Role(Entity):
 	def __init__(self,pos,di):
@@ -381,26 +380,13 @@ class SceneWall(Entity):
 		roTY={1:91,2:90}
 		s.rotation_y=roTY[typ]
 
+trw=omf+'l3/temple_wall/tm_wall'
 class TempleWall(Entity):
-	def __init__(self,pos,side,col=color.gray):
-		s=self
-		gra='res/terrain/grass.jpg'
-		tmpleW=omf+'l3/temple_wall/w_'+str(side)
-		super().__init__(model=tmpleW+'.ply',texture='l3/temple_wall/water_z.tga',name='tmpw',position=pos,scale=.025,rotation=(-90,90,0),color=col,collider=b)
-		if side == 2:
-			Entity(model='plane',texture=gra,name=s.name,position=(s.x-.3,s.y+2.35,s.z+.08),scale=(1.3,0,2.7),color=color.green)
-			bush(pos=(s.x-.3,s.y+2.7,s.z),sca=(2,1),ro_y=45)
-			bush(pos=(s.x-.3,s.y+2.7,s.z),sca=(2,1),ro_y=-45)
-			bush(pos=(s.x-.2,s.y+2.6,s.z-.8),sca=(1,1),ro_y=0)
-			bush(pos=(s.x-.4,s.y+2.5,s.z-.87),sca=(1,1),ro_y=0)
-			bush(pos=(s.x,s.y+2.5,s.z-1),sca=(1,1),ro_y=0)
-			return
-		Entity(model='plane',texture=gra,name=s.name,position=(s.x+.36,s.y+2.38,s.z),scale=(1.3,0,2.7),color=color.green)
-		bush(pos=(s.x+.3,s.y+2.7,s.z),sca=(2,1),ro_y=45)
-		bush(pos=(s.x+.3,s.y+2.7,s.z),sca=(2,1),ro_y=-45)
-		bush(pos=(s.x+.2,s.y+2.6,s.z-.8),sca=(1,1),ro_y=0)
-		bush(pos=(s.x+.4,s.y+2.5,s.z-.87),sca=(1,1),ro_y=0)
-		bush(pos=(s.x,s.y+2.5,s.z-1),sca=(1,1),ro_y=0)
+	def __init__(self,pos,sd):
+		kq=.025
+		if sd == 2:
+			kq=-.025
+		super().__init__(model=trw+'.ply',texture=trw+'.tga',name='tmpw',position=pos,scale=(.025,kq,.025),rotation=(-90,90,0),collider=b)
 
 class WoodStage(Entity):
 	def __init__(self,pos):
@@ -425,18 +411,18 @@ class MushroomTree(Entity):
 			super().__init__(model=lbP+'wtr_BTree1.ply',name='mtbt',texture=lbP+'tm_scn.tga',position=pos,scale=.03,color=color.rgb32(180,180,180),rotation=(-90,90,0))
 			Entity(model='cube',name=s.name,scale=(1.3,.5,.5),position=(s.x-.1,s.y+2.15,s.z-1.1),collider=b,visible=False)
 			Entity(model='cube',name=s.name,position=(s.x,s.y+3,s.z-.6),scale=(1,7,.5),collider=b,visible=False)
-			bush(pos=(s.x+.2,s.y+3.6,s.z-1.3),sca=1,ro_y=-35)
-			bush(pos=(s.x-.6,s.y+3.6,s.z-1.4),sca=1,ro_y=35)
-			bush(pos=(s.x-.1,s.y+3.8,s.z-1.45),sca=1)
-			bush(pos=(s.x+.1,s.y+1.7,s.z-1.75),sca=1.3,ro_y=.1)
-			bush(pos=(s.x-.4,s.y+1.5,s.z-1.6),sca=1.3,ro_y=.1)
-			bush(pos=(s.x-.7,s.y,s.z-1),sca=1.5,ro_y=0)
-			bush(pos=(s.x+.7,s.y,s.z-1.1),sca=1.5,ro_y=0)
-			bush(pos=(s.x,s.y+.3,s.z-1.05),sca=1.5,ro_y=0)
+			Bush(pos=(s.x+.2,s.y+3.6,s.z-1.3),sca=1,ro_y=-35)
+			Bush(pos=(s.x-.6,s.y+3.6,s.z-1.4),sca=1,ro_y=35)
+			Bush(pos=(s.x-.1,s.y+3.8,s.z-1.45),sca=1)
+			Bush(pos=(s.x+.1,s.y+1.7,s.z-1.75),sca=1.3,ro_y=.1)
+			Bush(pos=(s.x-.4,s.y+1.5,s.z-1.6),sca=1.3,ro_y=.1)
+			Bush(pos=(s.x-.7,s.y,s.z-1),sca=1.5,ro_y=0)
+			Bush(pos=(s.x+.7,s.y,s.z-1.1),sca=1.5,ro_y=0)
+			Bush(pos=(s.x,s.y+.3,s.z-1.05),sca=1.5,ro_y=0)
 			return
 		super().__init__(model=lbP+'wtr_BTree2.ply',name='mtbt',texture=lbP+'tm_scn.tga',position=pos,scale=.06,rotation=(-90,90,0))
-		Entity(model='cube',name=s.name,scale=(.65,.5,.6),position=(s.x,s.y-.1,s.z),collider=b,visible=False)
-		Entity(model='cube',name=s.name,position=(s.x,s.y+1.5,s.z+.5),scale=(1,3,.5),collider=b,visible=False)
+		s.gnd=Entity(model='cube',name=s.name,scale=(.65,.5,.6),position=(s.x,s.y-.1,s.z),collider=b,visible=False)
+		s.gnd=Entity(model='cube',name=s.name,position=(s.x,s.y+1.5,s.z+.5),scale=(1,3,.5),collider=b,visible=False)
 
 class Foam(Entity):
 	def __init__(self,pos,t):
@@ -781,9 +767,9 @@ class RuinRuins(Entity):
 	def __init__(self,pos,typ,ro_y):
 		rrn=omf+'l5/ruins_bgo/'
 		if typ == 3:
-			super().__init__(model=rrn+'ruin_bg'+str(typ)+'.ply',name='ruin',texture=rrn+'ruin_scene.tga',position=pos,scale=.08,rotation=(-90,ro_y,0),unlit=False)
+			super().__init__(model=rrn+'ruin_bg'+str(typ)+'.ply',name='rrrr',texture=rrn+'ruin_scene.tga',position=pos,scale=.08,rotation=(-90,ro_y,0),unlit=False)
 			return
-		super().__init__(model=rrn+'ruin_bg'+str(typ)+'.ply',name='ruin',texture=rrn+'ruin.tga',position=pos,scale=.03,rotation=(-90,ro_y,0),unlit=False)
+		super().__init__(model=rrn+'ruin_bg'+str(typ)+'.ply',name='rrrr',texture=rrn+'ruin.tga',position=pos,scale=.03,rotation=(-90,ro_y,0),unlit=False)
 
 class LogDanger(Entity):
 	def __init__(self,pos,ro_y):

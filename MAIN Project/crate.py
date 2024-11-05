@@ -303,7 +303,7 @@ class TNT(Entity):
 		s.tx=pp+'crate_tnt_'
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
-		s.aud=Audio('res/snd/misc/tnt.wav',name='ctn',volume=0,autoplay=False)
+		s.aud=Audio('res/snd/misc/tnt.wav',name='ctn',volume=0,autoplay=False,auto_destroy=True,add_to_scene_entities=False)
 		s.activ=False
 		s.countdown=0
 	def destroy(self):

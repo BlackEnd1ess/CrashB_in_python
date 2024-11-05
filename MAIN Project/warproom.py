@@ -1,5 +1,5 @@
 from ursina import Audio,Text,Entity,camera,scene,color,invoke
-import status,_loc,level,sound,settings,ui,_core,objects
+import status,_loc,level,sound,settings,ui,_core,objects,gc
 cu=camera.ui
 st=status
 sn=sound
@@ -125,6 +125,7 @@ def level_select():
 	camera.rotation=(0,0,0)
 	scene.fog_color=color.gray
 	scene.fog_density=(100,200)
+	gc.collect()
 	if st.collected_crystals >= 5 and not st.crd_seen:
 		st.crd_seen=True
 		Credits()

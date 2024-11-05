@@ -35,6 +35,7 @@ def wmp_anim(w):
 	if w.frm > 13.99:
 		w.frm=0
 	w.texture=w_pa+str(int(w.frm))+'.png'
+	del w
 
 def text_blink(M,t):
 	if M.blink_time <= 0:
@@ -103,7 +104,7 @@ class CrateCounter(Entity):
 	def __init__(self):
 		s=self
 		s.tpd=crtf
-		super().__init__(model=q,texture=None,parent=CU,scale=.1,position=(-.2,.43,0),fps=4,visible=False)
+		super().__init__(model=q,texture=None,parent=CU,scale=.1,position=(-.2,.43,.2),fps=4,visible=False)
 		s.col_digit0=Entity(model=q,texture=None,scale=.06,position=(s.x+.08,s.y,s.z),parent=CU,visible=False)
 		s.col_digit1=Entity(model=q,texture=None,scale=.06,position=(s.x+.14,s.y,s.z),parent=CU,visible=False)
 		s.col_digit2=Entity(model=q,texture=None,scale=.06,position=(s.x+.2,s.y,s.z),parent=CU,visible=False)
@@ -114,20 +115,15 @@ class CrateCounter(Entity):
 		s.icf=0
 	def crate_refr_ico(self):
 		s=self
-		s.icf=min(s.icf+time.dt*30,63.99)
-		if s.icf > 63.98:
+		s.icf=min(s.icf+time.dt*30,63.999)
+		if s.icf > 63.99:
 			s.icf=0
-		s.texture=crti+'anim_crt_'+str(int(s.icf))+'.png'
+		s.texture=crti+f'anim_crt_{int(s.icf)}.png'
 	def remv_ui(self):
 		s=self
-		s.visible=False
-		s.col_digit0.visible=False
-		s.col_digit1.visible=False
-		s.col_digit2.visible=False
-		s.seperator.visible=False
-		s.req_digit0.visible=False
-		s.req_digit1.visible=False
-		s.req_digit2.visible=False
+		s.visible,s.seperator.visible=False,False
+		s.col_digit0.visible,s.col_digit1.visible,s.col_digit2.visible=False,False,False
+		s.req_digit0.visible,s.req_digit1.visible,s.req_digit2.visible=False,False,False
 	def req_count_refr(self):
 		s=self
 		ccl=str(st.crates_in_level)
@@ -147,11 +143,8 @@ class CrateCounter(Entity):
 	def col_count_refr(self):
 		s=self
 		ccv=str(st.crate_count)
-		s.col_digit1.visible=False
-		s.col_digit2.visible=False
-		s.col_digit0.visible=True
-		s.seperator.visible=True
-		s.visible=True
+		s.col_digit0.visible,s.seperator.visible,s.visible=True,True,True
+		s.col_digit1.visible,s.col_digit2.visible=False,False
 		s.col_digit0.texture=s.tpd+ccv[0]+'.png'
 		if st.crate_count > 9:
 			s.col_digit1.texture=s.tpd+ccv[1]+'.png'
@@ -161,16 +154,17 @@ class CrateCounter(Entity):
 				s.col_digit2.texture=s.tpd+ccv[2]+'.png'
 				s.col_digit2.visible=True
 	def update(self):
-		if not st.gproc() and st.crates_in_level > 0:
-			s=self
-			if st.show_crates > 0:
-				st.show_crates=max(st.show_crates-time.dt,0)
-				if st.show_crates <= 0:
-					s.remv_ui()
-					return
-				s.crate_refr_ico()
-				s.col_count_refr()
-				s.req_count_refr()
+		if st.gproc() or st.crates_in_level <= 0:
+			return
+		s=self
+		if st.show_crates > 0:
+			st.show_crates=max(st.show_crates-time.dt,0)
+			if st.show_crates <= 0:
+				s.remv_ui()
+				return
+			s.crate_refr_ico()
+			s.col_count_refr()
+			s.req_count_refr()
 
 class LiveCounter(Entity):
 	def __init__(self):
@@ -559,22 +553,26 @@ class PauseMenu(Entity):####pause without update
 	def input(self,key):
 		s=self
 		if not st.pause:
+			del key
 			return
 		if not s.opt_menu:
-			if key in ['down arrow','s']:
+			if key in {'down arrow','s'}:
 				sn.ui_audio(ID=0,pit=.125)
 				if s.choose < 2:
 					s.choose+=1
+				del key
 				return
 			elif key in ['up arrow','w']:
 				sn.ui_audio(ID=0,pit=.125)
 				if s.choose > 0:
 					s.choose-=1
+					del key
 				return
 			if key == 'enter':
 				sn.ui_audio(ID=1)
 				if s.choose == 0:
 					cc.game_pause()
+					del key
 					return
 				if s.choose == 1:
 					s.music_vol.visible=True
@@ -587,6 +585,7 @@ class PauseMenu(Entity):####pause without update
 				if s.choose == 2:
 					if not st.LEVEL_CLEAN:
 						cc.clear_level(passed=False)
+			del key
 			return
 		if key in ['w','s','down arrow','up arrow']:
 			if s.sel_opt == 0:
@@ -597,6 +596,8 @@ class PauseMenu(Entity):####pause without update
 			if s.sel_opt == 1:
 				if settings.SFX_VOLUME < 1:
 					settings.SFX_VOLUME+=.1
+					if settings.SFX_VOLUME > 1:
+						settings.SFX_VOLUME=1
 			elif s.sel_opt == 0:
 				if settings.MUSIC_VOLUME < 1:
 					settings.MUSIC_VOLUME+=.1
@@ -619,6 +620,7 @@ class PauseMenu(Entity):####pause without update
 			s.select_0.visible=True
 			s.select_1.visible=True
 			s.select_2.visible=True
+		del key
 	def check_collected(self):
 		s=self
 		gems_total=st.color_gems+st.clear_gems

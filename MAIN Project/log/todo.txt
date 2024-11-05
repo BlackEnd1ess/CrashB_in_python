@@ -2,4 +2,6 @@
 - while death event, air crate activation cant interrupt.
   this cause continued activation after player respawn
 - gem gloss
-- sky backgrounds for l1,l2,l3
+- sky background for l3
+- level 1 gem route trees
+- level 3 reduce bushes

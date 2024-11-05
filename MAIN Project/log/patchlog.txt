@@ -106,3 +106,12 @@
 - debug Mode shows Entity Count for ALL Entities where loaded in Engine
 - level 5 thunder with flash light
 - clean looped water sound in level 3
+
+#04.11.2024
+- bonus and gem route will removed without crates, after solving it.
+
+#05.11.2024
+- warp room gem/crstal ordner (color gem/crystal/clear gem)
+- purple crate info text appears only, if player nearby this crate type
+- level 1 reduced bushes and replaced with multible bushes in one model
+- level 1 bonus wall dont need bushes anymore to hide they vertex holes

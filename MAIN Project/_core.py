@@ -115,8 +115,8 @@ def dth_event(c,rsn):
 def reset_state(c):
 	ui.BlackScreen()
 	st.crate_count-=st.crate_to_sv
-	if st.is_death_route:
-		st.is_death_route=False
+	if st.death_route:
+		st.death_route=False
 	if st.bonus_round:
 		st.wumpa_bonus=0
 		st.crate_bonus=0
@@ -151,7 +151,6 @@ def reset_state(c):
 def various_val(c):
 	c.in_water=max(c.in_water-time.dt,0)
 	c.indoor=max(c.indoor-time.dt,0)
-	c.landed=not(c.falling)
 	if not c.is_slippery:
 		c.move_speed=LC.dfsp
 	if st.bonus_solved and not st.wait_screen:
@@ -339,7 +338,7 @@ def delete_states():
 	st.level_col_gem=False
 	st.level_cle_gem=False
 	st.gem_path_solved=False
-	st.is_death_route=False
+	st.death_route=False
 	st.bonus_solved=False
 	st.bonus_round=False
 	st.LEVEL_CLEAN=False
@@ -450,6 +449,7 @@ def check_floor(c):
 		spc_floor(c,e=vp)
 		return
 	c.falling=True
+	c.landed=False
 	fsp={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}
 	c.y-=fsp[c.b_smash]
 	c.fall_time+=time.dt
@@ -504,6 +504,7 @@ def spc_floor(c,e):
 		return
 	if u == 'mptf' and not c.walking:
 		e.mv_player()
+	del u,c,e
 def ptf_up(p,c):
 	if not c.freezed:
 		c.freezed=True
@@ -601,17 +602,25 @@ def enter_bonus(c):
 	env.set_fog(st.level_index)
 	camera.y=-35
 	st.loading,c.freezed=False,False
+def clear_bonus():
+	for brd in scene.entities[:]:
+		if (brd.parent == scene) and (brd.x > 180):
+			if not (is_crate(brd) or brd in {LC.shdw,LC.ACTOR}):
+				purge_instance(brd)
+	del brd
 def back_to_level(c):
 	ui.BlackScreen()
-	if st.is_death_route:
-		st.is_death_route=False
+	c.position=st.checkpoint
+	if st.death_route:
+		st.death_route=False
 		st.gem_path_solved=True
+		clear_gem_route()
 	if st.bonus_round:
 		st.bonus_round=False
 		st.bonus_solved=True
+		clear_bonus()
 	dMN=_loc.day_m
 	st.day_mode=dMN[st.level_index]
-	c.position=st.checkpoint
 	c.freezed=False
 	env.set_fog(st.level_index)
 	camera.y=c.y+.5
@@ -620,20 +629,26 @@ def back_to_level(c):
 ## gem route
 def load_gem_route(c):
 	st.loading=True
-	if st.is_death_route:
+	if st.death_route:
 		invoke(lambda:back_to_level(c),delay=.5)
 		return
 	invoke(lambda:load_droute(c),delay=.5)
 def load_droute(c):
 	ui.BlackScreen()
-	if st.is_death_route:
+	if st.death_route:
 		c.back_to_level(c)
 		return
-	st.is_death_route=True
+	st.death_route=True
 	c.position=(200,2,-3)
 	camera.position=(200,.5,-3)
 	st.loading,c.freezed=False,False
 	sn.SpecialMusic(T=st.level_index)
+def clear_gem_route():
+	for grd in scene.entities[:]:
+		if (grd.parent == scene) and (grd.x > 180):
+			if not (is_crate(grd) or grd in {LC.shdw,LC.ACTOR}):
+				purge_instance(grd)
+	del grd
 
 ## npc
 def set_val_npc(m,drc,rng):
@@ -696,6 +711,7 @@ def bash_enemie(e,h):
 	e.is_hitten=True
 	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)
 	sn.obj_audio(ID=8)
+	del e,h
 
 ## game progress
 save_file='savegame.json'

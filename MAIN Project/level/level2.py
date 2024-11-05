@@ -1,6 +1,6 @@
 import sys,os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import objects,map_tools,crate,status,npc,gc
+import objects,map_tools,crate,status,npc
 from ursina import *
 
 mt=map_tools
@@ -16,7 +16,6 @@ def start_load():
 	load_object()
 	load_wumpa()
 	load_npc()
-	gc.collect()
 
 def load_object():
 	o.StartRoom(pos=(0,1,-64.2))

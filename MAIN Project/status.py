@@ -63,12 +63,12 @@ level_cle_gem=False
 
 bonus_solved=False
 bonus_round=False
+death_route=False
 
 weather_thunder=False
 gem_path_solved=False
-is_death_route=False
-is_time_trial=False
 
+is_time_trial=False
 is_invincible=False
 wait_screen=False
 death_event=False

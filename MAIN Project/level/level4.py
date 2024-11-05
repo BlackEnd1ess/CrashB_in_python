@@ -1,9 +1,10 @@
 import sys,os
+import settings,objects,map_tools,crate,npc,status,item,random
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import objects,map_tools,crate,npc,status,item,random,gc
 from ursina import *
 
 mt=map_tools
+st=status
 o=objects
 c=crate
 n=npc
@@ -12,11 +13,11 @@ U=-3
 def start_load():
 	load_crate()
 	bonus_zone()
-	gem_zone()
+	if 5 in st.COLOR_GEM or settings.debg:
+		gem_zone()
 	load_object()
 	load_wumpa()
 	load_npc()
-	gc.collect()
 
 def load_object():
 	sw_tile='res/terrain/l4/sewer_tiles.jpg'
@@ -292,6 +293,13 @@ def gem_zone():
 	o.SewerEntrance(pos=(200,1,-3))
 	o.SwimPlatform(pos=(200,-.45,-.7))
 	o.SwimPlatform(pos=(200-.3,-.45,.7))
+	o.SwimPlatform(pos=(200+.3,-.45,11.8))
+	o.SwimPlatform(pos=(200,-.45,12.8))
+	o.SwimPlatform(pos=(200-.3,-.45,13.8))
+	o.SwimPlatform(pos=(200+.3,-.45,18.7))
+	o.SwimPlatform(pos=(200,-.45,19.7))
+	o.SwimPlatform(pos=(200-.3,-.45,20.7))
+	#gem route crate
 	c.place_crate(ID=0,p=(200,-.5,-2))
 	c.place_crate(ID=0,p=(200,-.5,2))
 	c.place_crate(ID=9,p=(200,-.5,3),m=101)
@@ -300,15 +308,9 @@ def gem_zone():
 	mt.crate_row(ID=13,POS=(200,-.5,6.32),CNT=8,WAY=1,l=0,m=102)
 	mt.crate_row(ID=13,POS=(200,-.5,6+.32*9),CNT=3,WAY=0,l=0,m=102)
 	mt.crate_row(ID=13,POS=(200+.32*2,-.5,6+.32*10),CNT=5,WAY=1,l=0,m=102)
-	o.SwimPlatform(pos=(200+.3,-.45,11.8))
-	o.SwimPlatform(pos=(200,-.45,12.8))
-	o.SwimPlatform(pos=(200-.3,-.45,13.8))
 	mt.crate_row(ID=13,POS=(200-.32*2,-.5,14.5),CNT=5,WAY=1,l=0,m=102)
 	mt.crate_row(ID=13,POS=(200-.32*2,-.5,14.5+.32*5),CNT=4,WAY=0,l=0,m=102)
 	mt.crate_row(ID=13,POS=(200+.32*2,-.5,14.5+.32*5),CNT=7,WAY=1,l=0,m=102)
-	o.SwimPlatform(pos=(200+.3,-.45,18.7))
-	o.SwimPlatform(pos=(200,-.45,19.7))
-	o.SwimPlatform(pos=(200-.3,-.45,20.7))
 	mt.crate_row(ID=13,POS=(200-.32,-.5,21.5),CNT=7,WAY=1,l=0,m=102)
 	mt.crate_row(ID=13,POS=(200-.32,-.5,21.5+.32*7),CNT=4,WAY=0,l=0,m=102)
 	mt.crate_row(ID=13,POS=(200-.32+.32*3,-.5,21.5+.32*8),CNT=8,WAY=1,l=0,m=102)

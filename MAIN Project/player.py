@@ -1,4 +1,4 @@
-import _core,status,animation,sound,_loc,map_tools,settings
+import _core,status,animation,sound,_loc,map_tools,settings,gc
 from math import atan2
 from ursina import *
 
@@ -50,8 +50,8 @@ class CrashB(Entity):
 				sg.IFC_KEY:lambda:cc.show_status_ui(),
 				sg.ATK_KEY:lambda:s.spin_attack(),
 				sg.BLY_KEY:lambda:s.belly_smash(),
-				sg.FWD_KEY:lambda:setattr(s,'CMS',2.75),
-				sg.BCK_KEY:lambda:setattr(s,'CMS',3.5)}
+				sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),
+				sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
 		if sg.debg:
 			cc.PlayerDBG()
 			s.dev_act={
@@ -64,10 +64,9 @@ class CrashB(Entity):
 			if key in s.KEY_ACT:
 				s.KEY_ACT[key]()
 			if sg.debg:
-				if key == 'f':
-					print(scene.entities[-5:])
 				if key in s.dev_act:
 					s.dev_act[key]()
+		del key
 	def belly_smash(self):
 		s=self
 		if s.jumping or not s.landed:
@@ -161,6 +160,7 @@ class CrashB(Entity):
 	def check_jump(self):
 		s=self
 		if s.landed and not (s.jumping or s.falling):
+			s.landed=False
 			sn.pc_audio(ID=1)
 			s.jump_typ(t=1)
 	def anim_fall(self):
@@ -211,7 +211,7 @@ class CrashB(Entity):
 		if s.is_flip and not (s.landed and s.is_attack):
 			an.flip(s,sp=18)
 			return
-		if (s.landed and s.is_landing) and not (s.walking or s.jumping or s.is_attack):
+		if (s.landed and s.is_landing) and not any([s.walking,s.jumping,s.is_attack,s.falling]):
 			if s.b_smash:
 				an.belly_land(s,sp=16)
 			else:

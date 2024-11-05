@@ -1,6 +1,6 @@
 import sys,os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import objects,map_tools,status,crate,npc,gc
+import objects,map_tools,status,crate,npc
 from ursina.shaders import *
 from ursina import *
 
@@ -17,26 +17,25 @@ def start_load():
 	load_object()
 	load_wumpa()
 	load_npc()
-	gc.collect()
 
 def load_object():
 	o.StartRoom(pos=(0,0,-32.2))
 	o.BonusPlatform(pos=(.85,1.3,.85*8))
 	#temple
-	o.TempleWall(pos=(-2.55,-.3,-1.7),side=2)
-	o.TempleWall(pos=(2.7,-.3,-1.7),side=1)
-	o.TempleWall(pos=(-2.55,.7,27),side=2)
-	o.TempleWall(pos=(2.7,.7,27),side=1)
-	o.TempleWall(pos=(-2.55,.65,56.4),side=2)
-	o.TempleWall(pos=(2.7,.65,56.4),side=1)
+	o.TempleWall(pos=(-2.55,-.3,-1.7),sd=2)
+	o.TempleWall(pos=(2.7,-.3,-1.7),sd=1)
+	o.TempleWall(pos=(-2.55,.7,27),sd=2)
+	o.TempleWall(pos=(2.7,.7,27),sd=1)
+	o.TempleWall(pos=(-2.55,.65,56.4),sd=2)
+	o.TempleWall(pos=(2.7,.65,56.4),sd=1)
 	#tree
 	o.TreeScene(pos=(-2.3,2.2,82.5),sca=.0175)
 	o.TreeScene(pos=(2.3,2.2,82.5),sca=.0175)
 	o.TreeScene(pos=(-3,2.8,84),sca=.0175)
 	o.TreeScene(pos=(2.4,2.8,84),sca=.0175)
-	o.bush(pos=(-1,4.2,82),sca=2)
-	o.bush(pos=(0,4.5,82.1),sca=2)
-	o.bush(pos=(1,4.2,82.11),sca=2)
+	o.Bush(pos=(-1,4.2,82),sca=2)
+	o.Bush(pos=(0,4.5,82.1),sca=2)
+	o.Bush(pos=(1,4.2,82.11),sca=2)
 	#stage
 	o.WoodStage(pos=(0,.2,-20))
 	o.WoodStage(pos=(0,.2,-10))
@@ -100,13 +99,13 @@ def load_object():
 	o.SceneWall(pos=(3,2.4,74),typ=2)
 	#bush
 	for wbu in range(16):
-		o.bush(pos=(-3.2,2.7,-30+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=-35)
-		o.bush(pos=(3.2,3,-31+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=35)
-		o.bush(pos=(-3.2,3.5,1+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=-35)
-		o.bush(pos=(3.2,3.5,1+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=35)
+		o.Bush(pos=(-3.2,2.7,-30+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=-35)
+		o.Bush(pos=(3.2,3,-31+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=35)
+		o.Bush(pos=(-3.2,3.5,1+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=-35)
+		o.Bush(pos=(3.2,3.5,1+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=35)
 	for wba in range(34):
-		o.bush(pos=(-3.2,4.2,31+wba*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=-35)
-		o.bush(pos=(3.2,3.6,31+wba*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=35)
+		o.Bush(pos=(-3.2,4.2,31+wba*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=-35)
+		o.Bush(pos=(3.2,3.6,31+wba*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=35)
 	o.EndRoom(pos=(1,3.7,88),c=color.rgb32(200,210,200))
 	Entity(model='quad',color=color.black,scale=(100,20),position=(0,-10,95))
 def load_crate():

@@ -1,6 +1,6 @@
 import sys,os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import objects,map_tools,crate,npc,status,item,random,gc
+import settings,objects,map_tools,crate,npc,status,item,random
 from ursina import *
 
 mt=map_tools
@@ -14,17 +14,17 @@ U=-3
 def start_load():
 	load_crate()
 	bonus_zone()
-	gem_zone()
+	if 5 in st.COLOR_GEM or settings.debg:
+		gem_zone()
 	load_object()
 	load_wumpa()
 	load_npc()
-	gc.collect()
 
 def load_object():
 	o.StartRoom(pos=(0,0,-64.2))
 	o.BonusPlatform(pos=(9+.75*6,.5,-22))
 	o.GemPlatform(pos=(16.9,.4,-.1),t=2)
-	o.FallingZone(pos=(0,-2,0),s=(128,.3,128))
+	o.FallingZone(pos=(0,-2,0),s=(150,.3,128))
 	o.LevelScene(pos=(0,-20,120),sca=(350,100,1))
 	o.RuinsPlatform(pos=(0,-.3,-56),m=True)
 	o.RuinsPlatform(pos=(5.4,-.3,-56),m=False)
@@ -98,8 +98,8 @@ def load_object():
 		for dvn_z in range(4):
 			o.spw_ruin_ptf(p=(42.75+.75*dvn_x,-1,-1-.75*dvn_z),cnt=1,way=0)
 	#all gem path
-	for svn_x in range(5):
-		for svn_z in range(5):
+	for svn_x in range(4):
+		for svn_z in range(3):
 			o.spw_ruin_ptf(p=(63+.75*svn_x,.6,15+.75*svn_z),cnt=1,way=0)
 	#sculpts
 	o.MonkeySculpture(pos=(3.8,.2,-55),r=True,d=False)
