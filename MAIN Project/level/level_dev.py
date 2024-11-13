@@ -16,8 +16,8 @@ def start_load():
 	gc.collect()
 
 def load_object():
-	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass',color=color.green,visible=True)
-	item.GemStone(pos=(2,.4,-20),c=1)
+	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass')
+#	item.GemStone(pos=(2,.4,-20),c=1)
 	o.StartRoom(pos=(0,0,-32.2))
 def load_crate():
 	mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,1,1])
@@ -38,9 +38,11 @@ def load_crate():
 	mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,3])
 	mt.crate_block(ID=14,POS=(6.5,.16,-18),CNT=[3,3,3])
 def load_wumpa():
-	mt.wumpa_plane(POS=(0,.3,-14),CNT=[5,5])
+	return
+	#mt.wumpa_plane(POS=(0,.3,-14),CNT=[5,5])
 def load_npc():
-	n.spawn(ID=7,POS=(0,0,-24))
+	return
+	#n.spawn(ID=7,POS=(-3,0,-15))
 
 ## bonus level / gem path
 def bonus_zone():
