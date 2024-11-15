@@ -1,7 +1,9 @@
+from ursina import Entity,Text,Audio,color,scene,invoke,distance,Sequence,Wait
 import item,status,_core,animation,sound,npc,settings,_loc,ui,random,time
-from ursina import Entity,Text,Audio,color,scene,invoke,distance
+from ursina.ursinastuff import destroy
 
 ic=(.15,.2)
+an=animation
 cc=_core
 sn=sound
 st=status
@@ -12,7 +14,7 @@ cr1=pp+'cr_t0.ply'# single texture
 cr2=pp+'cr_t1.ply'# double texture
 
 ##spawn, destroy event
-def place_crate(p,ID,m=0,l=1,pse=None):
+def place_crate(p,ID,m=0,l=1,pse=False):
 	CRATES={0:lambda:Iron(pos=p,pse=pse),
 			1:lambda:Normal(pos=p,pse=pse),
 			2:lambda:QuestionMark(pos=p,pse=pse),
@@ -31,7 +33,7 @@ def place_crate(p,ID,m=0,l=1,pse=None):
 			15:lambda:cTime(pos=p,pse=pse),
 			16:lambda:LvInfo(pos=p,pse=pse)}
 	CRATES[ID]()
-	if not ID in {0,8,9,10,15,16} and not pse == 1:
+	if not ID in {0,8,9,10,15,16} and not pse:
 		st.crates_in_level+=1
 		if p[1] < -20:
 			st.crates_in_bonus+=1
@@ -40,12 +42,15 @@ def place_crate(p,ID,m=0,l=1,pse=None):
 	del p,ID,m,l,pse
 
 def destroy_event(c):
+	cc.crate_stack(c)
 	c.collider=None
-	sn.crate_audio(ID=2)
+	if not c.poly:
+		st.C_RESET.append(c)
 	if c.vnum in {11,12}:
-		explosion(cr=c)
+		explosion(c)
 	if c.visible:
-		animation.CrateBreak(cr=c)
+		sn.crate_audio(ID=2)
+		an.CrateBreak(c)
 	if st.bonus_round:
 		st.crate_bonus+=1
 	else:
@@ -53,9 +58,7 @@ def destroy_event(c):
 			st.crate_to_sv+=1
 			st.crate_count+=1
 			st.show_crates=5
-	cc.check_crates_over(c)
-	cc.purge_instance(c)
-	del c
+	cc.cache_instance(c)
 
 def block_destroy(c):
 	if not c.p_snd:
@@ -75,7 +78,7 @@ def spawn_ico(c):
 
 def explosion(cr):
 	if cr.visible:
-		Fireball(C=cr)
+		Fireball(cr)
 	sn.crate_audio(ID=10)
 	if cr.vnum == 12:
 		invoke(lambda:sn.crate_audio(ID=11,pit=1.4),delay=.1)
@@ -92,6 +95,14 @@ def explosion(cr):
 		if exR == LC.ACTOR:
 			cc.get_damage(exR,rsn=3)
 	del cr
+
+#checkpoint spawn letter
+def cnt_letter(cpos):
+	for ct in range(10):
+		spawn_letter(cpos,idx=ct)
+	del ct,cpos
+def spawn_letter(cpos,idx):
+	invoke(lambda:ui.CheckpointLetter(idx,pos=cpos),delay=.05*idx)
 
 ##Crate Logics
 class Iron(Entity):
@@ -135,8 +146,11 @@ class Bounce(Entity):
 		s.is_bounc=False
 		s.lf_time=5
 		s.b_cnt=0
+		s.frm=0
 		del pos,pse
 	def empty_destroy(self):
+		if st.aku_hit > 2:
+			cc.wumpa_count(10)
 		destroy_event(self)
 	def bnc_event(self):
 		s=self
@@ -144,32 +158,28 @@ class Bounce(Entity):
 		sn.crate_audio(ID=4,pit=1+s.b_cnt/10)
 		s.b_cnt+=1
 		s.lf_time=5
-		if not s.is_bounc:
-			s.is_bounc=True
-			animation.bnc_animation(s)
+		s.is_bounc=True
 		if s.b_cnt > 4 or s.lf_time <= 0:
 			s.empty_destroy()
 			return
 	def destroy(self):
 		s=self
-		if st.aku_hit > 2:
-			cc.wumpa_count(10)
-			s.empty_destroy()
-			return
 		if s.lf_time > 0 and s.b_cnt < 5:
 			s.bnc_event()
 			return
 		s.empty_destroy()
 	def update(self):
-		if not st.gproc():
-			s=self
-			if s.b_cnt > 0 and st.death_event:
-				s.lf_time=5
-				s.b_cnt=0
-				return
-			if s.visible:
-				if (s.lf_time > 0 and s.b_cnt > 0):
-					s.lf_time-=time.dt
+		if st.gproc():
+			return
+		s=self
+		if s.b_cnt > 0 and st.death_event:
+			s.lf_time=5
+			s.b_cnt=0
+			return
+		if s.is_bounc:
+			an.bnc_anim(s)
+		if (s.lf_time > 0 and s.b_cnt > 0):
+			s.lf_time=max(s.lf_time-time.dt,0)
 
 class ExtraLife(Entity):
 	def __init__(self,pos,pse):
@@ -208,9 +218,10 @@ class Checkpoint(Entity):
 	def destroy(self):
 		s=self
 		st.checkpoint=(s.x,s.y+1.5,s.z)
+		sn.crate_audio(ID=6)
+		cnt_letter(s.position)
 		destroy_event(s)
 		cc.collect_reset()
-		CheckpointAnimation(p=(s.x,s.y+.5,s.z))
 
 class SpringWood(Entity):
 	def __init__(self,pos,pse):
@@ -219,12 +230,18 @@ class SpringWood(Entity):
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		s.is_bounc=False
+		s.frm=0
 	def c_action(self):
-		animation.bnc_animation(self)
+		self.is_bounc=True
 		sn.crate_audio(ID=5)
 	def destroy(self):
 		item.place_wumpa(self.position,cnt=1,c_prg=True)
 		destroy_event(self)
+	def update(self):
+		if st.gproc():
+			return
+		if self.is_bounc:
+			an.bnc_anim(self)
 
 class SpringIron(Entity):
 	def __init__(self,pos,pse):
@@ -234,11 +251,18 @@ class SpringIron(Entity):
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		s.is_bounc=False
 		s.p_snd=False
+		s.frm=0
+		del pos,pse
 	def c_action(self):
-		animation.bnc_animation(self)
+		self.is_bounc=True
 		sn.crate_audio(ID=5)
 	def destroy(self):
 		block_destroy(self)
+	def update(self):
+		if st.gproc():
+			return
+		if self.is_bounc:
+			an.bnc_anim(self)
 
 class SwitchEmpty(Entity):
 	def __init__(self,pos,m,pse):
@@ -265,8 +289,11 @@ class SwitchEmpty(Entity):
 			st.C_RESET.append(s)
 			for _air in scene.entities[:]:
 				if isinstance(_air,Air) and _air.mark == s.mark:
-					invoke(_air.destroy,delay=ccount/3.5)
-					ccount+=.8
+					invoke(_air.destroy,delay=ccount/4)
+					if st.level_index == 5 and not st.bonus_round:
+						ccount=0
+					else:
+						ccount+=.8
 			spawn_ico(s)
 
 class SwitchNitro(Entity):
@@ -370,9 +397,10 @@ class Air(Entity):
 		s.c_ID=l
 	def destroy(self):
 		s=self
-		place_crate(p=s.position,ID=s.c_ID,pse=1)
+		place_crate(p=s.position,ID=s.c_ID,pse=True)
 		sn.crate_audio(ID=13)
-		cc.purge_instance(s)
+		st.C_RESET.append(s)
+		cc.cache_instance(s)
 
 class Protected(Entity):
 	def __init__(self,pos,pse):
@@ -382,16 +410,20 @@ class Protected(Entity):
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		s.hitten=False
 		s.p_snd=False
+		s.frm=0
 	def destroy(self):
 		s=self
-		if not s.hitten:
-			s.hitten=True
-			animation.prtc_anim(s)
+		s.hitten=True
 		block_destroy(s)
 	def c_destroy(self):
 		sn.crate_audio(ID=4,pit=.35)
 		item.place_wumpa(self.position,cnt=random.randint(5,10),c_prg=True)
 		destroy_event(self)
+	def update(self):
+		if st.gproc():
+			return
+		if self.hitten:
+			an.prtc_anim(self)
 
 class cTime(Entity):
 	def __init__(self,pos,tm=1):
@@ -417,58 +449,25 @@ class LvInfo(Entity):
 		destroy_event(s)
 
 ##crate effects
-class Fireball(Entity):#bug
-	def __init__(self,C):
+class Fireball(Entity):
+	def __init__(self,cr):
 		s=self
 		nC={11:color.red,12:color.green}
-		super().__init__(model='quad',texture=None,position=(C.x,C.y+.1,C.z+random.uniform(-.1,.1)),color=nC[C.vnum],scale=.75,unlit=False)
-		s.wave=Entity(model=None,texture=pp+'anim/exp_wave/0.tga',position=s.position,scale=.001,rotation_x=-90,color=nC[C.vnum],alpha=.8,unlit=False)
-		s.e_step=0
-		s.w_step=0
-	def e_wave(self):
-		s=self
-		s.w_step+=time.dt*15
-		if s.w_step > 4.9:
-			s.w_step=0
-			cc.purge_instance(s.wave)
-			return
-		s.wave.model=pp+'anim/exp_wave/'+str(int(s.w_step))+'.ply'
-	def f_ball(self):
-		s=self
-		s.e_step+=time.dt*25
-		if s.e_step > 14.9:
-			s.e_step=0
-			cc.purge_instance(s)
-			return
-		s.texture=pp+'anim/exp_fire/'+str(int(s.e_step))+'.png'
+		super().__init__(model='quad',texture=None,position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC[cr.vnum],scale=.75,unlit=False)
+		s.wave=Entity(model=None,texture=pp+'anim/exp_wave/0.tga',position=s.position,scale=.001,rotation_x=-90,color=nC[cr.vnum],alpha=.8,unlit=False)
+		s.ex_step=0
+		s.wv_step=0
+		del cr
+	def purge(self):
+		destroy(self.wave)
+		destroy(self)
 	def update(self):
-		if not st.gproc():
-			s=self
-			s.f_ball()
-			s.e_wave()
-
-class CheckpointAnimation(Entity):
-	def __init__(self,p):
 		s=self
-		super().__init__(position=(p[0]-.1,p[1]+.4,p[2]))
-		s.c_text='CHECKPOINT'
-		s.wtime=.05
-		s.index=0
-		sn.crate_audio(ID=6)
-	def shw_text(self):
-		s=self
-		s.wtime=max(s.wtime-time.dt,0)
-		if s.wtime <= 0:
-			s.wtime=.05
-			_d=1.5
-			letter=s.c_text[s.index]
-			ct=Text(letter,font=ui._fnt,position=(s.x+s.index/10,s.y,s.z),scale=7,parent=scene,color=color.rgb32(255,255,0),unlit=False)
-			invoke(ct.disable,delay=_d)
-			invoke(lambda:sn.pc_audio(ID=1,pit=.9),delay=_d+.1)
-			s.index+=1
-			if s.index >= 10:
-				s.index=0
-				cc.purge_instance(s)
-	def update(self):
-		if not st.gproc():
-			self.shw_text()
+		s.wv_step=min(s.wv_step+time.dt*15,4.999)
+		s.ex_step=min(s.ex_step+time.dt*25,14.999)
+		s.wave.model=pp+'anim/exp_wave/'+str(int(s.wv_step))+'.ply'
+		s.texture=pp+'anim/exp_fire/'+str(int(s.ex_step))+'.png'
+		s.wave.visible=(s.wv_step < 4.99)
+		s.visible=(s.ex_step < 14.99)
+		if (s.ex_step > 14.99) and (s.wv_step > 4.99):
+			s.purge()

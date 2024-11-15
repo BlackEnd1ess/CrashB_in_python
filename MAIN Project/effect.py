@@ -1,10 +1,27 @@
+from ursina.ursinastuff import destroy
 import status,_core,_loc,time,random
 from ursina import Entity,Vec3,color
 
+trpv='res/objects/ev/teleport/warp_effect'
+ef='res/effects/'
 st=status
 cc=_core
 LC=_loc
-ef='res/effects/'
+
+class WarpVortex(Entity):
+	def __init__(self,pos,sca,drc,col):
+		super().__init__(model=trpv+'.ply',texture=trpv+'.png',name='wpvx',position=pos,color=col,scale=sca,rotation_x=90,alpha=.5,unlit=False)
+		self.spd=600
+		self.drc=drc
+		del pos,sca,drc,col
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if s.drc == 1:
+			s.rotation_y+=time.dt*s.spd
+			return
+		s.rotation_y-=time.dt*s.spd
 
 class Sparkle(Entity):
 	def __init__(self,pos):
@@ -21,7 +38,7 @@ class Sparkle(Entity):
 			return
 		s.scale-=Vec3(time.dt/2,time.dt/2,0)
 		if s.scale_x <= 0:
-			cc.purge_instance(s)
+			destroy(s)
 
 class JumpDust(Entity):
 	def __init__(self,pos):
@@ -32,7 +49,7 @@ class JumpDust(Entity):
 		s=self
 		s.scale+=(time.dt,time.dt)
 		if s.scale_x > .6:
-			cc.purge_instance(s)
+			destroy(s)
 
 class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
@@ -58,7 +75,7 @@ class FireThrow(Entity):
 		if s.intersects(LC.ACTOR):
 			cc.get_damage(LC.ACTOR,rsn=3)
 		if s.life_time <= 0:
-			cc.purge_instance(s)
+			destroy(s)
 			return
 		s.scale+=(tdf,tdf,tdf)
 		s.fly_away()

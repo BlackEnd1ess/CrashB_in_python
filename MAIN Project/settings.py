@@ -1,4 +1,5 @@
 from ursina import color,window,camera
+from ursina.ursinastuff import destroy
 import environment
 
 ## debug options
@@ -30,14 +31,14 @@ def load():
 	w=window
 	w.windowed_size=(1600,900)
 	w.exit_button.visible=False
-	##debug infos
-	w.collider_counter.enabled=debg
-	w.entity_counter.enabled=debg
-	w.fps_counter.enabled=debg
-	w.cog_button.enabled=False
-	w.cog_menu.enabled=False
 	w.fullscreen=False
 	w.borderless=False
+	w.cog_menu.eternal=False
+	w.cog_menu.force_destroy=True
+	##debug infos
+	w.collider_counter.enabled=debg
+	w.fps_counter.enabled=debg
 	camera.fov=65
 	environment.init_amb_light()
+	destroy(w.cog_menu)
 	print('default settings loaded')

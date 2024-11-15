@@ -1,6 +1,6 @@
 from ursina import Entity,BoxCollider,Vec3,SpotLight,color,distance,lerp
 import _core,status,sound,ui,_loc,random,time
-
+from ursina.ursinastuff import destroy
 i_path='res/item/'
 b='box'
 
@@ -31,7 +31,10 @@ class WumpaFruit(Entity):
 		s.frm=0
 		del p,c_prg
 	def destroy(self):
-		cc.purge_instance(self)
+		s=self
+		if not s.c_purge:
+			st.W_RESET.append(s.spawn_pos)
+		destroy(s)
 	def collect(self):
 		s=self
 		cc.wumpa_count(1)
@@ -58,7 +61,7 @@ class ExtraLive(Entity):
 		s.follow=False
 	def collect(self):
 		cc.give_extra_live()
-		cc.purge_instance(self)
+		destroy(self)
 	def p_follow(self):
 		s=self
 		if distance(s,LC.ACTOR) < .6:
@@ -66,7 +69,7 @@ class ExtraLive(Entity):
 	def update(self):
 		s=self
 		if st.death_event:
-			cc.purge_instance(s)
+			destroy(s)
 			return
 		if s.follow:
 			q=LC.ACTOR
@@ -102,7 +105,6 @@ class GemStone(Entity):
 			4:color.rgb32(0,0,R),#blue gem
 			5:color.rgb32(R-20,R-20,0)}#yellow gem
 		s.color=ge_c[s.gemID]
-		#s.alpha=.75
 		##scale - info: blue gem and yellow gem are Y scaled
 		if s.gemID in {4,5}:
 			gSC={4:s.scale_z/2,5:s.scale_z*1.5}
@@ -132,8 +134,8 @@ class GemStone(Entity):
 		s.collider=None
 		LC.C_GEM=None
 		s.shine.color=color.black
-		cc.purge_instance(s.shine)
-		cc.purge_instance(s)
+		destroy(s.shine)
+		destroy(s)
 	def collect(self):
 		if self.gemID == 0:
 			st.level_cle_gem=True
@@ -170,11 +172,13 @@ class EnergyCrystal(Entity):
 		s=self
 		st.level_crystal=True
 		sn.ui_audio(ID=5)
-		status.show_gems=5
-		cc.purge_instance(s.glow)
-		cc.purge_instance(s)
+		st.show_gems=5
+		destroy(s.glow)
+		destroy(s)
 	def update(self):
 		if not st.gproc():
 			s=self
-			s.visible=(distance(s,LC.ACTOR) < 12)
+			kr=distance(s,LC.ACTOR) < 12
+			s.glow.visible=kr
+			s.visible=kr
 			s.rotation_y-=time.dt*70

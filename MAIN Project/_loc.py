@@ -2,6 +2,7 @@
 
 # checkpoint - bonus
 bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(0,1,-25)]
+checkp='CHECKPOINT'
 
 # display the name in pause menu and loading screen
 lv_name=['CENTRAL - WARP ROOM',
@@ -11,6 +12,14 @@ lv_name=['CENTRAL - WARP ROOM',
 		'LEVEL 4 - DRAIN DAMAGE',
 		'LEVEL 5 - RUINED',
 		'DEVELOPER TEST LEVEL']
+
+# gem box info
+ge_inf={0:'this is a developer test level, place the gem where you want',
+		1:'blue gem - reach the end of this level without breaking boxes',
+		2:'red gem - solve this level without loosing extra lifes.',
+		3:'yellow gem - reach the end of level before time up',
+		4:'green gem - unlock the yellow gem path',
+		5:'purple gem - unlock the green gem path'}
 
 # crash death actions/animations
 dt_act={0:'fall_endl',

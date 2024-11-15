@@ -59,7 +59,7 @@ def npc_action(m):
 			return
 		if m.is_purge:
 			effect.JumpDust(m.position)
-			cc.purge_instance(m)
+			cc.cache_instance(m)
 			return
 		an.npc_walking(m)
 		if m.vnum in {10,11}:
@@ -408,34 +408,36 @@ class Gorilla(Entity):
 			s.throw_act[s.t_mode]()
 
 ## passive NPC
+tpa='res/npc/akuaku/'
+aku_skin0=tpa+'aku'
+aku_skin1=tpa+'aku2'
 class AkuAkuMask(Entity):
 	def __init__(self,pos):
 		s=self
-		s.tpa='res/npc/akuaku/'
 		super().__init__(model=None,texture=None,scale=.00075,rotation_x=rx,position=pos)
-		s.skin_0=s.tpa+'aku.ply'
-		s.tex_0=s.tpa+'aku.tga'
-		s.skin_1=s.tpa+'aku2.ply'
-		s.tex_1=s.tpa+'aku2.tga'
-		s.last_y=s.y
 		st.aku_exist=True
-		s.ta=LC.ACTOR
+		s.cur_skin=None
+		s.last_y=s.y
 		s.flt_di=0
 		s.spt=.5
-		s.change_skin()
-		Sequence(s.check_dist_player,Wait(3),loop=True)()
 		s.spkw=0
+	def default_skin(self):
+		self.model=aku_skin0+'.ply'
+		self.texture=aku_skin0+'.tga'
+	def special_skin(self):
+		self.model=aku_skin1+'.ply'
+		self.texture=aku_skin1+'.tga'
 	def change_skin(self):
 		s=self
 		if st.aku_hit > 1:
-			s.unlit=False
-			s.model=s.skin_1
-			s.texture=s.tex_1
+			if s.cur_skin != 1:
+				s.cur_skin=1
+				s.special_skin()
 			s.spark()
 			return
-		s.unlit=True
-		s.model=s.skin_0
-		s.texture=s.tex_0
+		if s.cur_skin != 0:
+			s.cur_skin=0
+			s.default_skin()
 	def spark(self):
 		s=self
 		s.spt=max(s.spt-time.dt,0)
@@ -447,25 +449,27 @@ class AkuAkuMask(Entity):
 	def follow_player(self):
 		s=self
 		aSP=time.dt*8
-		s.rotation_y=lerp(s.rotation_y,s.ta.rotation_y,aSP)
+		ta=LC.ACTOR
+		s.rotation_y=lerp(s.rotation_y,ta.rotation_y,aSP)
 		if st.aku_hit < 3:
 			s.scale=.00075
-			if not s.ta.walking and s.ta.landed:
+			if not ta.walking and ta.landed:
 				s.floating()
 			else:
-				s.position=lerp(s.position,(s.ta.x-.25,s.ta.y+.6,s.ta.z-.4),aSP)
+				s.position=lerp(s.position,(ta.x-.25,ta.y+.6,ta.z-.4),aSP)
 				s.last_y=s.y
 			return
 		s.scale=.0012
-		fwd=Vec3(-sin(radians(s.ta.rotation_y)),0,-cos(radians(s.ta.rotation_y)))
-		mask_pos=s.ta.position+fwd*.25
-		s.position=(mask_pos.x,s.ta.y+.5,mask_pos.z)
+		fwd=Vec3(-sin(radians(ta.rotation_y)),0,-cos(radians(ta.rotation_y)))
+		mask_pos=ta.position+fwd*.25
+		s.position=(mask_pos.x,ta.y+.5,mask_pos.z)
 	def check_dist_player(self):
 		s=self
-		if not (LC.ACTOR or st.gproc()):
+		ta=LC.ACTOR
+		if not (ta or st.gproc()):
 			return
-		if distance(s.position,s.ta.position) > 2:
-			s.position=s.ta.position
+		if distance(s.position,ta.position) > 2:
+			s.position=ta.position
 	def floating(self):
 		s=self
 		tt=time.dt/10
@@ -478,11 +482,13 @@ class AkuAkuMask(Entity):
 	def update(self):
 		if not st.gproc():
 			s=self
+			akh=st.aku_hit
+			s.unlit=(akh < 2)
+			s.check_dist_player()
 			s.follow_player()
 			s.change_skin()
-			if st.aku_hit < 1:
+			if akh <= 0:
 				cc.purge_instance(s)
-				st.aku_exist=False
 
 class Hippo(Entity):
 	def __init__(self,POS):

@@ -3,11 +3,13 @@ from ursina.shaders import *
 from ursina import *
 
 an=animation
+ef=effect
 st=status
 sn=sound
 cc=_core
 LC=_loc
 
+wfc='wireframe_cube'
 omf='res/objects/'
 m='mesh'
 b='box'
@@ -15,13 +17,12 @@ b='box'
 def wtr_dist(w,p):
 	return ((p.z < w.z+(w.scale_z/2)+4) and (p.z > w.z-(w.scale_z/2)-4) and (p.x < w.x+(w.scale_x/2)+2) and (p.x > w.x-w.scale_x/2-2))
 
-####################
-##multible objects #
 #lv1
-def spawn_tree_wall(pos,cnt,d):
-	tro={0:-50,1:50}
-	for tsp in range(0,cnt):
-		Tree2D(pos=(pos[0]+random.uniform(-.1,.1),pos[1],pos[2]+tsp*3),rot=tro[d])
+def gr_block(p,vx,sca=.5):
+	for gbx in range(vx[0]):
+		for gbz in range(vx[1]):
+			GrassBlock(pos=(p[0]+gbx,p[1],p[2]+gbz),sca=sca)
+	del p,vx,sca
 
 #lv2
 def plank_bridge(pos,typ,cnt,ro_y,DST):
@@ -30,6 +31,12 @@ def plank_bridge(pos,typ,cnt,ro_y,DST):
 			0:lambda:Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)}
 		plNK[ro_y]()
 
+def sn_block(p,vx,sca=.5):
+	for gbx in range(vx[0]):
+		for gbz in range(vx[1]):
+			SnowBlock(pos=(p[0]+gbx/1.02,p[1],p[2]+gbz),sca=sca)
+	del p,vx,sca
+
 def pillar_twin(p):
 	Pillar(pos=(p[0],p[1],p[2]))
 	Pillar(pos=(p[0]+1.5,p[1],p[2]))
@@ -37,7 +44,7 @@ def pillar_twin(p):
 def spawn_ice_wall(pos,cnt,d):
 	ws={0:90,1:-90}
 	for icew in range(cnt):
-		SnowHill(pos=(pos[0],pos[1],pos[2]+icew*8.2),ro_y=ws[d])
+		SnowHill(pos=(pos[0],pos[1],pos[2]+icew*16.4),ro_y=ws[d])
 
 #lv3
 def side_hills(p,cnt):
@@ -69,24 +76,18 @@ class PseudoCrash(Entity):
 		MVP=omf+'l1/p_moss/moss'
 		rp='res/pc/crash'
 		super().__init__(model=rp+'.ply',texture=rp+'.tga',scale=.1/20,rotation=(-90,30,0),position=(9,-4,0),unlit=False)
-		Entity(model=MVP+'.ply',texture=MVP+'.tga',scale=.75/300,position=(self.x,self.y,self.z),rotation_x=-90)
+		Entity(model=MVP+'.obj',texture=MVP+'.tga',scale=.75/30,position=(self.x,self.y,self.z),double_sided=True)
 		self.idfr=0
 	def update(self):
 		animation.idle(self,sp=16)
 
 ####################
 ## level 1 objects #
-class Tree2D(Entity):
-	def __init__(self,pos,rot):
-		tCOL=random.choice([color.rgb32(128,128,128),color.rgb32(200,200,200),color.rgb32(255,255,255)])
-		super().__init__(model='quad',texture=omf+'l1/tree/tree'+str(random.randint(1,4))+'.png',name='trd2',scale=3,position=pos,rotation_y=rot,color=tCOL,enabled=False)
-
 MVP=omf+'l1/p_moss/moss'
 class MossPlatform(Entity):
 	def __init__(self,p,ptm,pts=.5,ptw=3):
 		s=self
-		super().__init__(model='cube',name='mptf',texture=None,position=p,scale=(.6,1,.6),collider=b,visible=False,enabled=False)
-		s.opt_model=Entity(model=MVP+'.ply',name=s.name,texture=MVP+'.tga',scale=.75/1000,position=(p[0],p[1]+.475,p[2]),rotation_x=-90,enabled=False)
+		super().__init__(model=MVP+'.obj',name='mptf',texture=MVP+'.tga',scale=.0085,position=(p[0],p[1]+.475,p[2]),enabled=False,double_sided=True,collider=b)
 		s.spawn_pos=p
 		s.ptm=ptm
 		s.pts=pts
@@ -123,40 +124,35 @@ class MossPlatform(Entity):
 			s=self
 			if s.is_sfc:
 				s.is_sfc=False
-				s.opt_model.animate_y(s.opt_model.y-1,duration=.3)
 				s.animate_y(s.y-1,duration=.3)
 				if distance(s,LC.ACTOR) < 6:
 					sn.obj_audio(ID=6)
 				return
 			s.is_sfc=True
 			s.animate_y(s.spawn_pos[1],duration=.3)
-			s.opt_model.animate_y(s.spawn_pos[1]+.475,duration=.3)
-	def update(self):
-		if not st.gproc():
-			s=self
-			s.opt_model.x=s.x
-			s.opt_model.z=s.z
 
 class BackgroundWall(Entity):
 	def __init__(self,p):
 		s=self
 		super().__init__(model=omf+'l1/wall_0/tr_wall.ply',texture=omf+'l1/wall_0/wall_wood.tga',scale=.02,position=p,rotation=(-90,90,0),color=color.rgb32(160,190,160))
+		if st.level_index == 1 and s.x > 190:
+			s.color=color.rgb32(0,140,160)
 		del p
 
 class Corridor(Entity):
 	def __init__(self,pos):
 		s=self
 		super().__init__(model=omf+'l1/w_corr/corridor.ply',texture=omf+'l1/w_corr/f_room.tga',name='cori',scale=.1,position=pos,rotation=(-90,90,0))
-		s.wall0=Entity(model='cube',visible=False,scale=(3,3,2.2),name=s.name,position=(s.x+2.3,s.y,s.z),collider=b)
-		s.wall1=Entity(model='cube',visible=False,scale=(3,3,2.2),name=s.name,position=(s.x-2.3,s.y,s.z),collider=b)
-		s.wall1=Entity(model='cube',visible=False,scale=(3,3,2.2),name=s.name,position=(s.x,s.y+3,s.z),collider=b)
+		HitBox(sca=(3,3,2.2),pos=(s.x+2.3,s.y,s.z))
+		HitBox(sca=(3,3,2.2),pos=(s.x-2.3,s.y,s.z))
+		HitBox(sca=(3,3,2.2),pos=(s.x,s.y+3,s.z))
 		IndoorZone(pos=(s.x,s.y+1.6,s.z),sca=3)
 
 class TreeScene(Entity):
 	def __init__(self,pos,sca):
 		s=self
 		super().__init__(model=omf+'l1/tree/tree_w.ply',name='tssn',texture=omf+'l1/tree/wd_scn.tga',rotation_x=-90,scale=sca,position=pos)
-		s.wall0=Entity(model='cube',name=s.name,scale=(1,10,1),position=(s.x+.2,s.y+3.5,s.z),visible=False,collider=b,enabled=False)
+		HitBox(pos=s.position,sca=(1,5,1))
 		del pos,sca
 
 class TreeRow(Entity):
@@ -165,11 +161,13 @@ class TreeRow(Entity):
 		super().__init__(model=trf+'multi_tree.ply',texture=trf+'tree_texture.png',name='trrw',position=pos,scale=sca,rotation_x=-90,color=color.rgb32(180,180,180))
 		del pos,sca
 
-gr=omf+'l1/grass_side/grass_side'
+gr=omf+'l1/grass_side/grass_sd'
 class GrassSide(Entity):
-	def __init__(self,pos,ry):
-		super().__init__(model=gr+'1.ply',texture=gr+'.jpg',name='grsi',position=pos,scale=(1,2,1.4),rotation=(-90,ry,0),enabled=False)
-		del pos,ry
+	def __init__(self,pos,m=False):
+		super().__init__(model=gr+'.ply',texture=gr+'.jpg',name='grsi',position=pos,scale=(1,2,1.4),rotation_x=-90,enabled=False)
+		if m:
+			self.scale_x=-1
+		del pos,m
 
 btt=omf+'l1/bush/bush1.png'
 class Bush(Entity):
@@ -177,18 +175,26 @@ class Bush(Entity):
 		super().__init__(model='quad',texture=btt,position=pos,scale=sca,rotation_y=ro_y,color=color.rgb32(0,170,0),enabled=False)
 		del pos,sca,ro_y
 
+tvx=omf+'l1/block/block'
+class GrassBlock(Entity):
+	def __init__(self,pos,sca):
+		super().__init__(model=tvx+'.obj',name='mblo',texture=tvx+'.jpg',position=pos,scale=sca,collider=b)
+		del pos,sca
+
 ####################
 ## level 2 objects #
+plob=omf+'l2/plank/plank.png'
 class Plank(Entity):
 	def __init__(self,pos,typ,ro_y):
 		s=self
-		super().__init__(model='cube',texture=omf+'l2/plank/plank.png',name='plnk',scale=(1,.1,.4),position=pos,collider=b,rotation_y=ro_y,texture_scale=(2,2))
+		super().__init__(model='cube',texture=plob,name='plnk',scale=(1,.1,.4),position=pos,collider=b,rotation_y=ro_y,texture_scale=(2,2))
 		s.spawn_pos=s.position
 		s.color=color.gray
 		s.typ=typ
 		if typ == 1:
 			s.is_touched=False
 			s.color=color.brown
+		del pos,typ,ro_y
 	def obj_reset(self):
 		s=self
 		s.is_touched=False
@@ -213,24 +219,27 @@ class Ropes(Entity):
 		s=self
 		rpt=omf+'l2/rope/rope_pce.jpg'
 		super().__init__(model='cube',scale=(.03,.03,le),name='snrp',texture=rpt,position=pos,texture_scale=(1,le*8),origin_z=-.5)
-		s.dup=Entity(model='cube',scale=s.scale,name=s.name,position=(s.x+1,s.y,s.z),texture=rpt,texture_scale=(1,le*8),origin_z=s.origin_z)
+		s.dup=Entity(model='cube',scale=s.scale,name=s.name,position=(s.x+.95,s.y,s.z),texture=rpt,texture_scale=(1,le*8),origin_z=s.origin_z)
+		del pos,le
 
 class Pillar(Entity):
 	def __init__(self,pos):
 		ppt=omf+'l2/pillar/s_pillar'
 		super().__init__(model=ppt+'.ply',texture=ppt+'_0.jpg',name='pilr',scale=.2,rotation=(-90,45,0),position=pos,color=color.cyan,collider=b)
 		IceCrystal(pos=(self.x,self.y+1.1,self.z+.075))
+		del pos
 
 class SnowWall(Entity):
 	def __init__(self,pos):
 		s=self
 		swbo='l2/snow_wall/snow_bonus'
 		super().__init__(model=omf+swbo+'.ply',texture=omf+swbo+'.tga',scale=.02,name='snwa',position=pos,rotation=(-90,-90,0))
-		Entity(model='cube',position=(s.x,s.y+.3,s.z+.3),scale=(5.5,3.5,.5),name=s.name,collider=b,visible=False)
+		del pos
 
 class IceCrystal(Entity):
 	def __init__(self,pos):
 		super().__init__(model=omf+'l2/ice_crystal/ice_crystal.ply',name='icec',texture=omf+'l2/ice_crystal/snow_2.tga',scale=(.025,.02,.03),position=pos,rotation=(-90,45,0),color=color.cyan)
+		del pos
 
 class WoodLog(Entity):
 	def __init__(self,pos):
@@ -242,6 +251,7 @@ class WoodLog(Entity):
 		s.danger=True
 		s.or_pos=s.y
 		s.stat=0
+		del pos
 	def reset_pos(self):
 		s=self
 		s.y=min(s.y+time.dt,s.or_pos+1.31)
@@ -269,43 +279,46 @@ class IceGround(Entity):
 		s=self
 		super().__init__(model='cube',name='iceg',texture='res/terrain/l2/ice_ground.png',position=pos,scale=sca,collider=b,alpha=.85)
 		s.texture_scale=(sca[0],sca[1])
-		s.ta=LC.ACTOR
+		del pos,sca
 	def mv_player(self):
-		s=self
-		s.ta.is_slippery=s.ta.landed
+		LC.ACTOR.is_slippery=LC.ACTOR.landed
 
+snh=omf+'l2/snw_hill/sn_hill'
 class SnowHill(Entity):
 	def __init__(self,pos,ro_y):
-		ep=omf+'l2/snow_hill/snow_hills'
-		super().__init__(model=ep+'.ply',texture=ep+'.jpg',name='snhi',position=pos,scale=(.6,.5,.4),rotation=(-90,ro_y,0))
+		super().__init__(model=snh+'.ply',texture=snh+'.jpg',name='snhi',position=pos,scale=(.6,.5,.4),rotation=(-90,ro_y,0))
+		del pos,ro_y
 
 class IceChunk(Entity):
 	def __init__(self,pos,rot,typ):
 		ice_ch=omf+'l2/ice_pce/ice_pce'
 		super().__init__(model=ice_ch+'_'+str(typ)+'.ply',texture=ice_ch+'.jpg',name='ickk',position=pos,scale=.8,rotation=rot)
+		del pos,rot,typ
 
+snPL=omf+'l2/snow_platform/snow_platform'
 class SnowPlatform(Entity):
 	def __init__(self,pos):
 		s=self
-		snPL='l2/snow_platform/snow_platform'
-		super().__init__(model=omf+snPL+'.ply',texture=omf+snPL+'.tga',name='sngg',position=pos,scale=.0075,rotation_x=-90)
-		s.co=Entity(model='cube',scale=(.85,1,.85),name=s.name,position=(s.x,s.y-.5,s.z),collider=b,visible=False)
+		super().__init__(model=snPL+'.ply',texture=snPL+'.tga',name='sngg',position=pos,scale=.0075,rotation_x=-90)
+		s.co=Entity(model=wfc,scale=(.85,1,.85),name=s.name,position=(s.x,s.y-.5,s.z),collider=b,visible=False)
+		del pos
 
+rol=omf+'l2/role/role'
 class Role(Entity):
 	def __init__(self,pos,di):
 		s=self
-		rol='l2/role/role'
-		super().__init__(model=omf+rol+'.ply',texture=omf+rol+'.tga',rotation=(-90,90,90),position=pos,scale=.01,collider=b)
+		super().__init__(model=rol+'.ply',texture=rol+'.tga',rotation=(-90,90,90),position=pos,scale=.01,collider=b)
 		s.main_pos=s.position
 		s.is_rolling=False
 		s.danger=False
 		s.roll_wait=1
 		s.direc=di
+		del pos,di
 	def roll_right(self):
 		s=self
 		s.x+=time.dt*2
 		s.rotation_x+=time.dt*80
-		if s.x >= s.main_pos[0]+1.8:
+		if s.x >= s.main_pos[0]+1.5:
 			s.roll_wait=1
 			s.direc=1
 			invoke(s.p_snd,delay=.5)
@@ -313,7 +326,7 @@ class Role(Entity):
 		s=self
 		s.x-=time.dt*2
 		s.rotation_x-=time.dt*80
-		if s.x <= s.main_pos[0]-1.8:
+		if s.x <= s.main_pos[0]-1.5:
 			s.roll_wait=1
 			s.direc=0
 			invoke(s.p_snd,delay=.5)
@@ -334,6 +347,13 @@ class Role(Entity):
 				return
 			s.is_rolling=False
 			s.danger=False
+
+sbl=omf+'l2/block/block'
+class SnowBlock(Entity):
+	def __init__(self,pos,sca):
+		super().__init__(model=sbl+'.obj',texture=sbl+'.jpg',rotation_y=180,position=pos,scale=sca)
+		self.collider=BoxCollider(self,size=Vec3(2,4,2))
+		del pos,sca
 
 
 ####################
@@ -393,14 +413,14 @@ class WoodStage(Entity):
 		s=self
 		wdStg=omf+'l3/wood_stage/w_stage'
 		super().__init__(model=wdStg+'.ply',texture=omf+'l3/wood_stage/stage_z.tga',name='wdst',position=pos,scale=.03,rotation=(-90,90,0),color=color.rgb32(100,100,0))
-		Entity(model='cube',position=(s.x,s.y-.46,s.z-1.5),scale=(4.2,1,1.2),name=s.name,collider=b,visible=False)
-		Entity(model='cube',position=(s.x,s.y-.46,s.z+.2),scale=(1.2,1,2.3),name=s.name,collider=b,visible=False)
+		Entity(model=wfc,position=(s.x,s.y-.46,s.z-1.5),scale=(4.2,1,1.2),name=s.name,collider=b,visible=False)
+		Entity(model=wfc,position=(s.x,s.y-.46,s.z+.2),scale=(1.2,1,2.3),name=s.name,collider=b,visible=False)
 
 class StoneTile(Entity):
 	def __init__(self,pos):
 		s=self
 		tlX=omf+'l3/tile/'
-		super().__init__(model='cube',name='tile',position=pos,scale=(.85,.3,.85),collider=b,visible=False)
+		super().__init__(model=wfc,name='tile',position=pos,scale=(.85,.3,.85),collider=b,visible=False)
 		s.vis=Entity(model=tlX+'tile.ply',name=s.name,texture=tlX+'platform_top.png',position=(s.x,s.y,s.z),rotation_x=-90,scale=.35)
 
 class MushroomTree(Entity):
@@ -409,8 +429,8 @@ class MushroomTree(Entity):
 		lbP=omf+'l3/mtree_scn/'
 		if typ == 1:
 			super().__init__(model=lbP+'wtr_BTree1.ply',name='mtbt',texture=lbP+'tm_scn.tga',position=pos,scale=.03,color=color.rgb32(180,180,180),rotation=(-90,90,0))
-			Entity(model='cube',name=s.name,scale=(1.3,.5,.5),position=(s.x-.1,s.y+2.15,s.z-1.1),collider=b,visible=False)
-			Entity(model='cube',name=s.name,position=(s.x,s.y+3,s.z-.6),scale=(1,7,.5),collider=b,visible=False)
+			Entity(model=wfc,name=s.name,scale=(1.3,.5,.5),position=(s.x-.1,s.y+2.15,s.z-1.1),collider=b,visible=False)
+			Entity(model=wfc,name=s.name,position=(s.x,s.y+3,s.z-.6),scale=(1,7,.5),collider=b,visible=False)
 			Bush(pos=(s.x+.2,s.y+3.6,s.z-1.3),sca=1,ro_y=-35)
 			Bush(pos=(s.x-.6,s.y+3.6,s.z-1.4),sca=1,ro_y=35)
 			Bush(pos=(s.x-.1,s.y+3.8,s.z-1.45),sca=1)
@@ -472,16 +492,16 @@ class SewerTunnel(Entity):
 		s=self
 		_sPA=omf+'l4/scn/'
 		super().__init__(model=_sPA+'tunnel.ply',texture=_sPA+'sewer2.tga',name='swtu',position=pos,color=c,scale=(.032,.034,.03),rotation=(-90,90,0))
-		Entity(model='cube',position=(s.x-3,s.y+2,s.z-3),name=s.name,scale=(1,6,10),collider=b,visible=False)
-		Entity(model='cube',position=(s.x+3,s.y+2,s.z-3),name=s.name,scale=(1,6,10),collider=b,visible=False)
+		Entity(model=wfc,position=(s.x-3,s.y+2,s.z-3),name=s.name,scale=(1,6,10),collider=b,visible=False)
+		Entity(model=wfc,position=(s.x+3,s.y+2,s.z-3),name=s.name,scale=(1,6,10),collider=b,visible=False)
 
 class SewerEscape(Entity):
 	def __init__(self,pos,typ=None,c=color.white):
 		s=self
 		_SE=omf+'l4/scn/'
 		super().__init__(model=_SE+'pipe_1.ply',texture=_SE+'sewers.tga',name='swec',position=pos,scale=.048,color=c,rotation=(-90,90,0))
-		Entity(model='cube',scale=(.3,8,11),name=s.name,position=(s.x-1.5,s.y+3,s.z+2),collider=b,visible=False)
-		Entity(model='cube',scale=(.3,8,11),name=s.name,position=(s.x+1.8,s.y+3,s.z+2),collider=b,visible=False)
+		Entity(model=wfc,scale=(.3,8,11),name=s.name,position=(s.x-1.5,s.y+3,s.z+2),collider=b,visible=False)
+		Entity(model=wfc,scale=(.3,8,11),name=s.name,position=(s.x+1.8,s.y+3,s.z+2),collider=b,visible=False)
 		if typ == 1:
 			s.color=color.rgb32(255,50,0)
 			s.unlit=False
@@ -490,8 +510,9 @@ class SewerPlatform(Entity):
 	def __init__(self,pos):
 		s=self
 		pPF=omf+'l4/scn/'
-		super().__init__(model='cube',name='swpl',scale=(.5,.2,.5),collider=b,position=pos,visible=False)
+		super().__init__(model=wfc,name='swpl',scale=(.5,.2,.5),collider=b,position=pos,visible=False)
 		s.vis=Entity(model=pPF+'ptf.ply',texture=pPF+'swr_ptf.tga',name=s.name,position=(s.x,s.y+.05,s.z),scale=.02,rotation_x=-90)
+		s.matr='metal'
 
 class SewerWall(Entity):
 	def __init__(self,pos):
@@ -505,9 +526,10 @@ class SwimPlatform(Entity):
 	def __init__(self,pos):
 		s=self
 		swmi=omf+'l4/swr_swim/swr_swim'
-		super().__init__(model='cube',name='swpt',color=color.white,collider=b,position=pos,scale=(.5,.3,.5),visible=False)
+		super().__init__(model=wfc,name='swpt',color=color.white,collider=b,position=pos,scale=(.5,.3,.5),visible=False)
 		s.opt=Entity(model=swmi+'.ply',texture=swmi+'.tga',name=s.name,scale=.1/200,rotation_x=-90,position=(s.x,s.y+.06,s.z))
 		s.active=False
+		s.matr='metal'
 		s.spawn_y=s.y
 		s.f_time=0
 	def sink(self):
@@ -651,26 +673,26 @@ class RuinsPlatform(Entity):##big platform
 		rnp=omf+'l5/ruins_scn/'
 		msc={True:-.03,False:.03}
 		msv={True:-.9,False:.9}
-		super().__init__(model='cube',collider=b,scale=(1.7,1,1.5),name='rnsp',position=pos,visible=False)
+		super().__init__(model=wfc,collider=b,scale=(1.7,1,1.5),name='rnsp',position=pos,visible=False)
 		s.opt_model=Entity(model=rnp+'ruins_ptf1.ply',texture=rnp+'ruins_scn.tga',name=s.name,position=(s.x,s.y+.5,s.z),scale=(.03,msc[m],.03),rotation=(-90,90,0))
-		s.rail0=Entity(model='cube',scale=(1.7,.5,.3),name=s.name,collider=b,position=(s.x,s.y+.8,s.z+.9),visible=False)
-		s.rail0=Entity(model='cube',scale=(.3,.5,1.7),name=s.name,collider=b,position=(s.x+msv[m],s.y+.8,s.z),visible=False)
+		s.rail0=Entity(model=wfc,scale=(1.7,.5,.3),name=s.name,collider=b,position=(s.x,s.y+.8,s.z+.9),visible=False)
+		s.rail0=Entity(model=wfc,scale=(.3,.5,1.7),name=s.name,collider=b,position=(s.x+msv[m],s.y+.8,s.z),visible=False)
 
 class RuinsBlock(Entity):## small platform
 	def __init__(self,pos):
 		s=self
 		rnb=omf+'l5/ruins_scn/'
-		super().__init__(model='cube',collider=b,scale=(.75,1,.75),name='rubl',position=pos,visible=False)
+		super().__init__(model=wfc,collider=b,scale=(.75,1,.75),name='rubl',position=pos,visible=False)
 		s.opt_model=Entity(model=rnb+'ruins_ptf02.ply',name=s.name,texture=rnb+'ruins_scn.tga',position=(s.x,s.y+.5,s.z-.025),scale=.03,rotation=(-90,90,0))
 
 class RuinsCorridor(Entity):## corridor
 	def __init__(self,pos):
 		s=self
 		rco=omf+'l5/ruins_scn/'
-		super().__init__(model='cube',position=pos,scale=(3,1,3),name='rncr',collider=b,visible=False)
+		super().__init__(model=wfc,position=pos,scale=(3,1,3),name='rncr',collider=b,visible=False)
 		s.opt_model=Entity(model=rco+'ruins_cor.ply',texture=rco+'ruins_scn.tga',name=s.name,position=(s.x,s.y+.5,s.z),scale=.03,rotation=(-90,90,0))
-		s.cor_w0=Entity(model='cube',position=(s.x-1.4,s.y+1.7,s.z),name=s.name,scale=(.5,2,3),collider=b,visible=False)
-		s.cor_w1=Entity(model='cube',position=(s.x+1.4,s.y+1.7,s.z),name=s.name,scale=(.5,2,3),collider=b,visible=False)
+		s.cor_w0=Entity(model=wfc,position=(s.x-1.4,s.y+1.7,s.z),name=s.name,scale=(.5,2,3),collider=b,visible=False)
+		s.cor_w1=Entity(model=wfc,position=(s.x+1.4,s.y+1.7,s.z),name=s.name,scale=(.5,2,3),collider=b,visible=False)
 		IndoorZone(pos=(s.x,s.y+2.55,s.z),sca=3)
 
 class MonkeySculpture(Entity):
@@ -700,7 +722,7 @@ class MonkeySculpture(Entity):
 					s.f_pause=True
 					invoke(s.f_reset,delay=5)
 				return
-			effect.FireThrow(pos=s.position,ro_y=s.rotation_y)
+			ef.FireThrow(pos=s.position,ro_y=s.rotation_y)
 			s.f_cnt+=1
 			if not s.s_audio:
 				s.s_audio=True
@@ -715,7 +737,7 @@ class LoosePlatform(Entity):
 	def __init__(self,pos,t):
 		s=self
 		s.lpp=omf+'l5/loose_ptf'+str(t)+'/'
-		super().__init__(model='cube',position=pos,scale=(.7,.5,.6),name='loos',collider=b,visible=False)
+		super().__init__(model=wfc,position=pos,scale=(.7,.5,.6),name='loos',collider=b,visible=False)
 		s.opt_model=Entity(model=s.lpp+'loose_ptf'+str(t)+'.ply',texture=s.lpp+'loose_ptf'+str(t)+'.tga',name=s.name,scale=.01/15,position=(s.x,s.y+.25,s.z),rotation=(-90,-90,0))
 		s.active=False
 		s.typ=t
@@ -847,7 +869,7 @@ class FallingZone(Entity):## falling
 
 class WaterHit(Entity):## collider for water
 	def __init__(self,p,sc):
-		super().__init__(model='cube',name='wtrh',collider=b,position=p,scale=(sc[0],.2,sc[1]),visible=False)
+		super().__init__(model=wfc,name='wtrh',collider=b,position=p,scale=(sc[0],.2,sc[1]),visible=False)
 
 class CrateScore(Entity):## level reward
 	def __init__(self,pos):
@@ -877,13 +899,13 @@ class StartRoom(Entity):## game spawn point
 	def __init__(self,pos):
 		s=self
 		super().__init__(model=omf+'ev/s_room/room1.ply',texture=omf+'ev/s_room/room.tga',name='strm',position=pos,scale=(.07,.07,.08),rotation=(270,90),color=color.white)
-		s.floor0=Entity(model='cube',name=s.name,collider=b,position=(s.x,s.y+.6,s.z-.2),scale=(1.7,.5,1.7),visible=False)
-		s.floor1=Entity(model='cube',name=s.name,collider=b,position=(s.x,s.y+.2,s.z+1.7),scale=(2,.5,2),visible=False)
-		s.wall0=Entity(model='cube',name=s.name,collider=b,position=(s.x-1,s.y+1.5,s.z),scale=(.4,13,6),visible=False)
-		s.wall1=Entity(model='cube',name=s.name,collider=b,position=(s.x+1,s.y+1.5,s.z),scale=(.4,13,6),visible=False)
-		s.bck0=Entity(model='cube',name=s.name,collider=b,position=(s.x,s.y+1.5,s.z-1),scale=(5,13,.6),visible=False)
-		s.ceil=Entity(model='cube',name=s.name,collider=b,position=(s.x,s.y+2.6,s.z-.2),scale=(6,1,6),visible=False,alpha=.4)
-		s.curt=Entity(model='plane',name=s.name,position=(s.x,s.y+0.01,s.z),color=color.black,scale=3)
+		HitBox(pos=(s.x,s.y+.6,s.z-.2),sca=(1.7,.5,1.7))#floor 0
+		HitBox(pos=(s.x,s.y+.2,s.z+1.7),sca=(2,.5,2))#floor 1
+		HitBox(pos=(s.x-1,s.y+1.5,s.z),sca=(.4,13,6))#wall left
+		HitBox(pos=(s.x+1,s.y+1.5,s.z),sca=(.4,13,6))#wall right
+		HitBox(pos=(s.x,s.y+1.5,s.z-1),sca=(5,13,.6))#back wall
+		HitBox(pos=(s.x,s.y+2.6,s.z-.2),sca=(6,1,6))#curtain
+		Entity(model='plane',name=s.name,position=(s.x,s.y+0.01,s.z),color=color.black,scale=3)
 		Entity(model='quad',name=s.name,color=color.black,scale=(6,.5),position=(s.x,s.y+2.3,s.z+2.4))
 		RoomDoor(pos=(s.x,s.y+1.875,s.z+2.3))
 		player.CrashB(pos=(s.x,s.y+.85,s.z-.1))
@@ -898,15 +920,15 @@ class EndRoom(Entity):## finish level
 		s=self
 		eR=omf+'ev/e_room/e_room'
 		super().__init__(model=eR+'.ply',texture=eR+'.tga',scale=.025,name='enrm',rotation=(-90,90,0),position=pos,color=c,unlit=False)
-		s.curt=Entity(model='plane',name=s.name,color=color.black,scale=(4,1,16),position=(s.x-1,s.y-1.8,s.z+3))
-		s.grnd=Entity(model='cube',name=s.name,scale=(4,1,16),position=(s.x-1,s.y-2,s.z+3),collider=b,visible=False)
-		s.wa_l=Entity(model='cube',name=s.name,scale=(1,3,16),position=(s.x-2.2,s.y,s.z+3),collider=b,visible=False)
-		s.wa_r=Entity(model='cube',name=s.name,scale=(1,3,16),position=(s.x,s.y,s.z+3),collider=b,visible=False)
-		s.ceil=Entity(model='cube',name=s.name,scale=(5,3,16),position=(s.x-1,s.y+1.4,s.z+3),collider=b,visible=False)
-		s.bck=Entity(model='cube',name=s.name,scale=(6,4,2),position=(s.x,s.y,s.z+9),collider=b,visible=False)
-		s.pod1=Entity(model='cube',name=s.name,scale=(6,1,2.5),position=(s.x-1,s.y-1.85,s.z+.45),collider=b,visible=False)
-		s.pod2=Entity(model='cube',name=s.name,scale=(.85,1,.85),position=(s.x-1.1,s.y-1.6,s.z+.3),collider=b,visible=False)
-		s.pod3=Entity(model='cube',name=s.name,scale=(1.6,1,1),position=(s.x-1.1,s.y-1.51,s.z+6.5),collider=b,visible=False)
+		Entity(model='plane',name=s.name,color=color.black,scale=(4,1,16),position=(s.x-1,s.y-1.8,s.z+3))#curtain
+		HitBox(sca=(4,1,16),pos=(s.x-1,s.y-2,s.z+3))#floor
+		HitBox(sca=(1,3,16),pos=(s.x-2.2,s.y,s.z+3))#wall left
+		HitBox(sca=(1,3,16),pos=(s.x,s.y,s.z+3))#wall right
+		HitBox(sca=(5,3,16),pos=(s.x-1,s.y+1.4,s.z+3))#ceiling
+		HitBox(sca=(6,4,2),pos=(s.x,s.y,s.z+9))#back
+		HitBox(sca=(6,1,2.5),pos=(s.x-1,s.y-1.85,s.z+.45))#pod1
+		HitBox(sca=(.85,1,.85),pos=(s.x-1.1,s.y-1.6,s.z+.3))#pod2
+		HitBox(sca=(1.6,1,1),pos=(s.x-1.1,s.y-1.51,s.z+6.5))#pod3
 		IndoorZone(pos=(s.x-1,s.y,s.z+1),sca=(5,2,12))
 		LevelFinish(p=(s.x-1.1,s.y-1.1,s.z+7))
 		RoomDoor(pos=(s.x-1.1,s.y+.25,s.z-4.78))
@@ -960,7 +982,7 @@ class GemPlatform(Entity):## gem platform
 			t=0
 		L=180
 		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L+20,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
-		super().__init__(model='cube',name='gmpt',color=color.green,scale=(.6,.4,.6),position=pos,collider=b,visible=False)
+		super().__init__(model=wfc,name='gmpt',color=color.green,scale=(.6,.4,.6),position=pos,collider=b,visible=False)
 		s.opt_model=Entity(model=omf+'ev/'+ne+'/'+ne+'.ply',name=s.name,texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=GMC[t],unlit=False)
 		s.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),name=s.name,position=(s.x,s.y-.011,s.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
 		s.org_color=s.color
@@ -998,15 +1020,14 @@ class PseudoGemPlatform(Entity):
 			t=0
 		L=180
 		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
-		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,collider=b,position=pos,color=GMC[t],unlit=False)
+		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=GMC[t],unlit=False)
 		s.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),position=(s.x,s.y-.01,s.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
-		s.hitbox=Entity(model='cube',position=(s.x,s.y-.15,s.z),scale=(.6,.4,.6),collider=b,visible=False)
-		if not s.is_enabled:
-			s.unlit=False
-			s.hitbox.collider=None
-			s.collider=None
-			s.bg_darkness.hide()
-			s.alpha=.5
+		if s.is_enabled:
+			HitBox(pos=(s.x,s.y-.15,s.z),sca=(.6,.4,.6))
+			return
+		s.unlit=False
+		s.bg_darkness.hide()
+		s.alpha=.5
 
 #############
 ## Switches #
@@ -1015,11 +1036,11 @@ class LevelFinish(Entity):## finish level
 		s=self
 		trpv=omf+'ev/teleport/warp_effect'
 		super().__init__(model='sphere',name='lvfi',collider=b,scale=1,position=p,visible=False)
-		s.eff_w0=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(s.x,s.y,s.z),scale=.6,alpha=.5,unlit=False)
-		s.eff_w1=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.orange,rotation_x=90,position=(s.x,s.y+.2,s.z),scale=.7,alpha=.5,unlit=False)
-		s.eff_w2=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(s.x,s.y+.4,s.z),scale=.8,alpha=.5,unlit=False)
-		s.eff_w3=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.orange,rotation_x=90,position=(s.x,s.y+.6,s.z),scale=.7,alpha=.5,unlit=False)
-		s.eff_w4=Entity(model=trpv+'.ply',texture=trpv+'.png',color=color.yellow,rotation_x=90,position=(s.x,s.y+.8,s.z),scale=.6,alpha=.5,unlit=False)
+		ef.WarpVortex(pos=(s.x,s.y,s.z),col=color.yellow,sca=.6,drc=1)
+		ef.WarpVortex(pos=(s.x,s.y+.2,s.z),col=color.orange,sca=.7,drc=0)
+		ef.WarpVortex(pos=(s.x,s.y+.4,s.z),col=color.yellow,sca=.8,drc=1)
+		ef.WarpVortex(pos=(s.x,s.y+.6,s.z),col=color.orange,sca=.7,drc=0)
+		ef.WarpVortex(pos=(s.x,s.y+.8,s.z),col=color.yellow,sca=.6,drc=1)
 		s.w_audio=Audio('res/snd/misc/portal.wav',volume=0,loop=True)
 	def update(self):
 		if not st.gproc():
@@ -1027,20 +1048,7 @@ class LevelFinish(Entity):## finish level
 			if s.intersects(LC.ACTOR):
 				cc.jmp_lv_fin()
 				return
-			cnnb=(distance(s,LC.ACTOR) < 12)
-			csnd=(distance(s,LC.ACTOR) < 6)
-			vrs=time.dt*600
-			s.eff_w0.rotation_y+=vrs
-			s.eff_w1.rotation_y-=vrs
-			s.eff_w2.rotation_y+=vrs
-			s.eff_w3.rotation_y-=vrs
-			s.eff_w4.rotation_y+=vrs
-			s.eff_w0.visible=cnnb
-			s.eff_w1.visible=cnnb
-			s.eff_w2.visible=cnnb
-			s.eff_w3.visible=cnnb
-			s.eff_w4.visible=cnnb
-			if csnd:
+			if (distance(s,LC.ACTOR) < 6):
 				s.w_audio.volume=settings.SFX_VOLUME
 				return
 			s.w_audio.volume=0
@@ -1055,6 +1063,11 @@ class IndoorZone(Entity):## disable rain
 
 ###################
 ## global objects #
+class HitBox(Entity):
+	def __init__(self,pos,sca):
+		super().__init__(model=wfc,position=pos,scale=sca,collider=b,name='htbx',visible=False,enabled=True)
+		del pos,sca
+
 class LevelScene(Entity):
 	def __init__(self,pos,sca):
 		s=self
@@ -1079,7 +1092,7 @@ class LevelScene(Entity):
 			s=self
 			xp={True:lambda:setattr(s,'x',s.bonus_x),False:lambda:setattr(s,'x',s.orginal_x)}
 			yp={True:lambda:setattr(s,'y',s.bonus_y),False:lambda:setattr(s,'y',s.orginal_y)}
-			xp[st.is_death_route]()
+			xp[st.death_route]()
 			yp[st.bonus_round]()
 
 class LightArea(SpotLight):
@@ -1112,18 +1125,3 @@ class Water(Entity):
 				if s.frm > 57.99:
 					s.frm=0
 				s.texture=s.wtfc+str(int(s.frm))+'.tga'
-
-class mBlock(Entity):
-	def __init__(self,pos,sca):
-		s=self
-		cHo=st.level_index
-		PA='res/terrain/l'+str(cHo)+'/'
-		tPL={0:'grass.png',1:'grass.png',2:'snow.png',3:'moss.png',4:'snow.png'}
-		wPL={0:'grass.png',1:'bricks.png',2:'ice_wall.png',3:'moss.png',4:'ice_wall.png'}
-		super().__init__(model='cube',name='mblo',texture=PA+tPL[cHo],position=pos,scale=(sca[0],.25,sca[1]),collider=b)
-		s.mWall=Entity(model='cube',name=s.name,texture=wPL[cHo],scale=(sca[0]-.01,1,sca[1]),position=(s.x,s.y-(s.scale_y*2.5),s.z+.01),collider=b)
-		vts=(sca[0],1)
-		if sca[1] > 2:
-			vts=(sca[0],sca[1]/2)
-		s.mWall.texture_scale=(sca[0],1)
-		s.texture_scale=vts

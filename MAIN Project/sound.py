@@ -30,14 +30,12 @@ def footstep(c):
 
 ##landing sound material
 def landing_sound(c,o):
-	fn=o.name
-	if fn in {'swpt','swpl'}:
-		pc_audio(ID=13)
-		del c,o
-		return
-	if not cc.is_crate(o):
+	if hasattr(o,'matr'):
+		if o.matr == 'metal':
+			pc_audio(ID=13)
+			return
+	if not (cc.is_crate(o) or cc.is_enemie(o)):
 		pc_audio(ID=2)
-		del c,o
 
 ## ambience sound
 snd_rain=VS+'rain.wav'

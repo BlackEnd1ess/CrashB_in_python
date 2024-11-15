@@ -1,7 +1,8 @@
-import _core,status,animation,sound,_loc,map_tools,settings,gc
+import _core,status,animation,sound,_loc,settings,_debug_
 from math import atan2
 from ursina import *
 
+debg=_debug_
 an=animation
 sg=settings
 st=status
@@ -53,10 +54,10 @@ class CrashB(Entity):
 				sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),
 				sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
 		if sg.debg:
-			cc.PlayerDBG()
+			debg.PlayerDBG()
 			s.dev_act={
 					sg.DEV_WARP:lambda:setattr(s,'position',(0,0,0)),
-					sg.DEV_INFO:lambda:map_tools.pos_info(s),
+					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					sg.DEV_ECAM:lambda:EditorCamera()}
 	def input(self,key):
 		s=self
@@ -163,6 +164,11 @@ class CrashB(Entity):
 			s.landed=False
 			sn.pc_audio(ID=1)
 			s.jump_typ(t=1)
+	def anim_land(self):
+		s=self
+		s.is_flip=False
+		s.flfr,s.ldfr,s.jmfr=0,0,0
+		s.is_landing=True
 	def anim_fall(self):
 		s=self
 		if st.death_event or (s.is_flip or s.is_attack):
@@ -194,12 +200,12 @@ class CrashB(Entity):
 		invoke(lambda:cc.reset_state(s),delay=2)
 	def refr_tex(self):
 		s=self
-		if s.texture == s.cur_tex:
-			return
 		if s.is_attack:
-			s.texture,s.cur_tex=atp,atp
+			if not atp in {s.texture,s.cur_tex}:
+				s.texture,s.cur_tex=atp,atp
 			return
-		s.texture,s.cur_tex=dtp,dtp
+		if not dtp in {s.texture,s.cur_tex}:
+			s.texture,s.cur_tex=dtp,dtp
 	def refr_anim(self):
 		s=self
 		if (s.standup):

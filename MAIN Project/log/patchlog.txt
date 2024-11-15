@@ -115,3 +115,28 @@
 - purple crate info text appears only, if player nearby this crate type
 - level 1 reduced bushes and replaced with multible bushes in one model
 - level 1 bonus wall dont need bushes anymore to hide they vertex holes
+
+#06.11.2024
+- Tree2D removed from Game and used multible Tree's in one Model as 3D
+- level 5 air crates transform without delay to avoid activation after respawn
+
+#09.11.2024
+- changed mBlock class and replaced model
+- changed level 1 structure
+- moss platform and mBlock reduced collider
+
+#11.11.2024
+- level 1 gem route transformed to 2D Zone
+- fixxed wrong NPC move-range by reset respawn
+- new asset in level 1 with closed stone wall
+
+#13.11.2024
+- removed WumpaFruits, WumpaCollectAnim, CheckpointLetters, Sparkle from Memory if purged.
+- debuger extra file for scan objects in mem
+- changed bounce animations func
+- fixxed errors
+- changed falling actions
+
+#14.11.2024
+- new assets in level 2
+- reduced collider/objects (ice chunks, wumpafruits,crates) in level 2

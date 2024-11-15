@@ -1,5 +1,6 @@
 from ursina import Animation,Sequence,Wait,Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,curve
 import status,_core,_loc,sound,settings,warproom,level,time
+from ursina.ursinastuff import destroy
 from time import strftime,gmtime
 
 cr_i='res/ui/icon/crystal/cry'
@@ -45,20 +46,33 @@ def text_blink(M,t):
 			return
 		t.color=M.font_color
 
-def live_get_anim():
-	lvA=Entity(parent=CU,model=q,texture=_icn+'crash_live.tga',scale=(.1,.09),position=(.5,.43,0),color=color.gold)
-	lvA.animate_x(.65,duration=.3)
-	invoke(lambda:cc.purge_instance(lvA),delay=3.1)
+class LiveCollectAnim(Entity):
+	def __init__(self):
+		super().__init__(model=q,texture=_icn+'crash_live.tga',position=(.5,.43,0),scale=(.1,.09),color=color.gold,parent=CU)
+	def update(self):
+		if not st.gproc():
+			s=self
+			if s.x < .65:
+				s.x+=time.dt*2
+				return
+			destroy(s)
 
 class WumpaCollectAnim(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=q,texture=w_pa+'0.png',scale={False:.075,True:.06}[st.bonus_round],parent=CU,position=pos,add_to_scene_entities=False)
+		super().__init__(model=q,texture=w_pa+'0.png',scale={False:.075,True:.06}[st.bonus_round],parent=CU,position=pos)
 		s.tdirec=(-.75,.43,0)
 		if st.bonus_round:
 			s.tdirec=(-.25,-.475,0)
-		s.animate_position(s.tdirec,duration=.4,curve=curve.linear)
-		invoke(s.disable,delay=.4)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if distance(s.position,s.tdirec) > .1:
+			s.position=lerp(s.position,s.tdirec,time.dt*5)
+			return
+		destroy(s)
+
 
 ## Main Counter ##
 class WumpaCounter(Entity):
@@ -233,8 +247,8 @@ class WumpaBonus(Entity):
 				if s.check_w() and not st.wait_screen:
 					s.w_count()
 				return
-			cc.purge_instance(s.w_text)
-			cc.purge_instance(s)
+			destroy(s.w_text)
+			destroy(s)
 
 class CrateBonus(Entity):
 	def __init__(self):
@@ -272,8 +286,8 @@ class CrateBonus(Entity):
 				if s.check_c() and not st.wait_screen:
 					s.c_count()
 				return
-			cc.purge_instance(s.c_text)
-			cc.purge_instance(s)
+			destroy(s.c_text)
+			destroy(s)
 
 class LiveBonus(Entity):
 	def __init__(self):
@@ -304,8 +318,8 @@ class LiveBonus(Entity):
 				if s.check_l() and not st.wait_screen:
 					s.l_count()
 				return
-			cc.purge_instance(s.l_text)
-			cc.purge_instance(s)
+			destroy(s.l_text)
+			destroy(s)
 
 
 ## Game Over Screen
@@ -374,7 +388,7 @@ class ProjectInfo(Entity):
 		Entity(model='quad',color=color.black,scale=(4,4),parent=CU)
 		super().__init__(model='quad',texture=btv+'disclaim.jpg',scale=(1.6,.8),parent=CU)
 		invoke(lambda:TitleScreen(),delay=5)
-		invoke(lambda:cc.purge_instance(self),delay=5)
+		destroy(self,delay=5.1)
 
 ## Loading Screen
 class LoadingScreen(Entity):
@@ -404,7 +418,7 @@ class WhiteScreen(Entity):
 			s.timer+=time.dt/2
 			s.alpha=s.timer
 			if s.timer > 2:
-				cc.purge_instance(s)
+				destroy(s)
 
 class BlackScreen(Entity):
 	def __init__(self):
@@ -420,7 +434,7 @@ class BlackScreen(Entity):
 				s.alpha=s.timer
 				if s.timer <= 0:
 					s.parent=None
-					cc.purge_instance(s)
+					destroy(s)
 
 ## Warp Room Interface
 class LevelSelector(Entity):
@@ -495,10 +509,10 @@ class BonusText(Entity):
 			return
 		s.ch_seq+=1
 	def update(self):
-		if not status.gproc() and not st.wait_screen:
+		if not st.gproc() and not st.wait_screen:
 			s=self
 			if not st.bonus_round:
-				cc.purge_instance(s)
+				destroy(s)
 				return
 			s.t_delay=max(s.t_delay-time.dt,0)
 			if s.t_delay <= 0:
@@ -716,22 +730,45 @@ class CollectedGem(Entity):
 		s.color_gem.visible=False
 		s.clear_gem.visible=False
 		s.crystal.visible=False
+		s.crystal.texture=None
+		s.color_gem.texture=None
+		s.clear_gem.texture=None
 
 ## Gem Hint
 class GemHint(Entity):
 	def __init__(self):
 		s=self
 		super().__init__()
-		l_inf={0:'this is a developer test level, place the gem where you want',
-				1:'blue gem - reach the end of this level without breaking boxes',
-				2:'red gem - solve this level without loosing extra lifes.',
-				3:'yellow gem - reach the end of level before time up',
-				4:'green gem - unlock the yellow gem path',
-				5:'purple gem - unlock the green gem path'}
-		s.mText=Text(l_inf[st.level_index],parent=camera.ui,font=_fnt,color=color.orange,scale=2.2,position=(-.6,-.3,.1))
-		invoke(lambda:cc.purge_instance(s.mText),delay=5)
+		s.mText=Text(LC.ge_inf[st.level_index],parent=camera.ui,font=_fnt,color=color.orange,scale=2.2,position=(-.6,-.3,.1))
+		s.tm=5
 	def update(self):
-		self.mText.visible=not(st.gproc())
+		s=self
+		s.mText.visible=not(st.gproc())
+		if s.visible:
+			s.tm=max(s.tm-time.dt,0)
+			if s.tm <= 0:
+				destroy(s.mText)
+				destroy(s)
+
+## Checkpoint Letters
+class CheckpointLetter(Entity):
+	def __init__(self,idx,pos):
+		s=self
+		super().__init__()
+		s.ckt=Text(LC.checkp[idx],font=_fnt,position=(pos[0]+idx/10,pos[1]+.4,pos[2]),scale=7,parent=scene,color=color.orange,unlit=False)
+		del idx,pos
+		s.tm=1.5
+	def purge(self):
+		sn.pc_audio(ID=1,pit=.9)
+		destroy(self.ckt)
+		destroy(self)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.tm=max(s.tm-time.dt,0)
+		if s.tm <= 0:
+			s.purge()
 
 ## Time Trial
 class TrialTimer(Entity):
@@ -747,8 +784,8 @@ class TrialTimer(Entity):
 			st.gem_death=True
 		self.trial_interrupt()
 	def trial_interrupt(self):
-		cc.purge_instance(self.disp)
-		cc.purge_instance(self)
+		destroy(self.disp)
+		destroy(self)
 	def update(self):
 		if not st.gproc():
 			s=self

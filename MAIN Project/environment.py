@@ -37,7 +37,7 @@ def env_switch(idx):
 	if idx in {1,5}:#rain in level 1 and 5
 		if idx == 5:
 			Thunderbolt()
-		RainFall()
+		WeatherRain()
 
 ##Fog Distance
 L_DST={0:(30,100),1:(10,15),2:(3,12),3:(16,20),4:(13,16),5:(8,18),6:(10,20)}
@@ -49,7 +49,7 @@ def set_fog(idx):
 		scene.fog_density=B_DST[idx]
 
 ##Rainfall Func
-class RainFall(Entity):
+class WeatherRain(Entity):
 	def __init__(self):
 		s=self
 		s.rnf='res/ui/misc/rain/'

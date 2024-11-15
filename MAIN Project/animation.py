@@ -1,6 +1,8 @@
 import status,_core,_loc,sound,time,random
+from ursina.ursinastuff import destroy
 from ursina import Entity,color,invoke
 
+## walk frame count npc
 npc_anim={0:7,#amadillo
 		1:12,#turtle
 		2:12,#saw turtle
@@ -23,6 +25,7 @@ mo='model'
 st=status
 sn=sound
 cc=_core
+bT=50
 t=18
 
 ## player animation
@@ -213,40 +216,19 @@ def eat_by_plant(c):
 	invoke(lambda:cc.reset_state(c),delay=3)
 
 ## crate animation
-bT=50
-def bnc_animation(c):
-	invoke(lambda:setattr(c,'model',cf+'bn/0.ply'),delay=0)
-	invoke(lambda:setattr(c,'model',cf+'bn/1.ply'),delay=1/bT)
-	invoke(lambda:setattr(c,'model',cf+'bn/2.ply'),delay=2/bT)
-	invoke(lambda:setattr(c,'model',cf+'bn/3.ply'),delay=3/bT)
-	invoke(lambda:setattr(c,'model',cf+'bn/4.ply'),delay=4/bT)
-	invoke(lambda:setattr(c,'model',cf+'bn/5.ply'),delay=5/bT)
-	invoke(lambda:setattr(c,'model',cf+'bn/6.ply'),delay=6/bT)
-	invoke(lambda:setattr(c,'model',cf+'bn/7.ply'),delay=7/bT)
-	invoke(lambda:setattr(c,'model',cf+'bn/8.ply'),delay=8/bT)
-	invoke(lambda:setattr(c,'model',cf+'bn/9.ply'),delay=9/bT)
-	invoke(lambda:setattr(c,'model',cf+'bn/10.ply'),delay=10/bT)
-	invoke(lambda:setattr(c,'model',cf+'bn/11.ply'),delay=11/bT)
-	invoke(lambda:setattr(c,'model',cf+'bn/12.ply'),delay=12/bT)
-	invoke(lambda:setattr(c,'model',cf+'bn/0.ply'),delay=13/bT)
-	invoke(lambda:setattr(c,'is_bounc',False),delay=13/bT)
+def bnc_anim(c):
+	c.frm=min(c.frm+time.dt*bT,12.999)
+	if c.frm > 12.99:
+		c.frm=0
+		c.is_bounc=False
+	c.model=cf+f'bn/{int(c.frm)}.ply'
 
 def prtc_anim(c):
-	invoke(lambda:setattr(c,'model',cf+'prt/0.ply'),delay=0)
-	invoke(lambda:setattr(c,'model',cf+'prt/1.ply'),delay=1/bT)
-	invoke(lambda:setattr(c,'model',cf+'prt/2.ply'),delay=2/bT)
-	invoke(lambda:setattr(c,'model',cf+'prt/3.ply'),delay=3/bT)
-	invoke(lambda:setattr(c,'model',cf+'prt/4.ply'),delay=4/bT)
-	invoke(lambda:setattr(c,'model',cf+'prt/5.ply'),delay=5/bT)
-	invoke(lambda:setattr(c,'model',cf+'prt/6.ply'),delay=6/bT)
-	invoke(lambda:setattr(c,'model',cf+'prt/7.ply'),delay=7/bT)
-	invoke(lambda:setattr(c,'model',cf+'prt/8.ply'),delay=8/bT)
-	invoke(lambda:setattr(c,'model',cf+'prt/9.ply'),delay=9/bT)
-	invoke(lambda:setattr(c,'model',cf+'prt/10.ply'),delay=10/bT)
-	invoke(lambda:setattr(c,'model',cf+'prt/11.ply'),delay=11/bT)
-	invoke(lambda:setattr(c,'model',cf+'prt/12.ply'),delay=12/bT)
-	invoke(lambda:setattr(c,'model',cf+'prt/0.ply'),delay=13/bT)
-	invoke(lambda:setattr(c,'hitten',False),delay=20/bT)
+	c.frm=min(c.frm+time.dt*bT,12.999)
+	if c.frm > 12.99:
+		c.frm=0
+		c.hitten=False
+	c.model=cf+f'prt/{int(c.frm)}.ply'
 
 class CrateBreak(Entity):
 	def __init__(self,cr):
@@ -265,7 +247,7 @@ class CrateBreak(Entity):
 		s.frame_break=min(s.frame_break+time.dt*t,13.999)
 		if s.frame_break > 13.99:
 			s.frame_break=0
-			cc.purge_instance(s)
+			destroy(s)
 			return
 		s.model=cf+'brk/'+str(int(s.frame_break))+'.ply'
 
@@ -293,7 +275,7 @@ class WarpRingEffect(Entity): ## spawn animation
 			s.model=s.omf+'warp_rings/'+str(int(s.rings))+'.ply'
 			if s.times > 7:
 				_loc.ACTOR.warped=True
-				cc.purge_instance(s)
+				destroy(s)
 
 ## npc animation
 def npc_walking(m):

@@ -3,15 +3,6 @@ c=crate
 o=objects
 I=item
 
-## pos info
-def pos_info(c):
-	sx=f"{c.x:.1f}"
-	sy=f"{c.y+.16:.2f}"#c
-	#sy=f"{c.y+.2:.2f}"#w
-	sz=f"{c.z:.1f}"
-	print(f"mt.crate_wall(ID=14,POS=({sx},{sy},{sz}),CNT=[1,2])")
-	#print(f"mt.wumpa_plane(POS=({sx},{sy},{sz}),CNT=[2,4])")
-
 ## multible crate spawn
 def bounce_twin(POS,CNT,trs=1.65):
 	for cbt in range(CNT):
@@ -73,7 +64,6 @@ def crate_plane(ID,POS,CNT):#[x,z]
 		for cwZ in range(CNT[1]):
 			c.place_crate(ID=ID,p=(POS[0]+.32*cwX,POS[1],POS[2]+.32*cwZ))
 	del ID,POS,CNT,cwX,cwZ
-
 
 ## multible wumpa spawn
 def wumpa_row(POS,CNT,WAY):#WAY: 0=right,1=front,2=up
