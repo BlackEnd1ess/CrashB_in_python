@@ -1,4 +1,5 @@
-import gc,os,ui,settings,psutil,_loc,status
+import gc,os,ui,settings,psutil,_loc,status,sys
+from collections import defaultdict
 from collections import Counter
 from ursina import *
 CV=camera.ui
@@ -75,10 +76,10 @@ class PlayerDBG(Entity):
 		s.inj_state.text=f'INJURED     : {rv.injured}'
 		s.frz_state.text=f'FREEZED     : {rv.freezed}'
 
-#check objects where in memory
+#check multible objects where in memory
 def chck_mem():
 	TRG='Entity'
-	ATR='model'
+	ATR='name'
 	all_objects=gc.get_objects(generation=2)
 	class_counts=Counter()
 	details=[]
@@ -97,3 +98,34 @@ def chck_mem():
 	print("\n",TRG,'-results in MEMORY:')
 	for i, filename in enumerate(details,1):
 		print(f"{TRG} {i}: {ATR} = {filename if filename else 'NONE'}")
+
+class MemoryTracker(Entity):
+	def __init__(self,interval=5,threshold=100000,**kwargs):
+		super().__init__(**kwargs)
+		self.interval = interval
+		self.threshold = threshold
+		self.previous_snapshot = {}
+		invoke(self.track_memory_growth,delay=self.interval)
+	def get_memory_snapshot(self):
+		snapshot = defaultdict(int)
+		for obj in gc.get_objects():
+			try:
+				class_name = type(obj).__name__
+				snapshot[class_name] += sys.getsizeof(obj)
+			except Exception:
+				pass
+		return snapshot
+	def track_memory_growth(self):
+		current_snapshot = self.get_memory_snapshot()
+		growth = {}
+		for class_name, current_size in current_snapshot.items():
+			previous_size = self.previous_snapshot.get(class_name, 0)
+			size_increase = current_size - previous_size
+			if size_increase > self.threshold:
+				growth[class_name] = size_increase
+		self.previous_snapshot = current_snapshot
+		if growth:
+			print("\nKlassen mit signifikantem Speicherwachstum:")
+			for class_name, increase in growth.items():
+				print(f"{class_name}: +{increase / 1024:.2f} KB")
+		invoke(self.track_memory_growth, delay=self.interval)

@@ -23,10 +23,9 @@ def load_object():
 	o.StartRoom(pos=(-.3,1,-66.5))
 	TS=16
 	cG=color.green
-	Sky(color=color.rgb32(40,90,80),texture='res/background/sky.jpg')
-	o.Water(pos=(0,.6,0),sca=(10,128),c=color.rgb32(80,80,120),a=1)
-	o.InvWall(pos=(-5,.5,-64),sca=(5.,10,200))
-	o.InvWall(pos=(4.7,.5,-64),sca=(5.,10,200))
+	o.Water(pos=(0,.6,-16),sca=(10,96),c=color.rgb32(70,90,100),a=1)
+	o.InvWall(pos=(-5,.5,-32),sca=(5.,10,128))
+	o.InvWall(pos=(5.3,.5,-32),sca=(5.,10,128))
 	o.BonusPlatform(pos=(1.4,1,-6))
 	o.GemPlatform(pos=(-.3,1.2,-18),t=4)
 	gs=1.6
@@ -38,14 +37,12 @@ def load_object():
 	o.GrassSide(pos=(4,gs,-16),m=True)
 	o.GrassSide(pos=(4,gs,15),m=True)
 	o.GrassSide(pos=(4,gs,46),m=True)
-	o.LevelScene(pos=(0,0,128),sca=(350,40,1))
-	o.LevelScene(pos=(0,-20,127),sca=(350,40,1))
+	o.LevelScene(pos=(0,0,128),sca=(250,40,1))
+	o.LevelScene(pos=(0,-20,127),sca=(250,40,1))
 	#plants
 	Entity(model='cube',texture='res/terrain/l1/bricks.png',scale=(9,2,.3),position=(0,-.2,-64.5),texture_scale=(9,2))
 	o.TreeScene(pos=(-1.2,1.2,-46),sca=.0175)
-	o.TreeScene(pos=(1.2,1.2,-46),sca=.0175)
 	o.TreeScene(pos=(0,1.7,-26.4),sca=.0175)
-	o.TreeScene(pos=(-1.4,1.5,10.6),sca=.0175)
 	for trw in range(8):
 		o.TreeRow(pos=(-4.3,1.2,-60+trw*12),sca=(.15,.16,.18))
 		o.TreeRow(pos=(4.3,1.2,-60+trw*12),sca=(.15,.16,.18))
@@ -58,12 +55,11 @@ def load_object():
 	o.TreeScene(pos=(1,1.6,-34.6),sca=.02)
 	o.TreeScene(pos=(-1.8,1.5,-21.5),sca=.02)
 	o.TreeScene(pos=(-1.5,1.2,-62.5),sca=.02)
-	o.TreeScene(pos=(-1.2,1.5,-54.5),sca=.02)
 	o.TreeScene(pos=(1.1,1.5,-53),sca=.02)
 	#platform
 	dz=-64
 	dy=.5
-	o.gr_block(p=(-.25,dy,dz),vx=[1,7])
+	o.gr_block(p=(-.25,dy,dz),vx=[1,6])
 	o.gr_block(p=(-1,dy,dz+7),vx=[2,2])
 	o.gr_block(p=(0,dy,dz+10),vx=[1,1])
 	o.gr_block(p=(-1,dy,dz+12),vx=[3,1])
@@ -72,7 +68,7 @@ def load_object():
 	o.gr_block(p=(0,dy,dz+32),vx=[1,1])
 	o.gr_block(p=(0,dy,dz+34),vx=[1,1])
 	o.gr_block(p=(0,dy,dz+36),vx=[1,2])
-	o.gr_block(p=(-2,dy,dz+36),vx=[1,7])
+	o.gr_block(p=(-2,dy,dz+36.5),vx=[1,6])
 	o.gr_block(p=(.7,dy,dz+41),vx=[1,6])
 	o.gr_block(p=(-1,dy,dz+48),vx=[3,5])
 	o.gr_block(p=(0,dy,dz+53),vx=[1,7])
@@ -147,17 +143,17 @@ def load_crate():
 	mt.bounce_twin(POS=(235.2,3.66,-2),CNT=1)
 def load_wumpa():
 	wu_h=1.3
-	mt.wumpa_plane(POS=(-.2,wu_h,-57),CNT=[1,4])
-	mt.wumpa_plane(POS=(0,wu_h,-50),CNT=[1,3])
+	mt.wumpa_row(POS=(-.2,wu_h,-57),CNT=2,WAY=2)
+	mt.wumpa_plane(POS=(0,wu_h,-50),CNT=[1,2])
 	mt.wumpa_row(POS=(0,wu_h,-44),CNT=2,WAY=2)
 	mt.wumpa_row(POS=(0,wu_h,-40),CNT=2,WAY=2)
-	mt.wumpa_plane(POS=(0,wu_h,-36.5),CNT=[1,3])
+	mt.wumpa_plane(POS=(0,wu_h,-36.5),CNT=[1,2])
 	mt.wumpa_row(POS=(-2,wu_h,-27),CNT=3,WAY=1)
 	mt.wumpa_row(POS=(.6,wu_h,-22),CNT=3,WAY=1)
-	mt.wumpa_plane(POS=(0,wu_h,-9),CNT=[1,3])
-	mt.wumpa_plane(POS=(0,wu_h,-6),CNT=[1,3])
-	mt.wumpa_plane(POS=(2,wu_h,-1.5),CNT=[1,3])
-	mt.wumpa_plane(POS=(0,wu_h,16.7),CNT=[1,3])
+	mt.wumpa_plane(POS=(0,wu_h,-9),CNT=[1,2])
+	mt.wumpa_plane(POS=(0,wu_h,-6),CNT=[1,2])
+	mt.wumpa_plane(POS=(2,wu_h,-1.5),CNT=[1,2])
+	mt.wumpa_plane(POS=(0,wu_h,16.7),CNT=[1,2])
 def load_npc():
 	n.spawn(ID=0,POS=(0,1.1,-52))
 	n.spawn(ID=2,POS=(0,1.1,-36.3),DRC=2)
@@ -166,8 +162,7 @@ def load_npc():
 ## bonus level / gem path
 def bonus_zone():
 	o.BonusPlatform(pos=(12,-36.7,U))
-	o.Water(pos=(0,-38.5,0),sca=(60,60),c=color.rgb32(100,110,110),a=.9)
-	Entity(model='plane',scale=70,position=(0,-40,0),color=color.black)
+	o.Water(pos=(0,-38.5,0),sca=(48,32),c=color.rgb32(80,80,120),a=1)
 	for w in range(2):
 		o.BackgroundWall(p=(0+w*14,-37,2))
 	o.gr_block(p=(.35,-37.65,U),vx=[2,1],sca=(.5,.75,.3))

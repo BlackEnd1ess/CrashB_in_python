@@ -45,14 +45,23 @@ ge_1='res/ui/icon/gem_1/gem'
 ge_2='res/ui/icon/gem_2/gem'
 fdc={1:ge_0,2:ge_0,3:ge_0,4:ge_1,5:ge_2,6:ge_0}
 
-#gem color
+#gem color 2D
 O=180
-cGLO={1:(0,0,O),
-	2:(O,0,0),
-	5:(O,0,O),
-	4:(0,O,0),
-	3:(O,O,0),
+cGLO={1:(0,0,O),#blue
+	2:(O,0,0),#red
+	5:(O,0,O),#yellow
+	4:(0,O,0),#green
+	3:(O,O,0),#violet
 	6:(O,0,0)}
+
+#gem color 3D
+R=180
+ge_c={0:(R-10,R-10,R),#clear gem
+	1:(R,0,0),#red gem
+	2:(0,R,0),#green gem
+	3:(R,0,R),#purple gem
+	4:(0,0,R),#blue gem
+	5:(R-20,R-20,0)}#yellow gem
 
 #triggers
 trigger_lst={'indz','lvfi','elwt','fthr'}

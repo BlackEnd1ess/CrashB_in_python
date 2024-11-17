@@ -1,4 +1,4 @@
-import ui,_core,status,environment,sound,LODsystem,sys,os
+import ui,_core,status,environment,sound,LODsystem,sys,os,gc
 from ursina import camera,invoke
 
 lv='level'
@@ -20,6 +20,7 @@ def free_level():
 		sn.WaterRiver()
 	ui.load_interface()
 	cc.level_ready=True
+	gc.collect()
 
 ## level settings
 def main_instance(idx):
@@ -34,7 +35,7 @@ def main_instance(idx):
 		6:lambda:test()}
 	goto[idx]()
 	environment.env_switch(idx)
-	del idx
+	del idx,goto
 
 ## levels to load
 def test():# test level

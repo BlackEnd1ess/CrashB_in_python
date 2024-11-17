@@ -34,12 +34,14 @@ def idle(d,sp):
 	if d.idfr > 10.99:
 		d.idfr=0
 	d.model=af+'idle/'+str(int(d.idfr))+'.ply'
+	del d,sp
 
 def run(d,sp):
 	d.rnfr=min(d.rnfr+time.dt*sp,10.999)
 	if d.rnfr > 10.99:
 		d.rnfr=0
 	d.model=af+'run/'+str(int(d.rnfr))+'.ply'
+	del d,sp
 
 def run_s(d,sp):
 	d.srfr=min(d.srfr+time.dt*sp,6.999)
@@ -58,12 +60,14 @@ def jup(d,sp):
 	if d.jmfr > 2.99:
 		return
 	d.model=af+'jmup/'+str(int(d.jmfr))+'.ply'
+	del d,sp
 
 def spin(d,sp):
 	d.spfr=min(d.spfr+time.dt*sp,11.999)
 	if d.spfr > 11.99:
 		d.spfr=0
 	d.model=af+'spn/'+str(int(d.spfr))+'.ply'
+	del d,sp
 
 def land(d,sp):
 	d.ldfr=min(d.ldfr+time.dt*sp,12.999)
@@ -72,11 +76,13 @@ def land(d,sp):
 		d.ldfr=0
 		return
 	d.model=af+'lnd/'+str(int(d.ldfr))+'.ply'
+	del d,sp
 
 def fall(d,sp):
 	if d.fafr < 7.99:
 		d.fafr=min(d.fafr+time.dt*sp,7.99)
 	d.model=af+'fall/'+str(int(d.fafr))+'.ply'
+	del d,sp
 
 def flip(d,sp):
 	d.flfr=min(d.flfr+time.dt*sp,16.999)
@@ -85,6 +91,7 @@ def flip(d,sp):
 		d.flfr=0
 		return
 	d.model=af+'flp/'+str(int(d.flfr))+'.ply'
+	del d,sp
 
 def belly_smash(d,sp):
 	d.smfr=min(d.smfr+time.dt*sp,2.999)
@@ -230,16 +237,20 @@ def prtc_anim(c):
 		c.hitten=False
 	c.model=cf+f'prt/{int(c.frm)}.ply'
 
+br='brk/0'
 class CrateBreak(Entity):
 	def __init__(self,cr):
-		bco=color.orange
-		anP=cr.position
-		if cr.vnum in {11,12,15,16}:
-			vco={11:color.red,12:color.green,15:color.gold,16:color.violet}
-			bco=vco[cr.vnum]
-		super().__init__(model=cf+'brk/0.ply',texture=cf+'brk/break.tga',rotation=(-90,random.randint(0,360),0),scale=.4/1000,color=bco,position=(anP[0],anP[1]-.16,anP[2]))
-		self.frame_break=0
-		del cr,bco,anP
+		s=self
+		super().__init__(model=cf+br+'.ply',texture=cf+br+'.tga',rotation=(-90,random.randint(0,360),0),scale=.4/1000,position=(cr.x,cr.y-.16,cr.z))
+		s.frame_break=0
+		s.color=color.orange
+		if cr.vnum == 11:
+			s.color=color.red
+		elif cr.vnum == 12:
+			s.color=color.green
+		elif cr.vnum == 16:
+			s.color=color.violet
+		del cr
 	def update(self):
 		if st.gproc():
 			return

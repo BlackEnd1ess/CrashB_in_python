@@ -7,7 +7,7 @@ LC=_loc
 
 ## short names from objects (entity.name)
 LOD_VAR=['rmdr','ctsc','htbx','wpvx']
-LV1=LOD_VAR+['trd2','tssn','mptf','mblo','bush']
+LV1=LOD_VAR+['trd2','tssn','mptf','mblo','bush','cori']
 LV2=LOD_VAR+['plnk','ickk','wdlg','pilr','icec','snwa','sngg']
 LV3=LOD_VAR+['wtfa','mptf','trd2','tile','foam','wdst','mtbt']
 LV4=LOD_VAR+['swpl','swp2','swpi','drpw','ssww','swri']
@@ -16,7 +16,7 @@ LL={1:LV1,2:LV2,3:LV3,4:LV4,5:LV5,6:LV1}
 
 ##level decoration (side)
 PLO=['strm']
-BGSO={1:PLO+['grsi','tmpw','trrw','cori'],
+BGSO={1:PLO+['grsi','trrw'],
 	2:PLO+['snhi'],
 	3:PLO+['tmpw'],
 	4:PLO+['swec','swtu'],

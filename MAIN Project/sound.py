@@ -1,5 +1,6 @@
 from ursina import Entity,Audio,Sequence,Wait,invoke
 import status,settings,_core,_loc,random,time
+from ursina.ursinastuff import destroy
 se=settings
 cc=_core
 st=status
@@ -9,24 +10,21 @@ VS='res/snd/ambience/'
 SP='res/snd/player/'
 SN='res/snd/misc/'
 SA='res/snd/npc/'
+dd=.8
 
 ##footstep
 def footstep(c):
 	if c.is_slippery:
 		pc_audio(ID=8,pit=1.5)
-		del c
 		return
 	if c.in_water > 0:
 		pc_audio(ID=11,pit=random.uniform(.9,1))
-		del c
 		return
 	else:
 		if st.level_index == 4:
 			pc_audio(ID=12)
-			del c
 			return
 		pc_audio(ID=0)
-		del c
 
 ##landing sound material
 def landing_sound(c,o):
@@ -43,8 +41,8 @@ SND_THU={0:'thunder_start',
 		1:'thunder0',
 		2:'thunder1'}
 def thu_audio(ID,pit=1):
-	pth=Audio(VS+SND_THU[ID]+'.wav',pitch=random.uniform(.1,.5),volume=se.SFX_VOLUME,auto_destroy=True,add_to_scene_entities=False)
-	del ID,pit,pth
+	pth=Audio(VS+SND_THU[ID]+'.wav',pitch=random.uniform(.1,.5),volume=se.SFX_VOLUME,add_to_scene_entities=False)
+	invoke(lambda:destroy(pth),delay=dd)
 
 ## INTERFACE SFX
 SND_UI={0:'select',
@@ -55,10 +53,10 @@ SND_UI={0:'select',
 		5:'gem'}
 def ui_audio(ID,pit=1):
 	if ID == 1:
-		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME/2,add_to_scene_entities=False,auto_destroy=True)
+		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME/2,add_to_scene_entities=False)
 	else:
-		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False,auto_destroy=True)
-	del ID,ua,pit
+		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
+	invoke(lambda:destroy(ua),delay=dd)
 
 ## PLAYER SFX
 SND_PC={0:'walk',
@@ -77,8 +75,8 @@ SND_PC={0:'walk',
 		13:'land_metal',
 		14:'fall_death'}
 def pc_audio(ID,pit=1):
-	pc=Audio(SP+SND_PC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False,auto_destroy=True)
-	del pc,ID,pit
+	pc=Audio(SP+SND_PC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
+	invoke(lambda:destroy(pc),delay=dd)
 
 ## CRATE SFX
 SND_CRT={0:'steel',
@@ -108,8 +106,8 @@ def crate_audio(ID,pit=1):
 	if ID == 11 and not st.ni_sn:
 		st.ni_sn=True
 		invoke(lambda:setattr(st,'ni_sn',False),delay=.1)
-	ca=Audio(SN+SND_CRT[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME*2,add_to_scene_entities=False,auto_destroy=True)
-	del ca,ID,pit
+	ca=Audio(SN+SND_CRT[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME*2,add_to_scene_entities=False)
+	invoke(lambda:destroy(ca),delay=dd)
 
 ## NPC SFX
 SND_NPC={0:'plant_bite',
@@ -118,8 +116,8 @@ SND_NPC={0:'plant_bite',
 		3:'seal',
 		4:'rat_idle'}
 def npc_audio(ID,pit=1):
-	np=Audio(SA+SND_NPC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False,auto_destroy=True)
-	del np,ID,pit
+	np=Audio(SA+SND_NPC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
+	invoke(lambda:destroy(np),delay=dd)
 
 ## OBJECTS/ITEM SFX
 SND_OBJ={0:'spawn',
@@ -135,8 +133,8 @@ SND_OBJ={0:'spawn',
 		10:'fire_throw',
 		11:'log_hit'}
 def obj_audio(ID,pit=1):
-	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False,auto_destroy=True)
-	del ob,ID,pit
+	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
+	invoke(lambda:destroy(ob),delay=dd)
 
 ## Background Sounds
 class WaterRiver(Audio):

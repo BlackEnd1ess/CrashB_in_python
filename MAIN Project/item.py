@@ -1,6 +1,10 @@
 from ursina import Entity,BoxCollider,Vec3,SpotLight,color,distance,lerp
 import _core,status,sound,ui,_loc,random,time
 from ursina.ursinastuff import destroy
+
+lfic='res/ui/icon/crash_live.tga'
+w_pa='res/ui/icon/wumpa/'
+CRY='crystal/crystal'
 i_path='res/item/'
 b='box'
 
@@ -22,8 +26,7 @@ def place_wumpa(pos,cnt,c_prg=False):
 class WumpaFruit(Entity):
 	def __init__(self,p,c_prg):
 		s=self
-		s.w_pa='res/ui/icon/wumpa/'
-		super().__init__(model='quad',texture=s.w_pa+'w0.png',name='wmpf',position=(p[0],p[1],p[2]),scale=.22)
+		super().__init__(model='quad',texture=w_pa+'w0.png',name='wmpf',position=(p[0],p[1],p[2]),scale=.22)
 		s.collider=BoxCollider(s,size=Vec3(1,1,1))
 		s.follow=False
 		s.c_purge=c_prg
@@ -45,8 +48,7 @@ class WumpaFruit(Entity):
 		s=self
 		fp=distance(s,LC.ACTOR)
 		if s.follow:
-			q=LC.ACTOR
-			s.position=lerp(s.position,(q.x,q.y+.2,q.z),time.dt*16)
+			s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.2,LC.ACTOR.z),time.dt*18)
 			return
 		if fp < 5:
 			ui.wmp_anim(s)
@@ -56,7 +58,7 @@ class WumpaFruit(Entity):
 class ExtraLive(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model='quad',texture='res/ui/icon/crash_live.tga',name='exlf',position=pos,scale=.3,collider=b)
+		super().__init__(model='quad',texture=lfic,name='exlf',position=pos,scale=.3,collider=b)
 		s.collider=BoxCollider(s,size=Vec3(1,1,1))
 		s.follow=False
 	def collect(self):
@@ -92,23 +94,16 @@ class GemStone(Entity):
 			LC.C_GEM=s
 			if (c == 5 and st.level_index == 3):
 				ui.TrialTimer(t=90)
-				return
-		s.purge_time=1
 	def gem_visual(self):
 		##color
 		s=self
-		R=180
-		ge_c={0:color.rgb32(R-10,R-10,R),#clear gem
-			1:color.rgb32(R,0,0),#red gem
-			2:color.rgb32(0,R,0),#green gem
-			3:color.rgb32(R,0,R),#purple gem
-			4:color.rgb32(0,0,R),#blue gem
-			5:color.rgb32(R-20,R-20,0)}#yellow gem
-		s.color=ge_c[s.gemID]
+		cu=LC.ge_c[s.gemID]
+		s.color=color.rgb32(cu[0],cu[1],cu[2])
 		##scale - info: blue gem and yellow gem are Y scaled
 		if s.gemID in {4,5}:
 			gSC={4:s.scale_z/2,5:s.scale_z*1.5}
 			s.scale_z=gSC[s.gemID]
+			del gSC
 		##light reflection
 		lgx=0
 		lgy=.32
@@ -120,6 +115,7 @@ class GemStone(Entity):
 			4:(s.x-lgx,s.y+lgy,s.z-lgz),
 			5:(s.x-lgx,s.y+lgy,s.z-lgz)}
 		s.shine=SpotLight(position=s_pos[s.gemID],color=color.gray)
+		del s_pos,lgx,lgy,lgz
 	def gem_fail(self):
 		gi=self.gemID
 		if gi == 4 and (st.level_index == 1 and st.crate_count > 0):#blue gem
@@ -164,7 +160,6 @@ class GemStone(Entity):
 class EnergyCrystal(Entity):
 	def __init__(self,pos):
 		s=self
-		CRY='crystal/crystal'
 		super().__init__(model=i_path+CRY+'.ply',texture=i_path+CRY+'.tga',name='crys',scale=.0013,rotation_x=-90,position=pos,double_sided=True,color=color.magenta)
 		s.glow=Entity(model='quad',texture=i_path+CRY+'_shine.tga',scale=(.5,.8),position=s.position,color=color.magenta,unlit=False)
 		s.collider=b

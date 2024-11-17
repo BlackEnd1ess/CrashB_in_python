@@ -35,7 +35,7 @@ def wmp_anim(w):
 	w.frm=min(w.frm+time.dt*18,13.999)
 	if w.frm > 13.99:
 		w.frm=0
-	w.texture=w_pa+str(int(w.frm))+'.png'
+	w.texture=w_pa+f'{int(w.frm)}.png'
 	del w
 
 def text_blink(M,t):

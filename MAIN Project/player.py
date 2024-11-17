@@ -54,10 +54,11 @@ class CrashB(Entity):
 				sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),
 				sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
 		if sg.debg:
+			#_debug_.MemoryTracker(interval=5,threshold=100000)
 			debg.PlayerDBG()
 			s.dev_act={
 					sg.DEV_WARP:lambda:setattr(s,'position',(0,0,0)),
-					sg.DEV_INFO:lambda:_debug_.pos_info(s),
+					sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
 	def input(self,key):
 		s=self
@@ -108,6 +109,7 @@ class CrashB(Entity):
 				me.destroy()
 			s.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
 			s.walk_event()
+			del mvD
 			return
 		s.walk_snd=0
 		s.walking=False
@@ -143,6 +145,7 @@ class CrashB(Entity):
 		s.jumping=True
 		if t == 4:
 			s.b_smash=False
+		del jmh,grv
 	def jump(self):
 		s=self
 		s.frst_lnd=True
@@ -157,7 +160,7 @@ class CrashB(Entity):
 		if (s.y >= s.vpos+hgt[kt]):
 			s.space_time=0
 			s.jumping=False
-			return
+			del hgt,fgt,kt
 	def check_jump(self):
 		s=self
 		if s.landed and not (s.jumping or s.falling):
@@ -196,6 +199,7 @@ class CrashB(Entity):
 				4:lambda:an.electric(s),
 				5:lambda:an.eat_by_plant(s)}
 			dca[rsn]()
+			del dca
 			return
 		invoke(lambda:cc.reset_state(s),delay=2)
 	def refr_tex(self):

@@ -65,7 +65,7 @@ def reset_state(c):
 		st.fails+=1
 		if st.level_index == 2:
 			st.gem_death=True
-	if st.extra_lives <= 0:
+	if st.extra_lives < 0:
 		st.game_over=True
 		game_over()
 		return
@@ -176,6 +176,7 @@ def cam_level(c):
 	if (c.jumping or c.falling):
 		if cm.rotation_x > 20:
 			cm.rotation_x=lerp(cm.rotation_x,c.y,ftt/5)
+		del c,cm,ftt
 		return
 	if c.landed and not (c.jumping or c.freezed):
 		cm.rotation_x=lerp(cm.rotation_x,25,ftt)
@@ -192,7 +193,6 @@ def spawn_level_crystal(idx):
 	cry_pos={0:(0,0,0),1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7),6:(0,.3,-15)}
 	if not idx in st.CRYSTAL:
 		item.EnergyCrystal(pos=cry_pos[idx])
-	del cry_pos
 def collect_reset():
 	st.C_RESET.clear()
 	st.W_RESET.clear()
@@ -399,7 +399,6 @@ def check_floor(c):
 	c.falling,c.landed=True,False
 	fsp={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}
 	c.y-=fsp[c.b_smash]
-	del fsp
 	c.fall_time+=time.dt
 	c.anim_fall()
 def fall_interact(c,e):
@@ -408,6 +407,7 @@ def fall_interact(c,e):
 			if e.vnum in {7,8}:
 				c.jump_typ(t=4)
 				e.c_action()
+				del c,e
 				return
 			if e.vnum == 3:
 				c.jump_typ(t=3)
@@ -452,7 +452,7 @@ def ptf_up(p,c):
 		p.y=p.start_y
 		go_to={'bnpt':lambda:load_bonus(c),'gmpt':lambda:load_gem_route(c)}
 		go_to[p.name]()
-		del p,c,go_to
+		del go_to
 
 ## interface,collectables
 def wumpa_count(n):
@@ -468,7 +468,6 @@ def wumpa_count(n):
 		if n > 1:
 			ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]))
 		ui.WumpaCollectAnim(pos=(sc_ps[0],sc_ps[1]+.1))
-	del n
 def give_extra_live():
 	sn.ui_audio(ID=3)
 	if st.bonus_round:
@@ -504,7 +503,6 @@ def crate_stack(c):
 		if (wm.y > c.y) and (wm.y-c.y) <= .33*sdi:
 			wm.animate_y(wm.y-.32,duration=.175)
 	sdi=0
-	del crf,c,sdi
 def check_nitro_stack():
 	nit_crt={ct for ct in scene.entities if is_crate(ct) and ct.vnum == 12 and ct.can_jmp}
 	all_crt={ct for ct in scene.entities if is_crate(ct)}

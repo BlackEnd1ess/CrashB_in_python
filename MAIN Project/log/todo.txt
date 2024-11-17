@@ -1,6 +1,8 @@
 ## BUGS/ERORRS
 - gem gloss
 - sky background for l3
-- level 3 reduce bushes
 - enemie fly no reflect
 - crate destroy from vec3 Y -1 / 1
+- crash tex bug after dth event
+- mushroom tree new texture/vertex
+- enemies doesnt respawn

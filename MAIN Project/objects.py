@@ -1,4 +1,4 @@
-import _core,status,item,sound,animation,player,_loc,settings,effect,npc
+import _core,status,item,sound,animation,player,_loc,settings,effect,npc,ui
 from ursina.shaders import *
 from ursina import *
 
@@ -11,7 +11,6 @@ LC=_loc
 
 wfc='wireframe_cube'
 omf='res/objects/'
-m='mesh'
 b='box'
 
 def wtr_dist(w,p):
@@ -22,7 +21,7 @@ def gr_block(p,vx,sca=.5):
 	for gbx in range(vx[0]):
 		for gbz in range(vx[1]):
 			GrassBlock(pos=(p[0]+gbx,p[1],p[2]+gbz),sca=sca)
-	del p,vx,sca
+	del p,vx,sca,gbx
 
 #lv2
 def plank_bridge(pos,typ,cnt,ro_y,DST):
@@ -47,10 +46,6 @@ def spawn_ice_wall(pos,cnt,d):
 		SnowHill(pos=(pos[0],pos[1],pos[2]+icew*16.4),ro_y=ws[d])
 
 #lv3
-def side_hills(p,cnt):
-	for sHil in range(cnt):
-		Entity(model='sphere',texture='grass',position=(p[0],p[1],p[2]+sHil),scale=(1,2+random.uniform(.3,.5),1.5),color=color.rgb32(0,120,0),texture_scale=(8,8))
-
 def multi_tile(p,cnt):#usage [x,y]
 	for _tlx in range(cnt[0]):
 		for _tly in range(cnt[1]):
@@ -139,26 +134,29 @@ class BackgroundWall(Entity):
 			s.color=color.rgb32(0,140,160)
 		del p
 
+wcw=omf+'l1/w_corr/w_cori'
 class Corridor(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=omf+'l1/w_corr/corridor.ply',texture=omf+'l1/w_corr/f_room.tga',name='cori',scale=.1,position=pos,rotation=(-90,90,0))
+		super().__init__(model=wcw+'.ply',texture=wcw+'.tga',name='cori',scale=.1,position=pos,rotation=(-90,90,0))
 		HitBox(sca=(3,3,2.2),pos=(s.x+2.3,s.y,s.z))
 		HitBox(sca=(3,3,2.2),pos=(s.x-2.3,s.y,s.z))
 		HitBox(sca=(3,3,2.2),pos=(s.x,s.y+3,s.z))
 		IndoorZone(pos=(s.x,s.y+1.6,s.z),sca=3)
+		del pos
 
+trs=omf+'l1/tree/tree_w'
 class TreeScene(Entity):
 	def __init__(self,pos,sca):
 		s=self
-		super().__init__(model=omf+'l1/tree/tree_w.ply',name='tssn',texture=omf+'l1/tree/wd_scn.tga',rotation_x=-90,scale=sca,position=pos)
+		super().__init__(model=trs+'.ply',name='tssn',texture=trs+'.tga',rotation_x=-90,scale=sca,position=pos)
 		HitBox(pos=s.position,sca=(1,5,1))
 		del pos,sca
 
+trm=omf+'l1/tree/multi_tree'
 class TreeRow(Entity):
 	def __init__(self,pos,sca):
-		trf=omf+'l1/tree/'
-		super().__init__(model=trf+'multi_tree.ply',texture=trf+'tree_texture.png',name='trrw',position=pos,scale=sca,rotation_x=-90,color=color.rgb32(180,180,180))
+		super().__init__(model=trm+'.ply',texture=trm+'.png',name='trrw',position=pos,scale=sca,rotation_x=-90,color=color.rgb32(180,180,180))
 		del pos,sca
 
 gr=omf+'l1/grass_side/grass_sd'
@@ -416,31 +414,23 @@ class WoodStage(Entity):
 		Entity(model=wfc,position=(s.x,s.y-.46,s.z-1.5),scale=(4.2,1,1.2),name=s.name,collider=b,visible=False)
 		Entity(model=wfc,position=(s.x,s.y-.46,s.z+.2),scale=(1.2,1,2.3),name=s.name,collider=b,visible=False)
 
+tlX=omf+'l3/tile/tile'
 class StoneTile(Entity):
 	def __init__(self,pos):
 		s=self
-		tlX=omf+'l3/tile/'
-		super().__init__(model=wfc,name='tile',position=pos,scale=(.85,.3,.85),collider=b,visible=False)
-		s.vis=Entity(model=tlX+'tile.ply',name=s.name,texture=tlX+'platform_top.png',position=(s.x,s.y,s.z),rotation_x=-90,scale=.35)
+		super().__init__(model=tlX+'.obj',name='tile',texture=tlX+'.jpg',position=pos,scale=.35)
+		s.collider=BoxCollider(s,center=Vec3(0,-.1,0),size=Vec3(2.4,1,2.4))
 
+lbP=omf+'l3/mtree_scn/'
 class MushroomTree(Entity):
 	def __init__(self,pos,typ):
 		s=self
-		lbP=omf+'l3/mtree_scn/'
 		if typ == 1:
-			super().__init__(model=lbP+'wtr_BTree1.ply',name='mtbt',texture=lbP+'tm_scn.tga',position=pos,scale=.03,color=color.rgb32(180,180,180),rotation=(-90,90,0))
+			super().__init__(model=lbP+'BTree0.ply',name='mtbt',texture=lbP+'tm_scn.tga',position=pos,scale=.03,color=color.rgb32(180,180,180),rotation=(-90,90,0))
 			Entity(model=wfc,name=s.name,scale=(1.3,.5,.5),position=(s.x-.1,s.y+2.15,s.z-1.1),collider=b,visible=False)
 			Entity(model=wfc,name=s.name,position=(s.x,s.y+3,s.z-.6),scale=(1,7,.5),collider=b,visible=False)
-			Bush(pos=(s.x+.2,s.y+3.6,s.z-1.3),sca=1,ro_y=-35)
-			Bush(pos=(s.x-.6,s.y+3.6,s.z-1.4),sca=1,ro_y=35)
-			Bush(pos=(s.x-.1,s.y+3.8,s.z-1.45),sca=1)
-			Bush(pos=(s.x+.1,s.y+1.7,s.z-1.75),sca=1.3,ro_y=.1)
-			Bush(pos=(s.x-.4,s.y+1.5,s.z-1.6),sca=1.3,ro_y=.1)
-			Bush(pos=(s.x-.7,s.y,s.z-1),sca=1.5,ro_y=0)
-			Bush(pos=(s.x+.7,s.y,s.z-1.1),sca=1.5,ro_y=0)
-			Bush(pos=(s.x,s.y+.3,s.z-1.05),sca=1.5,ro_y=0)
 			return
-		super().__init__(model=lbP+'wtr_BTree2.ply',name='mtbt',texture=lbP+'tm_scn.tga',position=pos,scale=.06,rotation=(-90,90,0))
+		super().__init__(model=lbP+'BTree1.ply',name='mtbt',texture=lbP+'tm_scn.tga',position=pos,scale=.06,rotation=(-90,90,0))
 		s.gnd=Entity(model='cube',name=s.name,scale=(.65,.5,.6),position=(s.x,s.y-.1,s.z),collider=b,visible=False)
 		s.gnd=Entity(model='cube',name=s.name,position=(s.x,s.y+1.5,s.z+.5),scale=(1,3,.5),collider=b,visible=False)
 
@@ -876,7 +866,7 @@ class CrateScore(Entity):## level reward
 		s=self
 		ev='res/crate/'
 		super().__init__(model=ev+'cr_t0.ply',name='ctsc',texture=ev+'1.tga',alpha=.4,scale=.18,position=pos,origin_y=.5)
-		s.cc_text=Text(parent=scene,position=(s.x-.2,s.y,s.z),text=None,font='res/ui/font.ttf',color=color.rgb32(255,255,100),scale=10)
+		s.cc_text=Text(parent=scene,position=(s.x-.2,s.y,s.z),name=s.name,text=None,font=ui._fnt,color=color.rgb32(255,255,100),scale=10)
 		if settings.debg:
 			print(f'crates total: {st.crates_in_level}')
 	def update(self):
@@ -895,10 +885,11 @@ class CrateScore(Entity):## level reward
 			cc.purge_instance(s.cc_text)
 			cc.purge_instance(s)
 
+rmp=omf+'ev/s_room/room'
 class StartRoom(Entity):## game spawn point
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=omf+'ev/s_room/room1.ply',texture=omf+'ev/s_room/room.tga',name='strm',position=pos,scale=(.07,.07,.08),rotation=(270,90),color=color.white)
+		super().__init__(model=rmp+'.ply',texture=rmp+'.tga',name='strm',position=pos,scale=(.07,.07,.08),rotation=(270,90),color=color.white)
 		HitBox(pos=(s.x,s.y+.6,s.z-.2),sca=(1.7,.5,1.7))#floor 0
 		HitBox(pos=(s.x,s.y+.2,s.z+1.7),sca=(2,.5,2))#floor 1
 		HitBox(pos=(s.x-1,s.y+1.5,s.z),sca=(.4,13,6))#wall left
@@ -914,11 +905,12 @@ class StartRoom(Entity):## game spawn point
 		st.checkpoint=(s.x,s.y+2,s.z)
 		camera.position=(s.x,s.y+2,s.z-3)
 		IndoorZone(pos=(s.x,s.y+1.5,s.z),sca=(3,2,7))
+		del pos
 
+eR=omf+'ev/e_room/e_room'
 class EndRoom(Entity):## finish level
 	def __init__(self,pos,c):
 		s=self
-		eR=omf+'ev/e_room/e_room'
 		super().__init__(model=eR+'.ply',texture=eR+'.tga',scale=.025,name='enrm',rotation=(-90,90,0),position=pos,color=c,unlit=False)
 		Entity(model='plane',name=s.name,color=color.black,scale=(4,1,16),position=(s.x-1,s.y-1.8,s.z+3))#curtain
 		HitBox(sca=(4,1,16),pos=(s.x-1,s.y-2,s.z+3))#floor
@@ -941,6 +933,7 @@ class EndRoom(Entity):## finish level
 			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=4)
 		if st.level_index == 2 and not 1 in st.COLOR_GEM:
 			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=1)
+		del pos,c
 
 class RoomDoor(Entity):## door for start and end room
 	def __init__(self,pos):
@@ -1105,18 +1098,22 @@ class LightArea(SpotLight):
 
 class InvWall(Entity):
 	def __init__(self,pos,sca):
-		super().__init__(model='cube',position=pos,scale=sca,visible=False,collider=b,color=color.red)
+		super().__init__(model=wfc,position=pos,scale=sca,visible=False,collider=b,color=color.blue)
 
+wtfc=omf+'ev/water/wtr_srfc/water_'
 class Water(Entity):
 	def __init__(self,pos,sca,c,a):
 		s=self
-		self.wtfc=omf+'ev/water/wtr_srfc/water_'
-		super().__init__(model='plane',texture=s.wtfc+'0.tga',position=pos,scale=(sca[0],.1,sca[1]),color=c,alpha=a)
+		super().__init__(model='plane',texture=wtfc+'0.tga',position=pos,scale=(sca[0],.1,sca[1]),color=c,alpha=a)
 		WaterHit(p=(pos[0],pos[1]-.1,pos[2]),sc=sca)
 		s.texture_scale=(sca[0]/3,sca[1]/3)
+		s.org_height=s.y
 		s.frm=0
+		del pos,sca,c,a
 	def update(self):
 		if st.gproc():
+			return
+		if (self.y < -15 and not st.bonus_round) or (self.x > 175 and not st.death_route):
 			return
 		if st.level_index != 2:
 			s=self
@@ -1124,4 +1121,4 @@ class Water(Entity):
 				s.frm=min(s.frm+time.dt*15,57.999)
 				if s.frm > 57.99:
 					s.frm=0
-				s.texture=s.wtfc+str(int(s.frm))+'.tga'
+				s.texture=wtfc+f'{int(s.frm)}.tga'

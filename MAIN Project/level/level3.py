@@ -42,7 +42,7 @@ def load_object():
 	o.WoodStage(pos=(0,2,60))
 	#platforms
 	o.MossPlatform(p=(0,-.3,-24.8),ptm=2)
-	o.MossPlatform(p=(0,-.3,-23.25),ptm=1)
+	o.MossPlatform(p=(0,.1,-23.25),ptm=1)
 	o.MossPlatform(p=(0,-.1,-1.3),ptm=0)
 	o.MossPlatform(p=(0,.5,0),ptm=0)
 	o.MossPlatform(p=(0,-.3,-7),ptm=0)
@@ -50,7 +50,7 @@ def load_object():
 	o.MossPlatform(p=(-.85,.5,52.5),ptm=3)
 	o.MossPlatform(p=(.85,.5,52.5),ptm=0)
 	o.MossPlatform(p=(0,1,56.5),ptm=0)
-	o.MossPlatform(p=(0,1.5,77.3),ptm=3)
+	o.MossPlatform(p=(0,1.55,77.3),ptm=3)
 	#blocks
 	tH=-.2
 	#e0
@@ -59,28 +59,30 @@ def load_object():
 	o.multi_tile(p=(-1,tH,-15),cnt=[3,3])
 	o.multi_tile(p=(0,tH,-5),cnt=[1,4])
 	#e1
-	o.multi_tile(p=(.85,tH+1.1,0),cnt=[1,6])
-	o.multi_tile(p=(-.85,tH+1.1,2),cnt=[1,1])
-	o.multi_tile(p=(-.85,tH+1.1,.85*5),cnt=[2,1])
-	o.multi_tile(p=(-.85,tH+1.1,.85*5),cnt=[1,8])
-	o.multi_tile(p=(0,tH+1.1,.85*8),cnt=[2,1])
-	o.multi_tile(p=(0,tH+1.1,13),cnt=[1,3])
-	o.StoneTile(pos=(0,tH+1.1,17))
-	o.StoneTile(pos=(0,tH+1.1,19))
-	o.multi_tile(p=(-.85,tH+1.1,23),cnt=[2,1])
-	o.multi_tile(p=(0,tH+1.1,26),cnt=[2,1])
-	o.multi_tile(p=(-.85,tH+1.1,29),cnt=[2,1])
-	o.multi_tile(p=(0,tH+1.1,32),cnt=[1,2])
-	o.multi_tile(p=(-.85,tH+1.1,40.5),cnt=[3,3])
-	o.multi_tile(p=(.85,tH+1.1,40.5+.85*3),cnt=[1,4])
-	o.multi_tile(p=(-.85,tH+1.1,40.5+.85*7),cnt=[3,1])
-	o.multi_tile(p=(-.85,tH+1.1,40.5+.85*8),cnt=[1,4])
+	nh=1.09
+	o.multi_tile(p=(.85,tH+nh,0),cnt=[1,6])
+	o.multi_tile(p=(-.85,tH+nh,2),cnt=[1,1])
+	o.multi_tile(p=(-.85,tH+nh,.85*5),cnt=[2,1])
+	o.multi_tile(p=(-.85,tH+nh,.85*5),cnt=[1,8])
+	o.multi_tile(p=(0,tH+nh,.85*8),cnt=[2,1])
+	o.multi_tile(p=(0,tH+nh,13),cnt=[1,3])
+	o.StoneTile(pos=(0,tH+nh,17))
+	o.StoneTile(pos=(0,tH+nh,19))
+	o.multi_tile(p=(-.85,tH+nh,23),cnt=[2,1])
+	o.multi_tile(p=(0,tH+nh,26),cnt=[2,1])
+	o.multi_tile(p=(-.85,tH+nh,29),cnt=[2,1])
+	o.multi_tile(p=(0,tH+nh,32),cnt=[1,2])
+	o.multi_tile(p=(-.85,tH+nh,40.5),cnt=[3,3])
+	o.multi_tile(p=(.85,tH+nh,40.5+.85*3),cnt=[1,4])
+	o.multi_tile(p=(-.85,tH+nh,40.5+.85*7),cnt=[3,1])
+	o.multi_tile(p=(-.85,tH+nh,40.5+.85*8),cnt=[1,4])
 	#e3
-	o.multi_tile(p=(0,1.7,57.4),cnt=[1,1])
-	o.multi_tile(p=(0,1.8,66.5),cnt=[1,3])
-	o.multi_tile(p=(0,1.8,66.5+.85*7),cnt=[1,4])
-	o.multi_tile(p=(0,1.8,80),cnt=[1,5])
-	o.multi_tile(p=(.85,1.8,80+.85),cnt=[1,1])
+	lb=1.79
+	o.multi_tile(p=(0,1.72,57.4),cnt=[1,1])
+	o.multi_tile(p=(0,lb,66.5),cnt=[1,3])
+	o.multi_tile(p=(0,lb,66.5+.85*7),cnt=[1,4])
+	o.multi_tile(p=(0,lb,80),cnt=[1,5])
+	o.multi_tile(p=(.85,lb,80+.85),cnt=[1,1])
 	#waterflow
 	o.WaterFlow(pos=(0,-.3,-16),sca=(5,32))
 	o.WaterFlow(pos=(0,.7,30),sca=(5,62))
@@ -97,15 +99,6 @@ def load_object():
 	o.SceneWall(pos=(3,1.7,45),typ=2)
 	o.SceneWall(pos=(-3.1,2.4,74),typ=1)
 	o.SceneWall(pos=(3,2.4,74),typ=2)
-	#bush
-	for wbu in range(16):
-		o.Bush(pos=(-3.2,2.7,-30+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=-35)
-		o.Bush(pos=(3.2,3,-31+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=35)
-		o.Bush(pos=(-3.2,3.5,1+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=-35)
-		o.Bush(pos=(3.2,3.5,1+wbu*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=35)
-	for wba in range(34):
-		o.Bush(pos=(-3.2,4.2,31+wba*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=-35)
-		o.Bush(pos=(3.2,3.6,31+wba*2),sca=(2,2+r.uniform(.5,2.5),2),ro_y=35)
 	o.EndRoom(pos=(1,3.7,88),c=color.rgb32(200,210,200))
 	Entity(model='quad',color=color.black,scale=(100,20),position=(0,-10,95))
 def load_crate():

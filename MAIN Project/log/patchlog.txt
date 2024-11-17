@@ -140,3 +140,6 @@
 #14.11.2024
 - new assets in level 2
 - reduced collider/objects (ice chunks, wumpafruits,crates) in level 2
+
+#17.11.2024
+- level 3 reduced bushes and removed optional optic entity from StoneTile

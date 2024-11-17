@@ -56,6 +56,7 @@ def npc_action(m):
 	if not st.gproc():
 		if m.is_hitten:
 			cc.fly_away(m)
+			del m
 			return
 		if m.is_purge:
 			effect.JumpDust(m.position)
@@ -421,6 +422,7 @@ class AkuAkuMask(Entity):
 		s.flt_di=0
 		s.spt=.5
 		s.spkw=0
+		del pos
 	def default_skin(self):
 		self.model=aku_skin0+'.ply'
 		self.texture=aku_skin0+'.tga'
@@ -458,18 +460,22 @@ class AkuAkuMask(Entity):
 			else:
 				s.position=lerp(s.position,(ta.x-.25,ta.y+.6,ta.z-.4),aSP)
 				s.last_y=s.y
+			del aSP,ta
 			return
 		s.scale=.0012
 		fwd=Vec3(-sin(radians(ta.rotation_y)),0,-cos(radians(ta.rotation_y)))
 		mask_pos=ta.position+fwd*.25
 		s.position=(mask_pos.x,ta.y+.5,mask_pos.z)
+		del fwd,aSP,ta,mask_pos
 	def check_dist_player(self):
 		s=self
 		ta=LC.ACTOR
 		if not (ta or st.gproc()):
+			del ta
 			return
 		if distance(s.position,ta.position) > 2:
 			s.position=ta.position
+			del ta
 	def floating(self):
 		s=self
 		tt=time.dt/10
@@ -479,6 +485,7 @@ class AkuAkuMask(Entity):
 			s.flt_di=1
 		if (s.flt_di == 1 and s.y <= s.last_y-.2):
 			s.flt_di=0
+		del tt,ddi
 	def update(self):
 		if not st.gproc():
 			s=self
