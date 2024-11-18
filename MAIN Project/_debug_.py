@@ -55,7 +55,7 @@ class PlayerDBG(Entity):
 		rv=LC.ACTOR
 		mem_usage=s.process.memory_info().rss/(1024*1024)
 		s.ent_state.text=f'instances   : {len(scene.entities)}'
-		s.mem_state.text=f'STATUS MEM  : {mem_usage:.0f} MB'
+		s.mem_state.text=f'MEMORY USAGE: {mem_usage:.0f} MB'
 		s.ppo_state.text=f'x{rv.x:.1f}  y{rv.y:.1f}  z{rv.z:.1f}'
 		s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'
 		s.ind_state.text=f'INDOOR ZONE : {(rv.indoor > 0)}'

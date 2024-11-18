@@ -85,6 +85,7 @@ def reset_state(c):
 	camera.position=c.position
 	camera.rotation=(15,0,0)
 	st.death_event=False
+	c.texture='res/pc/crash.tga'
 	c.visible=True
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def various_val(c):
@@ -384,23 +385,25 @@ def check_floor(c):
 	vp=vj.entity
 	if not c.landed:
 		fall_interact(c,vp)
-	if vj.normal:
+	if vj and vj.normal:
 		c.falling,c.landed=False,True
 		if not c.jumping:
 			c.y=vj.world_point.y
-		if c.frst_lnd:
-			c.frst_lnd=False
-			c.space_time,c.fall_time=0,0
-			c.anim_land()
-			sn.landing_sound(c,vp)
 		if not (is_crate(vp) or is_enemie(vp)):
 			spc_floor(c,vp)
+		land_act(c,vp)
 		return
 	c.falling,c.landed=True,False
 	fsp={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}
 	c.y-=fsp[c.b_smash]
 	c.fall_time+=time.dt
 	c.anim_fall()
+def land_act(c,vp):
+	if c.frst_lnd:
+		c.frst_lnd=False
+		c.space_time,c.fall_time=0,0
+		c.anim_land()
+		sn.landing_sound(c,vp)
 def fall_interact(c,e):
 	if (is_crate(e) and c.fall_time > .05):
 		if not ((e.vnum == 0) or (e.vnum in {9,10,11} and e.activ)):
@@ -618,12 +621,10 @@ def rotate_to_crash(m):
 	m.rotation_y=atan2(rtp.x,rtp.z)*(180/pi)+180
 	m.rotation_x=-90
 def fly_away(n):
-	if not n.collider:
-		return
 	n.position+=n.fly_direc*(time.dt*40)
-	n.fly_time=min(n.fly_time+time.dt,.51)
+	n.fly_time=min(n.fly_time+time.dt,.61)
 	ke=n.intersects().entity
-	if n.fly_time > .5:
+	if n.fly_time > .6:
 		cache_instance(n)
 		return
 	if (is_crate(ke) and ke.vnum != 6):
@@ -633,6 +634,7 @@ def fly_away(n):
 			ke.destroy()
 	if is_enemie(ke):
 		n.collider=None
+		n.enabled=False
 		if not ke.is_hitten:
 			bash_enemie(e=ke,h=n)
 			cache_instance(n)

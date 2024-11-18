@@ -423,16 +423,11 @@ class StoneTile(Entity):
 
 lbP=omf+'l3/mtree_scn/'
 class MushroomTree(Entity):
-	def __init__(self,pos,typ):
+	def __init__(self,pos):
 		s=self
-		if typ == 1:
-			super().__init__(model=lbP+'BTree0.ply',name='mtbt',texture=lbP+'tm_scn.tga',position=pos,scale=.03,color=color.rgb32(180,180,180),rotation=(-90,90,0))
-			Entity(model=wfc,name=s.name,scale=(1.3,.5,.5),position=(s.x-.1,s.y+2.15,s.z-1.1),collider=b,visible=False)
-			Entity(model=wfc,name=s.name,position=(s.x,s.y+3,s.z-.6),scale=(1,7,.5),collider=b,visible=False)
-			return
-		super().__init__(model=lbP+'BTree1.ply',name='mtbt',texture=lbP+'tm_scn.tga',position=pos,scale=.06,rotation=(-90,90,0))
-		s.gnd=Entity(model='cube',name=s.name,scale=(.65,.5,.6),position=(s.x,s.y-.1,s.z),collider=b,visible=False)
-		s.gnd=Entity(model='cube',name=s.name,position=(s.x,s.y+1.5,s.z+.5),scale=(1,3,.5),collider=b,visible=False)
+		super().__init__(model=lbP+'BNTree.ply',name='mtbt',texture=lbP+'tm_scn.tga',position=pos,scale=.03,color=color.rgb32(180,180,180),rotation=(-90,90,0))
+		Entity(model=wfc,name=s.name,scale=(1.3,.5,.5),position=(s.x-.1,s.y+2.15,s.z-1.1),collider=b,visible=False)
+		Entity(model=wfc,name=s.name,position=(s.x,s.y+3,s.z-.6),scale=(1,7,.5),collider=b,visible=False)
 
 class Foam(Entity):
 	def __init__(self,pos,t):
@@ -477,47 +472,51 @@ class BonusScene(Entity):
 
 ####################
 ## level 4 objects #
+_sPA=omf+'l4/scn/'
 class SewerTunnel(Entity):
 	def __init__(self,pos,c=color.white):
 		s=self
-		_sPA=omf+'l4/scn/'
 		super().__init__(model=_sPA+'tunnel.ply',texture=_sPA+'sewer2.tga',name='swtu',position=pos,color=c,scale=(.032,.034,.03),rotation=(-90,90,0))
-		Entity(model=wfc,position=(s.x-3,s.y+2,s.z-3),name=s.name,scale=(1,6,10),collider=b,visible=False)
-		Entity(model=wfc,position=(s.x+3,s.y+2,s.z-3),name=s.name,scale=(1,6,10),collider=b,visible=False)
 
+_SE=omf+'l4/scn/'
 class SewerEscape(Entity):
 	def __init__(self,pos,typ=None,c=color.white):
 		s=self
-		_SE=omf+'l4/scn/'
 		super().__init__(model=_SE+'pipe_1.ply',texture=_SE+'sewers.tga',name='swec',position=pos,scale=.048,color=c,rotation=(-90,90,0))
-		Entity(model=wfc,scale=(.3,8,11),name=s.name,position=(s.x-1.5,s.y+3,s.z+2),collider=b,visible=False)
-		Entity(model=wfc,scale=(.3,8,11),name=s.name,position=(s.x+1.8,s.y+3,s.z+2),collider=b,visible=False)
 		if typ == 1:
+			SewerGlowIron(pos=(s.x,s.y+.2,s.z+2.5),sca=(10,.01,10))
 			s.color=color.rgb32(255,50,0)
 			s.unlit=False
 
+class SewerGlowIron(Entity):
+	def __init__(self,pos,sca):
+		super().__init__(model='cube',texture=_SE+'swr_iron.png',position=pos,scale=sca,color=color.rgb32(255,50,0),texture_scale=(sca[0],sca[2]),unlit=False,collider=b)
+	def update(self):
+		s=self
+		if st.gproc():
+			return
+		if s.intersects(LC.ACTOR):
+			cc.get_damage(LC.ACTOR,rsn=3)
+
+pPF=omf+'l4/scn/'
 class SewerPlatform(Entity):
 	def __init__(self,pos):
 		s=self
-		pPF=omf+'l4/scn/'
-		super().__init__(model=wfc,name='swpl',scale=(.5,.2,.5),collider=b,position=pos,visible=False)
-		s.vis=Entity(model=pPF+'ptf.ply',texture=pPF+'swr_ptf.tga',name=s.name,position=(s.x,s.y+.05,s.z),scale=.02,rotation_x=-90)
+		super().__init__(model=pPF+'ptf.obj',texture=pPF+'swr_ptf.tga',name='swpl',position=pos,scale=.02,double_sided=True)
+		s.collider=BoxCollider(s,size=Vec3(25,4,25))
 		s.matr='metal'
 
+mo=omf+'l4/scn/sewer_wall_bg'
 class SewerWall(Entity):
 	def __init__(self,pos):
-		s=self
-		mo=omf+'l4/scn/sewer_wall_b'
-		super().__init__(model=mo+'.ply',texture=mo+'.tga',name='ssww',position=pos,scale=.0175,rotation=(-90,90,0))
-		s.bgw=Entity(model='cube',name=s.name,color=color.black,scale=(5,8,.1),position=(s.x,s.y,s.z+1))
-		s.color=color.rgb(.6,.5,.4)
+		super().__init__(model=mo+'.ply',texture=mo+'.tga',name='ssww',position=pos,scale=.0175,color=color.rgb(.6,.5,.4),rotation=(-90,90,0))
 
-class SwimPlatform(Entity):
+swmi=omf+'l4/swr_swim/swr_swim'
+class SwimPlatform(Entity):##box collider
 	def __init__(self,pos):
 		s=self
-		swmi=omf+'l4/swr_swim/swr_swim'
-		super().__init__(model=wfc,name='swpt',color=color.white,collider=b,position=pos,scale=(.5,.3,.5),visible=False)
-		s.opt=Entity(model=swmi+'.ply',texture=swmi+'.tga',name=s.name,scale=.1/200,rotation_x=-90,position=(s.x,s.y+.06,s.z))
+		super().__init__(model=swmi+'.obj',texture=swmi+'.tga',name='swpt',scale=.00625,position=pos,double_sided=True)
+		s.collider=BoxCollider(s,size=Vec3(100,30,100))
 		s.active=False
 		s.matr='metal'
 		s.spawn_y=s.y
@@ -525,7 +524,6 @@ class SwimPlatform(Entity):
 	def sink(self):
 		s=self
 		s.y-=time.dt
-		s.opt.y-=time.dt
 		if s.y <= s.spawn_y-.3:
 			sn.pc_audio(ID=10)
 			s.collider=None
@@ -533,7 +531,6 @@ class SwimPlatform(Entity):
 			s.f_time=0
 			invoke(lambda:setattr(s,'y',s.spawn_y),delay=5)
 			invoke(lambda:setattr(s,'collider',b),delay=5)
-			invoke(lambda:setattr(s.opt,'y',s.spawn_y),delay=5)
 	def update(self):
 		if not st.gproc():
 			s=self
@@ -542,33 +539,30 @@ class SwimPlatform(Entity):
 				if s.f_time >= .5:
 					s.sink()
 
+swn=omf+'l4/swr_entrance/swr_entrance'
 class SewerEntrance(Entity):
 	def __init__(self,pos):
-		swn=omf+'l4/swr_entrance/swr_entrance'
 		super().__init__(model=swn+'.ply',texture=swn+'.jpg',name='swri',position=pos,rotation_y=90,scale=2)
 
+swrp=omf+'l4/pipe/swpipe_'
 class SewerPipe(Entity):## danger
 	def __init__(self,pos,typ):
 		s=self
-		swrp=omf+'l4/pipe/pipe_'
 		swu=str(typ)
 		ro_y={0:-90,1:-90,2:90,3:90}
 		super().__init__(model=swrp+swu+'.ply',texture=swrp+swu+'.png',name='swpi',position=pos,scale=.75,rotation=(-90,ro_y[typ],0))
 		s.danger=(typ == 3)
 		s.typ=typ
-		if typ == 0:
-			Entity(model=Circle(16,thickness=1,radius=.6),name=s.name,color=color.black,position=(s.x,s.y,s.z+.2))
-			has_drips=random.randint(0,1)
-			if has_drips == 1:
-				DrippingWater(pos=(s.x,s.y-.75,s.z-.25),sca=(.9,.4))
 		if typ == 2:
-			Entity(model=Circle(16,thickness=1,radius=.5),color=color.black,name=s.name,position=(s.x,s.y+.8,s.z-.7),rotation_x=-30)
-			DrippingWater(pos=(s.x,s.y-.2,s.z-.5),sca=(.9,.4))
-		if typ == 3:
+			has_drips=random.randint(0,3)
+			if has_drips == 3:
+				DrippingWater(pos=(s.x,s.y-.2,s.z-.5),sca=(.9,.4))
+		elif typ == 3:
 			s.collider=BoxCollider(s,size=Vec3(.5,.5,5))
 			s.rotation_x=0
 			s.color=color.red
 			s.unlit=False
+		del ro_y,swu
 	def update(self):
 		s=self
 		if not st.gproc() and s.typ == 3:
@@ -639,12 +633,13 @@ class EletricWater(Entity):
 					s.tme=8
 				s.wtr_danger()
 
+dpw=omf+'l4/drips/'
 class DrippingWater(Entity):
 	def __init__(self,pos,sca):
 		s=self
-		s.dpw=omf+'l4/drips/'
-		super().__init__(model='quad',texture=s.dpw+'0.png',name='drpw',position=pos,scale=sca,rotation_z=90)
+		super().__init__(model='quad',texture=dpw+'0.png',name='drpw',position=pos,scale=sca,rotation_z=90)
 		s.frm=0
+		del pos,sca
 	def update(self):
 		s=self
 		if st.gproc() or (distance(s,LC.ACTOR) > 8):
@@ -652,7 +647,7 @@ class DrippingWater(Entity):
 		s.frm=min(s.frm+(time.dt*10),7.999)
 		if s.frm > 7.99:
 			s.frm=0
-		s.texture=s.dpw+f'{int(s.frm)}.png'
+		s.texture=dpw+f'{int(s.frm)}.png'
 
 
 ####################
@@ -775,13 +770,15 @@ class LoosePlatform(Entity):
 		if s.f_time >= .5:
 			s.fall()
 
+rrn=omf+'l5/ruins_bgo/'
 class RuinRuins(Entity):
 	def __init__(self,pos,typ,ro_y):
-		rrn=omf+'l5/ruins_bgo/'
 		if typ == 3:
 			super().__init__(model=rrn+'ruin_bg'+str(typ)+'.ply',name='rrrr',texture=rrn+'ruin_scene.tga',position=pos,scale=.08,rotation=(-90,ro_y,0),unlit=False)
+			del pos,typ,ro_y
 			return
 		super().__init__(model=rrn+'ruin_bg'+str(typ)+'.ply',name='rrrr',texture=rrn+'ruin.tga',position=pos,scale=.03,rotation=(-90,ro_y,0),unlit=False)
+		del pos,typ,ro_y
 
 class LogDanger(Entity):
 	def __init__(self,pos,ro_y):
@@ -1100,7 +1097,7 @@ class InvWall(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model=wfc,position=pos,scale=sca,visible=False,collider=b,color=color.blue)
 
-wtfc=omf+'ev/water/wtr_srfc/water_'
+wtfc=omf+'ev/water/water_'
 class Water(Entity):
 	def __init__(self,pos,sca,c,a):
 		s=self

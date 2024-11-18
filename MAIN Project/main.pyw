@@ -1,7 +1,7 @@
 from ursina import Ursina
 import settings,ui
 
-app=Ursina(title='Cresh B',icon='res/cb.ico')
+app=Ursina(title='Cresh B - Back to good old Times! <3 ',icon='res/cb.ico')
 def game():
 	settings.load()
 	if settings.debg:

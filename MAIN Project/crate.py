@@ -326,11 +326,10 @@ class SwitchNitro(Entity):
 			s.texture=pp+'0.tga'
 			spawn_ico(s)
 			st.C_RESET.append(s)
-			ni=[nt for nt in scene.entities if (isinstance(nt,Nitro))]
+			ni={nt for nt in scene.entities if (isinstance(nt,Nitro))}
 			for nd in ni:
 				if nd.collider:
 					nd.destroy()
-			del nd,ni
 
 class TNT(Entity):
 	def __init__(self,pos,pse):

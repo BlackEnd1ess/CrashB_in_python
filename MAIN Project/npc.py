@@ -56,7 +56,6 @@ def npc_action(m):
 	if not st.gproc():
 		if m.is_hitten:
 			cc.fly_away(m)
-			del m
 			return
 		if m.is_purge:
 			effect.JumpDust(m.position)
@@ -68,6 +67,7 @@ def npc_action(m):
 				1:lambda:cc.circle_move_xz(m),
 				2:lambda:cc.circle_move_y(m)}
 			rma[m.ro_mode]()
+			del rma
 			return
 		npc_walk(m)
 
