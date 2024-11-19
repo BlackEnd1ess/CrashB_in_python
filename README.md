@@ -1,6 +1,6 @@
 Information: This Project is a Crash Bandicoot inspired Game written in Python3 (Ursina 7.0.0)
 # temporary no Assets and Ressources aviable, need to renamed and encrypted! please keep patience :/ #
-# in meanwhile i will check, how i can make it more easier for you, to get the most of them #
+# HOW TO USE CRASH EDIT / CB-EXPORT: https://www.youtube.com/watch?v=ct_G9GAoAZU #
 
 # Functional Status: Reduces a lot of RAM Usage, but runs on faster PC's and Laptops with 200-400MB, more optimizions in work.
 
@@ -37,4 +37,4 @@ i will update weekly the Template Folder, which contains a lot of time saving Me
 in the script folder you can find a Tool, that makes automatic export.
 
 The Main Project Folder contains my own Version of this Game, which im showing on Youtube. This is only used to compare a functional version of the game.
-You can modify this Code to make your own System. In Comming Future i will upload Videos with necessary Tutorials.
+You can modify this Code to make your own System.
