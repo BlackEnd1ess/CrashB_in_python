@@ -2,7 +2,7 @@ Information: This Project is a Crash Bandicoot inspired Game written in Python3 
 # temporary no Assets and Ressources aviable, need to renamed and encrypted! please keep patience :/ #
 # HOW TO USE CRASH EDIT / CB-EXPORT: https://www.youtube.com/watch?v=ct_G9GAoAZU #
 
-# Functional Status: Reduces a lot of RAM Usage, but runs on faster PC's and Laptops with 200-400MB, more optimizions in work.
+# Functional Status: Level 1-4 will work with 200-300MB RAM in Single Run, its recommented to restart the Game after 3 Levels to clear MEM. New Assets and Optimation for Level 5 in work
 
 required Modules:
 - ursina
