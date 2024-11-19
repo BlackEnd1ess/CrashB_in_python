@@ -57,7 +57,7 @@ class CrashB(Entity):
 			#_debug_.MemoryTracker(interval=5,threshold=100000)
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(0,0,0)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(0,4,58.5)),
 					sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
 	def input(self,key):

@@ -143,3 +143,14 @@
 
 #17.11.2024
 - level 3 reduced bushes and removed optional optic entity from StoneTile
+
+#18.11.2024
+- level 4 reduced collider, planes and entities (no opt model)
+
+#19.11.2024
+- reduced stone tiles in level 3 (where 3x3 and replaced by one model)
+- level 3 invisible walls on level side
+- resized side walls in level 3 smaller
+- new asset in level 4 (Sewer Platform Big)
+- reduced sewer platforms by over 70 and replaced by Big Platform
+- level 4 invisible Walls on level side

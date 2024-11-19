@@ -50,11 +50,20 @@ class PlayerDBG(Entity):
 		s.process=psutil.Process(os.getpid())
 		s.cpu_usage=s.process.cpu_percent()
 		Sequence(s.refr,Wait(.1),loop=True)()
+	def count_entities(self,d):
+		if d == 0:
+			return len(scene.entities)
+		else:
+			c=0
+			q={g for g in scene.entities if (g.enabled)}
+			for k in q:
+				c+=1
+			return c
 	def refr(self):
 		s=self
 		rv=LC.ACTOR
 		mem_usage=s.process.memory_info().rss/(1024*1024)
-		s.ent_state.text=f'instances   : {len(scene.entities)}'
+		s.ent_state.text=f'instances   : {s.count_entities(d=0)}'
 		s.mem_state.text=f'MEMORY USAGE: {mem_usage:.0f} MB'
 		s.ppo_state.text=f'x{rv.x:.1f}  y{rv.y:.1f}  z{rv.z:.1f}'
 		s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'

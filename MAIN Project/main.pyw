@@ -1,5 +1,7 @@
 from ursina import Ursina
-import settings,ui
+import settings,ui,sys
+
+sys.dont_write_bytecode=True
 
 app=Ursina(title='Cresh B - Back to good old Times! <3 ',icon='res/cb.ico')
 def game():

@@ -394,9 +394,10 @@ class SceneWall(Entity):
 	def __init__(self,pos,typ):
 		s=self
 		sWCN=omf+'l3/scn_w/'
-		super().__init__(model=sWCN+'side'+str(typ)+'.ply',texture=sWCN+'water2_scn.tga',name='scwa',position=pos,scale=.04,rotation_x=-90)
+		super().__init__(model=sWCN+'side'+str(typ)+'.ply',texture=sWCN+'water2_scn.tga',name='scwa',position=pos,scale=(.0225,.0225,.025),rotation_x=-90)
 		roTY={1:91,2:90}
 		s.rotation_y=roTY[typ]
+		del pos,roTY,typ
 
 trw=omf+'l3/temple_wall/tm_wall'
 class TempleWall(Entity):
@@ -420,6 +421,12 @@ class StoneTile(Entity):
 		s=self
 		super().__init__(model=tlX+'.obj',name='tile',texture=tlX+'.jpg',position=pos,scale=.35)
 		s.collider=BoxCollider(s,center=Vec3(0,-.1,0),size=Vec3(2.4,1,2.4))
+
+class StoneTileBig(Entity):
+	def __init__(self,pos):
+		s=self
+		super().__init__(model=tlX+'_big.obj',texture=tlX+'.jpg',position=pos,scale=.35)
+		s.collider=BoxCollider(s,center=Vec3(0,-.1,0),size=(7.3,1,7.3))
 
 lbP=omf+'l3/mtree_scn/'
 class MushroomTree(Entity):
@@ -538,6 +545,15 @@ class SwimPlatform(Entity):##box collider
 				s.f_time+=time.dt
 				if s.f_time >= .5:
 					s.sink()
+
+swfl=omf+'l4/floor/swr_floor'
+class SewerFloor(Entity):
+	def __init__(self,pos):
+		s=self
+		super().__init__(model=swfl+'.obj',texture=swfl+'.png',name='swff',position=pos,scale=.5)
+		s.collider=BoxCollider(s,center=Vec3(0,-.5,0),size=(5,1.2,9.5))
+		s.matr='metal'
+		del pos
 
 swn=omf+'l4/swr_entrance/swr_entrance'
 class SewerEntrance(Entity):
@@ -1095,7 +1111,8 @@ class LightArea(SpotLight):
 
 class InvWall(Entity):
 	def __init__(self,pos,sca):
-		super().__init__(model=wfc,position=pos,scale=sca,visible=False,collider=b,color=color.blue)
+		super().__init__(model=wfc,position=pos,scale=sca,visible=False,collider=b)
+		del pos,sca
 
 wtfc=omf+'ev/water/water_'
 class Water(Entity):
