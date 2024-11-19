@@ -13,14 +13,12 @@ optional for help scripts:
 
 to install this Modules you need Python3 installed on your Computer and then type in your commandline:
 
-'''
 pip install ursina --upgrade
 
 important: if ursina-version about 7.0.0 and some issue happen, then install
 directly ursina 7.0.0 by typing: pip install ursina==7.0.0
 
 pip install imageio --upgrade
-'''
 
 After Install, download the ZIP File and extract them into a emtpy Folder.
 execute the Launcher by executing the "main.pyw" by clicking it or starting by
