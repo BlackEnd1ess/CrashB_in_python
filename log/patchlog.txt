@@ -1,0 +1,156 @@
+#11.10.2024
+- fixxed wumpa spawn position (was wrong by magnet collect)
+- Purple Crates Info Text disapears while Pause or death event
+- AkuAku invincible Range/refresh time decrased
+- fixxed multible TNT activation.
+- AkuAku invincible doesnt affect: NPC Sewer Mine, Crate Iron, Crate Spring Iron and active TNT Crate
+- Water in Level 1,3,4 will not play animation, if player outside of visible x/z position to reduce laggs.
+- AkuAku invincible plays 2 different random music
+- Extra Lifes will move to player if distance less than 0.6
+- foam will disabled by LOD System
+- fixxed issue: wumpa fruit where spawned by spring wood crates, doesnt purge after death event.
+- level 4: dripped water, eletric water animate only nearby player
+- Nitro Crate hop only nearby player distance < 3
+- removed Nitro and TNT light shader (unlit only)
+- level 4: changed fog distance and color
+- AkuAku Mask sparkle color to gold
+- fixxed explosion texture (have alpha value instead of black back ground)
+- decrased sparkle delay
+
+#13.10.2024
+- crystal shine on Energy Crystal
+
+#15.10.2024
+- fixxed level 2 ice wall glitch, where transport the player to the top by self.
+- hide vertex holes in level 1 background wall (bonus level)
+- invisible ground on level 4 (final area), have black color now to hide the yellow fog.
+- wood log in level 2 have backwall to avoid, that player walk around them.
+
+#16.10.2024
+- level 2: crates in 2D Area position fixxed
+- level 2: bonus round fog density
+- level 1: iron crates floor, replaced with grass platforms
+- level 1: resize trees to reduce entity count
+- level 1: fog distance in bonus level + black floor under water to hide the skybox
+- reduce frame transition-lagg in a lot of Animations, while changing to next frame
+- bugfixx: instant freeze after belly smash on spring crates
+- incrased gravity value by 0.1
+- incrased crash Animations speed
+- Raincards removed duplicate cards
+- Rain color to white, to improve visual frames
+- LODSystem disable all crates without switch states or refresh functions, instead of only hiding it
+- Fog Distance decrased by 2 in each level
+
+#17.10.2024
+- removed unlit flag from npc's
+- backface culling disabled on models
+
+#20.10.2024
+- changed LOD and c_shield function
+- Credits after solve level 5 and 5 collected crystals
+- developer game start and debugging info from player (settings DEBG -> True)
+- new texture on player shadow
+- player shadow hide on gem platform
+
+#22.10.2024
+- changed Fog refresh: trigger by enter level/bonus
+- dev keybind input by toggle (settings.debg -> True)
+- moss platform and NPC's have better custom options like platform speed in arguments.
+- fixxed TNT sound, where plays on already destroyed crates by akuaku
+- on npc jump, dust effect appears, enemy disables without shrinking phase.
+- npc vulture rotate to player in x direction
+- npc rat have now options between idle and walking + new animation frames
+- circle move can optimized with NPC mov range argument
+- npc move direction possible in x,y,z by set m direc to 0-2
+- changed name for level 1 and level 3
+
+#23.10.2024
+- changed sewer_tunnel.collider to simple invisble walls
+- level 3 moss platforms moving slower
+- fixxed fly time in new npc settings.
+
+#25.10.2024
+- improved crate fall physic
+- LOD disables Start Room, Endroom, Temple Walls and side Scenes to reduce Polygons
+- Rain 2D Animation refresh by built-in Sprite Animator
+- Player Debugger shows CPU and RAM Usage and have CB Font and customizable color in settings.py
+
+#26.10.2024
+- improved Room Door Function, where open both doors with the same resources
+
+#28.10.2024
+- pause menu doesnt refresh visiblity anymore. this function was replaced by switch on/off
+- player textures changes only 1 times to save resources
+- Background Music checks all 5 Seconds the current Zone
+- reduces crate fall time to 0.15
+- Level 3 River Background Sound doesn't spam instantly new Audio Instances and uses one in loop instead.
+- player debugger shows player position
+
+#29.10.2024
+- fixxed overlapping sounds after breaking or exploding crates in same time
+- nitro crates, where placed under a other crate, doesnt jump anymore
+- fixxed missed tree on level 3 end
+- function: wumpa fruits move from screen to wumpa counter icon, was changed
+- SFX Audio will not append in Entity List anymore, to save more Resources
+
+#01.11.2024
+- reduces wumpa fruits in level 1
+- debug mode can unlock gem platforms
+
+#02.11.2024
+- removed skybox, reduces wumpa fruits in any level
+- changed level system by loading level-files. make easier for incomming level editor
+- room door keeps open, if player.z is over door.z
+- 2D UI: gems,crystals doesnt lagg at last Frame anymore
+- reduce massive RAM Usage from 700MB to 200-300MB per Level
+- debug Mode shows Entity Count for ALL Entities where loaded in Engine
+- level 5 thunder with flash light
+- clean looped water sound in level 3
+
+#04.11.2024
+- bonus and gem route will removed without crates, after solving it.
+
+#05.11.2024
+- warp room gem/crstal ordner (color gem/crystal/clear gem)
+- purple crate info text appears only, if player nearby this crate type
+- level 1 reduced bushes and replaced with multible bushes in one model
+- level 1 bonus wall dont need bushes anymore to hide they vertex holes
+
+#06.11.2024
+- Tree2D removed from Game and used multible Tree's in one Model as 3D
+- level 5 air crates transform without delay to avoid activation after respawn
+
+#09.11.2024
+- changed mBlock class and replaced model
+- changed level 1 structure
+- moss platform and mBlock reduced collider
+
+#11.11.2024
+- level 1 gem route transformed to 2D Zone
+- fixxed wrong NPC move-range by reset respawn
+- new asset in level 1 with closed stone wall
+
+#13.11.2024
+- removed WumpaFruits, WumpaCollectAnim, CheckpointLetters, Sparkle from Memory if purged.
+- debuger extra file for scan objects in mem
+- changed bounce animations func
+- fixxed errors
+- changed falling actions
+
+#14.11.2024
+- new assets in level 2
+- reduced collider/objects (ice chunks, wumpafruits,crates) in level 2
+
+#17.11.2024
+- level 3 reduced bushes and removed optional optic entity from StoneTile
+
+#18.11.2024
+- level 4 reduced collider, planes and entities (no opt model)
+
+#19.11.2024
+- reduced stone tiles in level 3 (where 3x3 and replaced by one model)
+- level 3 invisible walls on level side
+- resized side walls in level 3 smaller
+- new asset in level 4 (Sewer Platform Big)
+- reduced sewer platforms by over 70 and replaced by Big Platform
+- level 4 invisible Walls on level side
