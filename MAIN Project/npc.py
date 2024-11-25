@@ -1,5 +1,5 @@
-from ursina import BoxCollider,Vec3,Entity,Audio,distance,lerp,invoke,Sequence,Wait
 import settings,_core,math,animation,status,sound,_loc,effect,objects,time,random
+from ursina import BoxCollider,Vec3,Entity,Audio,distance,lerp,invoke
 from math import radians,cos,sin,pi
 
 di={0:'x',1:'y',2:'z'}
@@ -106,7 +106,6 @@ class SawTurtle(Entity):
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(300,600,300))
 		cc.set_val_npc(s,drc,rng)
-		s.def_mode=True
 		s.move_speed=1
 		del pos,rng,drc
 	def update(self):

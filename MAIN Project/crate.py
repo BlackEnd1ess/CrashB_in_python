@@ -1,5 +1,5 @@
-from ursina import Entity,Text,Audio,color,scene,invoke,distance,Sequence,Wait
 import item,status,_core,animation,sound,npc,settings,_loc,ui,random,time
+from ursina import Entity,Text,Audio,color,scene,invoke,distance
 from ursina.ursinastuff import destroy
 
 ic=(.15,.2)

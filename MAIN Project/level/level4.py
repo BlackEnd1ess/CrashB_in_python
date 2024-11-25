@@ -136,7 +136,7 @@ def load_crate():
 	#crates
 	mt.crate_wall(ID=1,POS=(.25,.56,-61),CNT=[2,1])
 	mt.crate_wall(ID=1,POS=(.62,.16,-54.53),CNT=[1,2])
-	mt.crate_wall(ID=2,POS=(0,.16,-44.05),CNT=[2,1])
+	mt.crate_wall(ID=2,POS=(0,.56,-44.05),CNT=[2,1])
 	mt.crate_wall(ID=2,POS=(0,.56,-29.59-.32),CNT=[2,2])
 	mt.crate_wall(ID=2,POS=(.65,.16,-22.05),CNT=[1,2])
 	mt.crate_wall(ID=3,POS=(.77,.16,-7.70),CNT=[2,1])

@@ -1,4 +1,4 @@
-from ursina import Sky,Entity,PointLight,AmbientLight,Sequence,Wait,Animation,color,invoke,scene,camera
+from ursina import Sky,Entity,PointLight,AmbientLight,Animation,color,invoke,scene,camera
 import status,_loc,sound,time,random
 
 st=status
@@ -40,7 +40,7 @@ def env_switch(idx):
 		WeatherRain()
 
 ##Fog Distance
-L_DST={0:(30,100),1:(10,15),2:(3,12),3:(16,20),4:(13,16),5:(8,18),6:(10,20)}
+L_DST={0:(30,100),1:(10,15),2:(3,12),3:(16,20),4:(13,16),5:(8,15),6:(10,20)}
 B_DST={0:(0,0),1:(6,12),2:(4,4.5),3:(5,20),4:(8,15),5:(10,20),6:(15,30)}
 def set_fog(idx):
 	scene.fog_color=FOG_COL[st.day_mode]

@@ -123,8 +123,7 @@ def c_smash(c):
 				wr.destroy()
 		if is_enemie(wr):
 			wr.is_purge=True
-def c_attack():
-	c=LC.ACTOR
+def c_attack(c):
 	if not c.is_attack or st.gproc():
 		return
 	for qd in scene.entities[:]:
@@ -139,6 +138,7 @@ def c_attack():
 					if (qd.vnum in {1,11}) or (qd.vnum == 5 and qd.def_mode):
 						get_damage(c,rsn=1)
 					bash_enemie(qd,h=c)
+	del c
 def c_shield():
 	if st.aku_hit < 3 or st.gproc():
 		return
@@ -378,7 +378,8 @@ def check_wall(c):
 				get_damage(c,rsn=R)
 			return
 		if not xa in LC.trigger_lst:
-			c.position=lerp(c.position,c.position+hT.normal,time.dt*c.move_speed)
+			c.position-=c.direc*time.dt*c.move_speed
+
 def check_floor(c):
 	lkh={r for r in scene.entities if (str(r) in LC.item_lst|LC.dangers|LC.trigger_lst) or r in [c,LC.shdw]}
 	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.1,.1),ignore=lkh,debug=False)

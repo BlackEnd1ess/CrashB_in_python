@@ -2,3 +2,5 @@
 - gem gloss
 - sky background for l1,l3
 - crate destroy from vec3 Y -1 / 1
+- level 3 side walls leafes
+- to player direction if player nearby npc

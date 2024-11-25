@@ -84,17 +84,16 @@ class MossPlatform(Entity):
 		s=self
 		super().__init__(model=MVP+'.obj',name='mptf',texture=MVP+'.tga',scale=.0085,position=(p[0],p[1]+.475,p[2]),enabled=False,double_sided=True,collider=b)
 		s.spawn_pos=p
+		s.slp=ptw
+		s.ptw=ptw
 		s.ptm=ptm
 		s.pts=pts
 		s.turn=0
-		if ptm == 1:
-			s.is_sfc=True
-			Sequence(s.dive,Wait(ptw),loop=True)()
+		s.is_sfc=(ptm == 1)
 		if ptm > 1:
-			ca='x'
+			s.drc='x'
 			if ptm == 3:
-				ca='z'
-			Sequence(lambda:s.ptf_move(di=ca),loop=True)()
+				s.drc='z'
 		del p,ptm,pts,ptw
 	def ptf_move(self,di):
 		s=self
@@ -115,16 +114,27 @@ class MossPlatform(Entity):
 		LC.ACTOR.x=s.x
 		LC.ACTOR.z=s.z
 	def dive(self):
-		if not st.gproc():
-			s=self
-			if s.is_sfc:
-				s.is_sfc=False
-				s.animate_y(s.y-1,duration=.3)
-				if distance(s,LC.ACTOR) < 6:
-					sn.obj_audio(ID=6)
-				return
-			s.is_sfc=True
-			s.animate_y(s.spawn_pos[1],duration=.3)
+		s=self
+		if s.is_sfc:
+			s.is_sfc=False
+			s.animate_y(s.y-1,duration=.3)
+			if distance(s,LC.ACTOR) < 6:
+				sn.obj_audio(ID=6)
+			return
+		s.is_sfc=True
+		s.animate_y(s.spawn_pos[1],duration=.3)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if s.ptm == 1:
+			s.ptw=max(s.ptw-time.dt,0)
+			if s.ptw <= 0:
+				s.ptw=s.slp
+				s.dive()
+			return
+		if s.ptm > 1:
+			s.ptf_move(di=s.drc)
 
 class BackgroundWall(Entity):
 	def __init__(self,p):
@@ -522,7 +532,7 @@ swmi=omf+'l4/swr_swim/swr_swim'
 class SwimPlatform(Entity):##box collider
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=swmi+'.obj',texture=swmi+'.tga',name='swpt',scale=.00625,position=pos,double_sided=True)
+		super().__init__(model=swmi+'.obj',texture=swmi+'.tga',name='swpt',scale=.00625,position=pos,color=color.rgb32(120,200,200),double_sided=True)
 		s.collider=BoxCollider(s,size=Vec3(100,30,100))
 		s.active=False
 		s.matr='metal'
@@ -668,30 +678,30 @@ class DrippingWater(Entity):
 
 ####################
 ## level 5 objects #
+rnp=omf+'l5/ruins_scn/ruins_'
 class RuinsPlatform(Entity):##big platform
 	def __init__(self,pos,m):
 		s=self
-		rnp=omf+'l5/ruins_scn/'
-		msc={True:-.03,False:.03}
-		msv={True:-.9,False:.9}
-		super().__init__(model=wfc,collider=b,scale=(1.7,1,1.5),name='rnsp',position=pos,visible=False)
-		s.opt_model=Entity(model=rnp+'ruins_ptf1.ply',texture=rnp+'ruins_scn.tga',name=s.name,position=(s.x,s.y+.5,s.z),scale=(.03,msc[m],.03),rotation=(-90,90,0))
-		s.rail0=Entity(model=wfc,scale=(1.7,.5,.3),name=s.name,collider=b,position=(s.x,s.y+.8,s.z+.9),visible=False)
-		s.rail0=Entity(model=wfc,scale=(.3,.5,1.7),name=s.name,collider=b,position=(s.x+msv[m],s.y+.8,s.z),visible=False)
+		super().__init__(model=rnp+'ptf1.obj',texture=rnp+'scn.tga',name='rnsp',position=pos,rotation_y=-90,scale=.03,double_sided=True)
+		s.collider=BoxCollider(s,center=Vec3(0,-5,0),size=(55,10,55))
+		HitBox(pos=(s.x,s.y+.4,s.z+.9),sca=(1.7,.5,.3))
+		if m:
+			HitBox(pos=(s.x+.9,s.y+.4,s.z),sca=(.3,.5,1.7))
+			s.scale_z=-.03
+			return
+		HitBox(pos=(s.x-.9,s.y+.4,s.z),sca=(.3,.5,1.7))
 
 class RuinsBlock(Entity):## small platform
 	def __init__(self,pos):
 		s=self
-		rnb=omf+'l5/ruins_scn/'
-		super().__init__(model=wfc,collider=b,scale=(.75,1,.75),name='rubl',position=pos,visible=False)
-		s.opt_model=Entity(model=rnb+'ruins_ptf02.ply',name=s.name,texture=rnb+'ruins_scn.tga',position=(s.x,s.y+.5,s.z-.025),scale=.03,rotation=(-90,90,0))
+		super().__init__(model=rnp+'ptf02.obj',name='rubl',texture=rnp+'scn.tga',position=pos,scale=.03,rotation_y=-90,double_sided=True)
+		s.collider=BoxCollider(s,center=Vec3(0,-7.5,0),size=(25,15,25))
 
 class RuinsCorridor(Entity):## corridor
 	def __init__(self,pos):
 		s=self
-		rco=omf+'l5/ruins_scn/'
 		super().__init__(model=wfc,position=pos,scale=(3,1,3),name='rncr',collider=b,visible=False)
-		s.opt_model=Entity(model=rco+'ruins_cor.ply',texture=rco+'ruins_scn.tga',name=s.name,position=(s.x,s.y+.5,s.z),scale=.03,rotation=(-90,90,0))
+		s.opt_model=Entity(model=rnp+'cor.ply',texture=rnp+'scn.tga',name=s.name,position=(s.x,s.y+.5,s.z),scale=.03,rotation=(-90,90,0))
 		s.cor_w0=Entity(model=wfc,position=(s.x-1.4,s.y+1.7,s.z),name=s.name,scale=(.5,2,3),collider=b,visible=False)
 		s.cor_w1=Entity(model=wfc,position=(s.x+1.4,s.y+1.7,s.z),name=s.name,scale=(.5,2,3),collider=b,visible=False)
 		IndoorZone(pos=(s.x,s.y+2.55,s.z),sca=3)
@@ -704,13 +714,10 @@ class MonkeySculpture(Entity):
 		s.podium=Entity(model='cube',texture='res/terrain/l5/moss.png',name=s.name,scale=(.5,1,.5),texture_scale=(1,2),position=(s.x,s.y-.5,s.z))
 		s.f_pause=False
 		s.s_audio=False
-		s.f_cnt=0
 		s.danger=d
+		s.f_cnt=0
+		s.tme=.08
 		s.rot=r
-		if s.danger:
-			Sequence(s.fire_throw,Wait(.08),loop=True)()
-		if s.rot:
-			Sequence(s.rot_to_crash,loop=True)()
 	def f_reset(self):
 		s=self
 		s.f_pause=False
@@ -733,6 +740,18 @@ class MonkeySculpture(Entity):
 		s=self
 		if distance(s,LC.ACTOR) < 2:
 			cc.rotate_to_crash(s)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if s.danger:
+			s.tme=max(s.tme-time.dt,0)
+			if s.tme <= 0:
+				s.tme=.08
+				s.fire_throw()
+		if s.rot:
+			s.rot_to_crash()
+
 
 class LoosePlatform(Entity):
 	def __init__(self,pos,t):
@@ -864,8 +883,9 @@ class FallingZone(Entity):## falling
 		super().__init__(model='cube',name='fllz',collider=b,scale=s,position=pos,color=color.rgb32(0,0,0))
 		if st.level_index != 5:
 			self.visible=False
-		Sequence(self.refr_p,Wait(.2),loop=True)()
-	def refr_p(self):
+	def update(self):
+		if st.gproc():
+			return
 		ac=LC.ACTOR
 		if self.intersects(ac):
 			cc.dth_event(ac,rsn=0)

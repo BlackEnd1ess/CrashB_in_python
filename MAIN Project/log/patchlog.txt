@@ -154,3 +154,12 @@
 - new asset in level 4 (Sewer Platform Big)
 - reduced sewer platforms by over 70 and replaced by Big Platform
 - level 4 invisible Walls on level side
+
+#21.11.2024
+- fixxed wall stop/push back function - crates where fall on crash, will break
+- level 5 ruinsblock: no opt needed and reduced massive entities in map
+- level 5 ruinsblock clear shadow by thunderbolt
+- sewer swim platform overlay color
+
+#25.11.2024
+- removed Sequence() and replaced with update class func. Reason: doesnt work after last Engine Update

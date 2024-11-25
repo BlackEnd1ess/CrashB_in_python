@@ -42,8 +42,6 @@ class CrashB(Entity):
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(200,200,600))
 		cc.set_val(s)
 		an.WarpRingEffect(pos=s.position)
-		Sequence(cc.c_shield,Wait(.25),loop=True)()
-		Sequence(cc.c_attack,Wait(.1),loop=True)()
 		pShadow()
 		s.KEY_ACT={
 				sg.MNU_KEY:lambda:cc.game_pause(),
@@ -57,7 +55,7 @@ class CrashB(Entity):
 			#_debug_.MemoryTracker(interval=5,threshold=100000)
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(0,4,58.5)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(30+.75*6,5,4.7+.75*5)),
 					sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
 	def input(self,key):
@@ -250,8 +248,11 @@ class CrashB(Entity):
 		s.c_camera()
 		if s.jumping:s.jump()
 		if s.b_smash:cc.c_smash(s)
+		if s.is_attack:cc.c_attack(s)
 		if held_keys[settings.JMP_KEY]:
 			s.space_time+=time.dt/2
+		if st.aku_hit >= 3:
+			cc.c_shield()
 	def update(self):
 		if not st.gproc():
 			s=self

@@ -1,4 +1,4 @@
-from ursina import Sequence,Entity,Animation,Wait,scene,distance,distance_xz,color
+from ursina import Entity,Animation,scene,distance,distance_xz,color,time
 import _core,_loc,status,item,settings
 
 st=status
@@ -27,7 +27,7 @@ LD={0:0,1:30,2:18,3:16,4:24,5:25,6:16}
 
 ## init lod
 def start():
-	Sequence(lambda:refr(st.level_index),Wait(.6),loop=True)()
+	LODinGame()
 
 ## check distance
 def check_dst(p,v,dz):
@@ -36,23 +36,33 @@ def check_dst(p,v,dz):
 def check_dynamic(o):
 	return any({(cc.is_enemie(o) and not (o.is_hitten or o.is_purge)),(o.name in LL[st.level_index])})
 
-def refr(idx):
-	if st.gproc():
-		return
-	bc={r for r in scene.entities if r.parent == scene}
-	p=LC.ACTOR.position
-	for v in bc:
-		u=(check_dst(p,v.position,dz=int(scene.fog_density[1])))
-		w=distance_xz(v.position,p)
-		if cc.is_crate(v):
-			if v.vnum in {0,1,2}:
-				v.enabled=u
-			if v.vnum in {3,11,12}:
-				v.visible=u
-		if check_dynamic(v):
-			v.enabled=u
-		if v.name == 'wmpf':
-			v.enabled=(w < 8)
-		if idx != 6:
-			if v.name in BGSO[idx]:
-				v.enabled=(w < LD[idx])
+class LODinGame(Entity):
+	def __init__(self):
+		s=self
+		super().__init__()
+		s.idx=st.level_index
+		s.tme=.5
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.tme=max(s.tme-time.dt,0)
+		if s.tme <= 0:
+			s.tme=.5
+			bc={r for r in scene.entities if r.parent == scene}
+			p=LC.ACTOR.position
+			for v in bc:
+				u=(check_dst(p,v.position,dz=int(scene.fog_density[1])))
+				w=distance_xz(v.position,p)
+				if cc.is_crate(v):
+					if v.vnum in {0,1,2}:
+						v.enabled=u
+					if v.vnum in {3,11,12}:
+						v.visible=u
+				if check_dynamic(v):
+					v.enabled=u
+				if v.name == 'wmpf':
+					v.enabled=(w < 8)
+				if s.idx != 6:
+					if v.name in BGSO[s.idx]:
+						v.enabled=(w < LD[s.idx])

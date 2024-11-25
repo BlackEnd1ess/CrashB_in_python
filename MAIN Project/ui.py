@@ -1,4 +1,4 @@
-from ursina import Animation,Sequence,Wait,Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,curve
+from ursina import Animation,Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,curve
 import status,_core,_loc,sound,settings,warproom,level,time
 from ursina.ursinastuff import destroy
 from time import strftime,gmtime
@@ -82,8 +82,8 @@ class WumpaCounter(Entity):
 		super().__init__(model=q,parent=CU,position=(-.75,.43,0),scale=(.07,.08,0),visible=False)
 		s.digit_0=Entity(model=q,parent=CU,position=(s.x+.075,s.y),scale=.06,visible=False)
 		s.digit_1=Entity(model=q,parent=CU,position=(s.digit_0.x+.06,s.digit_0.y),scale=.06,visible=False)
+		s.refr=.1
 		s.frm=0
-		Sequence(s.refr,Wait(.01),loop=True)()
 	def digits(self):
 		s=self
 		n=f'{st.wumpa_fruits}'
@@ -99,20 +99,23 @@ class WumpaCounter(Entity):
 		if st.wumpa_fruits > 99:
 			st.wumpa_fruits=0
 			cc.give_extra_live()
-	def refr(self):
+	def update(self):
 		if st.gproc():
 			return
 		s=self
-		s.wumpa_max()
-		if st.show_wumpas > 0:
-			wmp_anim(s)
-			s.digits()
-			st.show_wumpas=max(st.show_wumpas-time.dt,0)
-			if st.show_wumpas <= 0:
-				s.frm=0
-				s.digit_0.visible=False
-				s.digit_1.visible=False
-				s.visible=False
+		s.refr=max(s.refr-time.dt,0)
+		if s.refr <= 0:
+			s.refr=.1
+			s.wumpa_max()
+			if st.show_wumpas > 0:
+				wmp_anim(s)
+				s.digits()
+				st.show_wumpas=max(st.show_wumpas-time.dt,0)
+				if st.show_wumpas <= 0:
+					s.frm=0
+					s.digit_0.visible=False
+					s.digit_1.visible=False
+					s.visible=False
 
 class CrateCounter(Entity):
 	def __init__(self):

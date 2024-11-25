@@ -18,7 +18,8 @@ def start_load():
 def load_object():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass')
 	item.GemStone(pos=(4,.4,-20),c=1)
-	o.SwimPlatform(pos=(0,.3,-25))
+	o.RuinsPlatform(pos=(0,.3,-25),m=True)
+	o.RuinsPlatform(pos=(4,.3,-25),m=False)
 	o.StartRoom(pos=(0,0,-32.2))
 def load_crate():
 	mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,1,1])

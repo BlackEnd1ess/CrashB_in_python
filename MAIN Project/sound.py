@@ -1,5 +1,5 @@
-from ursina import Entity,Audio,Sequence,Wait,invoke
 import status,settings,_core,_loc,random,time
+from ursina import Entity,Audio,invoke
 from ursina.ursinastuff import destroy
 se=settings
 cc=_core
@@ -42,7 +42,7 @@ SND_THU={0:'thunder_start',
 		2:'thunder1'}
 def thu_audio(ID,pit=1):
 	pth=Audio(VS+SND_THU[ID]+'.wav',pitch=random.uniform(.1,.5),volume=se.SFX_VOLUME,add_to_scene_entities=False)
-	invoke(lambda:destroy(pth),delay=dd)
+	invoke(lambda:destroy(pth),delay=pth.length*2)
 
 ## INTERFACE SFX
 SND_UI={0:'select',
@@ -140,13 +140,15 @@ def obj_audio(ID,pit=1):
 class WaterRiver(Audio):
 	def __init__(self):
 		super().__init__(VS+'waterf.wav',volume=0,loop=True)
-		invoke(lambda:Sequence(self.check_z,Wait(.5),loop=True)(),delay=1)
-	def check_z(self):
+		self.tme=.5
+	def update(self):
 		s=self
-		if st.gproc() or st.bonus_round:
-			s.volume=0
-			return
-		s.volume=settings.SFX_VOLUME
+		s.tme=max(s.tme-time.dt,0)
+		if s.tme <= 0:
+			if st.gproc() or st.bonus_round:
+				s.volume=0
+				return
+			s.volume=settings.SFX_VOLUME
 
 class AmbienceSound(Audio):
 	def __init__(self):
@@ -161,13 +163,16 @@ class AmbienceSound(Audio):
 class Rainfall(Audio):
 	def __init__(self):
 		super().__init__(snd_rain,loop=True,volume=0,add_to_scene_entities=False)
-		Sequence(self.check_z,Wait(.5),loop=True)()
-	def check_z(self):
+		self.tme=0
+	def update(self):
 		s=self
-		if (LC.ACTOR.indoor <= 0 and LC.ACTOR.warped) and not st.gproc():
-			s.volume=settings.SFX_VOLUME
-			return
-		s.volume=0
+		s.tme=max(s.tme-time.dt,0)
+		if s.tme <= 0:
+			s.tme=.5
+			if (LC.ACTOR.indoor <= 0 and LC.ACTOR.warped) and not st.gproc():
+				s.volume=settings.SFX_VOLUME
+				return
+			s.volume=0
 
 ## Background Music
 MC='res/snd/music/'

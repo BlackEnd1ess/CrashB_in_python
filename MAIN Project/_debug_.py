@@ -49,7 +49,7 @@ class PlayerDBG(Entity):
 		s.ppo_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.665),parent=CV,scale=fw)
 		s.process=psutil.Process(os.getpid())
 		s.cpu_usage=s.process.cpu_percent()
-		Sequence(s.refr,Wait(.1),loop=True)()
+		s.tme=3
 	def count_entities(self,d):
 		if d == 0:
 			return len(scene.entities)
@@ -59,31 +59,34 @@ class PlayerDBG(Entity):
 			for k in q:
 				c+=1
 			return c
-	def refr(self):
+	def update(self):
 		s=self
-		rv=LC.ACTOR
-		mem_usage=s.process.memory_info().rss/(1024*1024)
-		s.ent_state.text=f'instances   : {s.count_entities(d=0)}'
-		s.mem_state.text=f'MEMORY USAGE: {mem_usage:.0f} MB'
-		s.ppo_state.text=f'x{rv.x:.1f}  y{rv.y:.1f}  z{rv.z:.1f}'
-		s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'
-		s.ind_state.text=f'INDOOR ZONE : {(rv.indoor > 0)}'
-		s.inw_state.text=f'WATER ZONE  : {(rv.in_water > 0)}'
-		s.slp_state.text=f'IS SLIPPERY : {rv.is_slippery}'
-		s.bns_state.text=f'BONUS ROUND : {st.bonus_round}'
-		s.idl_state.text=f'IDLE STATUS : {st.p_idle(LC.ACTOR)}'
-		s.run_state.text=f'WALK STATUS : {rv.walking}'
-		s.fal_state.text=f'FALL STATUS : {rv.falling}'
-		s.lnd_state.text=f'LAND STATUS : {rv.is_landing}'
-		s.jmp_state.text=f'JUMP STATUS : {rv.jumping}'
-		s.flp_state.text=f'FLIP STATUS : {rv.is_flip}'
-		s.bly_state.text=f'BELLY SMASH : {rv.b_smash}'
-		s.atk_state.text=f'IS ATTACK   : {rv.is_attack}'
-		s.frl_state.text=f'FIRST LAND  : {rv.frst_lnd}'
-		s.gnd_state.text=f'IS LANDED   : {rv.landed}'
-		s.sta_state.text=f'STAND UP    : {rv.standup}'
-		s.inj_state.text=f'INJURED     : {rv.injured}'
-		s.frz_state.text=f'FREEZED     : {rv.freezed}'
+		s.tme=max(s.tme-time.dt,0)
+		if s.tme <= 0:
+			s.tme=3
+			rv=LC.ACTOR
+			mem_usage=s.process.memory_info().rss/(1024*1024)
+			s.ent_state.text=f'instances   : {s.count_entities(d=0)}'
+			s.mem_state.text=f'MEMORY USAGE: {mem_usage:.0f} MB'
+			s.ppo_state.text=f'x{rv.x:.1f}  y{rv.y:.1f}  z{rv.z:.1f}'
+			s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'
+			s.ind_state.text=f'INDOOR ZONE : {(rv.indoor > 0)}'
+			s.inw_state.text=f'WATER ZONE  : {(rv.in_water > 0)}'
+			s.slp_state.text=f'IS SLIPPERY : {rv.is_slippery}'
+			s.bns_state.text=f'BONUS ROUND : {st.bonus_round}'
+			s.idl_state.text=f'IDLE STATUS : {st.p_idle(LC.ACTOR)}'
+			s.run_state.text=f'WALK STATUS : {rv.walking}'
+			s.fal_state.text=f'FALL STATUS : {rv.falling}'
+			s.lnd_state.text=f'LAND STATUS : {rv.is_landing}'
+			s.jmp_state.text=f'JUMP STATUS : {rv.jumping}'
+			s.flp_state.text=f'FLIP STATUS : {rv.is_flip}'
+			s.bly_state.text=f'BELLY SMASH : {rv.b_smash}'
+			s.atk_state.text=f'IS ATTACK   : {rv.is_attack}'
+			s.frl_state.text=f'FIRST LAND  : {rv.frst_lnd}'
+			s.gnd_state.text=f'IS LANDED   : {rv.landed}'
+			s.sta_state.text=f'STAND UP    : {rv.standup}'
+			s.inj_state.text=f'INJURED     : {rv.injured}'
+			s.frz_state.text=f'FREEZED     : {rv.freezed}'
 
 #check multible objects where in memory
 def chck_mem():
