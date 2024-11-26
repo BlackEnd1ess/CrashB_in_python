@@ -23,7 +23,7 @@ BGSO={1:PLO+['grsi','trrw'],
 	5:PLO+['rrrr']}
 
 ## BSGO distance
-LD={0:0,1:30,2:18,3:16,4:24,5:25,6:16}
+LD={0:0,1:30,2:18,3:16,4:24,5:16,6:16}
 
 ## init lod
 def start():
@@ -52,7 +52,7 @@ class LODinGame(Entity):
 			bc={r for r in scene.entities if r.parent == scene}
 			p=LC.ACTOR.position
 			for v in bc:
-				u=(check_dst(p,v.position,dz=int(scene.fog_density[1])))
+				u=check_dst(p,v.position,int(scene.fog_density[1]))
 				w=distance_xz(v.position,p)
 				if cc.is_crate(v):
 					if v.vnum in {0,1,2}:

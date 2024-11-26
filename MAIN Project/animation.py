@@ -18,6 +18,7 @@ npc_anim={0:7,#amadillo
 		12:12,#eel
 		13:16}#sewer mine
 
+cl='res/objects/l5/loose_ptf/'
 cf='res/crate/anim/'
 nf='res/npc/'
 af='res/pc/'
@@ -261,6 +262,24 @@ class CrateBreak(Entity):
 			destroy(s)
 			return
 		s.model=cf+'brk/'+str(int(s.frame_break))+'.ply'
+
+class CollapseFloor(Entity):
+	def __init__(self,t,pos):
+		s=self
+		super().__init__(model=cl+f'{t}/0.ply',texture=cl+f'{t}/0.tga',position=pos,scale=.01/15,rotation_x=-90)
+		s.typ=t
+		s.frm=0
+		del t,pos
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.frm=min(s.frm+(time.dt*18),32.999)
+		if s.frm > 32.99:
+			s.frm=0
+			destroy(s)
+			return
+		s.model=cl+f'{s.typ}/{int(s.frm)}.ply'
 
 ##warp rings
 class WarpRingEffect(Entity): ## spawn animation

@@ -162,7 +162,7 @@ class AmbienceSound(Audio):
 
 class Rainfall(Audio):
 	def __init__(self):
-		super().__init__(snd_rain,loop=True,volume=0,add_to_scene_entities=False)
+		super().__init__(snd_rain,loop=True,volume=0)
 		self.tme=0
 	def update(self):
 		s=self

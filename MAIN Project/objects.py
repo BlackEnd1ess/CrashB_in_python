@@ -400,14 +400,12 @@ class WaterFall(Entity):
 				s.frm=0
 			s.texture=s.pa+str(int(s.frm))+'.png'
 
+sWCN=omf+'l3/scn_w/sd'
 class SceneWall(Entity):
 	def __init__(self,pos,typ):
 		s=self
-		sWCN=omf+'l3/scn_w/'
-		super().__init__(model=sWCN+'side'+str(typ)+'.ply',texture=sWCN+'water2_scn.tga',name='scwa',position=pos,scale=(.0225,.0225,.025),rotation_x=-90)
-		roTY={1:91,2:90}
-		s.rotation_y=roTY[typ]
-		del pos,roTY,typ
+		super().__init__(model=sWCN+str(typ)+'.obj',texture=sWCN+'.tga',name='scwa',position=pos,scale=(.0225,.0225,.025),rotation_y=-90,color=color.rgb32(150,170,150),double_sided=True)
+		del pos,typ
 
 trw=omf+'l3/temple_wall/tm_wall'
 class TempleWall(Entity):
@@ -706,18 +704,23 @@ class RuinsCorridor(Entity):## corridor
 		s.cor_w1=Entity(model=wfc,position=(s.x+1.4,s.y+1.7,s.z),name=s.name,scale=(.5,2,3),collider=b,visible=False)
 		IndoorZone(pos=(s.x,s.y+2.55,s.z),sca=3)
 
+rmsc=omf+'l5/m_sculpt/m_sculpt'
 class MonkeySculpture(Entity):
 	def __init__(self,pos,r,d,ro_y=90):
 		s=self
-		rmsc=omf+'l5/m_sculpt/m_sculpt'
-		super().__init__(model=rmsc+'.ply',texture=rmsc+'.tga',name='mnks',position=pos,scale=.003,rotation=(-90,ro_y,0),unlit=False)
-		s.podium=Entity(model='cube',texture='res/terrain/l5/moss.png',name=s.name,scale=(.5,1,.5),texture_scale=(1,2),position=(s.x,s.y-.5,s.z))
+		super().__init__(name='mnks',position=pos,scale=.003,rotation=(-90,ro_y,0))
+		s.model=rmsc+'1.ply'
+		if r:
+			s.model=rmsc+'.ply'
+			s.podium=Entity(model='cube',texture='res/terrain/l5/moss.png',name=s.name,scale=(.5,1,.5),texture_scale=(1,2),position=(s.x,s.y-.5,s.z))
+		s.texture=rmsc+'.tga'
 		s.f_pause=False
 		s.s_audio=False
 		s.danger=d
 		s.f_cnt=0
 		s.tme=.08
 		s.rot=r
+		del ro_y,pos,r,d
 	def f_reset(self):
 		s=self
 		s.f_pause=False
@@ -752,58 +755,33 @@ class MonkeySculpture(Entity):
 		if s.rot:
 			s.rot_to_crash()
 
-
+lpp=omf+'l5/loose_ptf/'
 class LoosePlatform(Entity):
 	def __init__(self,pos,t):
 		s=self
-		s.lpp=omf+'l5/loose_ptf'+str(t)+'/'
-		super().__init__(model=wfc,position=pos,scale=(.7,.5,.6),name='loos',collider=b,visible=False)
-		s.opt_model=Entity(model=s.lpp+'loose_ptf'+str(t)+'.ply',texture=s.lpp+'loose_ptf'+str(t)+'.tga',name=s.name,scale=.01/15,position=(s.x,s.y+.25,s.z),rotation=(-90,-90,0))
+		super().__init__(model=lpp+f'{t}/'+'lpf.obj',texture=lpp+f'{t}/'+'lpf.tga',name='loos',scale=.01/15,position=pos,rotation_y=-90,double_sided=True)
+		s.collider=BoxCollider(s,center=Vec3(0,-.5,0),size=(100*10,100,100*10))
 		s.active=False
 		s.typ=t
-		s.frm=0
-		if s.typ == 2:
-			s.f_time=0
-			s.scale=(.55,.2,.55)
-			s.opt_model.position=(s.x-.275,s.y+.1,s.z+.25)
-			s.spawn_h=s.y
-	def respawn(self):
+		del pos,t
+	def reset(self):
 		s=self
-		s.collider=b
-		s.frm=0
-		s.opt_model.model=s.lpp+'0.ply'
-	def fall(self):
-		s=self
-		s.y-=time.dt*3
-		s.opt_model.y-=time.dt*3
-		if s.y <= s.spawn_h-1:
-			s.active=False
-			s.collider=None
-			s.f_time=0
-			invoke(lambda:setattr(s,'y',s.spawn_h),delay=5)
-			invoke(lambda:setattr(s.opt_model,'y',s.spawn_h),delay=5)
-			invoke(lambda:setattr(s,'collider',b),delay=5)
+		s.collision,s.visible,s.active=True,True,False
 	def collapse(self):
 		s=self
-		s.frm=min(s.frm+(time.dt*18),32.99)
-		if s.frm > 26:
-			s.collider=None
-			if s.frm > 32.98:
-				sn.obj_audio(ID=9,pit=1)
-				s.active=False
-				invoke(s.respawn,delay=7)
-				return
-		s.opt_model.model=s.lpp+str(int(s.frm))+'.ply'
-	def update(self):
+		sn.obj_audio(ID=9,pit=1)
+		s.collision=False
+		invoke(s.reset,delay=8)
+	def action(self):
+		s=self
+		s.visible=False
+		an.CollapseFloor(t=s.typ,pos=s.position)
+		invoke(s.collapse,delay=1)
+	def pl_touch(self):
 		s=self
 		if not s.active:
-			return
-		if s.typ != 2:
-			s.collapse()
-			return
-		s.f_time=max(s.ftime+time.dt,.5)
-		if s.f_time >= .5:
-			s.fall()
+			s.active=True
+			s.action()
 
 rrn=omf+'l5/ruins_bgo/'
 class RuinRuins(Entity):

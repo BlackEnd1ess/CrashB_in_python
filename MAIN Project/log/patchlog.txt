@@ -163,3 +163,9 @@
 
 #25.11.2024
 - removed Sequence() and replaced with update class func. Reason: doesnt work after last Engine Update
+
+#26.11.2024
+- level 3 side wall scene added Foliages on Tree tops
+- added seperate Monkey Sculpture without and with podium below.
+- loose platform play sound earlier + no opt model need anymore (reduced collider)
+- FPS Counter in debug-window

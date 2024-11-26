@@ -45,7 +45,8 @@ class PlayerDBG(Entity):
 		s.aku_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.5),parent=CV,scale=fw)
 		s.mem_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.55),parent=CV,scale=fw)
 		s.ent_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.575),parent=CV,scale=fw)
-		s.dscr_text=Text('player pos:',color=color.azure,font=ui._fnt,position=(sx+.05,hg-.625),parent=CV,scale=fw)
+		s.fps_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.6),parent=CV,scale=fw)
+		s.dscr_text=Text('player pos:',color=color.azure,font=ui._fnt,position=(sx+.05,hg-.64),parent=CV,scale=1.3)
 		s.ppo_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.665),parent=CV,scale=fw)
 		s.process=psutil.Process(os.getpid())
 		s.cpu_usage=s.process.cpu_percent()
@@ -63,10 +64,11 @@ class PlayerDBG(Entity):
 		s=self
 		s.tme=max(s.tme-time.dt,0)
 		if s.tme <= 0:
-			s.tme=3
+			s.tme=1
 			rv=LC.ACTOR
 			mem_usage=s.process.memory_info().rss/(1024*1024)
-			s.ent_state.text=f'instances   : {s.count_entities(d=0)}'
+			s.ent_state.text=f'INSTANCES   : {s.count_entities(d=0)}'
+			s.fps_state.text=f'GRAPH FPS   : {int(1//time.dt_unscaled)}'
 			s.mem_state.text=f'MEMORY USAGE: {mem_usage:.0f} MB'
 			s.ppo_state.text=f'x{rv.x:.1f}  y{rv.y:.1f}  z{rv.z:.1f}'
 			s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'

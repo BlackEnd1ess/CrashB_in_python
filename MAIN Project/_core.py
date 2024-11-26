@@ -382,7 +382,7 @@ def check_wall(c):
 
 def check_floor(c):
 	lkh={r for r in scene.entities if (str(r) in LC.item_lst|LC.dangers|LC.trigger_lst) or r in [c,LC.shdw]}
-	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.1,.1),ignore=lkh,debug=False)
+	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.125,.125),ignore=lkh,debug=False)
 	vp=vj.entity
 	if not c.landed:
 		fall_interact(c,vp)
@@ -432,10 +432,10 @@ def spc_floor(c,e):
 	if u in {'bnpt','gmpt'}:
 		ptf_up(p=e,c=c)
 		return
-	if u in {'loos','swpt','HPP'}:
+	if u in {'swpt','HPP'}:
 		e.active=True
 		return
-	if (u == 'plnk' and e.typ == 1):
+	if (u == 'plnk' and e.typ == 1) or u == 'loos':
 		e.pl_touch()
 		return
 	if (u == 'swpi' and e.typ == 3):

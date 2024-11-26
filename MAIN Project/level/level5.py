@@ -46,9 +46,9 @@ def load_object():
 	o.spw_ruin_ptf(p=(1.2+.75*2,blh,-44+.75*9),cnt=1,way=0)
 	o.spw_ruin_ptf(p=(1.2+.75*2,blh,-44+.75*11),cnt=1,way=0)
 	o.RuinsPlatform(pos=(2.7,blh,-33),m=False)
-	o.LoosePlatform(pos=(5,0,-33),t=0)
-	o.LoosePlatform(pos=(6.5,0,-33),t=0)
-	o.LoosePlatform(pos=(8,0,-33),t=0)
+	o.LoosePlatform(pos=(5,.3,-33),t=0)
+	o.LoosePlatform(pos=(6.5,.3,-33),t=0)
+	o.LoosePlatform(pos=(8,.3,-33),t=0)
 	o.spw_ruin_ptf(p=(9,blh,-33),cnt=2,way=0)
 	o.spw_ruin_ptf(p=(9+.75*4,blh,-33),cnt=3,way=1)
 	o.RuinsCorridor(pos=(12,blh-.5,-28.5))
@@ -56,9 +56,9 @@ def load_object():
 	o.spw_ruin_ptf(p=(9+.75*4,blh,-23.5),cnt=1,way=0)
 	o.spw_ruin_ptf(p=(9+.75*4,blh,-22),cnt=3,way=0)
 	o.spw_ruin_ptf(p=(9+.75*4,blh,-20.5),cnt=1,way=0)
-	o.LoosePlatform(pos=(9+.75*4,0,-19),t=0)
-	o.LoosePlatform(pos=(9+.75*4,0,-17.5),t=0)
-	o.LoosePlatform(pos=(9+.75*4,0,-16),t=0)
+	o.LoosePlatform(pos=(9+.75*4,.3,-19),t=0)
+	o.LoosePlatform(pos=(9+.75*4,.3,-17.5),t=0)
+	o.LoosePlatform(pos=(9+.75*4,.3,-16),t=0)
 	o.RuinsCorridor(pos=(12,blh-.5,-13))
 	o.RuinsCorridor(pos=(12,blh-.5,-10))
 	o.spw_ruin_ptf(p=(9+.75*4,blh,-8.1),cnt=1,way=0)
@@ -69,8 +69,8 @@ def load_object():
 	o.spw_ruin_ptf(p=(13.2,blh,-7+.75*8),cnt=1,way=1)
 	o.spw_ruin_ptf(p=(14.7,blh,-7+.75*8),cnt=2,way=0)
 	o.spw_ruin_ptf(p=(14.7+.75*3,blh,-7+.75*8),cnt=2,way=0)
-	o.LoosePlatform(pos=(19,0,-1),t=0)
-	o.LoosePlatform(pos=(20.5,0,-1),t=0)
+	o.LoosePlatform(pos=(19,.3,-1),t=0)
+	o.LoosePlatform(pos=(20.5,.3,-1),t=0)
 	o.spw_ruin_ptf(p=(22,blh,-7+.75*8),cnt=4,way=0)
 	o.spw_ruin_ptf(p=(22+.75*4,blh,-7+.75*8),cnt=2,way=1)
 	o.spw_ruin_ptf(p=(22+.75*4,blh,-7+.75*11),cnt=1,way=1)
@@ -80,7 +80,7 @@ def load_object():
 	o.RuinsPlatform(pos=(29.95,blh,-7+.75*8),m=True)
 	o.RuinsPlatform(pos=(25,blh,4.65),m=False)
 	for lp0 in range(3):
-		o.LoosePlatform(pos=(26.6+lp0,.1+lp0/3,4.7),t=1)
+		o.LoosePlatform(pos=(26.6+lp0,.4+lp0/3,4.7),t=1)
 	blk=1.1
 	o.spw_ruin_ptf(p=(30,blk,4.7),cnt=1,way=0)
 	o.spw_ruin_ptf(p=(30+.75*2,blk,4.7),cnt=1,way=0)
@@ -109,10 +109,10 @@ def load_object():
 	o.spw_ruin_ptf(p=(30+.75*31,blk,4.7+.75),cnt=1,way=1)
 	o.spw_ruin_ptf(p=(30+.75*31,blk,4.7+.75*3),cnt=1,way=1)
 	o.spw_ruin_ptf(p=(30+.75*31,blk,4.7+.75*5),cnt=1,way=1)
-	o.LoosePlatform(pos=(53.2,.8,9.6),t=0)
-	o.LoosePlatform(pos=(53.2,.8,11.1),t=0)
-	o.LoosePlatform(pos=(53.2,.8,12.6),t=0)
-	o.LoosePlatform(pos=(53.2,.8,14.1),t=0)
+	o.LoosePlatform(pos=(53.2,1.1,9.6),t=0)
+	o.LoosePlatform(pos=(53.2,1.1,11.1),t=0)
+	o.LoosePlatform(pos=(53.2,1.1,12.6),t=0)
+	o.LoosePlatform(pos=(53.2,1.1,14.1),t=0)
 	for rn_x in range(3):
 		for rn_z in range(2):
 			o.spw_ruin_ptf(p=(52.45+.75*rn_x,blk,15.75+.75*rn_z),cnt=1,way=0)
@@ -133,7 +133,7 @@ def load_object():
 	#all gem path
 	for svn_x in range(3):
 		for svn_z in range(2):
-			o.spw_ruin_ptf(p=(63+.75*svn_x,blk,15.75+.75*svn_z),cnt=1,way=0)
+			o.spw_ruin_ptf(p=(59.5+.75*svn_x,blk,15.75+.75*svn_z),cnt=1,way=0)
 	#sculpts
 	o.MonkeySculpture(pos=(3.8,.2,-55),r=True,d=False)
 	o.MonkeySculpture(pos=(1.7,.3,-42.4),r=False,d=True,ro_y=-90)
@@ -155,8 +155,6 @@ def load_object():
 	o.PseudoGemPlatform(pos=(55.1,1.1,15.7),t=3)
 	o.PseudoGemPlatform(pos=(56.6,1.1,15.7),t=3)
 	o.PseudoGemPlatform(pos=(58.1,1.1,15.7),t=3)
-	o.PseudoGemPlatform(pos=(59.6,1.1,15.7),t=3)
-	o.PseudoGemPlatform(pos=(61.1,1.1,15.7),t=3)
 	# background objects
 	o.RuinRuins(pos=(-3,-1,-58),ro_y=30,typ=0)
 	o.RuinRuins(pos=(5,-1,-52),ro_y=40,typ=0)
@@ -207,8 +205,6 @@ def load_object():
 	o.RuinRuins(pos=(51,.4,31),ro_y=-70,typ=3)
 	o.RuinRuins(pos=(56,0,9),ro_y=90,typ=3)
 	o.RuinRuins(pos=(58,0,24),ro_y=90,typ=3)
-	o.RuinRuins(pos=(62,0,22),ro_y=90,typ=3)
-	o.RuinRuins(pos=(69,0,19),ro_y=90,typ=3)
 	o.RuinRuins(pos=(-3.5,-1,-54),ro_y=-90,typ=3)
 	o.RuinRuins(pos=(8.5,-.6,-53),ro_y=70,typ=3)
 	o.RuinRuins(pos=(-1,-1,-40),ro_y=90,typ=3)
@@ -240,14 +236,14 @@ def load_crate():
 	c.place_crate(ID=10,p=(56.2,1.26,24.7))
 	mt.crate_plane(ID=1,POS=(1.6,0,-35.7),CNT=[2,2])
 	mt.crate_plane(ID=2,POS=(35.6,1.26,9.5),CNT=[2,2])
-	mt.crate_plane(ID=1,POS=(52.1,1.26,15.7),CNT=[3,1])
+	mt.crate_row(ID=1,POS=(52.4,1.26,15.7),CNT=3,WAY=0)
 	mt.crate_block(ID=2,POS=(29.8,.36,-1),CNT=[2,2,1])
 	mt.crate_wall(ID=14,POS=(37.1,1.26,9.6),CNT=[1,3])
 	mt.crate_wall(ID=1,POS=(43.5,-.34,4.7),CNT=[1,2])
 	c.place_crate(ID=4,p=(11.6,.36,-33.1))
 	mt.bounce_twin(POS=(2.3,.36,-33.1),CNT=1)
 	mt.bounce_twin(POS=(38.3,1.26,8.4),CNT=1)
-	mt.bounce_twin(POS=(53.9,1.26,15.1),CNT=1)
+	mt.bounce_twin(POS=(53.9,1.26,16.5),CNT=1)
 	c.place_crate(ID=3,p=(11.4,.36,-20.6))
 	c.place_crate(ID=3,p=(19.7,.36,-1))
 	c.place_crate(ID=11,p=(52.5,1.26,5.4))
@@ -257,7 +253,7 @@ def load_crate():
 	c.place_crate(ID=9,p=(43,1.6,-2.8),m=102)
 	for ffc_x in range(5):
 		for ffc_z in range(2):
-			c.place_crate(ID=13,p=(64+.32*ffc_x,1.1+.16,16+.32*ffc_z),m=102,l=r.choice([1,2,7]))
+			c.place_crate(ID=13,p=(59.6+.32*ffc_x,1.1+.16,16+.32*ffc_z),m=102,l=r.choice([1,2,7]))
 	mt.crate_plane(ID=2,POS=(44.2,-.5+.16,-1.6),CNT=[2,2])
 	#aku
 	c.place_crate(ID=5,p=(4.8,.36,-56))
@@ -265,7 +261,7 @@ def load_crate():
 	#checkpoints
 	c.place_crate(ID=6,p=(11.9,.36,-28.6))
 	c.place_crate(ID=6,p=(25.4,.36,4.5))
-	c.place_crate(ID=6,p=(41.2,.06,4.6))
+	c.place_crate(ID=6,p=(40.5,.3+.16,4.6))
 	if not 3 in status.COLOR_GEM:
 		c.place_crate(ID=16,p=(-.4,.36,-56.4))
 def load_wumpa():
@@ -296,27 +292,26 @@ def load_npc():
 	n.spawn(ID=9,POS=(2.7,.2,-38.8))
 	n.spawn(ID=8,POS=(24.2,.2,-1),DRC=0,CMV=True)
 	n.spawn(ID=8,POS=(13.1,.2,-1),CMV=False)
-	n.spawn(ID=9,POS=(34.5,1.1,6.5),DRC=2)
-	n.spawn(ID=9,POS=(39,1.1,6.5),DRC=2)
+	n.spawn(ID=9,POS=(34.9,1.1,8.6),DRC=0,RNG=.6)
 	n.spawn(ID=8,POS=(53.2,1.1,8.3),CMV=False)
 	n.spawn(ID=8,POS=(55.4,1.1,24),DRC=2,CMV=True)
 
 ## bonus level / gem path
 def bonus_zone():
 	o.FallingZone(pos=(0,-42,0),s=(128,.3,32))
-	o.spw_ruin_ptf(p=(-1,-37,U),cnt=4,way=0)
-	o.spw_ruin_ptf(p=(2,-36.5,U),cnt=2,way=0)
-	o.spw_ruin_ptf(p=(4.5,-36.5,U),cnt=3,way=0)
-	o.spw_ruin_ptf(p=(6.75,-36,U),cnt=4,way=0)
-	o.LoosePlatform(pos=(10,-35.8,U),t=1)
-	o.LoosePlatform(pos=(11.5,-36,U),t=1)
-	o.LoosePlatform(pos=(13,-36.5,U),t=1)
-	o.spw_ruin_ptf(p=(14,-36.7,U),cnt=8,way=0)
-	o.spw_ruin_ptf(p=(21,-36.7,U),cnt=1,way=0)
-	o.spw_ruin_ptf(p=(21.75,-36.2,U),cnt=1,way=0)
-	o.spw_ruin_ptf(p=(24,-36.2,U),cnt=1,way=0)
-	o.spw_ruin_ptf(p=(24.75,-36.7,U),cnt=3,way=0)
-	o.spw_ruin_ptf(p=(31.17,-36.7,U),cnt=6,way=0)
+	o.spw_ruin_ptf(p=(-1,-36.5,U),cnt=4,way=0)
+	o.spw_ruin_ptf(p=(2,-36,U),cnt=2,way=0)
+	o.spw_ruin_ptf(p=(4.5,-36,U),cnt=3,way=0)
+	o.spw_ruin_ptf(p=(6.75,-35.5,U),cnt=4,way=0)
+	o.LoosePlatform(pos=(10,-35.5,U),t=1)
+	o.LoosePlatform(pos=(11.5,-35.8,U),t=1)
+	o.LoosePlatform(pos=(13,-36.1,U),t=1)
+	o.spw_ruin_ptf(p=(14,-36.2,U),cnt=8,way=0)
+	o.spw_ruin_ptf(p=(21,-36.2,U),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(21.75,-35.7,U),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(24,-35.7,U),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(24.75,-36.2,U),cnt=3,way=0)
+	o.spw_ruin_ptf(p=(31.17,-36.2,U),cnt=6,way=0)
 	#crate
 	mt.crate_stair(ID=1,POS=(26.8,-36.3,U),CNT=4,WAY=0)
 	mt.crate_row(ID=1,POS=(26.8+.32*4,-36.3+.32*3,U),CNT=5,WAY=0)
@@ -373,28 +368,29 @@ def bonus_zone():
 	o.RuinRuins(pos=(39,-36.8,U+2),ro_y=90,typ=0)
 	o.BonusPlatform(pos=(36,-36,U))
 def gem_zone():
+	bnh=-2.5
 	o.FallingZone(pos=(200,-5,0),s=(40,1,64))
-	o.spw_ruin_ptf(p=(200,-3,U),cnt=1,way=0)
-	o.spw_ruin_ptf(p=(200-.75,-3,U+1.5),cnt=3,way=0)
+	o.spw_ruin_ptf(p=(200,bnh,U),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(200-.75,bnh,U+1.5),cnt=3,way=0)
 	for rn_a in range(3):
-		o.spw_ruin_ptf(p=(200+(.75*3+rn_a*1.5),-3,U+1.5),cnt=1,way=0)
-	o.spw_ruin_ptf(p=(206.5,-3,U+1.5),cnt=2,way=0)
+		o.spw_ruin_ptf(p=(200+(.75*3+rn_a*1.5),bnh,U+1.5),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(206.5,bnh,U+1.5),cnt=2,way=0)
 	for rn_b in range(5):
-		o.spw_ruin_ptf(p=(200.5+.75*8,-3,U+(.75*3+rn_b*1.5)),cnt=1,way=0)
-	o.spw_ruin_ptf(p=(206.4-.75,-3,6.8),cnt=3,way=0)
+		o.spw_ruin_ptf(p=(200.5+.75*8,bnh,U+(.75*3+rn_b*1.5)),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(206.4-.75,bnh,6.8),cnt=3,way=0)
 	for rn_c in range(7):
-		o.spw_ruin_ptf(p=(202+(.75*3-rn_c*1.5),-3,U+.75*13),cnt=1,way=0)
-	o.spw_ruin_ptf(p=(194,-3,U+.75*13),cnt=3,way=1)
-	o.spw_ruin_ptf(p=(193.25,-3,U+.75*13),cnt=3,way=1)
+		o.spw_ruin_ptf(p=(202+(.75*3-rn_c*1.5),bnh,U+.75*13),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(194,bnh,U+.75*13),cnt=3,way=1)
+	o.spw_ruin_ptf(p=(193.25,bnh,U+.75*13),cnt=3,way=1)
 	for rn_dx in range(6):
 		for rn_dz in range(4):
-			o.spw_ruin_ptf(p=(189.5+(rn_dx*1.5),-3,U+(.75*17)+(rn_dz*1.3)),cnt=1,way=0)
-	o.spw_ruin_ptf(p=(194,-3,15.5),cnt=5,way=1)
+			o.spw_ruin_ptf(p=(189.5+(rn_dx*1.5),bnh,U+(.75*17)+(rn_dz*1.3)),cnt=1,way=0)
+	o.spw_ruin_ptf(p=(194,bnh,15.5),cnt=5,way=1)
 	for llpf in range(7):
 		o.LoosePlatform(pos=(194,-2.8,19.5+llpf*1.5),t=0)
 	for fnp_x in range(4):
 		for fnp_z in range(4):
-			o.spw_ruin_ptf(p=(193.25+.75*fnp_x,-3,30+.75*fnp_z),cnt=1,way=0)
+			o.spw_ruin_ptf(p=(193.25+.75*fnp_x,bnh,30+.75*fnp_z),cnt=1,way=0)
 	o.MonkeySculpture(pos=(194-1,-2.6,21),r=False,d=True,ro_y=-90)
 	o.MonkeySculpture(pos=(194+1,-2.6,24),r=False,d=True,ro_y=90)
 	o.MonkeySculpture(pos=(194-1,-2.6,27),r=False,d=True,ro_y=-90)
