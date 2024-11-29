@@ -169,3 +169,14 @@
 - added seperate Monkey Sculpture without and with podium below.
 - loose platform play sound earlier + no opt model need anymore (reduced collider)
 - FPS Counter in debug-window
+
+#27.11.2024
+- Checkpoint letters in one instance, where refresh own text
+- changed loose platforms y rotation, to keep the same texture side, while playing animation
+
+#28.11.2024
+- NPC where nearby crash, will walk in players direction
+- player Raycast will detect NPC's to improve collisions with them.
+
+#29.11.2024
+- reduces level 5 gorilla npc's, colliders and ruin background scenes

@@ -266,7 +266,7 @@ class CrateBreak(Entity):
 class CollapseFloor(Entity):
 	def __init__(self,t,pos):
 		s=self
-		super().__init__(model=cl+f'{t}/0.ply',texture=cl+f'{t}/0.tga',position=pos,scale=.01/15,rotation_x=-90)
+		super().__init__(model=cl+f'{t}/0.ply',texture=cl+f'{t}/0.tga',position=pos,scale=.01/15,rotation=(-90,-90,0))
 		s.typ=t
 		s.frm=0
 		del t,pos

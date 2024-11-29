@@ -25,6 +25,7 @@ def set_val(c):
 	c.indoor=.5
 	c.CMS=3
 	_loc.ACTOR=c
+	del _a,_v
 def get_damage(c,rsn):
 	if st.aku_hit > 2:
 		return
@@ -112,17 +113,17 @@ def c_slide(c):
 			c.slide_fwd=c.move_speed
 def c_smash(c):
 	k=[dp for dp in scene.entities if (distance(c.position,dp.position) < .4 and dp.collider and (is_crate(dp) or is_enemie(dp)))]
-	if len(k) > 0:
-		wr=k[0]
-		if is_crate(wr):
-			if wr.vnum in {3,11}:
-				wr.empty_destroy()
-			if wr.vnum == 14:
-				wr.c_destroy()
+	for sw in k:
+		if is_crate(sw):
+			if sw.vnum in {3,11}:
+				sw.empty_destroy()
+			if sw.vnum == 14:
+				sw.c_destroy()
 			else:
-				wr.destroy()
-		if is_enemie(wr):
-			wr.is_purge=True
+				sw.destroy()
+		if is_enemie(sw):
+			sw.is_purge=True
+	del k
 def c_attack(c):
 	if not c.is_attack or st.gproc():
 		return
@@ -194,6 +195,7 @@ def spawn_level_crystal(idx):
 	cry_pos={0:(0,0,0),1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7),6:(0,.3,-15)}
 	if not idx in st.CRYSTAL:
 		item.EnergyCrystal(pos=cry_pos[idx])
+	del cry_pos
 def collect_reset():
 	st.C_RESET.clear()
 	st.W_RESET.clear()
@@ -303,6 +305,7 @@ def collect_rewards():
 			5:3}#lv5#purple
 		st.COLOR_GEM.append(wcg[cdx])
 		st.color_gems+=1
+		del wcg
 	delete_states()
 	invoke(lambda:warproom.level_select(),delay=2)
 def purge_instance(v):
@@ -514,6 +517,7 @@ def check_nitro_stack():
 		for cra in all_crt:
 			if abs(cra.x-ni.x) < .1 and abs(cra.z-ni.z) < .1 and ni.y <= cra.y and not ni is cra:
 				ni.can_jmp=False
+	del nit_crt,all_crt
 def is_crate(e):
 	cck={C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
 		C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,C.SwitchEmpty,
@@ -641,11 +645,11 @@ def fly_away(n):
 			cache_instance(n)
 			wumpa_count(1)
 def is_enemie(n):
-	nnk=[N.Amadillo,N.Turtle,N.SawTurtle,
+	nnk={N.Amadillo,N.Turtle,N.SawTurtle,
 		N.Penguin,N.Hedgehog,N.Seal,
 		N.EatingPlant,N.Rat,N.Lizard,
 		N.Eel,N.Scrubber,N.Mouse,N.SewerMine,
-		N.Vulture,N.Gorilla]
+		N.Vulture,N.Gorilla}
 	return any(isinstance(n,npc_class) for npc_class in nnk)
 def bash_enemie(e,h):
 	e.is_hitten=True

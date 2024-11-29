@@ -4,7 +4,7 @@ import environment
 
 ## debug options
 debg_color=color.rgb32(180,180,180)
-debg=True
+debg=False
 
 ## keyboard bindings
 MNU_KEY='p'#		pause
@@ -35,9 +35,10 @@ def load():
 	w.borderless=False
 	w.cog_menu.eternal=False
 	w.cog_menu.force_destroy=True
-	##debug infos
+	w.fps_counter.enabled=False
+	##debug info
 	w.collider_counter.enabled=debg
-	w.fps_counter.enabled=debg
+	w.entity_counter.enabled=debg
 	camera.fov=65
 	environment.init_amb_light()
 	destroy(w.cog_menu)

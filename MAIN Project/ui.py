@@ -78,44 +78,39 @@ class WumpaCollectAnim(Entity):
 class WumpaCounter(Entity):
 	def __init__(self):
 		s=self
-		s.pa=wmpf
 		super().__init__(model=q,parent=CU,position=(-.75,.43,0),scale=(.07,.08,0),visible=False)
 		s.digit_0=Entity(model=q,parent=CU,position=(s.x+.075,s.y),scale=.06,visible=False)
 		s.digit_1=Entity(model=q,parent=CU,position=(s.digit_0.x+.06,s.digit_0.y),scale=.06,visible=False)
-		s.refr=.1
 		s.frm=0
 	def digits(self):
 		s=self
 		n=f'{st.wumpa_fruits}'
-		s.digit_0.texture=s.pa+n[0]+'.png'
+		s.digit_0.texture=wmpf+n[0]+'.png'
 		s.digit_0.visible=True
 		s.visible=True
 		if st.wumpa_fruits >= 10:
 			s.digit_1.visible=True
-			s.digit_1.texture=s.pa+n[1]+'.png'
+			s.digit_1.texture=wmpf+n[1]+'.png'
 			return
 		s.digit_1.visible=False
 	def wumpa_max(self):
-		if st.wumpa_fruits > 99:
-			st.wumpa_fruits=0
-			cc.give_extra_live()
+		st.wumpa_fruits=0
+		cc.give_extra_live()
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		s.refr=max(s.refr-time.dt,0)
-		if s.refr <= 0:
-			s.refr=.1
+		if st.wumpa_fruits > 99:
 			s.wumpa_max()
-			if st.show_wumpas > 0:
-				wmp_anim(s)
-				s.digits()
-				st.show_wumpas=max(st.show_wumpas-time.dt,0)
-				if st.show_wumpas <= 0:
-					s.frm=0
-					s.digit_0.visible=False
-					s.digit_1.visible=False
-					s.visible=False
+		if st.show_wumpas > 0:
+			wmp_anim(s)
+			s.digits()
+			st.show_wumpas=max(st.show_wumpas-time.dt,0)
+			if st.show_wumpas <= 0:
+				s.frm=0
+				s.digit_0.visible=False
+				s.digit_1.visible=False
+				s.visible=False
 
 class CrateCounter(Entity):
 	def __init__(self):
@@ -755,14 +750,15 @@ class GemHint(Entity):
 
 ## Checkpoint Letters
 class CheckpointLetter(Entity):
-	def __init__(self,idx,pos):
+	def __init__(self,pos):
 		s=self
 		super().__init__()
-		s.ckt=Text(LC.checkp[idx],font=_fnt,position=(pos[0]+idx/10,pos[1]+.4,pos[2]),scale=7,parent=scene,color=color.orange,unlit=False)
-		del idx,pos
-		s.tm=1.5
+		s.ckt=Text(None,font=_fnt,position=(pos[0],pos[1]+.4,pos[2]),scale=7,parent=scene,color=color.orange,unlit=False)
+		s.rev=False
+		s.tm=.075
+		s.idx=0
+		del pos
 	def purge(self):
-		sn.pc_audio(ID=1,pit=.9)
 		destroy(self.ckt)
 		destroy(self)
 	def update(self):
@@ -771,7 +767,20 @@ class CheckpointLetter(Entity):
 		s=self
 		s.tm=max(s.tm-time.dt,0)
 		if s.tm <= 0:
-			s.purge()
+			s.tm=.075
+			s.ckt.text={False:LC.checkp[:s.idx],True:LC.checkp[-s.idx+1:]}[s.rev]
+			if s.rev:
+				sn.pc_audio(ID=1,pit=.9)
+				s.ckt.x+=time.dt*4.4
+				s.idx-=1
+				if s.idx <= 0:
+					s.purge()
+				return
+			if s.idx >= len(LC.checkp):
+				s.tm=.3
+				s.rev=True
+				return
+			s.idx+=1
 
 ## Time Trial
 class TrialTimer(Entity):

@@ -21,16 +21,15 @@ class pShadow(Entity):## shadow point
 	def flw_p(self):
 		s=self
 		ta=LC.ACTOR
-		s.x=ta.x
-		s.z=ta.z
+		s.x,s.z=ta.x,ta.z
 		s.visible=not(ta.freezed)
 		vSH=raycast(ta.world_position,-Vec3(0,1,0),distance=2,ignore=[s,ta],debug=False)
 		if vSH.hit:
 			if not (str(vSH.entity) in LC.item_lst|LC.trigger_lst):
 				s.y=vSH.world_point.y
 			return
-		if ta.landed and not (ta.falling or ta.jumping):
-			s.y=(ta.y)
+		if ta.landed and ta.fall_time <= 0:
+			s.y=(ta.y+.001)
 	def update(self):
 		if not st.gproc():
 			self.flw_p()
@@ -52,10 +51,9 @@ class CrashB(Entity):
 				sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),
 				sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
 		if sg.debg:
-			#_debug_.MemoryTracker(interval=5,threshold=100000)
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(30+.75*6,5,4.7+.75*5)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(0,0,0)),
 					sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
 	def input(self,key):
@@ -103,11 +101,12 @@ class CrashB(Entity):
 				s.position+=mvD*(time.dt*s.move_speed)
 			if (mn == 'fthr'):
 				cc.get_damage(s,rsn=3)
+			if cc.is_enemie(me) and me.collider:
+				cc.get_damage(s,rsn=1)
 			if (cc.is_crate(me) and me.vnum == 12):
 				me.destroy()
 			s.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
 			s.walk_event()
-			del mvD
 			return
 		s.walk_snd=0
 		s.walking=False

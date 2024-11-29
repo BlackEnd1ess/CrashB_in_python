@@ -83,7 +83,7 @@ def explosion(cr):
 	sn.crate_audio(ID=10)
 	if cr.vnum == 12:
 		invoke(lambda:sn.crate_audio(ID=11,pit=1.4),delay=.1)
-	rk=[tt for tt in scene.entities if (distance(cr.position,tt.position) < 1)]
+	rk={tt for tt in scene.entities if (distance(cr.position,tt.position) < 1)}
 	for exR in rk:
 		if cc.is_crate(exR) and exR.collider:
 			if exR.vnum in {3,11}:
@@ -96,14 +96,6 @@ def explosion(cr):
 		if exR == LC.ACTOR:
 			cc.get_damage(exR,rsn=3)
 	del cr,rk
-
-#checkpoint spawn letter
-def cnt_letter(cpos):
-	for ct in range(10):
-		spawn_letter(cpos,idx=ct)
-	del ct,cpos
-def spawn_letter(cpos,idx):
-	invoke(lambda:ui.CheckpointLetter(idx,pos=cpos),delay=.05*idx)
 
 ##Crate Logics
 class Iron(Entity):
@@ -222,7 +214,7 @@ class Checkpoint(Entity):
 		s=self
 		st.checkpoint=(s.x,s.y+1.5,s.z)
 		sn.crate_audio(ID=6)
-		cnt_letter(s.position)
+		ui.CheckpointLetter(pos=s.position)
 		destroy_event(s)
 		cc.collect_reset()
 

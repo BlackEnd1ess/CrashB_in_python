@@ -759,7 +759,7 @@ lpp=omf+'l5/loose_ptf/'
 class LoosePlatform(Entity):
 	def __init__(self,pos,t):
 		s=self
-		super().__init__(model=lpp+f'{t}/'+'lpf.obj',texture=lpp+f'{t}/'+'lpf.tga',name='loos',scale=.01/15,position=pos,rotation_y=-90,double_sided=True)
+		super().__init__(model=lpp+f'{t}/'+'lpf.obj',texture=lpp+f'{t}/'+'lpf.tga',name='loos',scale=.01/15,position=pos,rotation_y=90,double_sided=True)
 		s.collider=BoxCollider(s,center=Vec3(0,-.5,0),size=(100*10,100,100*10))
 		s.active=False
 		s.typ=t

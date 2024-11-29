@@ -32,25 +32,45 @@ def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True):
 		13:lambda:SewerMine(pos=POS,drc=DRC,rng=RNG),
 		14:lambda:Gorilla(pos=POS,drc=DRC,rng=RNG)}
 	npc_[ID]()
-	del ID,POS,DRC,RTYP,RNG,CMV
+	del ID,POS,DRC,RTYP,RNG,CMV,npc_
+
+def follow_p(m,qr,spd):
+	if abs(m.spawn_pos[0]-m.x) < m.mov_range:
+		setattr(m,'x',lerp(m.x,qr.x,spd))
+	del qr,spd
+
+def npc_mv_back(m,spd):
+	if m.x != m.spawn_pos[0]:
+		m.x=lerp(m.x,m.spawn_pos[0],spd)
+	del spd
 
 def npc_walk(m):
 	pdv={0:m.spawn_pos[0],1:m.spawn_pos[1],2:m.spawn_pos[2]}
 	spd=time.dt*m.move_speed
+	qr=LC.ACTOR
 	mm=m.mov_direc
 	mt=m.turn
 	kv=getattr(m,di[mm])
+	mdp=distance(qr,m)
 	pmd={0:lambda:setattr(m,di[mm],kv+spd),1:lambda:setattr(m,di[mm],kv-spd)}
 	pmd[mt]()
+	if mm == 2:
+		if mdp < 2 and qr.y == m.y:
+			follow_p(m,qr,spd)
+		else:
+			npc_mv_back(m,spd)
 	if (mt == 0 and kv >= pdv[mm]+m.mov_range) or (mt == 1 and kv <= pdv[mm]-m.mov_range):
 		if mt == 0:
 			mr={0:90,1:0,2:0}
 			m.rotation_y=mr[mm]
 			m.turn=1
+			del mr
 			return
 		mr={0:270,1:0,2:180}
 		m.rotation_y=mr[mm]
 		m.turn=0
+		del mr
+	del pdv,pmd
 
 def npc_action(m):
 	if not st.gproc():
