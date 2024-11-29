@@ -121,9 +121,8 @@ def c_smash(c):
 				sw.c_destroy()
 			else:
 				sw.destroy()
-		if is_enemie(sw):
+		if is_enemie(sw) and sw.vnum != 13:
 			sw.is_purge=True
-	del k
 def c_attack(c):
 	if not c.is_attack or st.gproc():
 		return
@@ -138,8 +137,8 @@ def c_attack(c):
 				if not (qd.is_purge or qd.is_hitten):
 					if (qd.vnum in {1,11}) or (qd.vnum == 5 and qd.def_mode):
 						get_damage(c,rsn=1)
-					bash_enemie(qd,h=c)
-	del c
+					if not qd.vnum == 13:
+						bash_enemie(qd,h=c)
 def c_shield():
 	if st.aku_hit < 3 or st.gproc():
 		return
@@ -287,7 +286,6 @@ def delete_states():
 	st.death_event=False
 	st.gem_death=False
 	st.pause=False
-	st.day_mode=''
 	level_ready=False
 def collect_rewards():
 	cdx=st.level_index
@@ -373,16 +371,9 @@ def check_wall(c):
 		if xa in LC.item_lst:
 			jV.collect()
 			return
-		if is_enemie(jV):
-			R=1
-			if jV.vnum == 7:
-				R=5
-			if not c.is_attack:
-				get_damage(c,rsn=R)
-			return
+		hit_npc(c,m=jV)
 		if not xa in LC.trigger_lst:
 			c.position-=c.direc*time.dt*c.move_speed
-
 def check_floor(c):
 	lkh={r for r in scene.entities if (str(r) in LC.item_lst|LC.dangers|LC.trigger_lst) or r in [c,LC.shdw]}
 	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.125,.125),ignore=lkh,debug=False)
@@ -402,6 +393,7 @@ def check_floor(c):
 	c.y-=fsp[c.b_smash]
 	c.fall_time+=time.dt
 	c.anim_fall()
+	del fsp
 def land_act(c,vp):
 	if c.frst_lnd:
 		c.frst_lnd=False
@@ -424,7 +416,7 @@ def fall_interact(c,e):
 			e.destroy()
 			return
 	if is_enemie(e) and not (e.is_hitten or e.is_purge):
-		if (e.vnum in {2,9}) or (e.vnum == 5 and e.def_mode):
+		if (e.vnum in {2,9,13}) or (e.vnum == 5 and e.def_mode):
 			get_damage(c,rsn=1)
 		e.is_purge=True
 		c.jump_typ(t=2)
@@ -460,6 +452,14 @@ def ptf_up(p,c):
 		go_to={'bnpt':lambda:load_bonus(c),'gmpt':lambda:load_gem_route(c)}
 		go_to[p.name]()
 		del go_to
+def hit_npc(c,m):
+	if is_enemie(m) and m.collider:
+		if not (m.is_purge or m.is_hitten):
+			RS=1
+			if m.vnum == 7:
+				RS=5
+			if not c.is_attack:
+				get_damage(c,rsn=RS)
 
 ## interface,collectables
 def wumpa_count(n):
@@ -564,8 +564,6 @@ def back_to_level(c):
 		st.bonus_round=False
 		st.bonus_solved=True
 		clear_bonus()
-	dMN=_loc.day_m
-	st.day_mode=dMN[st.level_index]
 	c.freezed=False
 	env.set_fog(st.level_index)
 	camera.y=c.y+.5

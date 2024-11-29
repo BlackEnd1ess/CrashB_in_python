@@ -39,6 +39,7 @@ def load():
 	##debug info
 	w.collider_counter.enabled=debg
 	w.entity_counter.enabled=debg
+	w.color=color.black
 	camera.fov=65
 	environment.init_amb_light()
 	destroy(w.cog_menu)

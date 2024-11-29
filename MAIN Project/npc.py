@@ -397,7 +397,9 @@ class SewerMine(Entity):
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=.75
 	def update(self):
-		npc_action(self)
+		if not st.gproc():
+			an.npc_walking(self)
+			npc_walk(self)
 
 class Gorilla(Entity):
 	def __init__(self,pos,drc,rng):

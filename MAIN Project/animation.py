@@ -242,15 +242,17 @@ br='brk/0'
 class CrateBreak(Entity):
 	def __init__(self,cr):
 		s=self
-		super().__init__(model=cf+br+'.ply',texture=cf+br+'.tga',rotation=(-90,random.randint(0,360),0),scale=.4/1000,position=(cr.x,cr.y-.16,cr.z))
+		super().__init__(model=cf+br+'.ply',texture=cf+br+'.tga',rotation=(-90,random.randint(0,360),0),scale=.4/1000,position=(cr.x,cr.y-.16,cr.z),unlit=False)
 		s.frame_break=0
-		s.color=color.orange
-		if cr.vnum == 11:
-			s.color=color.red
+		s.color=color.rgb32(180,80,0)
+		if cr.vnum == 3:
+			s.color=color.rgb32(140,70,0)
+		elif cr.vnum == 11:
+			s.color=color.rgb32(190,0,0)
 		elif cr.vnum == 12:
-			s.color=color.green
+			s.color=color.rgb32(0,190,0)
 		elif cr.vnum == 16:
-			s.color=color.violet
+			s.color=color.rgb32(160,0,160)
 		del cr
 	def update(self):
 		if st.gproc():
@@ -266,10 +268,11 @@ class CrateBreak(Entity):
 class CollapseFloor(Entity):
 	def __init__(self,t,pos):
 		s=self
-		super().__init__(model=cl+f'{t}/0.ply',texture=cl+f'{t}/0.tga',position=pos,scale=.01/15,rotation=(-90,-90,0))
+		dc=.01/15
+		super().__init__(model=cl+f'{t}/0.ply',texture=cl+f'{t}/0.tga',position=pos,scale=(-dc,dc,dc),rotation=(-90,-270,0))
 		s.typ=t
 		s.frm=0
-		del t,pos
+		del t,pos,dc
 	def update(self):
 		if st.gproc():
 			return
@@ -277,6 +280,7 @@ class CollapseFloor(Entity):
 		s.frm=min(s.frm+(time.dt*18),32.999)
 		if s.frm > 32.99:
 			s.frm=0
+			s.disable()
 			destroy(s)
 			return
 		s.model=cl+f'{s.typ}/{int(s.frm)}.ply'

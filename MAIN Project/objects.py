@@ -11,6 +11,7 @@ LC=_loc
 
 wfc='wireframe_cube'
 omf='res/objects/'
+bgg='res/background/'
 b='box'
 
 def wtr_dist(w,p):
@@ -85,10 +86,10 @@ class MossPlatform(Entity):
 		super().__init__(model=MVP+'.obj',name='mptf',texture=MVP+'.tga',scale=.0085,position=(p[0],p[1]+.475,p[2]),enabled=False,double_sided=True,collider=b)
 		s.spawn_pos=p
 		s.slp=ptw
-		s.ptw=ptw
 		s.ptm=ptm
 		s.pts=pts
 		s.turn=0
+		s.ptw=0
 		s.is_sfc=(ptm == 1)
 		if ptm > 1:
 			s.drc='x'
@@ -890,11 +891,11 @@ class CrateScore(Entity):## level reward
 		if s.visible:
 			s.cc_text.text=f'{st.crate_count}/{st.crates_in_level}'
 			s.rotation_y-=120*time.dt
-		if (st.crate_count >= st.crates_in_level):
+		if st.crate_count >= st.crates_in_level:
 			item.GemStone(pos=(s.x,s.y-.3,s.z),c=0)
 			sn.ui_audio(ID=4)
-			cc.purge_instance(s.cc_text)
-			cc.purge_instance(s)
+			destroy(s.cc_text)
+			destroy(s)
 
 rmp=omf+'ev/s_room/room'
 class StartRoom(Entity):## game spawn point
@@ -1040,11 +1041,10 @@ class LevelFinish(Entity):## finish level
 		s=self
 		trpv=omf+'ev/teleport/warp_effect'
 		super().__init__(model='sphere',name='lvfi',collider=b,scale=1,position=p,visible=False)
-		ef.WarpVortex(pos=(s.x,s.y,s.z),col=color.yellow,sca=.6,drc=1)
-		ef.WarpVortex(pos=(s.x,s.y+.2,s.z),col=color.orange,sca=.7,drc=0)
-		ef.WarpVortex(pos=(s.x,s.y+.4,s.z),col=color.yellow,sca=.8,drc=1)
-		ef.WarpVortex(pos=(s.x,s.y+.6,s.z),col=color.orange,sca=.7,drc=0)
-		ef.WarpVortex(pos=(s.x,s.y+.8,s.z),col=color.yellow,sca=.6,drc=1)
+		ef.WarpVortex(pos=(s.x,s.y+.1,s.z),col=color.yellow,sca=.6,drc=1)
+		ef.WarpVortex(pos=(s.x,s.y+.3,s.z),col=color.orange,sca=.7,drc=0)
+		ef.WarpVortex(pos=(s.x,s.y+.5,s.z),col=color.yellow,sca=.8,drc=1)
+		ef.WarpVortex(pos=(s.x,s.y+.7,s.z),col=color.orange,sca=.7,drc=0)
 		s.w_audio=Audio('res/snd/misc/portal.wav',volume=0,loop=True)
 	def update(self):
 		if not st.gproc():
@@ -1075,14 +1075,13 @@ class HitBox(Entity):
 class LevelScene(Entity):
 	def __init__(self,pos,sca):
 		s=self
-		s.vpa='res/background/'
 		super().__init__(model='quad',texture=None,scale=sca,position=pos,texture_scale=(sca[0]/50,1))
 		if st.level_index == 1:
-			s.texture=s.vpa+'bg_woods.png'
+			s.texture=bgg+'bg_woods.png'
 			s.unlit=True
 			return
 		if st.level_index == 5:
-			s.texture=s.vpa+'bg_ruins.jpg'
+			s.texture=bgg+'bg_ruins.jpg'
 			s.color=color.rgb32(150,150,160)
 			s.shader=unlit_shader
 			s.orginal_tsc=s.texture_scale

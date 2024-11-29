@@ -180,3 +180,5 @@
 
 #29.11.2024
 - reduces level 5 gorilla npc's, colliders and ruin background scenes
+- fixxed animation rotation for collapse floor
+- shadow point changed y height, if player landed

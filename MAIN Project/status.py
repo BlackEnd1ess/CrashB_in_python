@@ -2,7 +2,6 @@ from ursina import *
 
 ## one load level settings
 checkpoint=None
-day_mode=''
 
 ## game progress items
 COLOR_GEM=[]

@@ -101,10 +101,9 @@ class CrashB(Entity):
 				s.position+=mvD*(time.dt*s.move_speed)
 			if (mn == 'fthr'):
 				cc.get_damage(s,rsn=3)
-			if cc.is_enemie(me) and me.collider:
-				cc.get_damage(s,rsn=1)
 			if (cc.is_crate(me) and me.vnum == 12):
 				me.destroy()
+			cc.hit_npc(c=s,m=me)
 			s.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
 			s.walk_event()
 			return

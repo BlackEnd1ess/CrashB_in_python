@@ -30,15 +30,6 @@ dt_act={0:'fall_endl',
 		5:'electric',
 		6:'eat_by_plant'}
 
-#day mode
-day_m={0:'empty',
-	1:'woods',
-	2:'snow',
-	3:'evening',
-	4:'sewer',
-	5:'empty',
-	6:'empty'}
-
 #2d gem animation
 ge_0='res/ui/icon/gem_0/gem'
 ge_1='res/ui/icon/gem_1/gem'
