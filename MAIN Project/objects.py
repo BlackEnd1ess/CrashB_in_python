@@ -865,7 +865,7 @@ class LogDanger(Entity):
 class RuinsScene(Entity):
 	def __init__(self):
 		s=self
-		super().__init__(model='quad',texture=bgg+'bg_ruins.jpg',scale=(800,120),texture_scale=(2,1),position=(0,-38,128),color=color.rgb32(160,160,170),shader=unlit_shader)
+		super().__init__(model='quad',texture=bgg+'bg_ruins.jpg',scale=(800,120),texture_scale=(2,1),position=(50,-38,128),color=color.rgb32(160,160,170),shader=unlit_shader)
 		s.orginal_x,s.orginal_y=s.x,s.y
 		s.orginal_tsc=s.texture_scale
 		s.bonus_x,s.bonus_y=-70,200
@@ -873,9 +873,6 @@ class RuinsScene(Entity):
 	def update(self):
 		if st.bonus_round:
 			self.y=self.bonus_y
-		#	return
-		#if st.death_route:
-		#	self.x=self.bonus_x
 
 ##################
 ## logic objects #
@@ -1048,9 +1045,15 @@ class LevelFinish(Entity):## finish level
 		ef.WarpVortex(pos=(s.x,s.y+.5,s.z),col=color.yellow,sca=.8,drc=1)
 		ef.WarpVortex(pos=(s.x,s.y+.7,s.z),col=color.orange,sca=.7,drc=0)
 		s.w_audio=Audio('res/snd/misc/portal.wav',volume=0,loop=True)
+		s.refr=.3
 	def update(self):
-		if not st.gproc():
-			s=self
+		s=self
+		if st.pause:
+			s.w_audio.volume=0
+			return
+		s.refr=max(s.refr-time.dt,0)
+		if s.refr <= 0:
+			s.refr=.3
 			if s.intersects(LC.ACTOR):
 				cc.jmp_lv_fin()
 				return
