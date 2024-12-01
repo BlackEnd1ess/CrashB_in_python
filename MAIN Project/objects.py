@@ -66,6 +66,7 @@ def spw_ruin_ptf(p,cnt,way):
 		else:
 			RuinsBlock(pos=(p[0],p[1],p[2]+rpv*.75))
 
+
 ## Pseudo CrashB
 class PseudoCrash(Entity):
 	def __init__(self):
@@ -189,6 +190,11 @@ class GrassBlock(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model=tvx+'.obj',name='mblo',texture=tvx+'.jpg',position=pos,scale=sca,collider=b)
 		del pos,sca
+
+class WoodScene(Entity):
+	def __init__(self,pos):
+		super().__init__(model='quad',texture=bgg+'bg_woods.png',position=pos,scale=(250,40),texture_scale=(5,1))
+		del pos
 
 ####################
 ## level 2 objects #
@@ -605,8 +611,6 @@ class EletricWater(Entity):
 		s.splash=0
 		s.frm=0
 		s.tme=8
-		if s.x > 150:
-			s.tme=random.uniform(.1,.2)
 	def wtr_anim(self):
 		s=self
 		s.frm=min(s.frm+time.dt*8,31.999)
@@ -626,6 +630,9 @@ class EletricWater(Entity):
 			invoke(s.wtr_normal,delay=1.5)
 	def wtr_normal(self):
 		s=self
+		if not s:
+			del s
+			return
 		s.electric=False
 		s.color=color.rgb32(0,125,125)
 		s.unlit=True
@@ -652,8 +659,8 @@ class EletricWater(Entity):
 			s.wtr_anim()
 			s.tme=max(s.tme-time.dt,0)
 			if s.tme <= 0:
-				if s.x > 150:
-					s.tme=8
+				if s.x > 180:
+					s.tme=random.uniform(.1,.2)
 				else:
 					s.tme=8
 				s.wtr_danger()
@@ -855,16 +862,27 @@ class LogDanger(Entity):
 						return
 					cc.get_damage(LC.ACTOR,rsn=1)
 
+class RuinsScene(Entity):
+	def __init__(self):
+		s=self
+		super().__init__(model='quad',texture=bgg+'bg_ruins.jpg',scale=(800,120),texture_scale=(2,1),position=(0,-38,128),color=color.rgb32(160,160,170),shader=unlit_shader)
+		s.orginal_x,s.orginal_y=s.x,s.y
+		s.orginal_tsc=s.texture_scale
+		s.bonus_x,s.bonus_y=-70,200
+		LC.bgT=s
+	def update(self):
+		if st.bonus_round:
+			self.y=self.bonus_y
+		#	return
+		#if st.death_route:
+		#	self.x=self.bonus_x
+
 ##################
 ## logic objects #
 class FallingZone(Entity):## falling
 	def __init__(self,pos,s):
-		super().__init__(model='cube',name='fllz',collider=b,scale=s,position=pos,color=color.rgb32(0,0,0))
-		if st.level_index != 5:
-			self.visible=False
+		super().__init__(model='cube',name='fllz',collider=b,scale=s,position=pos,color=color.rgb32(0,0,0),visible=False)
 	def update(self):
-		if st.gproc():
-			return
 		ac=LC.ACTOR
 		if self.intersects(ac):
 			cc.dth_event(ac,rsn=0)
@@ -978,36 +996,27 @@ class GemPlatform(Entity):## gem platform
 		s=self
 		ne='gem_ptf_e'
 		s.is_enabled=False
-		if t in st.COLOR_GEM:
+		if t in st.COLOR_GEM or settings.debg:
 			ne='gem_ptf'
 			s.is_enabled=True
-		if settings.debg:
-			ne='gem_ptf'
-			s.is_enabled=True
-			t=0
-		L=180
-		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L+20,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
-		super().__init__(model=wfc,name='gmpt',color=color.green,scale=(.6,.4,.6),position=pos,collider=b,visible=False)
-		s.opt_model=Entity(model=omf+'ev/'+ne+'/'+ne+'.ply',name=s.name,texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=GMC[t],unlit=False)
-		s.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),name=s.name,position=(s.x,s.y-.011,s.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
+			if settings.debg:
+				t=0
+		super().__init__(model=wfc,name='gmpt',scale=(.6,.4,.6),position=pos,collider=b,visible=False)
+		s.opt_model=Entity(model=omf+'ev/'+ne+'/'+ne+'.ply',name=s.name,texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=LC.GMC[t],unlit=False)
 		s.org_color=s.color
 		s.start_y=s.y
 		s.typ=t
 		if not s.is_enabled:
-			s.unlit=False
 			s.collider=None
-			s.bg_darkness.hide()
-			s.alpha=.6
+			s.alpha=.5
 	def update(self):
 		if not st.gproc():
 			s=self
 			if st.gem_path_solved:
-				cc.purge_instance(s.bg_darkness)
 				cc.purge_instance(s.opt_model)
 				cc.purge_instance(s)
 				return
 			s.opt_model.position=(s.x,s.y+.15,s.z)
-			s.bg_darkness.position=(s.opt_model.x,s.opt_model.y-.01,s.opt_model.z)
 			if s.is_enabled and not LC.ACTOR.freezed:
 				s.opt_model.rotation_y+=time.dt*20
 
@@ -1016,22 +1025,15 @@ class PseudoGemPlatform(Entity):
 		s=self
 		ne='gem_ptf_e'
 		s.is_enabled=False
-		if t in st.COLOR_GEM:
+		if t in st.COLOR_GEM or settings.debg:
 			ne='gem_ptf'
 			s.is_enabled=True
-		if settings.debg:
-			ne='gem_ptf'
-			s.is_enabled=True
-			t=0
-		L=180
-		GMC={0:color.rgb32(130,130,140),1:color.rgb32(L,0,0),2:color.rgb32(0,L,0),3:color.rgb32(L-50,0,L-50),4:color.rgb32(0,0,L+40),5:color.rgb32(L-30,L-30,0)}
-		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=GMC[t],unlit=False)
-		s.bg_darkness=Entity(model=Circle(16,mode='ngon',thickness=.1),position=(s.x,s.y-.01,s.z),rotation_x=90,color=color.black,scale=.7,alpha=.98)
+			if settings.debg:
+				t=0
+		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=LC.GMC[t],unlit=False)
 		if s.is_enabled:
 			HitBox(pos=(s.x,s.y-.15,s.z),sca=(.6,.4,.6))
 			return
-		s.unlit=False
-		s.bg_darkness.hide()
 		s.alpha=.5
 
 #############
@@ -1071,32 +1073,6 @@ class HitBox(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model=wfc,position=pos,scale=sca,collider=b,name='htbx',visible=False,enabled=True)
 		del pos,sca
-
-class LevelScene(Entity):
-	def __init__(self,pos,sca):
-		s=self
-		super().__init__(model='quad',texture=None,scale=sca,position=pos,texture_scale=(sca[0]/50,1))
-		if st.level_index == 1:
-			s.texture=bgg+'bg_woods.png'
-			s.unlit=True
-			return
-		if st.level_index == 5:
-			s.texture=bgg+'bg_ruins.jpg'
-			s.color=color.rgb32(150,150,160)
-			s.shader=unlit_shader
-			s.orginal_tsc=s.texture_scale
-			s.orginal_x=s.x
-			s.orginal_y=s.y
-			s.bonus_y=-70
-			s.bonus_x=170
-			_loc.bgT=s
-	def update(self):
-		if st.level_index == 5:
-			s=self
-			xp={True:lambda:setattr(s,'x',s.bonus_x),False:lambda:setattr(s,'x',s.orginal_x)}
-			yp={True:lambda:setattr(s,'y',s.bonus_y),False:lambda:setattr(s,'y',s.orginal_y)}
-			xp[st.death_route]()
-			yp[st.bonus_round]()
 
 class LightArea(SpotLight):
 	def __init__(self,pos):

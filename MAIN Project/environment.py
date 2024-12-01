@@ -20,7 +20,7 @@ AMB_COLOR={
 	2:c.rgb32(200,160,210),
 	3:c.rgb32(240,200,170),
 	4:c.rgb32(160,180,160),
-	5:c.rgb32(140,140,140),
+	5:c.rgb32(140,140,160),
 	6:c.rgb32(140,140,140)}
 
 SKY_COLOR={
@@ -30,7 +30,7 @@ SKY_COLOR={
 	3:c.rgb32(140,0,60),
 	4:c.black,
 	5:c.black,
-	6:c.azure}
+	6:c.black}
 
 def init_amb_light():#called 1 time
 	amv=AmbientLight(color=c.gray)

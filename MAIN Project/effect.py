@@ -1,6 +1,6 @@
+from ursina import Entity,Vec2,Vec3,color,Shader,Func,load_texture
 from ursina.ursinastuff import destroy
 import status,_core,_loc,time,random
-from ursina import Entity,Vec3,color
 
 trpv='res/objects/ev/teleport/warp_effect'
 ef='res/effects/'

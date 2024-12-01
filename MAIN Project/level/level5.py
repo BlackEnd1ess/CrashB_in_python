@@ -26,7 +26,7 @@ def load_object():
 	o.BonusPlatform(pos=(9+.75*6,.5,-22))
 	o.GemPlatform(pos=(16.9,.4,-.1),t=2)
 	o.FallingZone(pos=(0,-2,0),s=(150,.3,128))
-	o.LevelScene(pos=(0,-20,120),sca=(350,100,1))
+	o.RuinsScene()
 	o.RuinsPlatform(pos=(0,blh,-56),m=False)
 	o.RuinsPlatform(pos=(5.4,blh,-56),m=True)
 	o.spw_ruin_ptf(p=(0,blh,-61),cnt=3,way=1)

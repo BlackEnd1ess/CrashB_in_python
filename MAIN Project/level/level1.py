@@ -37,8 +37,8 @@ def load_object():
 	o.GrassSide(pos=(4,gs,-16),m=True)
 	o.GrassSide(pos=(4,gs,15),m=True)
 	o.GrassSide(pos=(4,gs,46),m=True)
-	o.LevelScene(pos=(0,0,128),sca=(250,40,1))
-	o.LevelScene(pos=(0,-20,127),sca=(250,40,1))
+	o.WoodScene(pos=(0,0,128))
+	o.WoodScene(pos=(0,-20,127))
 	#plants
 	Entity(model='cube',texture='res/terrain/l1/bricks.png',scale=(9,2,.3),position=(0,-.2,-64.5),texture_scale=(9,2))
 	o.TreeScene(pos=(-1.2,1.2,-46),sca=.0175)

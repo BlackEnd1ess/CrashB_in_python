@@ -94,11 +94,11 @@ class GemStone(Entity):
 			LC.C_GEM=s
 			if (c == 5 and st.level_index == 3):
 				ui.TrialTimer(t=90)
+		del ge,pos,c
 	def gem_visual(self):
 		##color
 		s=self
-		cu=LC.ge_c[s.gemID]
-		s.color=color.rgb32(cu[0],cu[1],cu[2])
+		s.color=LC.GMC[s.gemID]
 		##scale - info: blue gem and yellow gem are Y scaled
 		if s.gemID in {4,5}:
 			gSC={4:s.scale_z/2,5:s.scale_z*1.5}

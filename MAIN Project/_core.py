@@ -1,5 +1,5 @@
 import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,time,random,json,math
-from ursina import Entity,Text,camera,scene,invoke,Vec3,color,distance,boxcast,raycast
+from ursina import Entity,Text,camera,scene,invoke,Vec3,color,distance,boxcast,raycast,window
 from ursina.ursinastuff import destroy
 from math import atan2,sqrt,pi
 
@@ -255,6 +255,7 @@ def clear_level(passed):
 	st.LV_CLEAR_PROCESS=True
 	scene.clear()
 	if passed:
+		window.color=color.gray
 		collect_rewards()
 		ui.WhiteScreen()
 		return

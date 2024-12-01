@@ -18,7 +18,16 @@ def start_load():
 def load_object():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass',alpha=0)
 	item.GemStone(pos=(4,.4,-20),c=1)
-	o.LoosePlatform(pos=(0,.4,-25),t=1)
+	o.PseudoGemPlatform(pos=(0,.3,-21),t=1)
+	o.PseudoGemPlatform(pos=(1,.3,-21),t=2)
+	o.PseudoGemPlatform(pos=(2,.3,-21),t=3)
+	o.PseudoGemPlatform(pos=(3,.3,-21),t=4)
+	o.PseudoGemPlatform(pos=(4,.3,-21),t=5)
+	o.GemPlatform(pos=(0,.3,-22),t=1)
+	o.GemPlatform(pos=(1,.3,-22),t=2)
+	o.GemPlatform(pos=(2,.3,-22),t=3)
+	o.GemPlatform(pos=(3,.3,-22),t=4)
+	o.GemPlatform(pos=(4,.3,-22),t=5)
 	o.StartRoom(pos=(0,0,-32.2))
 	o.EndRoom(pos=(.5,2,-10),c=color.rgb32(180,200,200))
 def load_crate():

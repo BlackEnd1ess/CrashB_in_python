@@ -182,3 +182,8 @@
 - reduces level 5 gorilla npc's, colliders and ruin background scenes
 - fixxed animation rotation for collapse floor
 - shadow point changed y height, if player landed
+
+#01.12.2024
+- changed level 5 background height
+- gem colours stored in array for all 2d and 3d gems
+- reduced memory usage ingame from 290-310 to 240-to 220 MB RAM

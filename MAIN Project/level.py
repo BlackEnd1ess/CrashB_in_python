@@ -6,6 +6,7 @@ st=status
 cc=_core
 sn=sound
 
+flt=5
 ## start level
 def free_level():
 	camera.rotation_x=15
@@ -41,30 +42,30 @@ def main_instance(idx):
 def test():# test level
 	import level_dev
 	level_dev.start_load()
-	invoke(free_level,delay=1)
+	invoke(free_level,delay=flt)
 
 def level1():# rainy woods
 	import level1
 	level1.start_load()
-	invoke(free_level,delay=3)
+	invoke(free_level,delay=flt)
 
 def level2():# road to nowhere
 	import level2
 	st.gem_death=False
 	level2.start_load()
-	invoke(free_level,delay=3)
+	invoke(free_level,delay=flt)
 
 def level3():# river stream
 	import level3
 	level3.start_load()
-	invoke(free_level,delay=3)
+	invoke(free_level,delay=flt)
 
 def level4():# drain damage
 	import level4
 	level4.start_load()
-	invoke(free_level,delay=3)
+	invoke(free_level,delay=flt)
 
 def level5():# ruined
 	import level5
 	level5.start_load()
-	invoke(free_level,delay=3)
+	invoke(free_level,delay=flt)
