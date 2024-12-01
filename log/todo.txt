@@ -1,7 +1,1 @@
 ## BUGS/ERORRS
-- gem gloss
-- sky background for l1,l3
-- crate destroy from vec3 Y -1 / 1
-- level 3 side walls leafes
-- level 4 hidden crate below big platform
-- to player direction if player nearby npc
