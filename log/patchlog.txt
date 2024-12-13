@@ -187,3 +187,17 @@
 - changed level 5 background height
 - gem colours stored in array for all 2d and 3d gems
 - reduced memory usage ingame from 290-310 to 240-to 220 MB RAM
+- fixxed issue: portal sounds play, if game pause
+- added warp room e2 for extra levels
+- added bee NPC and Hive in Level 6
+
+#05.12.2024
+- Object Tikki Sculpture. moves random 4 way cycle
+
+#10.12.2024
+- Level 6 Assets: Sidewalls, Tree's, Front Walls and Floor implemented
+
+#13.12.2024
+- fixxed lumberjacks hunting range
+- bee will try to get player pos_y+0.15
+- bee hives will not spawn bee's if max bee limit reached
