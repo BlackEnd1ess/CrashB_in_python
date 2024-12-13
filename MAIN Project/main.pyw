@@ -3,7 +3,7 @@ import settings,ui,sys
 
 sys.dont_write_bytecode=True
 
-app=Ursina(title='Cresh B - Back to good old Times! <3 ',icon='res/cb.ico')
+app=Ursina(title='Cresh B - Retro Treveler',icon='res/cb.ico')
 def game():
 	settings.load()
 	if settings.debg:
@@ -18,7 +18,10 @@ def dev_start(idx):
 	import status,level
 	ui.LoadingScreen()
 	status.level_index=idx
-	level.main_instance(idx)
+	if idx == 0:
+		ui.TitleScreen()
+	else:
+		level.main_instance(idx)
 	del idx
 
 game()

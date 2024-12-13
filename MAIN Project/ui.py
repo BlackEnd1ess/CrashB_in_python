@@ -4,6 +4,7 @@ from ursina.ursinastuff import destroy
 from time import strftime,gmtime
 
 cr_i='res/ui/icon/crystal/cry'
+icb='res/ui/misc/icon_box.png'
 w_pa='res/ui/icon/wumpa/w'
 wmpf='res/ui/digit_wumpa/'
 crtf='res/ui/digit_crate/'
@@ -17,6 +18,7 @@ e='res/ui/pause/'
 q='quad'
 
 sf=.003
+oi=.1
 
 CU=camera.ui
 st=status
@@ -436,18 +438,17 @@ class BlackScreen(Entity):
 					s.parent=None
 					destroy(s)
 
+
 ## Warp Room Interface
 class LevelSelector(Entity):
 	def __init__(self,idx,pos):
 		s=self
-		sf=.1
-		gcsa={1:sf/1.8,2:sf,3:sf*1.4,4:sf,5:sf}
-		icb='res/ui/misc/icon_box.png'
+		gcsa={1:oi/1.8,2:oi,3:oi*1.4,4:oi,5:oi}
 		req_col=color.rgb32(25,25,25)
 		super().__init__(position=pos,parent=CU)
-		s.lv_crystal=Entity(model=q,texture=cr_i+'0.png',position=(s.x+.945,s.y,s.z),scale=sf,parent=CU,color=req_col)
-		s.lv_col_gem=Entity(model=q,texture=LC.fdc[idx]+'0.png',position=(s.x+.8,s.y,s.z),scale=sf,parent=CU,color=req_col)
-		s.lv_clr_gem=Entity(model=q,texture=LC.ge_0+'0.png',position=(s.x+1.09,s.y,s.z),scale=sf,parent=CU,color=req_col)
+		s.lv_crystal=Entity(model=q,texture=cr_i+'0.png',position=(s.x+.945,s.y,s.z),scale=oi,parent=CU,color=req_col)
+		s.lv_col_gem=Entity(model=q,texture=LC.fdc[idx]+'0.png',position=(s.x+.8,s.y,s.z),scale=oi,parent=CU,color=req_col)
+		s.lv_clr_gem=Entity(model=q,texture=LC.ge_0+'0.png',position=(s.x+1.09,s.y,s.z),scale=oi,parent=CU,color=req_col)
 		s.lv_name=Text(LC.lv_name[idx],font=_fnt,position=(s.x,s.y+.04,s.z),scale=2.5,color=color.orange,parent=CU)
 		s.bgd=Entity(model=q,texture='res/background/wroom.png',scale=(40,20),position=(0,0,4),color=color.rgb32(140,160,140))
 		s.lf0=Entity(model=q,texture=ivy_+'_m.png',scale=.2,position=(-.8,.4,.1),parent=CU)
@@ -473,7 +474,7 @@ class LevelSelector(Entity):
 		if idx == 5 and 3 in st.COLOR_GEM:
 			s.lv_col_gem.color=LC.GMU[5]
 		s.frm=0
-		del gcsa,sf,idx,pos,req_col
+		del gcsa,idx,pos,req_col
 	def refr(self):
 		s=self
 		s.frm=min(s.frm+time.dt*30,89.999)
@@ -490,6 +491,45 @@ class LevelSelector(Entity):
 			s.lv_name.color=color.white
 			return
 		s.lv_name.color=color.orange
+
+class SpecialLevelSelector(Entity):
+	def __init__(self,idx,pos):
+		s=self
+		req_col=color.rgb32(25,25,25)
+		super().__init__(position=pos,parent=CU)
+		s.lv_name=Text(LC.lv_name[idx],font=_fnt,position=(s.x,s.y+.04,s.z),scale=2.5,color=color.orange,parent=CU)
+		s.bgd=Entity(model='cube',texture='res/background/wroom.png',scale=(40,10,1),position=(0,-5,4),color=color.rgb32(130,130,160))
+		s.lf0=Entity(model=q,texture=ivy_+'_m.png',scale=.2,position=(-.8,-.4,.1),rotation_z=-90,parent=CU)
+		s.lf1=Entity(model=q,texture=ivy_+'.png',scale=.2,position=(.8,-.4,.1),rotation_z=90,parent=CU)
+		s.lv_clr_gem0=Entity(model=q,texture=LC.ge_0+'0.png',position=(s.x+.8,s.y,s.z),scale=oi,parent=CU,color=req_col)
+		s.lv_clr_gem1=Entity(model=q,texture=LC.ge_0+'0.png',position=(s.x+.945,s.y,s.z),scale=oi,parent=CU,color=req_col)
+		s.lvID=idx
+		for iwb in range(2):
+			Entity(model=q,texture=icb,position=(s.lv_clr_gem0.x+iwb/7,s.y,1),scale=.16,parent=CU,color=color.rgb32(120,120,150))
+		s.frm=0
+		mbg=color.rgb32(180,180,210)
+		if idx in st.CRYSTAL:
+			s.lv_clr_gem0.color=mbg
+		if idx in st.CLEAR_GEM:
+			s.lv_clr_gem1.color=mbg
+		del mbg,idx,pos,iwb
+	def refr(self):
+		s=self
+		s.frm=min(s.frm+time.dt*30,89.999)
+		if s.frm > 89.99:
+			s.frm=0
+		kg=f'{int(s.frm)}.png'
+		s.lv_clr_gem0.texture=LC.ge_0+kg
+		s.lv_clr_gem1.texture=LC.ge_0+kg
+	def update(self):
+		s=self
+		print(st.selected_level)
+		s.refr()
+		if st.selected_level == s.lvID:
+			s.lv_name.color=color.white
+			return
+		s.lv_name.color=color.orange
+
 
 ## Bonusround Text
 class BonusText(Entity):

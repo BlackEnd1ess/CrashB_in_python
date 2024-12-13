@@ -196,6 +196,11 @@ class WoodScene(Entity):
 		super().__init__(model='quad',texture=bgg+'bg_woods.png',position=pos,scale=(250,40),texture_scale=(5,1))
 		del pos
 
+class BrickWall(Entity):
+	def __init__(self,pos,sca):
+		super().__init__(model='plane',texture='res/terrain/l1/bricks.png',position=pos,scale=sca,texture_scale=(sca[0],sca[2]),rotation=(90,90,0),double_sided=True)
+		del pos,sca
+
 ####################
 ## level 2 objects #
 plob=omf+'l2/plank/plank.png'
@@ -640,10 +645,10 @@ class EletricWater(Entity):
 	def check_p(self):
 		s=self
 		ta=LC.ACTOR
-		if ta.in_water <= 0:
+		if ta.inwt <= 0:
 			s.splash=max(s.splash-time.dt,0)
 		if s.intersects(ta):
-			ta.in_water=.3
+			ta.inwt=.3
 			if s.electric:
 				cc.get_damage(ta,rsn=4)
 			if s.splash <= 0:
@@ -874,11 +879,119 @@ class RuinsScene(Entity):
 		if st.bonus_round:
 			self.y=self.bonus_y
 
+
+####################
+## level 6 objects #
+besc=omf+'l6/bgscn/scn'
+class BeeSideWall(Entity):
+	def __init__(self,pos,t):
+		super().__init__(model=besc+str(t)+'.ply',name='bewa',texture=besc+str(t)+'.tga',position=pos,scale=.14,rotation=(-90,90,0),double_sided=True)
+		del pos,t
+
+befl=omf+'l6/floor/floor'
+class BeeFloor(Entity):
+	def __init__(self,pos,t):
+		super().__init__(model=befl+f'{t}.obj',texture=befl+'.png',position=pos,scale=.6,double_sided=True,collider=b,rotation_y=90)
+		del pos,t
+
+betr=omf+'l6/wall/tree_wall'
+class BeeSideTree(Entity):
+	def __init__(self,pos,m=False):
+		bsc=(.01,.01,.01)
+		btr=-90
+		if m:
+			bsc=(-.01,.01,.01)
+			btr=90
+		super().__init__(model=betr+'.obj',texture=betr+'.tga',position=pos,scale=bsc,double_sided=True,rotation_y=btr)
+		del bsc
+
+brtv='res/terrain/l6/bee_terra.png'
+class BeeBigGround(Entity):
+	def __init__(self,pos,sca):
+		super().__init__(model='cube',name='bbgn',texture=brtv,position=pos,texture_scale=(sca[0],sca[2]),scale=sca,collider=b)
+
+behv=omf+'l6/hive/0'
+class Hive(Entity):
+	def __init__(self,pos,bID,bMAX):
+		s=self
+		super().__init__(model=behv+'.ply',texture=behv+'.tga',position=pos,scale=.1/150,rotation_x=-90)
+		s.locked=False
+		s.tme=5
+		s.bID=bID
+		s.bMAX=bMAX
+		s.frm=0
+		del pos,bID,bMAX
+	def has_own_bee(self):
+		s=self
+		bct=0
+		for qv in scene.entities[:]:
+			if isinstance(qv,npc.Bee) and qv.bID == s.bID:
+				bct+=1
+				if bct >= s.bMAX:
+					s.locked=True
+	def spawn_bee(self):
+		npc.Bee(pos=self.position,bID=self.bID)
+	def update(self):
+		if not st.gproc():
+			s=self
+			s.has_own_bee()
+			if s.locked:
+				s.tme=max(s.tme-time.dt,0)
+				if s.tme <= 0:
+					s.tme=5
+					s.locked=False
+			if (LC.ACTOR.z < s.z+8) and (LC.ACTOR.z > s.z-1.5):
+				if not s.locked:
+					an.hive_awake(s,sp=12)
+
+
+tk=omf+'l6/tikki/'
+class TikkiSculpture(Entity):
+	def __init__(self,pos,spd,rng):
+		s=self
+		super().__init__(model=tk+'0.ply',texture=tk+'0.tga',position=pos,scale=.0004,rotation_x=-90,name='tksc',collider=b)
+		s.is_moving=False
+		s.move_speed=spd
+		s.move_point=pos
+		s.spawn_pos=pos
+		s.an_pause=0
+		s.an_mode=0
+		s.tme=1
+		s.frm=0
+		s.rng=rng
+		del pos,spd,rng
+	def move_to_point(self):
+		s=self
+		if distance(s.position,s.move_point) < .1:
+			s.is_moving=False
+			return
+		s.position=lerp(s.position,s.move_point,time.dt*s.move_speed)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.an_pause=max(s.an_pause-time.dt,0)
+		if s.intersects(LC.ACTOR):
+			cc.get_damage(LC.ACTOR,rsn=1)
+		if s.an_pause <= 0:
+			an.tikki_rotate(s,sp=14)
+		if s.is_moving:
+			s.move_to_point()
+			return
+		s.tme=max(s.tme-time.dt,0)
+		if s.tme <= 0:
+			s.tme=1/s.move_speed
+			ksp=s.spawn_pos
+			s.move_point=random.choice([(ksp[0]+s.rng,ksp[1],ksp[2]),(ksp[0]-s.rng,ksp[1],ksp[2]),(ksp[0],ksp[1],ksp[2]+s.rng),(ksp[0],ksp[1],ksp[2]-s.rng)])
+			s.is_moving=True
+			del ksp
+
+
 ##################
 ## logic objects #
 class FallingZone(Entity):## falling
-	def __init__(self,pos,s):
-		super().__init__(model='cube',name='fllz',collider=b,scale=s,position=pos,color=color.rgb32(0,0,0),visible=False)
+	def __init__(self,pos,s,v=False):
+		super().__init__(model='cube',name='fllz',collider=b,scale=s,position=pos,color=color.black,visible=v)
 	def update(self):
 		ac=LC.ACTOR
 		if self.intersects(ac):

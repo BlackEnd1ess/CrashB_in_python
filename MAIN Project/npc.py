@@ -1,5 +1,6 @@
 import settings,_core,math,animation,status,sound,_loc,effect,objects,time,random
 from ursina import BoxCollider,Vec3,Entity,Audio,distance,lerp,invoke
+from ursina.ursinastuff import destroy
 from math import radians,cos,sin,pi
 
 di={0:'x',1:'y',2:'z'}
@@ -23,14 +24,16 @@ def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True):
 		4:lambda:Penguin(pos=POS,drc=DRC,rng=RNG),
 		5:lambda:Hedgehog(pos=POS,drc=DRC,rng=RNG),
 		6:lambda:Seal(pos=POS,drc=DRC,rng=RNG),
-		7:lambda:EatingPlant(pos=POS,drc=DRC,rng=RNG),
+		7:lambda:EatingPlant(pos=POS),
 		8:lambda:Rat(pos=POS,drc=DRC,rng=RNG,cmv=CMV),
 		9:lambda:Lizard(pos=POS,drc=DRC,rng=RNG),
 		10:lambda:Scrubber(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP),
 		11:lambda:Mouse(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP),
 		12:lambda:Eel(pos=POS,drc=DRC,rng=RNG),
 		13:lambda:SewerMine(pos=POS,drc=DRC,rng=RNG),
-		14:lambda:Gorilla(pos=POS,drc=DRC,rng=RNG)}
+		14:lambda:Gorilla(pos=POS,drc=DRC),
+		15:lambda:Bee(pos=POS),
+		16:lambda:Lumberjack(pos=POS)}
 	npc_[ID]()
 	del ID,POS,DRC,RTYP,RNG,CMV,npc_
 
@@ -222,15 +225,16 @@ class Seal(Entity):
 				invoke(lambda:setattr(s,'n_snd',False),delay=random.choice([1,1.5,1.2]))
 
 class EatingPlant(Entity):
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos):
 		s=self
 		nN='eating_plant'
 		s.vnum=7
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=.8/900,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+500),size=Vec3(400,400,700))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s)
 		s.m_direction,s.atk_frame,s.eat_frame=0,0,0
 		s.atk,s.eat=False,False
+		del pos
 	def action(self):
 		s=self
 		ta=LC.ACTOR
@@ -402,15 +406,15 @@ class SewerMine(Entity):
 			npc_walk(self)
 
 class Gorilla(Entity):
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos,drc):
 		s=self
 		nN='gorilla'
-		self.vnum=14
+		s.vnum=14
 		rmo={0:0,1:90,2:180,3:-90}
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation=(rx,rmo[drc],0),position=pos,scale=m_SC)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y,s.z+450),size=Vec3(400,400,800))
 		s.throw_act={0:lambda:an.gorilla_take(s),1:lambda:an.gorilla_throw(s)}
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc)
 		s.t_sleep=.5
 		s.t_mode=0
 		s.f_frame=0
@@ -428,6 +432,97 @@ class Gorilla(Entity):
 		s.t_sleep=max(s.t_sleep-time.dt,0)
 		if s.t_sleep <= 0:
 			s.throw_act[s.t_mode]()
+
+class Bee(Entity):
+	def __init__(self,pos,bID=0):
+		s=self
+		s.vnum=15
+		nN='bee'
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=-90,position=pos,scale=m_SC,collider='box')
+		s.buzz_snd=Audio(sn.BE,pitch=random.uniform(1,2),loop=True,volume=settings.SFX_VOLUME)
+		cc.set_val_npc(s)
+		s.bID=bID
+		s.frm=0
+		s.tme=0
+		del pos
+	def fly_home(self):
+		s=self
+		s.position=lerp(s.position,s.spawn_pos,time.dt*.5)
+		angle=math.atan2(s.spawn_pos[1]-s.y,s.spawn_pos[0]-s.x)
+		s.rotation_y=math.degrees(angle)
+		if abs(s.spawn_pos-s.position) < .05:
+			s.tme+=time.dt
+			if s.tme > .5:
+				s.tme=0
+				s.purge()
+	def purge(self):
+		s=self
+		s.buzz_snd.stop()
+		s.buzz_snd.fade_out()
+		s.enabled=False
+		destroy(s)
+	def hunt_p(self):
+		s=self
+		s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.125,LC.ACTOR.z),time.dt*1.5)
+		cc.rotate_to_crash(s)
+	def fly_event(self):
+		s=self
+		an.bee_fly(s,sp=14)
+		if (LC.ACTOR.z < s.spawn_pos[2]+8):
+			s.buzz_snd.pitch=1.5
+			s.hunt_p()
+			return
+		s.buzz_snd.pitch=1.4
+		s.fly_home()
+	def update(self):
+		s=self
+		if not st.death_event:
+			if st.pause:
+				s.buzz_snd.volume=0
+				return
+			if s.is_hitten:
+				s.buzz_snd.stop()
+				s.buzz_snd.fade_out()
+				cc.fly_away(s)
+				return
+			if s.is_purge:
+				effect.JumpDust(s.position)
+				s.purge()
+				return
+			s.fly_event()
+			return
+		s.purge()
+
+class Lumberjack(Entity):
+	def __init__(self,pos):
+		nN='lumberjack'
+		s=self
+		s.vnum=16
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=-90,position=pos,scale=m_SC,collider='box')
+		cc.set_val_npc(s)
+		s.move_speed=1
+		del pos
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		ug=LC.ACTOR
+		ljsp=time.dt*3
+		ljds=distance(s.spawn_pos,ug.position)
+		if s.is_hitten:
+			cc.fly_away(s)
+			return
+		if s.is_purge:
+			effect.JumpDust(s.position)
+			cc.cache_instance(s)
+			return
+		if ljds < 4:
+			cc.rotate_to_crash(s)
+		if ljds < 2:
+			an.npc_walking(s)
+			s.position=lerp((s.x,s.y,s.z),(ug.x,s.y,ug.z),ljsp)
+			return
+		s.position=lerp(s.position,s.spawn_pos,ljsp)
 
 ## passive NPC
 tpa='res/npc/akuaku/'

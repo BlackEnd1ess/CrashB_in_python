@@ -73,7 +73,7 @@ class PlayerDBG(Entity):
 			s.ppo_state.text=f'x{rv.x:.1f}  y{rv.y:.1f}  z{rv.z:.1f}'
 			s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'
 			s.ind_state.text=f'INDOOR ZONE : {(rv.indoor > 0)}'
-			s.inw_state.text=f'WATER ZONE  : {(rv.in_water > 0)}'
+			s.inw_state.text=f'WATER ZONE  : {(rv.inwt > 0)}'
 			s.slp_state.text=f'IS SLIPPERY : {rv.is_slippery}'
 			s.bns_state.text=f'BONUS ROUND : {st.bonus_round}'
 			s.idl_state.text=f'IDLE STATUS : {st.p_idle(LC.ACTOR)}'
@@ -105,13 +105,13 @@ def chck_mem():
 			if class_name == TRG and obj.parent == scene:
 				fs=getattr(obj,ATR)
 				details.append(fs)
-	print("MEMORY INFO:")
-	print(' ')
-	for class_name, count in class_counts.items():
-		print(f"{class_name}: {count} Instances")
-	print("\n",TRG,'-results in MEMORY:')
-	for i, filename in enumerate(details,1):
-		print(f"{TRG} {i}: {ATR} = {filename if filename else 'NONE'}")
+#	print("MEMORY INFO:")
+#	print(' ')
+#	for class_name, count in class_counts.items():
+#		print(f"{class_name}: {count} Instances")
+#	print("\n",TRG,'-results in MEMORY:')
+#	for i, filename in enumerate(details,1):
+#		print(f"{TRG} {i}: {ATR} = {filename if filename else 'NONE'}")
 
 class MemoryTracker(Entity):
 	def __init__(self,interval=5,threshold=100000,**kwargs):

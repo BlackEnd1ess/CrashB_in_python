@@ -16,7 +16,10 @@ npc_anim={0:7,#amadillo
 		10:3,#scrubber
 		11:8,#mouse
 		12:12,#eel
-		13:16}#sewer mine
+		13:16,#sewer mine
+		14:0,#gorilla
+		15:0,#bee
+		16:10}#lumberjack
 
 cl='res/objects/l5/loose_ptf/'
 cf='res/crate/anim/'
@@ -119,6 +122,26 @@ def stand_up(d,sp):
 		d.standup=False
 		return
 	d.model=af+'stand_up/'+str(int(d.sufr))+'.ply'
+
+def diggin_in(d,sp):
+	d.dgifr=min(d.dgifr+time.dt*sp,7.999)
+	if d.dgifr > 7.99:
+		d.dig_in=False
+		d.digged=True
+		d.visible=False
+		return
+	d.model=af+'dig_in/'+str(int(d.dgifr))+'.ply'
+	del d,sp
+
+def diggin_out(d,sp):
+	d.dgofr=min(d.dgofr+time.dt*sp,2.999)
+	if d.dgofr > 2.99:
+		d.dig_out,d.dig_in,d.digged=False,False,False
+		d.visible=True
+		return
+	d.model=af+'dig_out/'+str(int(d.dgofr))+'.ply'
+	del d,sp
+#def dig_attack(d,sp):
 
 ## crash death animationsa
 def angel_fly(c):
@@ -390,6 +413,39 @@ def gorilla_fall(m):
 		cc.purge_instance(m)
 		return
 	m.model=go+'/fall/'+str(int(m.f_frame))+'.ply'
+
+#hive
+hpf='res/objects/l6/hive/'
+def hive_awake(h,sp):
+	h.frm=min(h.frm+time.dt*sp,8.999)
+	if h.frm > 8.99:
+		h.frm=0
+		h.active=True
+		h.spawn_bee()
+	h.model=hpf+str(int(h.frm))+'.ply'
+	del h,sp
+
+bb='bee/'
+def bee_fly(b,sp):
+	b.frm=min(b.frm+time.dt*sp,9.999)
+	if b.frm > 9.99:
+		b.frm=0
+	b.model=nf+bb+str(int(b.frm))+'.ply'
+	del b,sp
+
+tki='res/objects/l6/tikki/'
+def tikki_rotate(t,sp):
+	if t.an_mode == 0:
+		t.frm=min(t.frm+time.dt*sp,10.999)
+		if t.frm > 10.99:
+			t.an_pause=1
+			t.an_mode=1
+	else:
+		t.frm=max(t.frm-time.dt*sp,0)
+		if t.frm == 0:
+			t.an_pause=1
+			t.an_mode=0
+	t.model=tki+f'{int(t.frm)}.ply'
 
 ## door animation
 dpw='res/objects/ev/door/'

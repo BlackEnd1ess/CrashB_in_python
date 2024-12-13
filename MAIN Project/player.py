@@ -53,7 +53,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(0,0,0)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(0,3,-20)),
 					sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
 	def input(self,key):
@@ -107,7 +107,7 @@ class CrashB(Entity):
 			s.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
 			s.walk_event()
 			return
-		s.walk_snd=0
+		s.wksn=0
 		s.walking=False
 	def walk_event(self):
 		s=self
@@ -120,13 +120,13 @@ class CrashB(Entity):
 			if s.is_landing:
 				s.is_landing=False
 			an.run(s,sp=18)
-		s.walk_snd=max(s.walk_snd-time.dt,0)
-		if s.walk_snd <= 0:
+		s.wksn=max(s.wksn-time.dt,0)
+		if s.wksn <= 0:
 			sn.footstep(self)
 			if s.is_slippery:
-				s.walk_snd=.5
+				s.wksn=.5
 				return
-			s.walk_snd=.35
+			s.wksn=.35
 	def jump_typ(self,t):
 		s=self
 		grv={1:(2.5),2:(2.8),3:(3.0),4:(2.7)}
@@ -208,10 +208,10 @@ class CrashB(Entity):
 			s.texture,s.cur_tex=dtp,dtp
 	def refr_anim(self):
 		s=self
-		if (s.standup):
+		if s.standup:
 			an.stand_up(s,sp=18)
 			return
-		if (s.is_attack):
+		if s.is_attack:
 			an.spin(s,sp=22)
 			return
 		if s.is_flip and not (s.landed and s.is_attack):

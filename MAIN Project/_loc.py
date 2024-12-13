@@ -6,13 +6,17 @@ bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(0,1
 checkp='CHECKPOINT'
 
 # display the name in pause menu and loading screen
-lv_name=['CENTRAL - WARP ROOM',
-		'LEVEL 1 - RAINY WOODS',
-		'LEVEL 2 - WAY TO NOWHERE',
-		'LEVEL 3 - RIVER STREAM',
-		'LEVEL 4 - DRAIN DAMAGE',
-		'LEVEL 5 - RUINED',
-		'DEVELOPER TEST LEVEL']
+lv_name=[
+	'CENTRAL - WARP ROOM',
+	'LEVEL 1 - RAINY WOODS',
+	'LEVEL 2 - WAY TO NOWHERE',
+	'LEVEL 3 - RIVER STREAM',
+	'LEVEL 4 - DRAIN DAMAGE',
+	'LEVEL 5 - RUINED',
+	'LEVEL 6 - TOTALLY BEE',
+	'LEVEL 7 - PISTON PUSH',
+	'LEVEL 8 - ?????? ?????',
+	'DEVELOPER TEST LEVEL']
 
 # gem box info
 ge_inf={0:'this is a developer test level, place the gem where you want',

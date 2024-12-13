@@ -12,8 +12,8 @@ C=crate
 N=npc
 
 ## player
-def set_val(c):
-	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','walk_snd','fall_time','slide_fwd','in_water','space_time'}:
+def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound					inwater				dig
+	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','space_time'}:
 		setattr(c,_a,0)#values
 	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','atk_ctm'}:
 		setattr(c,_v,False)#flags
@@ -25,7 +25,7 @@ def set_val(c):
 	c.indoor=.5
 	c.CMS=3
 	_loc.ACTOR=c
-	del _a,_v
+	del _a,_v,c
 def get_damage(c,rsn):
 	if st.aku_hit > 2:
 		return
@@ -90,7 +90,7 @@ def reset_state(c):
 	c.visible=True
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def various_val(c):
-	c.in_water=max(c.in_water-time.dt,0)
+	c.inwt=max(c.inwt-time.dt,0)
 	c.indoor=max(c.indoor-time.dt,0)
 	if not c.is_slippery:
 		c.move_speed=LC.dfsp
@@ -595,7 +595,7 @@ def clear_gem_route():
 	del grd
 
 ## npc
-def set_val_npc(m,drc,rng):
+def set_val_npc(m,drc=None,rng=None):
 	m.anim_frame,m.fly_time,m.turn=0,0,0
 	m.is_hitten,m.is_purge=False,False
 	m.spawn_pos=m.position
@@ -641,14 +641,17 @@ def fly_away(n):
 		n.enabled=False
 		if not ke.is_hitten:
 			bash_enemie(e=ke,h=n)
-			cache_instance(n)
+			if n.vnum == 15:
+				destroy(n)
+			else:
+				cache_instance(n)
 			wumpa_count(1)
 def is_enemie(n):
 	nnk={N.Amadillo,N.Turtle,N.SawTurtle,
 		N.Penguin,N.Hedgehog,N.Seal,
 		N.EatingPlant,N.Rat,N.Lizard,
 		N.Eel,N.Scrubber,N.Mouse,N.SewerMine,
-		N.Vulture,N.Gorilla}
+		N.Vulture,N.Gorilla,N.Bee,N.Lumberjack}
 	return any(isinstance(n,npc_class) for npc_class in nnk)
 def bash_enemie(e,h):
 	e.is_hitten=True
@@ -670,7 +673,8 @@ def save_game():
 		'LS_CL':st.CLEAR_GEM,#Lv ID clear gem
 		'LS_CG':st.COLOR_GEM,#Color Gem ID
 		'M_VOL':settings.MUSIC_VOLUME,
-		'S_VOL':settings.SFX_VOLUME}
+		'S_VOL':settings.SFX_VOLUME,
+		'CRD_W':st.crd_seen}
 	with open(save_file,'w') as f:
 		json.dump(save_data,f)
 def load_game():
@@ -687,3 +691,4 @@ def load_game():
 	st.COLOR_GEM=[(x) for x in save_data['LS_CG']]
 	settings.SFX_VOLUME=save_data['S_VOL']
 	settings.MUSIC_VOLUME=save_data['M_VOL']
+	st.crd_seen=save_data['CRD_W']

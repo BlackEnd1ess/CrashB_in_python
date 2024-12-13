@@ -67,6 +67,7 @@ death_route=False
 weather_thunder=False
 gem_path_solved=False
 
+bonus_warp_room=False
 is_time_trial=False
 is_invincible=False
 wait_screen=False

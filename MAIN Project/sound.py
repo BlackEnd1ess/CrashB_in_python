@@ -6,6 +6,7 @@ cc=_core
 st=status
 LC=_loc
 
+BE='res/snd/npc/bee.wav'
 VS='res/snd/ambience/'
 SP='res/snd/player/'
 SN='res/snd/misc/'
@@ -17,7 +18,7 @@ def footstep(c):
 	if c.is_slippery:
 		pc_audio(ID=8,pit=1.5)
 		return
-	if c.in_water > 0:
+	if c.inwt > 0:
 		pc_audio(ID=11,pit=random.uniform(.9,1))
 		return
 	else:
@@ -76,7 +77,7 @@ SND_PC={0:'walk',
 		14:'fall_death'}
 def pc_audio(ID,pit=1):
 	pc=Audio(SP+SND_PC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
-	invoke(lambda:destroy(pc),delay=dd)
+	invoke(lambda:destroy(pc),delay=pc.length*2)
 
 ## CRATE SFX
 SND_CRT={0:'steel',
@@ -114,10 +115,11 @@ SND_NPC={0:'plant_bite',
 		1:'scrubber',
 		2:'mouse',
 		3:'seal',
-		4:'rat_idle'}
+		4:'rat_idle',
+		5:'buzzing'}
 def npc_audio(ID,pit=1):
 	np=Audio(SA+SND_NPC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
-	invoke(lambda:destroy(np),delay=dd)
+	invoke(lambda:destroy(np),delay=np.length*2)
 
 ## OBJECTS/ITEM SFX
 SND_OBJ={0:'spawn',
@@ -134,7 +136,7 @@ SND_OBJ={0:'spawn',
 		11:'log_hit'}
 def obj_audio(ID,pit=1):
 	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
-	invoke(lambda:destroy(ob),delay=dd)
+	invoke(lambda:destroy(ob),delay=ob.length*2)
 
 ## Background Sounds
 class WaterRiver(Audio):

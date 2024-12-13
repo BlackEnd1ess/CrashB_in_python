@@ -28,12 +28,7 @@ def main_instance(idx):
 	sys.path.append(os.path.join(os.path.dirname(__file__),lv))
 	st.loading=True
 	st.weather_thunder=(idx == 5)
-	goto={1:lambda:level1(),
-		2:lambda:level2(),
-		3:lambda:level3(),
-		4:lambda:level4(),
-		5:lambda:level5(),
-		6:lambda:test()}
+	goto={1:level1,2:level2,3:level3,4:level4,5:level5,6:level6,7:level7,8:level8,9:test}
 	goto[idx]()
 	environment.env_switch(idx)
 	del idx,goto
@@ -68,4 +63,19 @@ def level4():# drain damage
 def level5():# ruined
 	import level5
 	level5.start_load()
+	invoke(free_level,delay=flt)
+
+def level6():# totally bee
+	import level6
+	level6.start_load()
+	invoke(free_level,delay=flt)
+
+def level7():# piston push
+	import level7
+	level7.start_load()
+	invoke(free_level,delay=flt)
+
+def level8():# ???
+	import level8
+	level8.start_load()
 	invoke(free_level,delay=flt)

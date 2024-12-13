@@ -34,7 +34,7 @@ def check_dst(p,v,dz):
 	return (v.z < p.z+dz and p.z < v.z+3 and abs(p.x-v.x) < 8 and abs(p.y-v.y) < 6)
 
 def check_dynamic(o):
-	return any({(cc.is_enemie(o) and not (o.is_hitten or o.is_purge)),(o.name in LL[st.level_index])})
+	return any({(cc.is_enemie(o) and not (o.is_hitten or o.is_purge or o.vnum == 15)),(o.name in LL[st.level_index])})
 
 class LODinGame(Entity):
 	def __init__(self):
