@@ -133,7 +133,8 @@ SND_OBJ={0:'spawn',
 		8:'npc_beat',
 		9:'collapse_floor',
 		10:'fire_throw',
-		11:'log_hit'}
+		11:'log_hit',
+		12:'land_mine'}
 def obj_audio(ID,pit=1):
 	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 	invoke(lambda:destroy(ob),delay=ob.length*2)
@@ -187,7 +188,7 @@ class LevelMusic(Audio):
 		if (st.bonus_round or st.death_route):
 			s.fade_out()
 			cc.purge_instance(s)
-		if st.gproc() or st.aku_hit > 2:
+		if st.loading or st.aku_hit > 2:
 			s.volume=0
 			return
 		s.volume=se.MUSIC_VOLUME

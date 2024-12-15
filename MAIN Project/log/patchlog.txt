@@ -201,3 +201,9 @@
 - fixxed lumberjacks hunting range
 - bee will try to get player pos_y+0.15
 - bee hives will not spawn bee's if max bee limit reached
+
+#15.12.2024
+- implemented land mine where stuns the player
+- added new crash andimation: stun fly
+- fixxed level 6 bee/hive limit range
+- fixxed collider in platforms/floors level 6

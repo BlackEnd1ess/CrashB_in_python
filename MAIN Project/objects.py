@@ -891,7 +891,9 @@ class BeeSideWall(Entity):
 befl=omf+'l6/floor/floor'
 class BeeFloor(Entity):
 	def __init__(self,pos,t):
-		super().__init__(model=befl+f'{t}.obj',texture=befl+'.png',position=pos,scale=.6,double_sided=True,collider=b,rotation_y=90)
+		s=self
+		super().__init__(model=befl+f'{t}.obj',texture=befl+'.png',position=pos,scale=.6,double_sided=True,rotation_y=90)
+		s.collider=BoxCollider(s,size=Vec3(4,6,4))
 		del pos,t
 
 betr=omf+'l6/wall/tree_wall'
@@ -930,7 +932,8 @@ class Hive(Entity):
 				if bct >= s.bMAX:
 					s.locked=True
 	def spawn_bee(self):
-		npc.Bee(pos=self.position,bID=self.bID)
+		s=self
+		npc.Bee(pos=s.position,bID=s.bID)
 	def update(self):
 		if not st.gproc():
 			s=self
@@ -943,7 +946,6 @@ class Hive(Entity):
 			if (LC.ACTOR.z < s.z+8) and (LC.ACTOR.z > s.z-1.5):
 				if not s.locked:
 					an.hive_awake(s,sp=12)
-
 
 tk=omf+'l6/tikki/'
 class TikkiSculpture(Entity):
@@ -986,6 +988,48 @@ class TikkiSculpture(Entity):
 			s.is_moving=True
 			del ksp
 
+lm=omf+'l6/lmine/'
+class LandMine(Entity):
+	def __init__(self,pos,rng):
+		s=self
+		super().__init__(model=lm+'0.ply',name='ldmn',texture=lm+'0.tga',position=pos,rotation_x=-90,scale=.00065)
+		s.explode=False
+		s.p_snd=False
+		s.rng=rng
+		s.frm=0
+		s.tme=1
+		del pos,rng
+	def purge(self):
+		destroy(self)
+	def m_audio(self):
+		s=self
+		s.tme=max(s.tme-time.dt,0)
+		if s.tme <= 0:
+			s.tme=random.randint(1,2)
+			sn.obj_audio(ID=12,pit=random.uniform(.8,1))
+	def explosion(self):
+		s=self
+		s.frm=0
+		LC.ACTOR.stun_fd=(s.x,s.y,s.z+s.rng)
+		LC.ACTOR.stun=True
+		s.explode=True
+		if not s.p_snd:
+			s.p_snd=True
+			sn.crate_audio(ID=10)
+	def update(self):
+		if not st.gproc():
+			s=self
+			if s.explode:
+				LC.ACTOR.y=lerp(LC.ACTOR.y,s.y+1,time.dt*12)
+				an.mine_destroy(s,sp=12)
+				return
+			lmd=distance(s,LC.ACTOR)
+			an.land_mine(s,sp=12)
+			if lmd < .3:
+				s.explosion()
+				return
+			if lmd < 2:
+				s.m_audio()
 
 ##################
 ## logic objects #

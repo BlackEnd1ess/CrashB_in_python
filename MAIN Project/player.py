@@ -86,7 +86,7 @@ class CrashB(Entity):
 		sn.pc_audio(ID=4)
 	def move(self):
 		s=self
-		if (s.b_smash or st.p_rst(s)):
+		if (s.b_smash or st.p_rst(s) or s.stun):
 			return
 		mvD=Vec3(held_keys[sg.RGT_KEY]-held_keys[sg.LFT_KEY],0,held_keys[sg.FWD_KEY]-held_keys[sg.BCK_KEY]).normalized()
 		s.direc=mvD
@@ -157,6 +157,14 @@ class CrashB(Entity):
 			s.space_time=0
 			s.jumping=False
 			del hgt,fgt,kt
+	def stun_fly(self):
+		s=self
+		sdf=s.stun_fd[2]
+		if abs(s.z-sdf) > .2:
+			s.z=lerp(s.z,sdf,time.dt*4)
+			return
+		if s.landed:
+			s.stun=False
 	def check_jump(self):
 		s=self
 		if s.landed and not (s.jumping or s.falling):
@@ -170,6 +178,8 @@ class CrashB(Entity):
 		s.is_landing=True
 	def anim_fall(self):
 		s=self
+		if s.stun:
+			return
 		if st.death_event or (s.is_flip or s.is_attack):
 			return
 		if s.b_smash:
@@ -208,6 +218,9 @@ class CrashB(Entity):
 			s.texture,s.cur_tex=dtp,dtp
 	def refr_anim(self):
 		s=self
+		if s.stun:
+			an.c_stun(s,sp=16)
+			return
 		if s.standup:
 			an.stand_up(s,sp=18)
 			return
@@ -244,6 +257,9 @@ class CrashB(Entity):
 		s=self
 		s.move()
 		s.c_camera()
+		if s.stun:
+			s.stun_fly()
+			return
 		if s.jumping:s.jump()
 		if s.b_smash:cc.c_smash(s)
 		if s.is_attack:cc.c_attack(s)

@@ -476,22 +476,23 @@ class Bee(Entity):
 		s.fly_home()
 	def update(self):
 		s=self
-		if not st.death_event:
-			if st.pause:
-				s.buzz_snd.volume=0
-				return
-			if s.is_hitten:
-				s.buzz_snd.stop()
-				s.buzz_snd.fade_out()
-				cc.fly_away(s)
-				return
-			if s.is_purge:
-				effect.JumpDust(s.position)
-				s.purge()
-				return
-			s.fly_event()
+		if abs(s.z-s.spawn_pos[2]) > 9:# destroy if bee to far away and breaks limit
+			s.purge()
 			return
-		s.purge()
+		if st.pause:
+			s.buzz_snd.volume=0
+			return
+		if s.is_hitten:
+			s.buzz_snd.stop()
+			s.buzz_snd.fade_out()
+			cc.fly_away(s)
+			return
+		if s.is_purge:
+			effect.JumpDust(s.position)
+			s.purge()
+			return
+		s.fly_event()
+		return
 
 class Lumberjack(Entity):
 	def __init__(self,pos):

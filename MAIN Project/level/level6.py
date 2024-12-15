@@ -19,6 +19,7 @@ def load_object():
 	o.FallingZone(pos=(0,-1.4,-40),s=(5,.1,60),v=True)
 	bte='res/terrain/l6/bee_terra.png'
 	#e0
+	o.LandMine(pos=(0,0,-56),rng=.7)
 	o.BeeSideWall(pos=(.5,.8,-54),t=0)
 	o.BeeSideWall(pos=(.5,.8,-48),t=0)
 	o.BeeSideTree(pos=(1.7,.2,-43.3))

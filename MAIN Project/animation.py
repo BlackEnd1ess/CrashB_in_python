@@ -141,7 +141,14 @@ def diggin_out(d,sp):
 		return
 	d.model=af+'dig_out/'+str(int(d.dgofr))+'.ply'
 	del d,sp
-#def dig_attack(d,sp):
+
+def c_stun(d,sp):
+	d.stnfr=min(d.stnfr+time.dt*sp,14.999)
+	if d.stnfr > 14.99:
+		d.stnfr=0
+		return
+	d.model=af+'stun/'+str(int(d.stnfr))+'.ply'
+	del d,sp
 
 ## crash death animationsa
 def angel_fly(c):
@@ -446,6 +453,23 @@ def tikki_rotate(t,sp):
 			t.an_pause=1
 			t.an_mode=0
 	t.model=tki+f'{int(t.frm)}.ply'
+	del t,sp
+
+ldm='res/objects/l6/lmine/'
+def land_mine(m,sp):
+	m.frm=min(m.frm+time.dt*sp,10.999)
+	if m.frm > 10.99:
+		m.frm=0
+	m.model=ldm+str(int(m.frm))+'.ply'
+	del m,sp
+
+def mine_destroy(m,sp):
+	m.frm=min(m.frm+time.dt*sp,10.999)
+	if m.frm > 10.99:
+		m.frm=0
+		m.purge()
+		return
+	m.model=ldm+'expl/'+str(int(m.frm))+'.ply'
 
 ## door animation
 dpw='res/objects/ev/door/'

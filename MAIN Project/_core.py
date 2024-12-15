@@ -12,14 +12,15 @@ C=crate
 N=npc
 
 ## player
-def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound					inwater				dig
-	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','space_time'}:
+def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound					inwater
+	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','space_time','stnfr'}:
 		setattr(c,_a,0)#values
-	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','atk_ctm'}:
+	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','atk_ctm','stun'}:
 		setattr(c,_v,False)#flags
 	c.move_speed=LC.dfsp
 	c.cur_tex=c.texture
 	c.gravity=LC.dfsp
+	c.stun_fd=(0,0,0)
 	c.direc=(0,0,0)
 	c.vpos=c.y
 	c.indoor=.5
@@ -88,6 +89,7 @@ def reset_state(c):
 	st.death_event=False
 	c.texture='res/pc/crash.tga'
 	c.visible=True
+	c.stun=False
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def various_val(c):
 	c.inwt=max(c.inwt-time.dt,0)
@@ -397,7 +399,7 @@ def check_floor(c):
 	del fsp
 def land_act(c,vp):
 	if c.frst_lnd:
-		c.frst_lnd=False
+		c.frst_lnd,c.stun=False,False
 		c.space_time,c.fall_time=0,0
 		c.anim_land()
 		sn.landing_sound(c,vp)
