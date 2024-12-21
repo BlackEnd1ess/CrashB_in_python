@@ -105,13 +105,13 @@ def chck_mem():
 			if class_name == TRG and obj.parent == scene:
 				fs=getattr(obj,ATR)
 				details.append(fs)
-#	print("MEMORY INFO:")
-#	print(' ')
-#	for class_name, count in class_counts.items():
-#		print(f"{class_name}: {count} Instances")
-#	print("\n",TRG,'-results in MEMORY:')
-#	for i, filename in enumerate(details,1):
-#		print(f"{TRG} {i}: {ATR} = {filename if filename else 'NONE'}")
+	print("MEMORY INFO:")
+	print(' ')
+	for class_name, count in class_counts.items():
+		print(f"{class_name}: {count} Instances")
+	print("\n",TRG,'-results in MEMORY:')
+	for i, filename in enumerate(details,1):
+		print(f"{TRG} {i}: {ATR} = {filename if filename else 'NONE'}")
 
 class MemoryTracker(Entity):
 	def __init__(self,interval=5,threshold=100000,**kwargs):

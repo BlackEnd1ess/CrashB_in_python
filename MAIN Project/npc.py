@@ -463,7 +463,7 @@ class Bee(Entity):
 		destroy(s)
 	def hunt_p(self):
 		s=self
-		s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.125,LC.ACTOR.z),time.dt*1.5)
+		s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.125,LC.ACTOR.z),time.dt*1.8)
 		cc.rotate_to_crash(s)
 	def fly_event(self):
 		s=self

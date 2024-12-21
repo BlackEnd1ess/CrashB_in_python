@@ -207,3 +207,13 @@
 - added new crash andimation: stun fly
 - fixxed level 6 bee/hive limit range
 - fixxed collider in platforms/floors level 6
+
+#18.12.2024
+- lv6 bonus level
+
+#20.12.2024
+- bee side-walls have visible underground area to hide map sky
+
+#21.12.2024
+- new Asset: Front Wall (Lv 6)
+- changed Level struct, added Gem-Route

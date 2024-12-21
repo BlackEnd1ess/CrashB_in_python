@@ -882,17 +882,17 @@ class RuinsScene(Entity):
 
 ####################
 ## level 6 objects #
-besc=omf+'l6/bgscn/scn'
+besc=omf+'l6/bgscn/bscn'
 class BeeSideWall(Entity):
 	def __init__(self,pos,t):
-		super().__init__(model=besc+str(t)+'.ply',name='bewa',texture=besc+str(t)+'.tga',position=pos,scale=.14,rotation=(-90,90,0),double_sided=True)
+		super().__init__(model=besc+f'{t}.obj',name='bewa',texture=besc+f'{t}.tga',position=pos,scale=.14,rotation_y=-90,double_sided=True,color=color.rgb32(160,160,160))
 		del pos,t
 
 befl=omf+'l6/floor/floor'
 class BeeFloor(Entity):
 	def __init__(self,pos,t):
 		s=self
-		super().__init__(model=befl+f'{t}.obj',texture=befl+'.png',position=pos,scale=.6,double_sided=True,rotation_y=90)
+		super().__init__(model=befl+f'{t}.obj',texture=befl+'.png',name='bbfl',position=pos,scale=.6,double_sided=True,rotation_y=90)
 		s.collider=BoxCollider(s,size=Vec3(4,6,4))
 		del pos,t
 
@@ -904,7 +904,7 @@ class BeeSideTree(Entity):
 		if m:
 			bsc=(-.01,.01,.01)
 			btr=90
-		super().__init__(model=betr+'.obj',texture=betr+'.tga',position=pos,scale=bsc,double_sided=True,rotation_y=btr)
+		super().__init__(model=betr+'.obj',name='bbst',texture=betr+'.tga',position=pos,scale=bsc,double_sided=True,rotation_y=btr)
 		del bsc
 
 brtv='res/terrain/l6/bee_terra.png'
@@ -990,17 +990,18 @@ class TikkiSculpture(Entity):
 
 lm=omf+'l6/lmine/'
 class LandMine(Entity):
-	def __init__(self,pos,rng):
+	def __init__(self,pos):
 		s=self
 		super().__init__(model=lm+'0.ply',name='ldmn',texture=lm+'0.tga',position=pos,rotation_x=-90,scale=.00065)
 		s.explode=False
 		s.p_snd=False
-		s.rng=rng
 		s.frm=0
 		s.tme=1
-		del pos,rng
+		del pos
 	def purge(self):
-		destroy(self)
+		s=self
+		LC.LDM_POS.append(s.position)
+		destroy(s)
 	def m_audio(self):
 		s=self
 		s.tme=max(s.tme-time.dt,0)
@@ -1010,7 +1011,7 @@ class LandMine(Entity):
 	def explosion(self):
 		s=self
 		s.frm=0
-		LC.ACTOR.stun_fd=(s.x,s.y,s.z+s.rng)
+		LC.ACTOR.stun_fd=(s.x,s.y,s.z+2)
 		LC.ACTOR.stun=True
 		s.explode=True
 		if not s.p_snd:
@@ -1030,6 +1031,23 @@ class LandMine(Entity):
 				return
 			if lmd < 2:
 				s.m_audio()
+
+stwl=omf+'l6/stone_wall/stone_wall'
+class StoneWall(Entity):
+	def __init__(self,pos):
+		super().__init__(model=stwl+'.obj',texture=stwl+'.png',position=pos,scale=.5,color=color.rgb32(90,140,180),collider=b)
+		del pos
+
+class FrontStoneWall(Entity):
+	def __init__(self,pos):
+		super().__init__(model=stwl+'_front.ply',texture=stwl+'.png',position=pos,scale=.6,rotation=(90,0,0),collider=b)
+		del pos
+
+bnbn=omf+'l6/bwall/bwall'
+class BonusBeeWall(Entity):
+	def __init__(self,pos):
+		super().__init__(model=bnbn+'.obj',name='bnsw',texture=bnbn+'.tga',position=pos,scale=.02,rotation_y=-90,color=color.rgb32(120,160,120),double_sided=True)
+		del pos
 
 ##################
 ## logic objects #

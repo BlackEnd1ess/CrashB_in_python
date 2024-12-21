@@ -53,7 +53,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(0,3,-20)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(0,4,0)),
 					sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
 	def input(self,key):

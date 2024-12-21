@@ -1,4 +1,4 @@
-import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,time,random,json,math
+import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,time,random,json,math,objects
 from ursina import Entity,Text,camera,scene,invoke,Vec3,color,distance,boxcast,raycast,window
 from ursina.ursinastuff import destroy
 from math import atan2,sqrt,pi
@@ -81,6 +81,8 @@ def reset_state(c):
 	rmv_wumpas()
 	reset_wumpas()
 	reset_npc()
+	if st.level_index == 6:
+		reset_mines()
 	check_nitro_stack()
 	c.position=status.checkpoint
 	env.set_fog(st.level_index)
@@ -248,6 +250,10 @@ def reset_npc():
 			else:
 				npc.spawn(ID=NP.vnum,POS=NP.spawn_pos,DRC=NP.mov_direc,RNG=NP.mov_range)
 	st.NPC_RESET.clear()
+def reset_mines():
+	for rsm in LC.LDM_POS[:]:
+		objects.LandMine(pos=rsm)
+	LC.LDM_POS.clear()
 def jmp_lv_fin():
 	if not st.LEVEL_CLEAN:
 		destroy(LC.ACTOR)
@@ -653,7 +659,8 @@ def is_enemie(n):
 		N.Penguin,N.Hedgehog,N.Seal,
 		N.EatingPlant,N.Rat,N.Lizard,
 		N.Eel,N.Scrubber,N.Mouse,N.SewerMine,
-		N.Vulture,N.Gorilla,N.Bee,N.Lumberjack}
+		N.Vulture,N.Gorilla,
+		N.Bee,N.Lumberjack}
 	return any(isinstance(n,npc_class) for npc_class in nnk)
 def bash_enemie(e,h):
 	e.is_hitten=True

@@ -59,6 +59,8 @@ GMC={0:color.rgb32(O,O,O),
 	4:color.rgb32(0,0,O),
 	5:color.rgb32(O,O,0)}
 
+#lv6 mine position
+LDM_POS=[]
 #triggers
 trigger_lst={'indz','lvfi','elwt','fthr'}
 
