@@ -10,10 +10,11 @@ st=status
 def pos_info(c):
 	sx=f"{c.x:.1f}"
 	syc=f"{c.y+.16:.2f}"#crate
-	syw=f"{c.y+.2:.2f}"#wumpa
+	#syw=f"{c.y+.2:.2f}"#wumpa
 	sz=f"{c.z:.1f}"
-	print(f"mt.crate_wall(ID=14,POS=({sx},{syc},{sz}),CNT=[1,2])")
-	print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=0)")
+	#print(f"mt.crate_wall(ID=1,POS=({sx},{syc},{sz}),CNT=[1,2])")
+	print(f"c.place_crate(ID=5,p=({sx},{syc},{sz}))")##nitro
+	#print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=0)")
 
 #player attr info
 class PlayerDBG(Entity):
