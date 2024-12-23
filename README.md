@@ -18,6 +18,12 @@ pip install ursina --upgrade
 important: if ursina-version about 7.0.0 and some issue happen, then install
 directly ursina 7.0.0 by typing: pip install ursina==7.0.0
 
+Sound Issue: If you plug in a Sound output Device, while the Game run, then
+you need to restart the Game to get Sound. If you pull out Cable from your 
+Headset, while the Process runs, then the Game will lagg and spam a lot of
+Error results in console. Make sure that your Output Devices is connected before
+you start this Game.
+
 pip install imageio --upgrade
 
 After Install, download the ZIP File and extract them into a emtpy Folder.
