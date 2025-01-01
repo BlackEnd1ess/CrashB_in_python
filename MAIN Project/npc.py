@@ -249,7 +249,7 @@ class EatingPlant(Entity):
 			if not (ta.is_attack or ta.jumping):
 				if ta.y <= s.y+.2:
 					cc.get_damage(ta,rsn=5)
-					if st.aku_hit == 0 and not s.eat:
+					if st.aku_hit < 1 and not s.eat:
 						s.eat=True
 	def npc_anim(self):
 		s=self
@@ -463,7 +463,7 @@ class Bee(Entity):
 		destroy(s)
 	def hunt_p(self):
 		s=self
-		s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.125,LC.ACTOR.z),time.dt*1.8)
+		s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.125,LC.ACTOR.z),time.dt*2.3)
 		cc.rotate_to_crash(s)
 	def fly_event(self):
 		s=self
@@ -476,7 +476,7 @@ class Bee(Entity):
 		s.fly_home()
 	def update(self):
 		s=self
-		if abs(s.z-s.spawn_pos[2]) > 9:# destroy if bee to far away and breaks limit
+		if abs(s.z-s.spawn_pos[2]) > 10.1 or st.death_event:# destroy if bee to far away and breaks limit
 			s.purge()
 			return
 		if st.pause:

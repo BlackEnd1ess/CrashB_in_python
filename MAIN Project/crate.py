@@ -94,7 +94,7 @@ def explosion(cr):
 			if not exR.is_hitten:
 				cc.bash_enemie(e=exR,h=cr)
 		if exR == LC.ACTOR:
-			cc.get_damage(exR,rsn=3)
+			cc.get_damage(exR,rsn=4)
 	del cr,rk
 
 ##Crate Logics

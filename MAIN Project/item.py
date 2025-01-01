@@ -113,7 +113,8 @@ class GemStone(Entity):
 			2:(s.x-lgx,s.y+lgy,s.z-lgz),
 			3:(s.x-lgx,s.y+lgy,s.z-lgz),
 			4:(s.x-lgx,s.y+lgy,s.z-lgz),
-			5:(s.x-lgx,s.y+lgy,s.z-lgz)}
+			5:(s.x-lgx,s.y+lgy,s.z-lgz),
+			6:(s.x-lgx,s.y+lgy,s.z-lgz)}
 		s.shine=SpotLight(position=s_pos[s.gemID],color=color.gray)
 		del s_pos,lgx,lgy,lgz
 	def gem_fail(self):
@@ -151,6 +152,8 @@ class GemStone(Entity):
 		if not st.gproc():
 			s=self
 			s.rotation_y-=time.dt*60
+			if st.level_index == 6 and st.bonus_round:
+				s.shine.color=color.black
 			if s.gem_fail():
 				s.purge()
 				return

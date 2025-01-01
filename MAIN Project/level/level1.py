@@ -156,8 +156,8 @@ def load_wumpa():
 	mt.wumpa_plane(POS=(0,wu_h,16.7),CNT=[1,2])
 def load_npc():
 	n.spawn(ID=0,POS=(0,1.1,-52))
-	n.spawn(ID=2,POS=(0,1.1,-36.3),DRC=2)
-	n.spawn(ID=1,POS=(0,1.1,-15))
+	n.spawn(ID=1,POS=(0,1.1,-36.3),DRC=2)
+	n.spawn(ID=2,POS=(0,1.1,-15))
 
 ## bonus level / gem path
 def bonus_zone():

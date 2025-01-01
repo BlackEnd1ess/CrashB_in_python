@@ -290,7 +290,7 @@ class WoodLog(Entity):
 		s=self
 		if not st.gproc():
 			if s.intersects(LC.ACTOR) and s.danger:
-				cc.get_damage(LC.ACTOR,rsn=1)
+				cc.get_damage(LC.ACTOR,rsn=2)
 			ttr={0:s.reset_pos,1:s.stomp}
 			ttr[s.stat]()
 
@@ -357,7 +357,7 @@ class Role(Entity):
 		s=self
 		if not st.gproc():
 			if (s.intersects(LC.ACTOR) and s.danger):
-				cc.get_damage(LC.ACTOR,rsn=1)
+				cc.get_damage(LC.ACTOR,rsn=2)
 			s.roll_wait=max(s.roll_wait-time.dt,0)
 			if s.roll_wait <= 0:
 				s.is_rolling=True
@@ -523,7 +523,7 @@ class SewerGlowIron(Entity):
 		if st.gproc():
 			return
 		if s.intersects(LC.ACTOR):
-			cc.get_damage(LC.ACTOR,rsn=3)
+			cc.get_damage(LC.ACTOR,rsn=4)
 
 pPF=omf+'l4/scn/'
 class SewerPlatform(Entity):
@@ -603,7 +603,7 @@ class SewerPipe(Entity):## danger
 		s=self
 		if not st.gproc() and s.typ == 3:
 			if s.intersects(LC.ACTOR):
-				cc.get_damage(LC.ACTOR,rsn=3)
+				cc.get_damage(LC.ACTOR,rsn=4)
 
 class EletricWater(Entity):
 	def __init__(self,pos,sca):
@@ -650,7 +650,7 @@ class EletricWater(Entity):
 		if s.intersects(ta):
 			ta.inwt=.3
 			if s.electric:
-				cc.get_damage(ta,rsn=4)
+				cc.get_damage(ta,rsn=6)
 			if s.splash <= 0:
 				s.splash=.3
 				sn.pc_audio(ID=10)
@@ -865,7 +865,7 @@ class LogDanger(Entity):
 						sn.obj_audio(ID=8)
 						s.stop_throw=True
 						return
-					cc.get_damage(LC.ACTOR,rsn=1)
+					cc.get_damage(LC.ACTOR,rsn=2)
 
 class RuinsScene(Entity):
 	def __init__(self):
@@ -943,7 +943,7 @@ class Hive(Entity):
 				if s.tme <= 0:
 					s.tme=5
 					s.locked=False
-			if (LC.ACTOR.z < s.z+8) and (LC.ACTOR.z > s.z-1.5):
+			if (LC.ACTOR.z < s.z+10) and (LC.ACTOR.z > s.z-1.5):
 				if not s.locked:
 					an.hive_awake(s,sp=12)
 
@@ -974,7 +974,7 @@ class TikkiSculpture(Entity):
 		s=self
 		s.an_pause=max(s.an_pause-time.dt,0)
 		if s.intersects(LC.ACTOR):
-			cc.get_damage(LC.ACTOR,rsn=1)
+			cc.get_damage(LC.ACTOR,rsn=2)
 		if s.an_pause <= 0:
 			an.tikki_rotate(s,sp=14)
 		if s.is_moving:
@@ -1035,7 +1035,7 @@ class LandMine(Entity):
 stwl=omf+'l6/stone_wall/stone_wall'
 class StoneWall(Entity):
 	def __init__(self,pos):
-		super().__init__(model=stwl+'.obj',texture=stwl+'.png',position=pos,scale=.5,color=color.rgb32(90,140,180),collider=b)
+		super().__init__(model=stwl+'.obj',texture=stwl+'.png',position=pos,scale=(.5,.5,.3),color=color.rgb32(90,140,180),collider=b)
 		del pos
 
 class FrontStoneWall(Entity):
@@ -1057,7 +1057,7 @@ class FallingZone(Entity):## falling
 	def update(self):
 		ac=LC.ACTOR
 		if self.intersects(ac):
-			cc.dth_event(ac,rsn=0)
+			cc.dth_event(ac,rsn=1)
 
 class WaterHit(Entity):## collider for water
 	def __init__(self,p,sc):
@@ -1249,7 +1249,7 @@ class IndoorZone(Entity):## disable rain
 ## global objects #
 class HitBox(Entity):
 	def __init__(self,pos,sca):
-		super().__init__(model=wfc,position=pos,scale=sca,collider=b,name='htbx',visible=False,enabled=True)
+		super().__init__(model=wfc,position=pos,scale=sca,collider=b,name='htbx',visible=False)
 		del pos,sca
 
 class LightArea(SpotLight):

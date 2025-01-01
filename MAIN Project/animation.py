@@ -32,7 +32,7 @@ cc=_core
 bT=50
 t=18
 
-## player animation
+## crash play animation
 def idle(d,sp):
 	d.idfr=min(d.idfr+time.dt*sp,10.999)
 	if d.idfr > 10.99:
@@ -150,108 +150,48 @@ def c_stun(d,sp):
 	d.model=af+'stun/'+str(int(d.stnfr))+'.ply'
 	del d,sp
 
-## crash death animationsa
-def angel_fly(c):
-	DTH=13
-	ATF=af+'death/angel/'
-	c.model=ATF+'0.ply'
-	c.texture=ATF+'crash_death.tga'
-	c.animate_y(c.y+1.7,duration=2)
-	invoke(lambda:setattr(c,mo,ATF+'1.ply'),delay=1/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'2.ply'),delay=2/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'3.ply'),delay=3/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'4.ply'),delay=4/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'5.ply'),delay=5/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'6.ply'),delay=6/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'7.ply'),delay=7/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'8.ply'),delay=8/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'9.ply'),delay=9/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'10.ply'),delay=10/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'11.ply'),delay=11/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'12.ply'),delay=12/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'13.ply'),delay=13/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'14.ply'),delay=14/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'15.ply'),delay=15/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'16.ply'),delay=16/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'17.ply'),delay=17/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'18.ply'),delay=18/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'19.ply'),delay=19/DTH)
-	invoke(lambda:setattr(c,mo,ATF+'20.ply'),delay=20/DTH)
-	invoke(lambda:cc.reset_state(c),delay=3)
 
-def water_swim(c):
-	DTW=18
-	sn.pc_audio(ID=10)
-	ATW=af+'death/water/'
-	c.model=ATW+'0.ply'
-	c.texture=ATW+'0.tga'
-	invoke(lambda:setattr(c,mo,ATW+'1.ply'),delay=1/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'2.ply'),delay=2/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'3.ply'),delay=3/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'4.ply'),delay=4/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'5.ply'),delay=5/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'6.ply'),delay=6/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'7.ply'),delay=7/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'8.ply'),delay=8/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'9.ply'),delay=9/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'10.ply'),delay=10/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'11.ply'),delay=11/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'12.ply'),delay=12/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'13.ply'),delay=13/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'14.ply'),delay=14/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'15.ply'),delay=15/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'16.ply'),delay=16/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'17.ply'),delay=17/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'18.ply'),delay=18/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'19.ply'),delay=19/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'20.ply'),delay=20/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'21.ply'),delay=21/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'22.ply'),delay=22/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'23.ply'),delay=23/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'24.ply'),delay=24/DTW)
-	invoke(lambda:setattr(c,mo,ATW+'25.ply'),delay=25/DTW)
-	invoke(lambda:cc.reset_state(c),delay=3)
+## crash death animations
+def dth_angelfly(c):
+	c.y+=time.dt
+	c.dth_fr=min(c.dth_fr+time.dt*t,20.999)
+	if c.texture != af+'death/angel/0.tga':
+		c.texture=af+'death/angel/0.tga'
+	if c.dth_fr > 20.99:
+		c.dth_fr=0
+	c.model=af+f'death/angel/{int(c.dth_fr)}.ply'
 
-def fire_ash(c):
-	DTE=18
-	ATA=af+'death/fire/'
-	c.model=ATA+'0.ply'
-	c.texture=ATA+'0.tga'
-	invoke(lambda:setattr(c,mo,ATA+'1.ply'),delay=1/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'2.ply'),delay=2/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'3.ply'),delay=3/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'4.ply'),delay=4/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'5.ply'),delay=5/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'6.ply'),delay=6/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'7.ply'),delay=7/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'8.ply'),delay=8/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'9.ply'),delay=9/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'10.ply'),delay=10/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'11.ply'),delay=11/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'12.ply'),delay=12/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'13.ply'),delay=13/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'14.ply'),delay=14/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'15.ply'),delay=15/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'16.ply'),delay=16/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'17.ply'),delay=17/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'18.ply'),delay=18/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'19.ply'),delay=19/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'20.ply'),delay=20/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'21.ply'),delay=21/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'22.ply'),delay=22/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'23.ply'),delay=23/DTE)
-	invoke(lambda:setattr(c,mo,ATA+'24.ply'),delay=24/DTE)
-	invoke(lambda:cc.reset_state(c),delay=3)
+def dth_wtr_swim(c):
+	c.dth_fr=min(c.dth_fr+time.dt*t,25.999)
+	if c.dth_fr > 25.99:
+		c.dth_fr=25
+	c.model=af+f'death/water/{int(c.dth_fr)}.ply'
 
-def electric(c):
-	ATV=af+'death/volt/'
-	c.model=ATV+'0.ply'
-	c.texture=ATV+'0.tga'
-	invoke(lambda:cc.reset_state(c),delay=3)
+def dth_fire_ash(c):
+	c.dth_fr=min(c.dth_fr+time.dt*t,24.999)
+	if c.dth_fr > 24.99:
+		c.dth_fr=24
+	c.model=af+f'death/fire/{int(c.dth_fr)}.ply'
 
-def eat_by_plant(c):
-	c.visible=False
-	invoke(lambda:cc.reset_state(c),delay=3)
+def dth_el_shock(c):
+	c.model=af+f'death/volt/0.ply'
+	c.texture=af+f'death/volt/0.tga'
+
+def dth_beesting(c):
+	if not c.landed:
+		c.y=(c.y-c.y)
+	c.rotation_y=0
+	c.dth_fr=min(c.dth_fr+time.dt*t,47.999)
+	if c.dth_fr > 47.99:
+		c.dth_fr=47
+	c.model=af+f'death/sting/{int(c.dth_fr)}.ply'
+
+def dth_c_buried(c):
+	c.dth_fr=min(c.dth_fr+time.dt*t,11.999)
+	if c.dth_fr > 11.99:
+		c.dth_fr=11
+	c.model=af+f'death/buried/{int(c.dth_fr)}.ply'
+
 
 ## crate animation
 def bnc_anim(c):

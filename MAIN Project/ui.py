@@ -508,7 +508,7 @@ class SpecialLevelSelector(Entity):
 			Entity(model=q,texture=icb,position=(s.lv_clr_gem0.x+iwb/7,s.y,1),scale=.16,parent=CU,color=color.rgb32(120,120,150))
 		s.frm=0
 		mbg=color.rgb32(180,180,210)
-		if idx in st.CRYSTAL:
+		if idx in st.COLOR_GEM:
 			s.lv_clr_gem0.color=mbg
 		if idx in st.CLEAR_GEM:
 			s.lv_clr_gem1.color=mbg
@@ -583,7 +583,7 @@ class PauseMenu(Entity):
 		s.select_1=Text(s.selection[1],font=_fnt,scale=3,tag=1,position=(vF-.5,vF-.275,s.z-1),color=s.font_color,parent=CU,visible=False)
 		s.select_2=Text(s.selection[2],font=_fnt,scale=3,tag=2,position=(vF-.5,vF-.35,s.z-1),color=s.font_color,parent=CU,visible=False)
 		s.crystal_counter=Text('0/5',font=_fnt,scale=6,position=(vF+.325,vF+.325,s.z-1),color=color.rgb32(160,0,160),parent=CU,visible=False)
-		s.gem_counter=Text('0/10 GEMS',font=_fnt,scale=5,position=(vF+.3,vF-.1,s.z-1),color=color.rgb32(170,170,190),parent=CU,visible=False)
+		s.gem_counter=Text('0/16 GEMS',font=_fnt,scale=5,position=(vF+.3,vF-.1,s.z-1),color=color.rgb32(170,170,190),parent=CU,visible=False)
 		s.add_text=Text('+ 0',font=_fnt,scale=4,position=(vF+.325,vF+.025,vF-1),color=s.font_color,parent=CU,visible=False)
 		s.game_progress=Text('Progress 0%',font=_fnt,scale=3,position=(vF+.325,vF-.35,s.z-1),color=color.gold,parent=CU,visible=False)
 		##animation
@@ -678,9 +678,9 @@ class PauseMenu(Entity):
 	def check_collected(self):
 		s=self
 		gems_total=st.color_gems+st.clear_gems
-		s.gem_counter.text=str(gems_total)+'/10 GEMS'
+		s.gem_counter.text=str(gems_total)+'/16 GEMS'
 		s.crystal_counter.text=str(st.collected_crystals)+'/5'
-		s.game_progress.text='Progress '+str(st.color_gems*5+st.clear_gems*5+st.collected_crystals*10)+'%'
+		s.game_progress.text='Progress '+str(st.color_gems*6+st.clear_gems*5+st.collected_crystals*6)+'%'
 		s.add_text.text='+ '+str(st.clear_gems)
 		for qc in {s.col_gem1,s.col_gem2,s.col_gem3,s.col_gem3,s.col_gem4,s.col_gem5}:
 			if int(qc.name) in st.COLOR_GEM:
@@ -732,7 +732,7 @@ class CollectedGem(Entity):
 		idx=st.level_index
 		super().__init__(position=(0,0),parent=CU,scale=.14)
 		s.crystal=Entity(model=q,texture=cr_i+'0.png',scale=s.scale,position=(s.x,s.y-.4),color=color.rgb32(200,0,200),visible=False,parent=CU)
-		s.clear_gem=Entity(model=q,texture=LC.ge_0+'0.png',position=(s.x-.1,s.y-.4),scale=s.scale,color=color.rgb32(128,128,180),visible=False,parent=CU)
+		s.clear_gem=Entity(model=q,texture=LC.ge_0+'0.png',position=(s.x-.1,s.y-.4),scale=s.scale,color=LC.cglr,visible=False,parent=CU)
 		s.color_gem=Entity(model=q,texture=LC.fdc[idx]+'0.png',position=(s.x+.1,s.y-.4),scale=s.scale,color=LC.GMU[idx],visible=False,parent=CU)
 		if idx == 3:
 			s.color_gem.scale_y=.2

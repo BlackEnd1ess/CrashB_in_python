@@ -57,7 +57,7 @@ def ui_audio(ID,pit=1):
 		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME/2,add_to_scene_entities=False)
 	else:
 		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
-	invoke(lambda:destroy(ua),delay=ua.length*2)
+	invoke(lambda:destroy(ua),delay=ua.length*8)
 
 ## PLAYER SFX
 SND_PC={0:'walk',

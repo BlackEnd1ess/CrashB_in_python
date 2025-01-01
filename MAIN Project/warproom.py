@@ -36,24 +36,22 @@ class LvSelect(Entity):
 		self.bgm=Audio('res/snd/music/ev/wroom.mp3',volume=settings.MUSIC_VOLUME,loop=True)
 	def input(self,key):
 		if key in settings.BCK_KEY:
+			sn.ui_audio(ID=0,pit=.125)
 			if st.bonus_warp_room:
 				if st.selected_level < 8:
 					st.selected_level+=1
-					sn.ui_audio(ID=0,pit=.125)
 			else:
 				if st.selected_level < 5:
 					st.selected_level+=1
-					sn.ui_audio(ID=0,pit=.125)
 			return
 		if key == settings.FWD_KEY:
+			sn.ui_audio(ID=0,pit=.125)
 			if st.bonus_warp_room:
 				if st.selected_level > 6:
 					st.selected_level-=1
-					sn.ui_audio(ID=0,pit=.125)
 			else:
 				if st.selected_level > 1:
 					st.selected_level-=1
-					sn.ui_audio(ID=0,pit=.125)
 			return
 		if key == 'f2':
 			sn.ui_audio(ID=1)

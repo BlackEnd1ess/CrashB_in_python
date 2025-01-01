@@ -13,9 +13,9 @@ N=npc
 
 ## player
 def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound					inwater
-	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','space_time','stnfr'}:
+	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','space_time','stnfr','dth_cause','dth_fr'}:
 		setattr(c,_a,0)#values
-	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','atk_ctm','stun'}:
+	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','stun'}:
 		setattr(c,_v,False)#flags
 	c.move_speed=LC.dfsp
 	c.cur_tex=c.texture
@@ -23,6 +23,7 @@ def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun
 	c.stun_fd=(0,0,0)
 	c.direc=(0,0,0)
 	c.vpos=c.y
+	c.dth_timer=4
 	c.indoor=.5
 	c.CMS=3
 	_loc.ACTOR=c
@@ -45,13 +46,14 @@ def hurt_blink(c):
 	invoke(lambda:setattr(c,'visible',True),delay=.2)
 def dth_event(c,rsn):
 	if not st.death_event:
-		if rsn == 0:
+		if rsn == 1:
 			sn.pc_audio(ID=14,pit=.8)
 		else:
 			sn.pc_audio(ID=7,pit=.8)
 		st.death_event=True
 		c.freezed=True
-		c.death_action(rsn=rsn)
+		c.dth_cause=rsn
+	del rsn
 def reset_state(c):
 	ui.BlackScreen()
 	st.crate_count-=st.crate_to_sv
@@ -89,6 +91,7 @@ def reset_state(c):
 	camera.position=c.position
 	camera.rotation=(15,0,0)
 	st.death_event=False
+	c.dth_fr=0
 	c.texture='res/pc/crash.tga'
 	c.visible=True
 	c.stun=False
@@ -140,7 +143,7 @@ def c_attack(c):
 			if is_enemie(qd):
 				if not (qd.is_purge or qd.is_hitten):
 					if (qd.vnum in {1,11}) or (qd.vnum == 5 and qd.def_mode):
-						get_damage(c,rsn=1)
+						get_damage(c,rsn=2)
 					if not qd.vnum == 13:
 						bash_enemie(qd,h=c)
 def c_shield():
@@ -305,14 +308,17 @@ def collect_rewards():
 		st.CLEAR_GEM.append(cdx)
 		st.clear_gems+=1
 	if st.level_col_gem:
-		wcg={1:4,#lv1#blue
-			2:1,#lv2#red
-			3:5,#lv3#yellow
-			4:2,#lv4#green
-			5:3}#lv5#purple
-		st.COLOR_GEM.append(wcg[cdx])
 		st.color_gems+=1
-		del wcg
+		if cdx > 5:
+			st.COLOR_GEM.append(cdx)
+		else:
+			wcg={1:4,#lv1#blue
+				2:1,#lv2#red
+				3:5,#lv3#yellow
+				4:2,#lv4#green
+				5:3}#lv5#purple
+			st.COLOR_GEM.append(wcg[cdx])
+			del wcg
 	delete_states()
 	invoke(lambda:warproom.level_select(),delay=2)
 def purge_instance(v):
@@ -426,7 +432,7 @@ def fall_interact(c,e):
 			return
 	if is_enemie(e) and not (e.is_hitten or e.is_purge):
 		if (e.vnum in {2,9,13}) or (e.vnum == 5 and e.def_mode):
-			get_damage(c,rsn=1)
+			get_damage(c,rsn=2)
 		e.is_purge=True
 		c.jump_typ(t=2)
 		sn.pc_audio(ID=5)
@@ -443,10 +449,10 @@ def spc_floor(c,e):
 		e.pl_touch()
 		return
 	if (u == 'swpi' and e.typ == 3):
-		get_damage(c,rsn=3)
+		get_damage(c,rsn=4)
 		return
 	if u == 'wtrh':
-		dth_event(c,rsn=2)
+		dth_event(c,rsn=3)
 		return
 	if u == 'mptf' and not c.walking:
 		e.mv_player()
@@ -464,9 +470,11 @@ def ptf_up(p,c):
 def hit_npc(c,m):
 	if is_enemie(m) and m.collider:
 		if not (m.is_purge or m.is_hitten):
-			RS=1
+			RS=2
 			if m.vnum == 7:
 				RS=5
+			if m.vnum == 15:
+				RS=7
 			if not c.is_attack:
 				get_damage(c,rsn=RS)
 

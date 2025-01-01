@@ -2,7 +2,7 @@ from ursina import color
 ## lists, arrays and list access
 
 # checkpoint - bonus
-bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(0,1,-25)]
+bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(9,5,20)]
 checkp='CHECKPOINT'
 
 # display the name in pause menu and loading screen
@@ -26,15 +26,6 @@ ge_inf={0:'this is a developer test level, place the gem where you want',
 		4:'green gem - unlock the yellow gem path',
 		5:'purple gem - unlock the green gem path'}
 
-# crash death actions/animations
-dt_act={0:'fall_endl',
-		1:'angel',
-		2:'water',
-		3:'explode',
-		4:'burn',
-		5:'electric',
-		6:'eat_by_plant'}
-
 #2d gem animation
 ge_0='res/ui/icon/gem_0/gem'
 ge_1='res/ui/icon/gem_1/gem'
@@ -44,20 +35,24 @@ fdc={1:ge_0,2:ge_0,3:ge_0,4:ge_1,5:ge_2,6:ge_0}
 
 #gem ui color
 O=180
+cglr=color.rgb32(O,O,O)# clear gem
 GMU={1:color.rgb32(0,0,O),#blue
 	2:color.rgb32(O,0,0),#red
 	3:color.rgb32(O,O,0),#violet
 	4:color.rgb32(0,O,0),#green
 	5:color.rgb32(O,0,O),#yellow
-	6:color.rgb32(O,O,O)}#clear
+	6:cglr}#clear
 
 #gem color
-GMC={0:color.rgb32(O,O,O),
+GMC={0:cglr,
 	1:color.rgb32(O,0,0),
 	2:color.rgb32(0,O,0),
 	3:color.rgb32(O,0,O),
 	4:color.rgb32(0,0,O),
-	5:color.rgb32(O,O,0)}
+	5:color.rgb32(O,O,0),
+	6:cglr,
+	7:cglr,
+	8:cglr}
 
 #lv6 mine position
 LDM_POS=[]

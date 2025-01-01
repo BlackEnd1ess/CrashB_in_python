@@ -6,12 +6,12 @@ cc=_core
 LC=_loc
 
 ## short names from objects (entity.name)
-LOD_VAR=['rmdr','htbx','wpvx']
-LV1=LOD_VAR+['trd2','tssn','mptf','mblo','bush','cori']
+LOD_VAR=['rmdr','wpvx']
+LV1=LOD_VAR+['trd2','tssn','mptf','mblo','bush','cori','htbx']
 LV2=LOD_VAR+['plnk','ickk','wdlg','pilr','icec','snwa','sngg']
 LV3=LOD_VAR+['wtfa','mptf','trd2','tile','foam','wdst','mtbt']
 LV4=LOD_VAR+['swpl','swp2','swpi','drpw','ssww','swri','swff']
-LV5=LOD_VAR+['mnks','loos','rnsp','rubl','rncr']
+LV5=LOD_VAR+['mnks','loos','rnsp','rubl','rncr','htbx']
 LV6=LOD_VAR+['ldmn','tksc','bbfl','bbst','sngg']
 LL={1:LV1,2:LV2,3:LV3,4:LV4,5:LV5,6:LV6}
 

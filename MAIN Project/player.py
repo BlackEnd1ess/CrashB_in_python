@@ -53,7 +53,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(0,4,0)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(9,4,21)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					sg.DEV_ECAM:lambda:EditorCamera()}
 	def input(self,key):
@@ -76,12 +76,11 @@ class CrashB(Entity):
 				s.animate_y(s.y+.45,.2)
 	def spin_attack(self):
 		s=self
-		if not (s.is_attack or s.atk_ctm):
-			s.atk_ctm,s.is_attack=True,True
+		if not s.is_attack:
+			s.is_attack=True
 			s.standup,s.is_landing=False,False
 			sn.pc_audio(ID=3)
 			invoke(lambda:setattr(s,'is_attack',False),delay=.5)
-			invoke(lambda:setattr(s,'atk_ctm',False),delay=.75)
 			return
 		sn.pc_audio(ID=4)
 	def move(self):
@@ -100,7 +99,7 @@ class CrashB(Entity):
 			if not mc or (mc and mn in LC.item_lst|LC.trigger_lst):
 				s.position+=mvD*(time.dt*s.move_speed)
 			if (mn == 'fthr'):
-				cc.get_damage(s,rsn=3)
+				cc.get_damage(s,rsn=4)
 			if (cc.is_crate(me) and me.vnum == 12):
 				me.destroy()
 			cc.hit_npc(c=s,m=me)
@@ -196,18 +195,25 @@ class CrashB(Entity):
 				cc.cam_indoor(s)
 				return
 			cc.cam_level(s)
-	def death_action(self,rsn):
+	def death_action(self):
 		s=self
-		if rsn > 0:#0 is falling
-			dca={1:lambda:an.angel_fly(s),
-				2:lambda:an.water_swim(s),
-				3:lambda:an.fire_ash(s),
-				4:lambda:an.electric(s),
-				5:lambda:an.eat_by_plant(s)}
-			dca[rsn]()
-			del dca
+		dtc=s.dth_cause
+		s.dth_timer-=time.dt
+		if s.dth_timer <= 0:
+			s.dth_timer=4
+			cc.reset_state(s)
 			return
-		invoke(lambda:cc.reset_state(s),delay=2)
+		if dtc in [1,5]:
+			s.visible=False
+			return
+		cbda={2:lambda:an.dth_angelfly(s),
+			3:lambda:an.dth_wtr_swim(s),
+			4:lambda:an.dth_fire_ash(s),
+			6:lambda:an.dth_el_shock(s),
+			7:lambda:an.dth_beesting(s),
+			8:lambda:an.dth_c_buried(s)}
+		cbda[dtc]()
+		del cbda
 	def refr_tex(self):
 		s=self
 		if s.is_attack:
@@ -245,8 +251,6 @@ class CrashB(Entity):
 		for vkh in range(7):
 			invoke(lambda:cc.hurt_blink(self),delay=vkh/3)
 	def c_physic(self):
-		if st.death_event:
-			return
 		s=self
 		cc.check_wall(s)
 		cc.various_val(s)
@@ -270,9 +274,11 @@ class CrashB(Entity):
 	def update(self):
 		if not st.gproc():
 			s=self
+			if st.death_event:
+				s.death_action()
+				return
 			s.c_physic()
 			if not st.p_rst(s):
 				s.c_interact()
-			if not st.death_event:
-				s.refr_tex()
-				s.refr_anim()
+			s.refr_tex()
+			s.refr_anim()

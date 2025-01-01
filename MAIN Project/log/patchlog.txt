@@ -217,3 +217,21 @@
 #21.12.2024
 - new Asset: Front Wall (Lv 6)
 - changed Level struct, added Gem-Route
+
+#23.12.2024
+- implemented gem types for new levels
+- finished level 6 main structure
+
+#28.12.2024
+- added invisible walls in lv 6
+- bonus level falling zone added
+- npc's, crates and fruits placed
+- fixxed missing select sound
+
+#29.12.2024
+- added new asset: stone block for l6
+- new snow/rain system proto type
+
+#01.01.2025
+- crash death animation: stinged by bee
+- all death animations will refreshed by delta time and player wait 5 sec.

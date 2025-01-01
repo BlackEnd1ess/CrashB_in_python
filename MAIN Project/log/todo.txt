@@ -1,4 +1,8 @@
 ## BUGS/ERORRS
-
+- l6 mine freeze bug
 
 ##TODO
+- mine destroy animation
+- crash buried by lmbjack animation
+- lumberjack smash anim
+- landmine explosion texture animation

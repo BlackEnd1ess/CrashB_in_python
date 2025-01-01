@@ -73,7 +73,7 @@ class FireThrow(Entity):
 		tdf=time.dt*1.1
 		s.life_time=max(s.life_time-time.dt,0)
 		if s.intersects(LC.ACTOR):
-			cc.get_damage(LC.ACTOR,rsn=3)
+			cc.get_damage(LC.ACTOR,rsn=4)
 		if s.life_time <= 0:
 			destroy(s)
 			return
