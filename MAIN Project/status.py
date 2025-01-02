@@ -6,7 +6,7 @@ checkpoint=None
 ## game progress items
 COLOR_GEM=[]
 CLEAR_GEM=[]
-CRYSTAL=[]
+CRYSTAL=[1,2,3,4,5]
 
 ## reset instances
 NPC_RESET=[]
@@ -36,7 +36,7 @@ lives_bonus=0
 extra_lives=4
 
 ## collected gems/crystal
-collected_crystals=0
+collected_crystals=5
 color_gems=0
 clear_gems=0
 
@@ -74,7 +74,7 @@ wait_screen=False
 death_event=False
 aku_exist=False
 gem_death=False
-crd_seen=False
+crd_seen=True
 loading=False
 pause=False
 

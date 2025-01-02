@@ -1,4 +1,4 @@
-import item,status,_core,animation,sound,npc,settings,_loc,ui,random,time
+import item,status,_core,animation,sound,npc,settings,_loc,ui,random,time,effect
 from ursina import Entity,Text,Audio,color,scene,invoke,distance
 from ursina.ursinastuff import destroy
 
@@ -79,7 +79,7 @@ def spawn_ico(c):
 
 def explosion(cr):
 	if cr.visible:
-		Fireball(cr)
+		effect.Fireball(cr)
 	sn.crate_audio(ID=10)
 	if cr.vnum == 12:
 		invoke(lambda:sn.crate_audio(ID=11,pit=1.4),delay=.1)
@@ -455,25 +455,3 @@ class LvInfo(Entity):
 		destroy_event(s)
 
 ##crate effects
-class Fireball(Entity):
-	def __init__(self,cr):
-		s=self
-		nC={11:color.red,12:color.green}
-		super().__init__(model='quad',texture=None,position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC[cr.vnum],scale=.75,unlit=False)
-		s.wave=Entity(model=None,texture=pp+'anim/exp_wave/0.tga',position=s.position,scale=.001,rotation_x=-90,color=nC[cr.vnum],alpha=.8,unlit=False)
-		s.ex_step=0
-		s.wv_step=0
-		del cr
-	def purge(self):
-		destroy(self.wave)
-		destroy(self)
-	def update(self):
-		s=self
-		s.wv_step=min(s.wv_step+time.dt*15,4.999)
-		s.ex_step=min(s.ex_step+time.dt*25,14.999)
-		s.wave.model=pp+'anim/exp_wave/'+str(int(s.wv_step))+'.ply'
-		s.texture=pp+'anim/exp_fire/'+str(int(s.ex_step))+'.png'
-		s.wave.visible=(s.wv_step < 4.99)
-		s.visible=(s.ex_step < 14.99)
-		if (s.ex_step > 14.99) and (s.wv_step > 4.99):
-			s.purge()

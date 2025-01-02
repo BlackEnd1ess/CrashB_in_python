@@ -187,9 +187,15 @@ def dth_beesting(c):
 	c.model=af+f'death/sting/{int(c.dth_fr)}.ply'
 
 def dth_c_buried(c):
-	c.dth_fr=min(c.dth_fr+time.dt*t,11.999)
-	if c.dth_fr > 11.99:
-		c.dth_fr=11
+	c.rotation_y=0
+	if not c.sma_dth:
+		c.sma_dth=True
+		c.y-=.3
+	if c.texture != af+'death/buried/0.tga':
+		c.texture=af+'death/buried/0.tga'
+	c.dth_fr=min(c.dth_fr+time.dt*t,10.999)
+	if c.dth_fr > 10.99:
+		c.dth_fr=10
 	c.model=af+f'death/buried/{int(c.dth_fr)}.ply'
 
 
@@ -394,6 +400,14 @@ def tikki_rotate(t,sp):
 			t.an_mode=0
 	t.model=tki+f'{int(t.frm)}.ply'
 	del t,sp
+
+lbh=nf+'lumberjack/smash/'
+def lmbjack_smash(m,sp):
+	m.sma_frm=min(m.sma_frm+time.dt*sp,35.999)
+	if m.sma_frm > 35.99:
+		m.sma_frm=0
+		m.is_atk=False
+	m.model=lbh+f'{int(m.sma_frm)}.ply'
 
 ldm='res/objects/l6/lmine/'
 def land_mine(m,sp):

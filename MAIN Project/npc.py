@@ -502,6 +502,8 @@ class Lumberjack(Entity):
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=-90,position=pos,scale=m_SC,collider='box')
 		cc.set_val_npc(s)
 		s.move_speed=1
+		s.sma_frm=0
+		s.is_atk=False
 		del pos
 	def update(self):
 		if st.gproc():
@@ -517,9 +519,14 @@ class Lumberjack(Entity):
 			effect.JumpDust(s.position)
 			cc.cache_instance(s)
 			return
+		if s.is_atk:
+			an.lmbjack_smash(s,sp=22)
+			return
 		if ljds < 4:
 			cc.rotate_to_crash(s)
 		if ljds < 2:
+			if distance(s,ug) < .4:
+				s.is_atk=True
 			an.npc_walking(s)
 			s.position=lerp((s.x,s.y,s.z),(ug.x,s.y,ug.z),ljsp)
 			return

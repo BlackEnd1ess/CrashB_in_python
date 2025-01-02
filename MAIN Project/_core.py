@@ -13,9 +13,9 @@ N=npc
 
 ## player
 def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound					inwater
-	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','space_time','stnfr','dth_cause','dth_fr'}:
+	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','space_time','stnfr','stun_tme','dth_cause','dth_fr'}:
 		setattr(c,_a,0)#values
-	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','stun'}:
+	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','stun','sma_dth'}:
 		setattr(c,_v,False)#flags
 	c.move_speed=LC.dfsp
 	c.cur_tex=c.texture
@@ -84,7 +84,9 @@ def reset_state(c):
 	reset_wumpas()
 	reset_npc()
 	if st.level_index == 6:
+		c.sma_dth=False
 		reset_mines()
+		rmv_bees()
 	check_nitro_stack()
 	c.position=status.checkpoint
 	env.set_fog(st.level_index)
@@ -253,10 +255,6 @@ def reset_npc():
 			else:
 				npc.spawn(ID=NP.vnum,POS=NP.spawn_pos,DRC=NP.mov_direc,RNG=NP.mov_range)
 	st.NPC_RESET.clear()
-def reset_mines():
-	for rsm in LC.LDM_POS[:]:
-		objects.LandMine(pos=rsm)
-	LC.LDM_POS.clear()
 def jmp_lv_fin():
 	if not st.LEVEL_CLEAN:
 		destroy(LC.ACTOR)
@@ -473,8 +471,10 @@ def hit_npc(c,m):
 			RS=2
 			if m.vnum == 7:
 				RS=5
-			if m.vnum == 15:
+			elif m.vnum == 15:
 				RS=7
+			elif m.vnum == 16:
+				RS=8
 			if not c.is_attack:
 				get_damage(c,rsn=RS)
 
@@ -709,3 +709,13 @@ def load_game():
 	settings.SFX_VOLUME=save_data['S_VOL']
 	settings.MUSIC_VOLUME=save_data['M_VOL']
 	st.crd_seen=save_data['CRD_W']
+
+##lv6 func
+def rmv_bees():
+	for vbw in scene.entities[:]:
+		if isinstance(vbw,npc.Bee):
+			vbw.purge()
+def reset_mines():
+	for rsm in LC.LDM_POS[:]:
+		objects.LandMine(pos=rsm)
+	LC.LDM_POS.clear()

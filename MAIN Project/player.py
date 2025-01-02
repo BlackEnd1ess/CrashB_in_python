@@ -159,10 +159,12 @@ class CrashB(Entity):
 	def stun_fly(self):
 		s=self
 		sdf=s.stun_fd[2]
+		s.stun_tme+=time.dt
 		if abs(s.z-sdf) > .2:
 			s.z=lerp(s.z,sdf,time.dt*4)
 			return
-		if s.landed:
+		if s.landed or s.stun_tme > 2:
+			s.stun_tme=0
 			s.stun=False
 	def check_jump(self):
 		s=self

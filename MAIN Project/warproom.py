@@ -18,7 +18,10 @@ class BonusRoomEntry(Entity):
 	def __init__(self):
 		s=self
 		super().__init__()
-		s.desc_w=Text('WARP ROOM E2 - F1',font=fn,scale=2,position=(-.55,-.45,0),color=color.magenta,parent=cu)
+		mtt='WARP ROOM E2 - F1'
+		if st.bonus_warp_room:
+			mtt='WARP ROOM E1 - F1'
+		s.desc_w=Text(mtt,font=fn,scale=2,position=(-.55,-.45,0),color=color.magenta,parent=cu)
 		s.tme=.3
 	def update(self):
 		s=self

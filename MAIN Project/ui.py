@@ -523,7 +523,6 @@ class SpecialLevelSelector(Entity):
 		s.lv_clr_gem1.texture=LC.ge_0+kg
 	def update(self):
 		s=self
-		print(st.selected_level)
 		s.refr()
 		if st.selected_level == s.lvID:
 			s.lv_name.color=color.white

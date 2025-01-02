@@ -185,7 +185,7 @@ class LevelMusic(Audio):
 		super().__init__(lM,volume=se.MUSIC_VOLUME,loop=True)
 	def update(self):
 		s=self
-		if (st.bonus_round or st.death_route):
+		if (st.bonus_round or st.death_route or st.game_over):
 			s.fade_out()
 			cc.purge_instance(s)
 		if st.loading or st.aku_hit > 2:
@@ -214,7 +214,7 @@ class SpecialMusic(Audio):
 		super().__init__(MC+'lv'+str(T)+'/0c.mp3',volume=se.MUSIC_VOLUME,loop=True)
 	def update(self):
 		s=self
-		if not st.death_route:
+		if not st.death_route or st.game_over:
 			s.fade_out()
 			cc.purge_instance(s)
 			LevelMusic(T=st.level_index)

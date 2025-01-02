@@ -1016,6 +1016,7 @@ class LandMine(Entity):
 		s.explode=True
 		if not s.p_snd:
 			s.p_snd=True
+			ef.Fireball(s)
 			sn.crate_audio(ID=10)
 	def update(self):
 		if not st.gproc():

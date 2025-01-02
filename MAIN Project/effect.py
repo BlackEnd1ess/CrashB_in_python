@@ -51,6 +51,33 @@ class JumpDust(Entity):
 		if s.scale_x > .6:
 			destroy(s)
 
+class Fireball(Entity):
+	def __init__(self,cr):
+		s=self
+		nC=color.red
+		if str(cr) == 'ldmn':
+			nC=color.orange
+		if cc.is_crate(cr) and cr.vnum == 12:
+			nC=color.green
+		super().__init__(model='quad',texture=None,position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC,scale=.75,unlit=False)
+		s.wave=Entity(model=None,texture='res/crate/anim/exp_wave/0.tga',position=s.position,scale=.001,rotation_x=-90,color=nC,alpha=.8,unlit=False)
+		s.ex_step=0
+		s.wv_step=0
+		del cr
+	def purge(self):
+		destroy(self.wave)
+		destroy(self)
+	def update(self):
+		s=self
+		s.wv_step=min(s.wv_step+time.dt*15,4.999)
+		s.ex_step=min(s.ex_step+time.dt*25,14.999)
+		s.wave.model='res/crate/anim/exp_wave/'+str(int(s.wv_step))+'.ply'
+		s.texture='res/crate/anim/exp_fire/'+str(int(s.ex_step))+'.png'
+		s.wave.visible=(s.wv_step < 4.99)
+		s.visible=(s.ex_step < 14.99)
+		if (s.ex_step > 14.99) and (s.wv_step > 4.99):
+			s.purge()
+
 class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
 		s=self
