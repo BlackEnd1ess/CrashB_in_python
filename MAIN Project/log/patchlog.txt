@@ -234,4 +234,12 @@
 
 #01.01.2025
 - crash death animation: stinged by bee
-- all death animations will refreshed by delta time and player wait 5 sec.
+- all death animations will refreshed by delta time and player wait 4 sec.
+- lumberjack have smash animation now
+- crash death animation: buried by lumberjack
+- fixxed freezing mine stun state which never finished.
+- landmine in level 6 have explosion effect and wave now.
+
+#02.01.2024
+- fixxed mirrored death animation in level 6 (buried)
+- placed side blocks on the side with vertex holes near by startroom in level 6.

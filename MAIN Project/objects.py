@@ -1050,6 +1050,12 @@ class BonusBeeWall(Entity):
 		super().__init__(model=bnbn+'.obj',name='bnsw',texture=bnbn+'.tga',position=pos,scale=.02,rotation_y=-90,color=color.rgb32(120,160,120),double_sided=True)
 		del pos
 
+bsbq=omf+'l6/stone_wall/'
+class BeeSideBlock(Entity):
+	def __init__(self,pos):
+		super().__init__(model=bsbq+'sblock.ply',texture=bsbq+'stone_wall.png',position=pos,scale=.5,rotation=(-90,0,0),color=color.rgb32(200,170,180),double_sided=True)
+		del pos
+
 ##################
 ## logic objects #
 class FallingZone(Entity):## falling

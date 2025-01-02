@@ -20,6 +20,8 @@ def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun
 	c.move_speed=LC.dfsp
 	c.cur_tex=c.texture
 	c.gravity=LC.dfsp
+	c.inv_sc=-.1/110
+	c.nor_sc=.1/110
 	c.stun_fd=(0,0,0)
 	c.direc=(0,0,0)
 	c.vpos=c.y
@@ -92,6 +94,7 @@ def reset_state(c):
 	env.set_fog(st.level_index)
 	camera.position=c.position
 	camera.rotation=(15,0,0)
+	c.scale_x=c.nor_sc
 	st.death_event=False
 	c.dth_fr=0
 	c.texture='res/pc/crash.tga'
@@ -200,7 +203,9 @@ def cam_bonus(c):
 
 ## world, misc
 def spawn_level_crystal(idx):
-	cry_pos={0:(0,0,0),1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7),6:(0,.3,-15)}
+	if idx > 5 or idx == 0:
+		return
+	cry_pos={1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7)}
 	if not idx in st.CRYSTAL:
 		item.EnergyCrystal(pos=cry_pos[idx])
 	del cry_pos

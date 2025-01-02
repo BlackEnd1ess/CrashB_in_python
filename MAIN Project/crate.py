@@ -453,5 +453,3 @@ class LvInfo(Entity):
 		if distance(s,LC.ACTOR) < 3:
 			ui.GemHint()
 		destroy_event(s)
-
-##crate effects

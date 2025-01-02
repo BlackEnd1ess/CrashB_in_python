@@ -187,6 +187,7 @@ def dth_beesting(c):
 	c.model=af+f'death/sting/{int(c.dth_fr)}.ply'
 
 def dth_c_buried(c):
+	c.scale_x=c.inv_sc
 	c.rotation_y=0
 	if not c.sma_dth:
 		c.sma_dth=True

@@ -463,7 +463,7 @@ class Bee(Entity):
 		destroy(s)
 	def hunt_p(self):
 		s=self
-		s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.125,LC.ACTOR.z),time.dt*2.3)
+		s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.135,LC.ACTOR.z),time.dt*2.3)
 		cc.rotate_to_crash(s)
 	def fly_event(self):
 		s=self
@@ -479,6 +479,12 @@ class Bee(Entity):
 		if abs(s.z-s.spawn_pos[2]) > 10.1 or st.death_event:# destroy if bee to far away and breaks limit
 			s.purge()
 			return
+		jbc=s.intersects()
+		if jbc and str(jbc.entity) == 'bee':
+			if s.x < jbc.entity.x:
+				jbc.entity.x=lerp(s.x,jbc.entity.x+.4,time.dt*9)
+			else:
+				jbc.entity.x=lerp(s.x,jbc.entity.x-.4,time.dt*9)
 		if st.pause:
 			s.buzz_snd.volume=0
 			return
