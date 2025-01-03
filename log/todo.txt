@@ -1,8 +1,4 @@
 ## BUGS/ERORRS
-- l6 mine freeze bug
+- lv 4 gem route glitch
 
 ##TODO
-- mine destroy animation
-- crash buried by lmbjack animation
-- lumberjack smash anim
-- landmine explosion texture animation
