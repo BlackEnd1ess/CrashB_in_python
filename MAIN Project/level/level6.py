@@ -22,7 +22,7 @@ def load_object():
 	item.GemStone(c=6,pos=(0,2.1,-.8))
 	o.FallingZone(pos=(0,-1,-40),s=(32,.1,300),v=True)
 	#tikki sculpt
-	#o.TikkiSculpture(pos=(0,0,-54),spd=2,rng=.8)
+	o.TikkiSculpture(pos=(0,0,-54),spd=2,rng=.8)
 	o.TikkiSculpture(pos=(0,1.8,7.35),spd=3,rng=.8)
 	o.TikkiSculpture(pos=(9,2.5,23.9),spd=4,rng=1)
 	#invisible wall
@@ -35,9 +35,9 @@ def load_object():
 	o.HitBox(pos=(10.2,0,30),sca=(.3,10,24))
 	o.HitBox(pos=(7.8,0,32),sca=(.3,10,18))
 	#hives
-	o.Hive(pos=(.5,.7,-29.7),bID=21,bMAX=3)
+	o.Hive(pos=(.5,.7,-29.7),bID=21,bMAX=2)
 	o.Hive(pos=(.5,1.8,1),bID=22,bMAX=3)
-	o.Hive(pos=(9.6,2.4,25.8),bID=23,bMAX=3)
+	o.Hive(pos=(9.6,2.4,25.8),bID=23,bMAX=4)
 	#mines
 	o.LandMine(pos=(0,0,-56.3813))
 	o.LandMine(pos=(-.45,.2,-41.7))

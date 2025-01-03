@@ -918,34 +918,33 @@ class Hive(Entity):
 		s=self
 		super().__init__(model=behv+'.ply',texture=behv+'.tga',position=pos,scale=.1/150,rotation_x=-90)
 		s.locked=False
-		s.tme=5
-		s.bID=bID
+		s.bees_out=0
 		s.bMAX=bMAX
+		s.bID=bID
+		s.tme=.3
 		s.frm=0
 		del pos,bID,bMAX
-	def has_own_bee(self):
+	def is_own_bee(self):
 		s=self
-		bct=0
+		s.bees_out=0
 		for qv in scene.entities[:]:
 			if isinstance(qv,npc.Bee) and qv.bID == s.bID:
-				bct+=1
-				if bct >= s.bMAX:
-					s.locked=True
+				s.bees_out+=1
+				s.locked=(s.bees_out >= s.bMAX)
 	def spawn_bee(self):
 		s=self
 		npc.Bee(pos=s.position,bID=s.bID)
 	def update(self):
-		if not st.gproc():
-			s=self
-			s.has_own_bee()
-			if s.locked:
-				s.tme=max(s.tme-time.dt,0)
-				if s.tme <= 0:
-					s.tme=5
-					s.locked=False
-			if (LC.ACTOR.z < s.z+10) and (LC.ACTOR.z > s.z-1.5):
-				if not s.locked:
-					an.hive_awake(s,sp=12)
+		if st.gproc():
+			return
+		s=self
+		s.tme=min(s.tme-time.dt,0)
+		if s.tme <= 0:
+			s.tme=.3
+			s.is_own_bee()
+		if (LC.ACTOR.z < s.z+10) and (LC.ACTOR.z > s.z-1.5):
+			if not s.locked:
+				an.hive_awake(s,sp=12)
 
 tk=omf+'l6/tikki/'
 class TikkiSculpture(Entity):

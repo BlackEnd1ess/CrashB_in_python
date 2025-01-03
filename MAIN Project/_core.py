@@ -329,6 +329,10 @@ def purge_instance(v):
 		st.aku_exist=False
 	destroy(v)
 def cache_instance(v):
+	if str(v) == 'bee':
+		destroy(v)
+		del v
+		return
 	if is_enemie(v):
 		st.NPC_RESET.append(v)
 	v.enabled=False
@@ -658,14 +662,14 @@ def fly_away(n):
 		else:
 			ke.destroy()
 	if is_enemie(ke):
+		if n.vnum == 15:
+			destroy(n)
+			return
 		n.collider=None
 		n.enabled=False
 		if not ke.is_hitten:
 			bash_enemie(e=ke,h=n)
-			if n.vnum == 15:
-				destroy(n)
-			else:
-				cache_instance(n)
+			cache_instance(n)
 			wumpa_count(1)
 def is_enemie(n):
 	nnk={N.Amadillo,N.Turtle,N.SawTurtle,

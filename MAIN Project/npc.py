@@ -480,11 +480,12 @@ class Bee(Entity):
 			s.purge()
 			return
 		jbc=s.intersects()
+		ksc=time.dt*10
 		if jbc and str(jbc.entity) == 'bee':
 			if s.x < jbc.entity.x:
-				jbc.entity.x=lerp(s.x,jbc.entity.x+.4,time.dt*9)
+				jbc.entity.x=lerp(s.x,jbc.entity.x+.4,ksc)
 			else:
-				jbc.entity.x=lerp(s.x,jbc.entity.x-.4,time.dt*9)
+				jbc.entity.x=lerp(s.x,jbc.entity.x-.4,ksc)
 		if st.pause:
 			s.buzz_snd.volume=0
 			return

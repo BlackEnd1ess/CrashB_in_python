@@ -1,4 +1,4 @@
 ## BUGS/ERORRS
+- lv 4 gem route glitch
 
 ##TODO
-- bee min distance to other bee
