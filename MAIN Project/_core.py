@@ -455,7 +455,7 @@ def spc_floor(c,e):
 	if (u == 'plnk' and e.typ == 1) or u == 'loos':
 		e.pl_touch()
 		return
-	if (u == 'swpi' and e.typ == 3):
+	if (u == 'swpi' and e.typ == 3) or (u == 'labt' and e.danger):
 		get_damage(c,rsn=4)
 		return
 	if u == 'wtrh':
@@ -677,7 +677,8 @@ def is_enemie(n):
 		N.EatingPlant,N.Rat,N.Lizard,
 		N.Eel,N.Scrubber,N.Mouse,N.SewerMine,
 		N.Vulture,N.Gorilla,
-		N.Bee,N.Lumberjack}
+		N.Bee,N.Lumberjack,
+		N.SpiderRobot,N.Robot,N.LabAssistant}
 	return any(isinstance(n,npc_class) for npc_class in nnk)
 def bash_enemie(e,h):
 	e.is_hitten=True

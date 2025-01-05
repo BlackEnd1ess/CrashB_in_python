@@ -33,7 +33,10 @@ def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True):
 		13:lambda:SewerMine(pos=POS,drc=DRC,rng=RNG),
 		14:lambda:Gorilla(pos=POS,drc=DRC),
 		15:lambda:Bee(pos=POS),
-		16:lambda:Lumberjack(pos=POS)}
+		16:lambda:Lumberjack(pos=POS),
+		17:lambda:SpiderRobot(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP),
+		18:lambda:Robot(pos=POS,drc=DRC,rng=RNG),
+		19:lambda:LabAssistant(pos=POS)}
 	npc_[ID]()
 	del ID,POS,DRC,RTYP,RNG,CMV,npc_
 
@@ -538,6 +541,54 @@ class Lumberjack(Entity):
 			s.position=lerp((s.x,s.y,s.z),(ug.x,s.y,ug.z),ljsp)
 			return
 		s.position=lerp(s.position,s.spawn_pos,ljsp)
+
+class SpiderRobot(Entity):
+	def __init__(self,pos,drc,rng,rtyp):
+		s=self
+		nN='spider_robot'
+		s.vnum=17
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
+		cc.set_val_npc(s,drc,rng)
+		s.move_speed=1
+		del pos,rng,drc,rtyp
+	def update(self):
+		npc_action(self)
+
+class Robot(Entity):
+	def __init__(self,pos,drc,rng):
+		s=self
+		nN='robot'
+		s.vnum=18
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
+		cc.set_val_npc(s,drc,rng)
+		s.move_speed=1.4
+		s.tme=.6
+		del pos,rng,drc
+	def update(self):
+		s=self
+		npc_action(s)
+		if not st.gproc():
+			if distance(s,LC.ACTOR) < 4:
+				s.tme=max(s.tme-time.dt,0)
+				if s.tme <= 0:
+					s.tme=.6
+					sn.pc_audio(ID=12)
+					invoke(lambda:sn.pc_audio(ID=12,pit=.8),delay=.4)
+
+class LabAssistant(Entity):
+	def __init__(self,pos,drc,rng):
+		s=self
+		nN='lab_assistant'
+		s.vnum=19
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
+		cc.set_val_npc(s,drc,rng)
+		s.move_speed=1
+		del pos,rng,drc
+	def update(self):
+		npc_action(self)
 
 ## passive NPC
 tpa='res/npc/akuaku/'

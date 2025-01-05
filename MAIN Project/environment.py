@@ -12,7 +12,8 @@ FOG_COLOR={
 	3:c.rgb32(25,45,25),
 	4:c.rgb32(160,160,0),
 	5:c.black,
-	6:c.orange}
+	6:c.orange,
+	7:c.black}
 
 AMB_COLOR={
 	0:c.gray,
@@ -21,7 +22,8 @@ AMB_COLOR={
 	3:c.rgb32(240,200,170),
 	4:c.rgb32(160,180,160),
 	5:c.rgb32(140,140,160),
-	6:c.rgb32(190,190,190)}
+	6:c.rgb32(190,190,190),
+	7:c.rgb32(150,150,150)}
 
 SKY_COLOR={
 	0:c.black,
@@ -30,7 +32,8 @@ SKY_COLOR={
 	3:c.rgb32(140,0,60),
 	4:c.black,
 	5:c.black,
-	6:c.orange}
+	6:c.orange,
+	7:c.black}
 
 def init_amb_light():#called 1 time
 	amv=AmbientLight(color=c.gray)
@@ -47,7 +50,7 @@ def env_switch(idx):
 		WeatherRain()
 
 ##Fog Distance
-L_DST={0:(30,100),1:(10,15),2:(3,12),3:(16,20),4:(13,16),5:(8,15),6:(15,20),7:(15,30)}
+L_DST={0:(30,100),1:(10,15),2:(3,12),3:(16,20),4:(13,16),5:(8,15),6:(15,20),7:(17,20)}
 B_DST={0:(0,0),1:(6,12),2:(4,4.5),3:(5,20),4:(8,15),5:(10,20),6:(15,30),7:(10,20)}
 def set_fog(idx):
 	scene.fog_color=FOG_COLOR[idx]

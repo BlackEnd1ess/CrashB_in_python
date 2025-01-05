@@ -30,7 +30,7 @@ ge_inf={0:'this is a developer test level, place the gem where you want',
 ge_0='res/ui/icon/gem_0/gem'
 ge_1='res/ui/icon/gem_1/gem'
 ge_2='res/ui/icon/gem_2/gem'
-fdc={1:ge_0,2:ge_0,3:ge_0,4:ge_1,5:ge_2,6:ge_0}
+fdc={1:ge_0,2:ge_0,3:ge_0,4:ge_1,5:ge_2,6:ge_0,7:ge_0}
 
 
 #gem ui color
@@ -41,7 +41,8 @@ GMU={1:color.rgb32(0,0,O),#blue
 	3:color.rgb32(O,O,0),#violet
 	4:color.rgb32(0,O,0),#green
 	5:color.rgb32(O,0,O),#yellow
-	6:cglr}#clear
+	6:cglr,#clear
+	7:cglr}#clear
 
 #gem color
 GMC={0:cglr,

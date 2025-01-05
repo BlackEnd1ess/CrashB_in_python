@@ -13,7 +13,7 @@ LV3=LOD_VAR+['wtfa','mptf','trd2','tile','foam','wdst','mtbt']
 LV4=LOD_VAR+['swpl','swp2','swpi','drpw','ssww','swri','swff']
 LV5=LOD_VAR+['mnks','loos','rnsp','rubl','rncr','htbx']
 LV6=LOD_VAR+['ldmn','tksc','bbfl','bbst','sngg']
-LV7=LOD_VAR+[]
+LV7=LOD_VAR+['labt']
 LL={1:LV1,2:LV2,3:LV3,4:LV4,5:LV5,6:LV6,7:LV7}
 
 ##level decoration (side)
@@ -26,7 +26,7 @@ BGSO={1:PLO+['grsi','trrw'],
 	7:PLO+[]}
 
 ## BSGO distance
-LD={0:0,1:30,2:18,3:16,4:24,5:16,6:16}
+LD={0:0,1:30,2:18,3:16,4:24,5:16,6:16,7:16}
 
 ## init lod
 def start():

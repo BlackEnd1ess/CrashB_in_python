@@ -19,7 +19,10 @@ npc_anim={0:7,#amadillo
 		13:16,#sewer mine
 		14:0,#gorilla
 		15:0,#bee
-		16:10}#lumberjack
+		16:10,#lumberjack
+		17:10,#spider robot
+		18:29,#robot
+		19:0}#lab assistant
 
 cl='res/objects/l5/loose_ptf/'
 cf='res/crate/anim/'

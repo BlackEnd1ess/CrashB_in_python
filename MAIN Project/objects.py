@@ -30,6 +30,7 @@ def plank_bridge(pos,typ,cnt,ro_y,DST):
 		plNK={90:lambda:Plank(pos=(pos[0]+wP*DST,pos[1],pos[2]),ro_y=ro_y,typ=typ),
 			0:lambda:Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)}
 		plNK[ro_y]()
+	del pos,typ,cnt,ro_y,DST
 
 def sn_block(p,vx,sca=.5):
 	for gbx in range(vx[0]):
@@ -40,23 +41,27 @@ def sn_block(p,vx,sca=.5):
 def pillar_twin(p):
 	Pillar(pos=(p[0],p[1],p[2]))
 	Pillar(pos=(p[0]+1.5,p[1],p[2]))
+	del p
 
 def spawn_ice_wall(pos,cnt,d):
 	ws={0:90,1:-90}
 	for icew in range(cnt):
 		SnowHill(pos=(pos[0],pos[1],pos[2]+icew*16.4),ro_y=ws[d])
+	del pos,cnt,d
 
 #lv3
 def multi_tile(p,cnt):#usage [x,y]
 	for _tlx in range(cnt[0]):
 		for _tly in range(cnt[1]):
 			StoneTile(pos=(p[0]+.85*_tlx,p[1],p[2]+.85*_tly))
+	del p,cnt
 
 #lv 4
 def swr_multi_ptf(p,cnt):#usage [x,y]
 	for swX in range(cnt[0]):
 		for swZ in range(cnt[1]):
 			SewerPlatform(pos=(p[0]+.501*swX,p[1],p[2]+.501*swZ))
+	del p,cnt
 
 #lv 5
 def spw_ruin_ptf(p,cnt,way):
@@ -65,8 +70,16 @@ def spw_ruin_ptf(p,cnt,way):
 			RuinsBlock(pos=(p[0]+rpv*.75,p[1],p[2]))
 		else:
 			RuinsBlock(pos=(p[0],p[1],p[2]+rpv*.75))
+	del p,cnt,way
 
-
+#lv7
+def spw_lab_tile(p,cnt,way,typ):
+	for lbt in range(cnt):
+		if way == 0:
+			LabTile(pos=(p[0]+lbt,p[1],p[2]),typ=typ,ro_y=0)
+		else:
+			LabTile(pos=(p[0],p[1],p[2]+lbt),typ=typ,ro_y=90)
+	del p,cnt,way,typ
 ## Pseudo CrashB
 class PseudoCrash(Entity):
 	def __init__(self):
@@ -1055,6 +1068,51 @@ class BeeSideBlock(Entity):
 		super().__init__(model=bsbq+'sblock.ply',texture=bsbq+'stone_wall.png',position=pos,scale=.5,rotation=(-90,0,0),color=color.rgb32(200,170,180),double_sided=True)
 		del pos
 
+
+####################
+## level 7 objects #
+lbcb=omf+'l7/lab_ptf/lab_ptf'
+class LabTile(Entity):
+	def __init__(self,pos,typ=0,ro_y=0):
+		s=self
+		super().__init__(model=lbcb+'.obj',texture=lbcb+'.png',name='labt',position=pos,scale=(.5,.7,.5),collider=b,rotation_y=ro_y)
+		s.danger=(typ > 0)
+		s.matr='metal'
+		s.typ=typ
+		if typ > 0:
+			s.color=color.red
+			s.heat_color=0
+			s.unlit=False
+			if typ == 2:
+				s.is_heat=True
+				s.refr=0
+		del pos
+	def update(self):
+		s=self
+		if st.gproc() or s.typ < 2:
+			return
+		s.danger=(s.heat_color <= 0)
+		s.color=color.rgb32(255,int(s.heat_color),int(s.heat_color))
+		s.refr=max(s.refr-time.dt,0)
+		rtu=time.dt*50
+		if s.refr <= 0:
+			if s.is_heat:
+				s.heat_color=min(s.heat_color+rtu,255)
+				if s.heat_color >= 255:
+					s.refr=1
+					s.is_heat=False
+				return
+			s.heat_color=max(s.heat_color-rtu,0)
+			if s.heat_color <= 0:
+				s.refr=1
+				s.is_heat=True
+
+lbscn=omf+'l7/lab_bgs/lab_bgs'
+class LabScene(Entity):
+	def __init__(self,pos):
+		super().__init__(model=lbscn+'.ply',texture=lbscn+'.tga',position=pos,scale=.015,rotation=(-90,90,0),double_sided=True)
+		del pos
+
 ##################
 ## logic objects #
 class FallingZone(Entity):## falling
@@ -1163,6 +1221,8 @@ class BonusPlatform(Entity):## switch -> bonus round
 	def __init__(self,pos):
 		s=self
 		sIN='ev/bonus/bonus'
+		if st.level_index == 7:
+			sIN='ev/bonus/bonus_e'
 		super().__init__(model=omf+sIN+'.ply',texture=omf+sIN+'.tga',name='bnpt',collider=b,scale=-.001,rotation_x=90,position=pos,unlit=False)
 		s.start_y=s.y
 	def update(self):

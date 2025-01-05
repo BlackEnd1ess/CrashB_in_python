@@ -22,7 +22,7 @@ def footstep(c):
 		pc_audio(ID=11,pit=random.uniform(.9,1))
 		return
 	else:
-		if st.level_index == 4:
+		if st.level_index == 4 or (st.level_index == 7 and c.indoor <= 0):
 			pc_audio(ID=12)
 			return
 		pc_audio(ID=0)

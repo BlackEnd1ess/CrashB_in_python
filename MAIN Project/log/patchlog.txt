@@ -240,10 +240,15 @@
 - fixxed freezing mine stun state which never finished.
 - landmine in level 6 have explosion effect and wave now.
 
-#02.01.2024
+#02.01.2025
 - fixxed mirrored death animation in level 6 (buried)
 - placed side blocks on the side with vertex holes near by startroom in level 6.
 
-#03.01.2024
+#03.01.2025
 - spawn bug in level 6 bee hive fixxed. Bee's can spawn constantly now, if own bee's < max value.
 - bee's take a small distance to each other, to stay visible.
+
+#05.01.2024
+- level 7 prototyp: piston it away / spaced out
+- level 7 new NPC: Robot, SpiderRobot
+- Level 7 new Assets: LabTile (with heating function), Lab Background Scene, Bonus Platform (Space Design)
