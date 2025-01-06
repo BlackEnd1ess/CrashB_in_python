@@ -80,6 +80,15 @@ def spw_lab_tile(p,cnt,way,typ):
 		else:
 			LabTile(pos=(p[0],p[1],p[2]+lbt),typ=typ,ro_y=90)
 	del p,cnt,way,typ
+
+def spw_multi_lab_tile(p,cnt,typ,way):
+	for laX in range(cnt[0]):
+		for laZ in range(cnt[1]):
+			if way == 0:
+				LabTile(pos=(p[0]+laX,p[1],p[2]+laZ),typ=typ,ro_y=0)
+			else:
+				LabTile(pos=(p[0]+laX,p[1],p[2]+laZ),typ=typ,ro_y=90)
+	del p,cnt,typ,way
 ## Pseudo CrashB
 class PseudoCrash(Entity):
 	def __init__(self):
@@ -1075,7 +1084,7 @@ lbcb=omf+'l7/lab_ptf/lab_ptf'
 class LabTile(Entity):
 	def __init__(self,pos,typ=0,ro_y=0):
 		s=self
-		super().__init__(model=lbcb+'.obj',texture=lbcb+'.png',name='labt',position=pos,scale=(.5,.7,.5),collider=b,rotation_y=ro_y)
+		super().__init__(model=lbcb+'.obj',texture=lbcb+'.png',name='labt',position=pos,scale=(.5,.8,.5),collider=b,rotation_y=ro_y)
 		s.danger=(typ > 0)
 		s.matr='metal'
 		s.typ=typ
@@ -1112,6 +1121,51 @@ class LabScene(Entity):
 	def __init__(self,pos):
 		super().__init__(model=lbscn+'.ply',texture=lbscn+'.tga',position=pos,scale=.015,rotation=(-90,90,0),double_sided=True)
 		del pos
+
+lbpi=omf+'l7/piston/piston'
+class Piston(Entity):
+	def __init__(self,pos,typ,spd):
+		s=self
+		rj=-90
+		super().__init__(model=lbpi+'.ply',texture=lbpi+'.tga',position=pos,scale=(.1/110,.1/110,.1/100),rotation=(rj,0,0),collider=b)
+		s.danger=True
+		s.spawn_y=s.y
+		s.mvspd=spd
+		s.tme=spd
+		s.typ=typ
+		s.mode=0
+		del pos,typ,spd
+	def stomp(self):
+		s=self
+		s.y=max(s.y-time.dt*s.mvspd,s.spawn_y-2.051)
+		if s.y <= s.spawn_y-2.05:
+			jg=s.intersects(LC.ACTOR)
+			if jg and jg.normal == Vec3(0,-1,0) and s.danger:
+				cc.get_damage(LC.ACTOR,rsn=2)
+			s.danger=False
+			if distance(s,LC.ACTOR) < 8:
+				sn.obj_audio(ID=13,pit=.8)
+			s.mode=1
+			s.tme=.5
+	def reset(self):
+		s=self
+		s.y=min(s.y+time.dt*s.mvspd,s.spawn_y+.1)
+		if s.y >= s.spawn_y:
+			s.danger=True
+			if distance(s,LC.ACTOR) < 8:
+				sn.obj_audio(ID=13,pit=.5)
+			s.mode=0
+			s.tme=1-(1/s.mvspd)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.tme=max(s.tme-time.dt,0)
+		if s.tme <= 0:
+			pva={0:lambda:s.stomp(),1:lambda:s.reset()}
+			pva[s.mode]()
+			del pva
+
 
 ##################
 ## logic objects #

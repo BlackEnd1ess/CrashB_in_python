@@ -251,4 +251,9 @@
 #05.01.2024
 - level 7 prototyp: piston it away / spaced out
 - level 7 new NPC: Robot, SpiderRobot
-- Level 7 new Assets: LabTile (with heating function), Lab Background Scene, Bonus Platform (Space Design)
+- Level 7 new Assets: LabTile (with heating function), Lab Background Scene, Bonus Platform (Space Design),
+Piston
+
+#06.01.2024
+- level 7 struct finished
+- dynamic sound volume by distance to NPC

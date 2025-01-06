@@ -2,7 +2,7 @@ from ursina import color
 ## lists, arrays and list access
 
 # checkpoint - bonus
-bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(9,5,20)]
+bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(9,5,20),(26,4.4,-36)]
 checkp='CHECKPOINT'
 
 # display the name in pause menu and loading screen
@@ -64,7 +64,7 @@ trigger_lst={'indz','lvfi','elwt','fthr'}
 item_lst={'wmpf','exlf','gems','crys'}
 
 #danger zone
-dangers={'wood_log','role','fllz'}
+dangers={'wood_log','role','fllz','piston'}
 
 #default speed for move and gravity
 dfsp=2.5

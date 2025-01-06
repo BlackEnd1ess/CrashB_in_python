@@ -116,7 +116,8 @@ SND_NPC={0:'plant_bite',
 		2:'mouse',
 		3:'seal',
 		4:'rat_idle',
-		5:'buzzing'}
+		5:'buzzing',
+		6:'spider_robot'}
 def npc_audio(ID,pit=1):
 	np=Audio(SA+SND_NPC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 	invoke(lambda:destroy(np),delay=np.length*2)
@@ -134,7 +135,8 @@ SND_OBJ={0:'spawn',
 		9:'collapse_floor',
 		10:'fire_throw',
 		11:'log_hit',
-		12:'land_mine'}
+		12:'land_mine',
+		13:'piston'}
 def obj_audio(ID,pit=1):
 	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 	invoke(lambda:destroy(ob),delay=ob.length*2)

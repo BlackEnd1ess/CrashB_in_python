@@ -678,7 +678,7 @@ def is_enemie(n):
 		N.Eel,N.Scrubber,N.Mouse,N.SewerMine,
 		N.Vulture,N.Gorilla,
 		N.Bee,N.Lumberjack,
-		N.SpiderRobot,N.Robot,N.LabAssistant}
+		N.SpiderRobotFlat,N.SpiderRobotUp,N.Robot,N.LabAssistant}
 	return any(isinstance(n,npc_class) for npc_class in nnk)
 def bash_enemie(e,h):
 	e.is_hitten=True

@@ -23,7 +23,7 @@ DEV_ECAM='e'#		edior camera
 
 
 ## global volume
-MUSIC_VOLUME=.4
+MUSIC_VOLUME=.5
 SFX_VOLUME=.5
 
 ## window

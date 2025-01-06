@@ -34,9 +34,10 @@ def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True):
 		14:lambda:Gorilla(pos=POS,drc=DRC),
 		15:lambda:Bee(pos=POS),
 		16:lambda:Lumberjack(pos=POS),
-		17:lambda:SpiderRobot(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP),
-		18:lambda:Robot(pos=POS,drc=DRC,rng=RNG),
-		19:lambda:LabAssistant(pos=POS)}
+		17:lambda:SpiderRobotFlat(pos=POS,drc=DRC,rng=RNG),
+		18:lambda:SpiderRobotUp(pos=POS,drc=DRC,rng=RNG),
+		19:lambda:Robot(pos=POS,drc=DRC,rng=RNG),
+		20:lambda:LabAssistant(pos=POS)}
 	npc_[ID]()
 	del ID,POS,DRC,RTYP,RNG,CMV,npc_
 
@@ -542,28 +543,61 @@ class Lumberjack(Entity):
 			return
 		s.position=lerp(s.position,s.spawn_pos,ljsp)
 
-class SpiderRobot(Entity):
-	def __init__(self,pos,drc,rng,rtyp):
+class SpiderRobotFlat(Entity):
+	def __init__(self,pos,drc,rng):
 		s=self
-		nN='spider_robot'
+		nN='spider_robot_flat'
 		s.vnum=17
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
+		s.aud=Audio('res/snd/npc/spider_robot.wav',loop=True,volume=0)
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1
-		del pos,rng,drc,rtyp
+		del pos,rng,drc
 	def update(self):
-		npc_action(self)
+		s=self
+		if s.is_hitten or s.is_purge:
+			s.aud.stop()
+			s.aud.fade_out()
+		npc_action(s)
+		if not st.gproc():
+			if distance(s,LC.ACTOR) < 10:
+				current_distance=distance(s,LC.ACTOR)
+				nvv=max(0,1-(current_distance/5))
+				s.aud.volume=min(1,nvv*settings.SFX_VOLUME)
+
+class SpiderRobotUp(Entity):
+	def __init__(self,pos,drc,rng):
+		s=self
+		nN='spider_robot_up'
+		s.vnum=18
+		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
+		s.aud=Audio('res/snd/npc/spider_robot.wav',loop=True,volume=0)
+		cc.set_val_npc(s,drc,rng)
+		s.move_speed=1
+		del pos,rng,drc
+	def update(self):
+		s=self
+		if s.is_hitten or s.is_purge:
+			s.aud.stop()
+			s.aud.fade_out()
+		npc_action(s)
+		if not st.gproc():
+			if distance(s,LC.ACTOR) < 10:
+				current_distance=distance(s,LC.ACTOR)
+				nvv=max(0,1-(current_distance/5))
+				s.aud.volume=min(1,nvv*settings.SFX_VOLUME)
 
 class Robot(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
 		nN='robot'
-		s.vnum=18
+		s.vnum=19
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
 		cc.set_val_npc(s,drc,rng)
-		s.move_speed=1.4
+		s.move_speed=1.8
 		s.tme=.6
 		del pos,rng,drc
 	def update(self):
@@ -581,7 +615,7 @@ class LabAssistant(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
 		nN='lab_assistant'
-		s.vnum=19
+		s.vnum=20
 		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
 		cc.set_val_npc(s,drc,rng)
