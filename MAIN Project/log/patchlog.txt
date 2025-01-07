@@ -248,12 +248,18 @@
 - spawn bug in level 6 bee hive fixxed. Bee's can spawn constantly now, if own bee's < max value.
 - bee's take a small distance to each other, to stay visible.
 
-#05.01.2024
+#05.01.2025
 - level 7 prototyp: piston it away / spaced out
 - level 7 new NPC: Robot, SpiderRobot
 - Level 7 new Assets: LabTile (with heating function), Lab Background Scene, Bonus Platform (Space Design),
 Piston
 
-#06.01.2024
+#06.01.2025
 - level 7 struct finished
 - dynamic sound volume by distance to NPC
+
+#07.01.2025
+- level 7 new object: lab pad and taser + animation and effect + sound
+- level 7 asset: floating platform
+- level 7 heating lap tiles: incrased heating speed + sound effect
+- level 7 bonus platform metal sound

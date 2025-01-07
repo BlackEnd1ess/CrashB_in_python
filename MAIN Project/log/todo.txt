@@ -2,3 +2,7 @@
 - lv 4 gem route glitch
 
 ##TODO
+- lab assistant
+- pipes asset
+- piston platforms
+- flying Platforms #need logic

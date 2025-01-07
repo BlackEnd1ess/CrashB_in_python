@@ -35,7 +35,10 @@ def load_object():
 	o.Piston(pos=(20.5,2.1+4.2,-36),typ=0,spd=2)
 	o.Piston(pos=(29,3.1+4.2,-36),typ=0,spd=2)
 	o.Piston(pos=(33,3.1+4.2,-36),typ=0,spd=2)
+	#e pads
+	#o.LabPad(pos=(0,.3,-57),ID=35)
 	#e1
+	o.LabPlatform(pos=(0,.3,-58))
 	o.spw_lab_tile(p=(0,0,-62),cnt=4,way=1,typ=0)
 	o.spw_lab_tile(p=(0,0,-57),cnt=5,way=0,typ=0)
 	o.spw_lab_tile(p=(8,.45,-57),cnt=1,way=0,typ=1)
@@ -70,7 +73,7 @@ def load_object():
 	o.spw_lab_tile(p=(50,3.3,-19),cnt=3,way=0,typ=0)
 	o.spw_lab_tile(p=(50,3.6,-18),cnt=3,way=0,typ=0)
 	o.spw_lab_tile(p=(51,3.6,-17),cnt=4,way=1,typ=0)
-	o.EndRoom(pos=(52.1,5.3,-8.6),c=color.rgb32(255,100,0))
+	o.EndRoom(pos=(52.1,5.3,-8.6),c=color.rgb32(180,180,180))
 def load_crate():
 	return
 def load_wumpa():

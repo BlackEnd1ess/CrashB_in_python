@@ -106,3 +106,15 @@ class FireThrow(Entity):
 			return
 		s.scale+=(tdf,tdf,tdf)
 		s.fly_away()
+
+class ElectroBall(Entity):
+	def __init__(self,pos):
+		super().__init__(model='quad',texture=ef+'sparkle.tga',position=pos,scale=.8,collider='box',color=color.rgb32(0,60,255),unlit=False,alpha=.75)
+		self.spawn_y=self.y
+	def update(self):
+		if not st.gproc():
+			s=self
+			s.rotation_z+=time.dt*500
+			s.y-=time.dt*2
+			if s.y <= s.spawn_y-LC.ltth:
+				destroy(s)

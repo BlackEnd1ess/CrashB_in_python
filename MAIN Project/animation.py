@@ -430,6 +430,20 @@ def mine_destroy(m,sp):
 		return
 	m.model=ldm+'expl/'+str(int(m.frm))+'.ply'
 
+## lab pad
+labp='res/objects/l7/e_pad/'
+def pad_refr(lp):
+	lp.frm=min(lp.frm+time.dt*10,3.999)
+	if lp.frm > 3.99:
+		lp.frm=3
+	lp.model=labp+f'{lp.mode}/{int(lp.frm)}.ply'
+
+labt='res/objects/l7/lab_taser/'
+def taser_rotation(t):
+	t.frm=min(t.frm+time.dt*15,6.999)
+	if t.frm > 6.99:
+		t.frm=0
+	t.model=labt+f'/{int(t.frm)}.ply'
 ## door animation
 dpw='res/objects/ev/door/'
 def door_open(d):

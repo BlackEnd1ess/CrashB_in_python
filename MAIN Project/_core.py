@@ -449,7 +449,7 @@ def spc_floor(c,e):
 	if u in {'bnpt','gmpt'}:
 		ptf_up(p=e,c=c)
 		return
-	if u in {'swpt','HPP'}:
+	if u in {'swpt','HPP','epad'}:
 		e.active=True
 		return
 	if (u == 'plnk' and e.typ == 1) or u == 'loos':

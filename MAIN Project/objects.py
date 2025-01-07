@@ -1103,11 +1103,13 @@ class LabTile(Entity):
 		s.danger=(s.heat_color <= 0)
 		s.color=color.rgb32(255,int(s.heat_color),int(s.heat_color))
 		s.refr=max(s.refr-time.dt,0)
-		rtu=time.dt*50
+		rtu=time.dt*80
 		if s.refr <= 0:
 			if s.is_heat:
 				s.heat_color=min(s.heat_color+rtu,255)
 				if s.heat_color >= 255:
+					if distance(s,LC.ACTOR) < 4:
+						sn.obj_audio(ID=15)
 					s.refr=1
 					s.is_heat=False
 				return
@@ -1119,7 +1121,7 @@ class LabTile(Entity):
 lbscn=omf+'l7/lab_bgs/lab_bgs'
 class LabScene(Entity):
 	def __init__(self,pos):
-		super().__init__(model=lbscn+'.ply',texture=lbscn+'.tga',position=pos,scale=.015,rotation=(-90,90,0),double_sided=True)
+		super().__init__(model=lbscn+'.ply',texture=lbscn+'.tga',name='lbbr',position=pos,scale=.015,rotation=(-90,90,0),double_sided=True)
 		del pos
 
 lbpi=omf+'l7/piston/piston'
@@ -1166,6 +1168,70 @@ class Piston(Entity):
 			pva[s.mode]()
 			del pva
 
+lpad=omf+'l7/e_pad/'
+class LabPad(Entity):
+	def __init__(self,pos,ID):
+		s=self
+		super().__init__(model=lpad+'0/0.ply',texture=lpad+'0/0.tga',name='epad',position=pos,scale=.1/100,rotation_x=-90,collider=b)
+		s.active=False
+		s.locked=False
+		s.matr='metal'
+		s.mode=0
+		s.frm=0
+		s.tme=1
+		s.ID=ID
+		LabTaser(pos=(s.x,s.y+LC.ltth,s.z),ID=s.ID)
+		del pos,ID
+	def trigger_taser(self):
+		for lpo in scene.entities[:]:
+			if isinstance(lpo,LabTaser) and lpo.ID == self.ID:
+				lpo.shoot_laser()
+	def disable_pad(self):
+		s=self
+		s.mode=0
+		s.unlit,s.locked=True,False
+		s.texture=lpad+'0/0.tga'
+	def enable_pad(self):
+		s=self
+		s.tme=.5
+		if not s.locked:
+			sn.obj_audio(ID=14)
+			s.locked=True
+			s.trigger_taser()
+		s.mode=1
+		s.texture=lpad+'1/0.tga'
+		s.unlit=False
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		an.pad_refr(s)
+		s.tme=max(s.tme-time.dt,0)
+		if s.active:
+			s.active=False
+			s.enable_pad()
+			return
+		if s.tme <= 0:
+			s.disable_pad()
+
+lbts=omf+'l7/lab_taser/'
+class LabTaser(Entity):
+	def __init__(self,pos,ID):
+		s=self
+		super().__init__(model=lbts+'0.ply',texture=lbts+'0.tga',position=pos,scale=.1/140,rotation_x=-90)
+		s.frm=0
+		s.ID=ID
+		del pos,ID
+	def shoot_laser(self):
+		ef.ElectroBall(pos=self.position)
+	def update(self):
+		if not st.gproc():
+			an.taser_rotation(self)
+
+llpt=omf+'l7/space_ptf/space_ptf'
+class LabPlatform(Entity):
+	def __init__(self,pos):
+		super().__init__(model=llpt+'.ply',texture=llpt+'.tga',position=pos,scale=.1/140,rotation_x=-90,unlit=False)
 
 ##################
 ## logic objects #
@@ -1277,6 +1343,7 @@ class BonusPlatform(Entity):## switch -> bonus round
 		sIN='ev/bonus/bonus'
 		if st.level_index == 7:
 			sIN='ev/bonus/bonus_e'
+			s.matr='metal'
 		super().__init__(model=omf+sIN+'.ply',texture=omf+sIN+'.tga',name='bnpt',collider=b,scale=-.001,rotation_x=90,position=pos,unlit=False)
 		s.start_y=s.y
 	def update(self):
