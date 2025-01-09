@@ -1172,7 +1172,7 @@ lpad=omf+'l7/e_pad/'
 class LabPad(Entity):
 	def __init__(self,pos,ID):
 		s=self
-		super().__init__(model=lpad+'0/0.ply',texture=lpad+'0/0.tga',name='epad',position=pos,scale=.1/100,rotation_x=-90,collider=b)
+		super().__init__(model=lpad+'0/0.ply',texture=lpad+'0/0.tga',name='epad',position=pos,scale=.1/85,rotation_x=-90,collider=b)
 		s.active=False
 		s.locked=False
 		s.matr='metal'
@@ -1230,8 +1230,65 @@ class LabTaser(Entity):
 
 llpt=omf+'l7/space_ptf/space_ptf'
 class LabPlatform(Entity):
+	def __init__(self,pos,drc,spd,rng):
+		s=self
+		super().__init__(model=llpt+'.ply',texture=llpt+'.tga',position=pos,scale=.1/120,rotation_x=-90,unlit=False,collider=b)
+		s.spawn_pos=pos
+		s.matr='metal'
+		s.mv_rng=rng
+		s.mv_spd=spd
+		s.direc=drc
+		s.mode=0
+		del pos,spd,drc,rng
+	def ptf_fwd(self):
+		s=self
+		kfv={0:lambda:setattr(s,'z',s.z+time.dt*s.mv_spd),1:lambda:setattr(s,'z',s.z-time.dt*s.mv_spd)}
+		kfv[s.mode]()
+		del kfv
+		if (s.mode == 0 and s.z >= s.spawn_pos[2]+s.mv_rng) or (s.mode == 1 and s.z <= s.spawn_pos[2]-s.mv_rng):
+			if s.mode == 0:
+				s.mode=1
+				return
+			s.mode=0
+	def ptf_up(self):
+		s=self
+		kfv={0:lambda:setattr(s,'y',s.y+time.dt*s.mv_spd),1:lambda:setattr(s,'y',s.y-time.dt*s.mv_spd)}
+		kfv[s.mode]()
+		del kfv
+		if (s.mode == 0 and s.y >= s.spawn_pos[1]+s.mv_rng) or (s.mode == 1 and s.y <= s.spawn_pos[1]-s.mv_rng):
+			if s.mode == 0:
+				s.mode=1
+				return
+			s.mode=0
+	def ptf_sd(self):
+		s=self
+		kfv={0:lambda:setattr(s,'x',s.x+time.dt*s.mv_spd),1:lambda:setattr(s,'x',s.x-time.dt*s.mv_spd)}
+		kfv[s.mode]()
+		del kfv
+		if (s.mode == 0 and s.x >= s.spawn_pos[0]+s.mv_rng) or (s.mode == 1 and s.x <= s.spawn_pos[0]-s.mv_rng):
+			if s.mode == 0:
+				s.mode=1
+				return
+			s.mode=0
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		svd={0:lambda:s.ptf_sd(),1:lambda:s.ptf_fwd(),2:lambda:s.ptf_up()}
+		svd[s.direc]()
+		del svd
+
+lbpg=omf+'l7/lab_pipe/lab_pipe'
+class LabPipe(Entity):
 	def __init__(self,pos):
-		super().__init__(model=llpt+'.ply',texture=llpt+'.tga',position=pos,scale=.1/140,rotation_x=-90,unlit=False)
+		super().__init__(model=lbpg+'.ply',texture=lbpg+'.tga',position=pos,scale=.05,rotation=(-90,90,0))
+		del pos
+
+lbfa=omf+'l7/boiler/boiler'
+class Boiler(Entity):
+	def __init__(self,pos,ro_y=0):
+		super().__init__(model=lbfa+'.ply',texture=lbfa+'.tga',position=pos,scale=.04,rotation=(-90,ro_y,0))
+		del pos,ro_y
 
 ##################
 ## logic objects #

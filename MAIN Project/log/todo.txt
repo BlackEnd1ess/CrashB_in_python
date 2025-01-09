@@ -3,6 +3,4 @@
 
 ##TODO
 - lab assistant
-- pipes asset
 - piston platforms
-- flying Platforms #need logic

@@ -263,3 +263,10 @@ Piston
 - level 7 asset: floating platform
 - level 7 heating lap tiles: incrased heating speed + sound effect
 - level 7 bonus platform metal sound
+
+#08.01.2025
+- level 7 new object: floating platforms in 3 possible directions
+
+#09.01.2025
+- level 7 new asset: pipes and boiler
+- level 7 longer level struct
