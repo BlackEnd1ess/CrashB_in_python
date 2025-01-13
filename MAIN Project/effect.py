@@ -116,5 +116,7 @@ class ElectroBall(Entity):
 			s=self
 			s.rotation_z+=time.dt*500
 			s.y-=time.dt*2
+			if s.intersects(LC.ACTOR):
+				cc.get_damage(LC.ACTOR,rsn=6)
 			if s.y <= s.spawn_y-LC.ltth:
 				destroy(s)

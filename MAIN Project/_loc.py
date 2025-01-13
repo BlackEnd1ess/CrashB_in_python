@@ -56,7 +56,7 @@ GMC={0:cglr,
 	8:cglr}
 
 #lab taser height
-ltth=1.6
+ltth=1.7
 
 #lv6 mine position
 LDM_POS=[]

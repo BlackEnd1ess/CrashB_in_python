@@ -1,50 +1,57 @@
 from ursina import Entity,Animation,scene,distance,distance_xz,color,time
-import _core,_loc,status,item,settings
+import _core,_loc,status,settings
 
 st=status
 cc=_core
 LC=_loc
 
 ## short names from objects (entity.name)
-LOD_VAR=['rmdr','wpvx']
-LV1=LOD_VAR+['trd2','tssn','mptf','mblo','bush','cori','htbx']
-LV2=LOD_VAR+['plnk','ickk','wdlg','pilr','icec','snwa','sngg']
-LV3=LOD_VAR+['wtfa','mptf','trd2','tile','foam','wdst','mtbt']
-LV4=LOD_VAR+['swpl','swp2','swpi','drpw','ssww','swri','swff']
-LV5=LOD_VAR+['mnks','loos','rnsp','rubl','rncr','htbx']
-LV6=LOD_VAR+['ldmn','tksc','bbfl','bbst','sngg']
-LV7=LOD_VAR+['labt','epad','tser']
-LL={1:LV1,2:LV2,3:LV3,4:LV4,5:LV5,6:LV6,7:LV7}
+ANY_LV={'rmdr','wpvx','strm'}
+BIG_OBJ={
+	0:ANY_LV,
+	1:ANY_LV|{'grsi','trrw','tssn'},
+	2:ANY_LV|{'snhi','snwa'},
+	3:ANY_LV|{'tmpw','scwa'},
+	4:ANY_LV|{'swec','swtu'},
+	5:ANY_LV|{'rrrr'},
+	6:ANY_LV,
+	7:ANY_LV|set()}
 
-##level decoration (side)
-PLO=['strm']
-BGSO={1:PLO+['grsi','trrw'],
-	2:PLO+['snhi'],
-	3:PLO+['tmpw'],
-	4:PLO+['swec','swtu'],
-	5:PLO+['rrrr'],
-	7:PLO+['lbbr']}
+DYN_OBJ={
+	0:set(),
+	1:{'mblo','bush','htbx'},
+	2:{'plnk','sngg','ickk','snbb','wdlg'},
+	3:{'tile','wtfa','wdst'},
+	4:{'swpl','swpt','swff','drpw'},
+	5:{'loos','rnsp','htbx'},
+	6:{'ldmn','tksc','bbfl','bbst','sngg'},
+	7:{'labt','epad','tser','labo','lapi','lbbr'}}
 
-## BSGO distance
-LD={0:0,1:30,2:18,3:16,4:24,5:16,6:16,7:14}
-
-## init lod
-def start():
-	LODinGame()
-
-## check distance
-def check_dst(p,v,dz):
-	return (v.z < p.z+dz and p.z < v.z+3 and abs(p.x-v.x) < 8 and abs(p.y-v.y) < 6)
-
-def check_dynamic(o):
-	return any({(cc.is_enemie(o) and not (o.is_hitten or o.is_purge or o.vnum == 15)),(o.name in LL[st.level_index])})
-
-class LODinGame(Entity):
+class ManageObjects(Entity):
 	def __init__(self):
 		s=self
 		super().__init__()
-		s.idx=st.level_index
+		s.dx={1:10,2:8,3:10,4:8,5:10,6:8,7:8}[st.level_index]#side
+		s.dz={1:16,2:14,3:18,4:24,5:20,6:20,7:12}[st.level_index]#front
+		s.dv={1:4,2:4,3:4,4:5,5:5,6:4,7:3}[st.level_index]#back
 		s.tme=.5
+	def check_dst(self,v,p):
+		s=self
+		return v.z < p.z+s.dz and p.z < v.z+s.dv and abs(p.x-v.x) < s.dx
+	def run(self):
+		s=self
+		ix=st.level_index
+		pp=LC.ACTOR
+		for v in scene.entities[:]:
+			kd=distance_xz(v,pp)
+			if v.name in DYN_OBJ[ix]:
+				v.enabled=s.check_dst(v,pp)
+			if v.name in BIG_OBJ[ix]:
+				v.enabled=kd < 25
+			if cc.is_crate(v) and v.vnum in {0,1,2} or v.name == 'wmpf':
+				v.enabled=kd < 8
+			if cc.is_enemie(v) and v.vnum != 15:
+				v.enabled=kd < 12
 	def update(self):
 		if st.gproc():
 			return
@@ -52,20 +59,4 @@ class LODinGame(Entity):
 		s.tme=max(s.tme-time.dt,0)
 		if s.tme <= 0:
 			s.tme=.5
-			bc={r for r in scene.entities if r.parent == scene}
-			p=LC.ACTOR.position
-			for v in bc:
-				u=check_dst(p,v.position,int(scene.fog_density[1]))
-				w=distance_xz(v.position,p)
-				if cc.is_crate(v):
-					if v.vnum in {0,1,2}:
-						v.enabled=u
-					if v.vnum in {3,11,12}:
-						v.visible=u
-				if check_dynamic(v):
-					v.enabled=u
-				if v.name == 'wmpf':
-					v.enabled=(w < 8)
-				if s.idx != 6:
-					if v.name in BGSO[s.idx]:
-						v.enabled=(w < LD[s.idx])
+			s.run()

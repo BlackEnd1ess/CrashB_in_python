@@ -53,8 +53,9 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(84,6,1)),
-					sg.DEV_INFO:lambda:_debug_.chck_mem(),
+					sg.DEV_WARP:lambda:setattr(s,'position',(99,7,1)),
+					sg.DEV_INFO:lambda:_debug_.pos_info(s),
+					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
 	def input(self,key):
 		s=self
@@ -118,7 +119,7 @@ class CrashB(Entity):
 		else:
 			if s.is_landing:
 				s.is_landing=False
-			an.run(s,sp=18)
+			an.run(s,sp=17)
 		s.wksn=max(s.wksn-time.dt,0)
 		if s.wksn <= 0:
 			sn.footstep(self)
@@ -236,7 +237,7 @@ class CrashB(Entity):
 			an.spin(s,sp=22)
 			return
 		if s.is_flip and not (s.landed and s.is_attack):
-			an.flip(s,sp=18)
+			an.flip(s,sp=20)
 			return
 		if (s.landed and s.is_landing) and not any([s.walking,s.jumping,s.is_attack,s.falling]):
 			if s.b_smash:

@@ -242,6 +242,7 @@ class CrateBreak(Entity):
 		s.frame_break=min(s.frame_break+time.dt*t,13.999)
 		if s.frame_break > 13.99:
 			s.frame_break=0
+			s.texture=None
 			destroy(s)
 			return
 		s.model=cf+'brk/'+str(int(s.frame_break))+'.ply'

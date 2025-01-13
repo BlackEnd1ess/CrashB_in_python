@@ -1,6 +1,10 @@
 ## BUGS/ERORRS
 - lv 4 gem route glitch
+- checkpoint lagg
 
 ##TODO
 - lab assistant
 - piston platforms
+- death event, sounds
+- special texture tile below piston
+- reduce tiles and replace

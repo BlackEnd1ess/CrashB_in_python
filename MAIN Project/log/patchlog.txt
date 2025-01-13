@@ -270,3 +270,7 @@ Piston
 #09.01.2025
 - level 7 new asset: pipes and boiler
 - level 7 longer level struct
+
+#13.01.2025
+- improved LODsystem
+- Progress Level 7 Structure

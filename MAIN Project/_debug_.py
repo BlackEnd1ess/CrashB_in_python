@@ -13,8 +13,8 @@ def pos_info(c):
 	syw=f"{c.y+.2:.2f}"#wumpa
 	sz=f"{c.z:.1f}"
 	#print(f"mt.crate_wall(ID=1,POS=({sx},{syc},{sz}),CNT=[1,2])")
-	#print(f"c.place_crate(ID=3,p=({sx},{syc},{sz}))")
-	print(f"mt.wumpa_double_row(POS=({sx},{syw},{sz}),CNT=3)")
+	print(f"c.place_crate(ID=6,p=({sx},{syc},{sz}))")
+	#print(f"mt.wumpa_double_row(POS=({sx},{syw},{sz}),CNT=3)")
 
 #player attr info
 class PlayerDBG(Entity):
@@ -52,15 +52,12 @@ class PlayerDBG(Entity):
 		s.process=psutil.Process(os.getpid())
 		s.cpu_usage=s.process.cpu_percent()
 		s.tme=3
-	def count_entities(self,d):
-		if d == 0:
-			return len(scene.entities)
-		else:
-			c=0
-			q={g for g in scene.entities if (g.enabled)}
-			for k in q:
-				c+=1
-			return c
+	def count_entities(self):
+		c=0
+		q={g for g in scene.entities if (g.enabled)}
+		for k in q:
+			c+=1
+		return c
 	def update(self):
 		s=self
 		s.tme=max(s.tme-time.dt,0)
@@ -68,7 +65,7 @@ class PlayerDBG(Entity):
 			s.tme=1
 			rv=LC.ACTOR
 			mem_usage=s.process.memory_info().rss/(1024*1024)
-			s.ent_state.text=f'INSTANCES   : {s.count_entities(d=0)}'
+			s.ent_state.text=f'INSTANCES   : {s.count_entities()}/{len(scene.entities)}'
 			s.fps_state.text=f'GRAPH FPS   : {int(1//time.dt_unscaled)}'
 			s.mem_state.text=f'MEMORY USAGE: {mem_usage:.0f} MB'
 			s.ppo_state.text=f'x{rv.x:.1f}  y{rv.y:.1f}  z{rv.z:.1f}'

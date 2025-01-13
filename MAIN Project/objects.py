@@ -73,12 +73,12 @@ def spw_ruin_ptf(p,cnt,way):
 	del p,cnt,way
 
 #lv7
-def spw_lab_tile(p,cnt,way,typ):
+def spw_lab_tile(p,cnt,way,typ,sca_y=.8):
 	for lbt in range(cnt):
 		if way == 0:
-			LabTile(pos=(p[0]+lbt,p[1],p[2]),typ=typ,ro_y=0)
+			LabTile(pos=(p[0]+lbt,p[1],p[2]),typ=typ,ro_y=0,sca_y=sca_y)
 		else:
-			LabTile(pos=(p[0],p[1],p[2]+lbt),typ=typ,ro_y=90)
+			LabTile(pos=(p[0],p[1],p[2]+lbt),typ=typ,ro_y=90,sca_y=sca_y)
 	del p,cnt,way,typ
 
 def spw_multi_lab_tile(p,cnt,typ,way):
@@ -106,7 +106,7 @@ MVP=omf+'l1/p_moss/moss'
 class MossPlatform(Entity):
 	def __init__(self,p,ptm,pts=.5,ptw=3):
 		s=self
-		super().__init__(model=MVP+'.obj',name='mptf',texture=MVP+'.tga',scale=.0085,position=(p[0],p[1]+.475,p[2]),enabled=False,double_sided=True,collider=b)
+		super().__init__(model=MVP+'.obj',name='mptf',texture=MVP+'.tga',scale=.0085,position=(p[0],p[1]+.475,p[2]),double_sided=True,collider=b)
 		s.spawn_pos=p
 		s.slp=ptw
 		s.ptm=ptm
@@ -196,7 +196,7 @@ class TreeRow(Entity):
 gr=omf+'l1/grass_side/grass_sd'
 class GrassSide(Entity):
 	def __init__(self,pos,m=False):
-		super().__init__(model=gr+'.ply',texture=gr+'.jpg',name='grsi',position=pos,scale=(1,2,1.4),rotation_x=-90,enabled=False)
+		super().__init__(model=gr+'.ply',texture=gr+'.jpg',name='grsi',position=pos,scale=(1,2,1.4),rotation_x=-90)
 		if m:
 			self.scale_x=-1
 		del pos,m
@@ -204,7 +204,7 @@ class GrassSide(Entity):
 btt=omf+'l1/bush/bush1.png'
 class Bush(Entity):
 	def __init__(self,pos,sca,ro_y=0):
-		super().__init__(model='quad',texture=btt,position=pos,scale=sca,rotation_y=ro_y,color=color.rgb32(0,170,0),enabled=False)
+		super().__init__(model='quad',texture=btt,position=pos,scale=sca,rotation_y=ro_y,color=color.rgb32(0,170,0))
 		del pos,sca,ro_y
 
 tvx=omf+'l1/block/block'
@@ -393,7 +393,7 @@ class Role(Entity):
 sbl=omf+'l2/block/block'
 class SnowBlock(Entity):
 	def __init__(self,pos,sca):
-		super().__init__(model=sbl+'.obj',texture=sbl+'.jpg',rotation_y=180,position=pos,scale=sca)
+		super().__init__(model=sbl+'.obj',texture=sbl+'.jpg',rotation_y=180,name='snbb',position=pos,scale=sca)
 		self.collider=BoxCollider(self,size=Vec3(2,4,2))
 		del pos,sca
 
@@ -438,7 +438,7 @@ sWCN=omf+'l3/scn_w/sd'
 class SceneWall(Entity):
 	def __init__(self,pos,typ):
 		s=self
-		super().__init__(model=sWCN+str(typ)+'.obj',texture=sWCN+'.tga',name='scwa',position=pos,scale=(.0225,.0225,.025),rotation_y=-90,color=color.rgb32(150,170,150),double_sided=True)
+		super().__init__(model=sWCN+str(typ)+'.obj',texture=sWCN+'.tga',name='scwa',position=pos,scale=(.0225,.0265,.025),rotation_y=-90,color=color.rgb32(150,180,150),double_sided=True)
 		del pos,typ
 
 trw=omf+'l3/temple_wall/tm_wall'
@@ -1082,23 +1082,26 @@ class BeeSideBlock(Entity):
 ## level 7 objects #
 lbcb=omf+'l7/lab_ptf/lab_ptf'
 class LabTile(Entity):
-	def __init__(self,pos,typ=0,ro_y=0):
+	def __init__(self,pos,typ=0,ro_y=0,sca_y=.8):
 		s=self
-		super().__init__(model=lbcb+'.obj',texture=lbcb+'.png',name='labt',position=pos,scale=(.5,.8,.5),collider=b,rotation_y=ro_y)
-		s.danger=(typ > 0)
+		super().__init__(model=lbcb+'.obj',texture=lbcb+'.png',name='labt',position=pos,scale=(.5,sca_y,.5),collider=b,rotation_y=ro_y)
 		s.matr='metal'
 		s.typ=typ
-		if typ > 0:
+		s.danger=not(typ in {0,3})
+		if typ == 1:
 			s.color=color.red
-			s.heat_color=0
 			s.unlit=False
-			if typ == 2:
-				s.is_heat=True
-				s.refr=0
+		if typ == 2:
+			s.is_heat=True
+			s.heat_color=0
+			s.refr=0
+			s.unlit=False
+		if typ == 3:
+			s.texture=lbcb+'_e.png'
 		del pos
 	def update(self):
 		s=self
-		if st.gproc() or s.typ < 2:
+		if st.gproc() or s.typ in {0,1,3}:
 			return
 		s.danger=(s.heat_color <= 0)
 		s.color=color.rgb32(255,int(s.heat_color),int(s.heat_color))
@@ -1218,7 +1221,7 @@ lbts=omf+'l7/lab_taser/'
 class LabTaser(Entity):
 	def __init__(self,pos,ID):
 		s=self
-		super().__init__(model=lbts+'0.ply',texture=lbts+'0.tga',position=pos,scale=.1/140,rotation_x=-90)
+		super().__init__(model=lbts+'0.ply',texture=lbts+'0.tga',position=pos,scale=.1/150,rotation_x=-90)
 		s.frm=0
 		s.ID=ID
 		del pos,ID
@@ -1281,13 +1284,13 @@ class LabPlatform(Entity):
 lbpg=omf+'l7/lab_pipe/lab_pipe'
 class LabPipe(Entity):
 	def __init__(self,pos):
-		super().__init__(model=lbpg+'.ply',texture=lbpg+'.tga',position=pos,scale=.05,rotation=(-90,90,0))
+		super().__init__(model=lbpg+'.ply',texture=lbpg+'.tga',name='lapi',position=pos,scale=.05,rotation=(-90,90,0))
 		del pos
 
 lbfa=omf+'l7/boiler/boiler'
 class Boiler(Entity):
 	def __init__(self,pos,ro_y=0):
-		super().__init__(model=lbfa+'.ply',texture=lbfa+'.tga',position=pos,scale=.04,rotation=(-90,ro_y,0))
+		super().__init__(model=lbfa+'.ply',texture=lbfa+'.tga',name='labo',position=pos,scale=.04,rotation=(-90,ro_y,0))
 		del pos,ro_y
 
 ##################

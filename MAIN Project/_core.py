@@ -521,7 +521,8 @@ def crate_set_val(cR,Cpos,Cpse):
 	cR.texture='res/crate/'+str(cR.vnum)+'.tga'
 	if cR.vnum == 15:
 		cR.texture='res/crate/crate_t'+str(cR.time_stop)+'.tga'
-	cR.org_tex=cR.texture
+	if cR.vnum in {9,10}:
+		cR.org_tex=cR.texture
 	cR.spawn_pos=Cpos
 	cR.position=Cpos
 	cR.collider='box'
@@ -672,14 +673,15 @@ def fly_away(n):
 			cache_instance(n)
 			wumpa_count(1)
 def is_enemie(n):
-	nnk={N.Amadillo,N.Turtle,N.SawTurtle,
-		N.Penguin,N.Hedgehog,N.Seal,
-		N.EatingPlant,N.Rat,N.Lizard,
-		N.Eel,N.Scrubber,N.Mouse,N.SewerMine,
-		N.Vulture,N.Gorilla,
-		N.Bee,N.Lumberjack,
-		N.SpiderRobotFlat,N.SpiderRobotUp,N.Robot,N.LabAssistant}
-	return any(isinstance(n,npc_class) for npc_class in nnk)
+	ix={0:{},
+	1:{N.Amadillo,N.Turtle,N.SawTurtle},
+	2:{N.Penguin,N.Hedgehog,N.Seal},
+	3:{N.EatingPlant,N.SawTurtle},
+	4:{N.Eel,N.Scrubber,N.Mouse,N.SewerMine},
+	5:{N.Gorilla,N.Rat,N.Lizard},
+	6:{N.Bee,N.Lumberjack},
+	7:{N.SpiderRobotFlat,N.SpiderRobotUp,N.Robot}}
+	return any(isinstance(n,npc_class) for npc_class in ix[st.level_index])
 def bash_enemie(e,h):
 	e.is_hitten=True
 	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)
