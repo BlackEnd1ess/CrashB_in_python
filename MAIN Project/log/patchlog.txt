@@ -272,5 +272,9 @@ Piston
 - level 7 longer level struct
 
 #13.01.2025
-- improved LODsystem
+- improved LODsystem -> simpler/faster Render Culling
 - Progress Level 7 Structure
+
+#15.01.2025
+- Tiles, where placed below a danger Piston, has different Ground Texture.
+- Level 7 new Object: Piston Platform

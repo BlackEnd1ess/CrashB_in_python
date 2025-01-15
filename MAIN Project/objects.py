@@ -1171,6 +1171,46 @@ class Piston(Entity):
 			pva[s.mode]()
 			del pva
 
+lbff=omf+'l7/piston_ptf/piston_ptf'
+class PistonPlatform(Entity):
+	def __init__(self,pos,spd,pa):
+		s=self
+		super().__init__(model=lbff+'.obj',texture=lbff+'.tga',position=pos,scale=.1/100,collider=b,double_sided=True)
+		s.spw_y=s.y
+		s.mvsp=spd
+		s.wait=0
+		s.stat=0
+		s.wt=pa
+		del pos,spd,pa
+	def mv_down(self):
+		s=self
+		if s.y > s.spw_y-1.7:
+			s.y-=time.dt*s.mvsp*1.5
+			return
+		s.wait=s.wt
+		s.stat=1
+		if distance(s,LC.ACTOR) < 8:
+			sn.obj_audio(ID=13,pit=.5)
+	def mv_up(self):
+		s=self
+		if s.y < s.spw_y:
+			s.y+=time.dt*s.mvsp
+			return
+		s.wait=s.wt
+		s.stat=0
+		if distance(s,LC.ACTOR) < 8:
+			sn.obj_audio(ID=13,pit=.8)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.wait=max(s.wait-time.dt,0)
+		if s.wait <= 0:
+			if s.stat == 0:
+				s.mv_down()
+				return
+			s.mv_up()
+
 lpad=omf+'l7/e_pad/'
 class LabPad(Entity):
 	def __init__(self,pos,ID):

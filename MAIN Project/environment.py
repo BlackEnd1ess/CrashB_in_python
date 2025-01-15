@@ -42,7 +42,7 @@ def init_amb_light():#called 1 time
 ##start environment
 def env_switch(idx):
 	LC.AMBIENT_LIGHT.color=AMB_COLOR[idx]
-	#set_fog(idx)
+	set_fog(idx)
 	window.color=SKY_COLOR[idx]
 	if idx in {1,5}:#rain in level 1 and 5
 		if idx == 5:

@@ -27,6 +27,7 @@ DYN_OBJ={
 	6:{'ldmn','tksc','bbfl','bbst','sngg'},
 	7:{'labt','epad','tser','labo','lapi','lbbr'}}
 
+## func for render culling
 class ManageObjects(Entity):
 	def __init__(self):
 		s=self

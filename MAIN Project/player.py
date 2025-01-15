@@ -53,7 +53,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(99,7,1)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(23.3,-34,-3)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
@@ -243,7 +243,7 @@ class CrashB(Entity):
 			if s.b_smash:
 				an.belly_land(s,sp=16)
 			else:
-				an.land(s,sp=18)
+				an.land(s,sp=19)
 			return
 		if st.p_idle(s) or s.freezed:
 			if s.is_slippery:
