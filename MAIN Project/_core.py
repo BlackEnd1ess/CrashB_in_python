@@ -15,7 +15,7 @@ N=npc
 def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound					inwater
 	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','space_time','stnfr','stun_tme','dth_cause','dth_fr'}:
 		setattr(c,_a,0)#values
-	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','stun','sma_dth'}:
+	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','stun','sma_dth','dth_snd'}:
 		setattr(c,_v,False)#flags
 	c.move_speed=LC.dfsp
 	c.cur_tex=c.texture
@@ -98,6 +98,7 @@ def reset_state(c):
 	st.death_event=False
 	c.dth_fr=0
 	c.texture='res/pc/crash.tga'
+	c.dth_snd=False
 	c.visible=True
 	c.stun=False
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
@@ -546,10 +547,7 @@ def check_nitro_stack():
 				ni.can_jmp=False
 	del nit_crt,all_crt
 def is_crate(e):
-	cck={C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
-		C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,C.SwitchEmpty,
-		C.SwitchNitro,C.TNT,C.Nitro,C.Air,C.Protected,C.cTime,C.LvInfo}
-	return any(isinstance(e,crate_class) for crate_class in cck)
+	return any(isinstance(e,crate_class) for crate_class in LC.CCK)
 
 ## bonus level
 def load_b_ui():
@@ -609,7 +607,7 @@ def load_droute(c):
 		c.back_to_level(c)
 		return
 	st.death_route=True
-	c.position=(200,2,-3)
+	c.position=(200,2.3,-3)
 	camera.position=(200,.5,-3)
 	st.loading,c.freezed=False,False
 	sn.SpecialMusic(T=st.level_index)
@@ -673,15 +671,7 @@ def fly_away(n):
 			cache_instance(n)
 			wumpa_count(1)
 def is_enemie(n):
-	ix={0:{},
-	1:{N.Amadillo,N.Turtle,N.SawTurtle},
-	2:{N.Penguin,N.Hedgehog,N.Seal},
-	3:{N.EatingPlant,N.SawTurtle},
-	4:{N.Eel,N.Scrubber,N.Mouse,N.SewerMine},
-	5:{N.Gorilla,N.Rat,N.Lizard},
-	6:{N.Bee,N.Lumberjack},
-	7:{N.SpiderRobotFlat,N.SpiderRobotUp,N.Robot}}
-	return any(isinstance(n,npc_class) for npc_class in ix[st.level_index])
+	return any(isinstance(n,npc_class) for npc_class in LC.NCC)
 def bash_enemie(e,h):
 	e.is_hitten=True
 	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)

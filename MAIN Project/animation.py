@@ -161,8 +161,12 @@ def dth_angelfly(c):
 	c.dth_fr=min(c.dth_fr+time.dt*t,20.999)
 	if c.texture != af+'death/angel/0.tga':
 		c.texture=af+'death/angel/0.tga'
+	if not c.dth_snd:
+		c.dth_snd=True
+		sn.pc_audio(ID=15,pit=.35)
 	if c.dth_fr > 20.99:
 		c.dth_fr=0
+		sn.pc_audio(ID=16)
 	c.model=af+f'death/angel/{int(c.dth_fr)}.ply'
 
 def dth_wtr_swim(c):
@@ -172,14 +176,23 @@ def dth_wtr_swim(c):
 	c.model=af+f'death/water/{int(c.dth_fr)}.ply'
 
 def dth_fire_ash(c):
+	if not c.dth_snd:
+		c.dth_snd=True
+		sn.obj_audio(ID=16,pit=1.1)
 	c.dth_fr=min(c.dth_fr+time.dt*t,24.999)
 	if c.dth_fr > 24.99:
 		c.dth_fr=24
 	c.model=af+f'death/fire/{int(c.dth_fr)}.ply'
 
 def dth_el_shock(c):
-	c.model=af+f'death/volt/0.ply'
-	c.texture=af+f'death/volt/0.tga'
+	if not c.dth_snd:
+		c.dth_snd=True
+		sn.obj_audio(ID=17)
+	c.dth_fr=min(c.dth_fr+time.dt*t,1.999)
+	if c.dth_fr > 1.99:
+		c.dth_fr=0
+	c.texure=af+f'death/volt/{int(c.dth_fr)}.tga'
+	c.model=af+f'death/volt/{int(c.dth_fr)}.ply'
 
 def dth_beesting(c):
 	if not c.landed:
@@ -228,11 +241,11 @@ class CrateBreak(Entity):
 		s.color=color.rgb32(180,80,0)
 		if cr.vnum == 3:
 			s.color=color.rgb32(140,70,0)
-		elif cr.vnum == 11:
+		if cr.vnum == 11:
 			s.color=color.rgb32(190,0,0)
-		elif cr.vnum == 12:
+		if cr.vnum == 12:
 			s.color=color.rgb32(0,190,0)
-		elif cr.vnum == 16:
+		if cr.vnum == 16:
 			s.color=color.rgb32(160,0,160)
 		del cr
 	def update(self):
@@ -245,7 +258,7 @@ class CrateBreak(Entity):
 			s.texture=None
 			destroy(s)
 			return
-		s.model=cf+'brk/'+str(int(s.frame_break))+'.ply'
+		s.model=cf+f'brk/{int(s.frame_break)}.ply'
 
 class CollapseFloor(Entity):
 	def __init__(self,t,pos):

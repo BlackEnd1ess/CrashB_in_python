@@ -25,7 +25,7 @@ DYN_OBJ={
 	4:{'swpl','swpt','swff','drpw'},
 	5:{'loos','rnsp','htbx'},
 	6:{'ldmn','tksc','bbfl','bbst','sngg'},
-	7:{'labt','epad','tser','labo','lapi','lbbr'}}
+	7:{'labt','epad','labo','lapi','lbbr','ltts'}}
 
 ## func for render culling
 class ManageObjects(Entity):
@@ -34,8 +34,12 @@ class ManageObjects(Entity):
 		super().__init__()
 		s.dx={1:10,2:8,3:10,4:8,5:10,6:8,7:8}[st.level_index]#side
 		s.dz={1:16,2:14,3:18,4:24,5:20,6:20,7:12}[st.level_index]#front
-		s.dv={1:4,2:4,3:4,4:5,5:5,6:4,7:3}[st.level_index]#back
+		s.dv={1:4,2:4,3:4,4:5,5:5,6:4,7:4}[st.level_index]#back
+		s.BO={1:30,2:18,3:32,4:25,5:26,6:25,7:25}[st.level_index]#BIG OBJECT DISTANCE
 		s.tme=.5
+		s.CD=14
+		s.ND=12
+		s.WD=8
 	def check_dst(self,v,p):
 		s=self
 		return v.z < p.z+s.dz and p.z < v.z+s.dv and abs(p.x-v.x) < s.dx
@@ -48,11 +52,16 @@ class ManageObjects(Entity):
 			if v.name in DYN_OBJ[ix]:
 				v.enabled=s.check_dst(v,pp)
 			if v.name in BIG_OBJ[ix]:
-				v.enabled=kd < 25
-			if cc.is_crate(v) and v.vnum in {0,1,2} or v.name == 'wmpf':
-				v.enabled=kd < 8
+				v.enabled=kd < s.BO
+			if v.name == 'wmpf':
+				v.enabled=kd < s.WD
+			if cc.is_crate(v):
+				if v.vnum in {0,1,2}:
+					v.enabled=kd < s.CD
+				if v.vnum == 12:
+					v.visible=kd < s.CD
 			if cc.is_enemie(v) and v.vnum != 15:
-				v.enabled=kd < 12
+				v.enabled=kd < s.ND
 	def update(self):
 		if st.gproc():
 			return

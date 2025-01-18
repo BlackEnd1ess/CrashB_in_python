@@ -89,20 +89,21 @@ def spw_multi_lab_tile(p,cnt,typ,way):
 			else:
 				LabTile(pos=(p[0]+laX,p[1],p[2]+laZ),typ=typ,ro_y=90)
 	del p,cnt,typ,way
-## Pseudo CrashB
+## Pseudo CrashB in Warp Room
+
+MVP=omf+'l1/p_moss/moss'
+rp='res/pc/crash'
 class PseudoCrash(Entity):
 	def __init__(self):
-		MVP=omf+'l1/p_moss/moss'
-		rp='res/pc/crash'
+		s=self
 		super().__init__(model=rp+'.ply',texture=rp+'.tga',scale=.1/20,rotation=(-90,30,0),position=(9,-4,0),unlit=False)
-		Entity(model=MVP+'.obj',texture=MVP+'.tga',scale=.75/30,position=(self.x,self.y,self.z),double_sided=True)
-		self.idfr=0
+		Entity(model=MVP+'.obj',texture=MVP+'.tga',scale=.75/30,position=(s.x,s.y,s.z),double_sided=True,color=color.rgb32(170,190,180))
+		s.idfr=0
 	def update(self):
-		animation.idle(self,sp=16)
+		animation.idle(self,sp=18)
 
 ####################
 ## level 1 objects #
-MVP=omf+'l1/p_moss/moss'
 class MossPlatform(Entity):
 	def __init__(self,p,ptm,pts=.5,ptw=3):
 		s=self
@@ -408,6 +409,7 @@ class WaterFlow(Entity):
 		s.cbst=Entity(model='cube',texture='res/terrain/l3/cobble_stone.png',name=s.name,position=(pos[0],pos[1]-.7,pos[2]+.05),scale=(10,.1,sca[1]),texture_scale=(10,sca[1]))
 		WaterHit(p=(pos[0],pos[1]-.1,pos[2]),sc=sca)
 		s.frm=0
+		del pos,sca
 	def update(self):
 		if not st.gproc():
 			s=self
@@ -426,6 +428,7 @@ class WaterFall(Entity):
 		s.frm=0
 		Foam(pos=(s.x,s.y-.49,s.z-.5),t=0)
 		Foam(pos=(s.x,s.y+.501,s.z+.49),t=1)
+		del pos
 	def update(self):
 		if not st.gproc():
 			s=self
@@ -448,6 +451,7 @@ class TempleWall(Entity):
 		if sd == 2:
 			kq=-.025
 		super().__init__(model=trw+'.ply',texture=trw+'.tga',name='tmpw',position=pos,scale=(.025,kq,.025),rotation=(-90,90,0),collider=b)
+		del pos,sd
 
 class WoodStage(Entity):
 	def __init__(self,pos):
@@ -456,6 +460,7 @@ class WoodStage(Entity):
 		super().__init__(model=wdStg+'.ply',texture=omf+'l3/wood_stage/stage_z.tga',name='wdst',position=pos,scale=.03,rotation=(-90,90,0),color=color.rgb32(100,100,0))
 		Entity(model=wfc,position=(s.x,s.y-.46,s.z-1.5),scale=(4.2,1,1.2),name=s.name,collider=b,visible=False)
 		Entity(model=wfc,position=(s.x,s.y-.46,s.z+.2),scale=(1.2,1,2.3),name=s.name,collider=b,visible=False)
+		del pos
 
 tlX=omf+'l3/tile/tile'
 class StoneTile(Entity):
@@ -463,12 +468,14 @@ class StoneTile(Entity):
 		s=self
 		super().__init__(model=tlX+'.obj',name='tile',texture=tlX+'.jpg',position=pos,scale=.35)
 		s.collider=BoxCollider(s,center=Vec3(0,-.1,0),size=Vec3(2.4,1,2.4))
+		del pos
 
 class StoneTileBig(Entity):
 	def __init__(self,pos):
 		s=self
 		super().__init__(model=tlX+'_big.obj',texture=tlX+'.jpg',position=pos,scale=.35)
 		s.collider=BoxCollider(s,center=Vec3(0,-.1,0),size=(7.3,1,7.3))
+		del pos
 
 lbP=omf+'l3/mtree_scn/'
 class MushroomTree(Entity):
@@ -477,6 +484,7 @@ class MushroomTree(Entity):
 		super().__init__(model=lbP+'BNTree.ply',name='mtbt',texture=lbP+'tm_scn.tga',position=pos,scale=.03,color=color.rgb32(180,180,180),rotation=(-90,90,0))
 		Entity(model=wfc,name=s.name,scale=(1.3,.5,.5),position=(s.x-.1,s.y+2.15,s.z-1.1),collider=b,visible=False)
 		Entity(model=wfc,name=s.name,position=(s.x,s.y+3,s.z-.6),scale=(1,7,.5),collider=b,visible=False)
+		del pos
 
 class Foam(Entity):
 	def __init__(self,pos,t):
@@ -489,6 +497,7 @@ class Foam(Entity):
 		if t == 1:
 			s.color=color.rgb32(210,210,210)
 			s.frm=15.99
+		del pos,t
 	def flow_normal(self):
 		s=self
 		s.frm+=time.dt*6
@@ -512,12 +521,13 @@ class Foam(Entity):
 class BonusBackground(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model='quad',texture='res/background/bonus_1.jpg',name='bbgn',scale=sca,texture_scale=(1,1),position=pos,color=color.rgb32(100,60,80),unlit=False,shader=unlit_shader)
+		del pos,sca
 
 class BonusScene(Entity):
 	def __init__(self,pos):
 		bcnn=omf+'l3/mtree_scn/'
 		super().__init__(model=bcnn+'wtr_bSCN.ply',texture=bcnn+'tm_scn.tga',name='bnsc',position=pos,scale=.035,rotation=(-90,90,0))
-
+		del pos
 
 ####################
 ## level 4 objects #
@@ -536,10 +546,12 @@ class SewerEscape(Entity):
 			SewerGlowIron(pos=(s.x,s.y+.2,s.z+2.5),sca=(10,.01,10))
 			s.color=color.rgb32(255,50,0)
 			s.unlit=False
+		del pos,c
 
 class SewerGlowIron(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model='cube',texture=_SE+'swr_iron.png',position=pos,scale=sca,color=color.rgb32(255,50,0),texture_scale=(sca[0],sca[2]),unlit=False,collider=b)
+		del pos,sca
 	def update(self):
 		s=self
 		if st.gproc():
@@ -554,11 +566,13 @@ class SewerPlatform(Entity):
 		super().__init__(model=pPF+'ptf.obj',texture=pPF+'swr_ptf.tga',name='swpl',position=pos,scale=.02,double_sided=True)
 		s.collider=BoxCollider(s,size=Vec3(25,4,25))
 		s.matr='metal'
+		del pos
 
 mo=omf+'l4/scn/sewer_wall_bg'
 class SewerWall(Entity):
 	def __init__(self,pos):
 		super().__init__(model=mo+'.ply',texture=mo+'.tga',name='ssww',position=pos,scale=.0175,color=color.rgb(.6,.5,.4),rotation=(-90,90,0))
+		del pos
 
 swmi=omf+'l4/swr_swim/swr_swim'
 class SwimPlatform(Entity):##box collider
@@ -570,6 +584,7 @@ class SwimPlatform(Entity):##box collider
 		s.matr='metal'
 		s.spawn_y=s.y
 		s.f_time=0
+		del pos
 	def sink(self):
 		s=self
 		s.y-=time.dt
@@ -601,6 +616,7 @@ swn=omf+'l4/swr_entrance/swr_entrance'
 class SewerEntrance(Entity):
 	def __init__(self,pos):
 		super().__init__(model=swn+'.ply',texture=swn+'.jpg',name='swri',position=pos,rotation_y=90,scale=2)
+		del pos
 
 swrp=omf+'l4/pipe/swpipe_'
 class SewerPipe(Entity):## danger
@@ -638,6 +654,7 @@ class EletricWater(Entity):
 		s.splash=0
 		s.frm=0
 		s.tme=8
+		del pos,sca
 	def wtr_anim(self):
 		s=self
 		s.frm=min(s.frm+time.dt*8,31.999)
@@ -721,14 +738,17 @@ class RuinsPlatform(Entity):##big platform
 		if m:
 			HitBox(pos=(s.x+.9,s.y+.4,s.z),sca=(.3,.5,1.7))
 			s.scale_z=-.03
+			del pos,m
 			return
 		HitBox(pos=(s.x-.9,s.y+.4,s.z),sca=(.3,.5,1.7))
+		del pos,m
 
 class RuinsBlock(Entity):## small platform
 	def __init__(self,pos):
 		s=self
 		super().__init__(model=rnp+'ptf02.obj',name='rubl',texture=rnp+'scn.tga',position=pos,scale=.03,rotation_y=-90,double_sided=True)
 		s.collider=BoxCollider(s,center=Vec3(0,-7.5,0),size=(25,15,25))
+		del pos
 
 class RuinsCorridor(Entity):## corridor
 	def __init__(self,pos):
@@ -738,6 +758,7 @@ class RuinsCorridor(Entity):## corridor
 		s.cor_w0=Entity(model=wfc,position=(s.x-1.4,s.y+1.7,s.z),name=s.name,scale=(.5,2,3),collider=b,visible=False)
 		s.cor_w1=Entity(model=wfc,position=(s.x+1.4,s.y+1.7,s.z),name=s.name,scale=(.5,2,3),collider=b,visible=False)
 		IndoorZone(pos=(s.x,s.y+2.55,s.z),sca=3)
+		del pos
 
 rmsc=omf+'l5/m_sculpt/m_sculpt'
 class MonkeySculpture(Entity):
@@ -839,6 +860,7 @@ class LogDanger(Entity):
 		s.start_delay=.3
 		s.life_time=3
 		s.direc_y=0
+		del pos,ro_y
 	def fly(self):
 		s=self
 		fsp=3.2
@@ -895,11 +917,16 @@ class RuinsScene(Entity):
 		super().__init__(model='quad',texture=bgg+'bg_ruins.jpg',scale=(800,120),texture_scale=(2,1),position=(50,-38,128),color=color.rgb32(160,160,170),shader=unlit_shader)
 		s.orginal_x,s.orginal_y=s.x,s.y
 		s.orginal_tsc=s.texture_scale
-		s.bonus_x,s.bonus_y=-70,200
+		s.spawn_y=s.y
+		s.bonus_y=-70
 		LC.bgT=s
 	def update(self):
+		s=self
 		if st.bonus_round:
-			self.y=self.bonus_y
+			s.y=s.bonus_y
+			return
+		if s.y != s.spawn_y:
+			s.y=s.spawn_y
 
 
 ####################
@@ -933,6 +960,7 @@ brtv='res/terrain/l6/bee_terra.png'
 class BeeBigGround(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model='cube',name='bbgn',texture=brtv,position=pos,texture_scale=(sca[0],sca[2]),scale=sca,collider=b)
+		del pos,sca
 
 behv=omf+'l6/hive/0'
 class Hive(Entity):
@@ -1111,8 +1139,6 @@ class LabTile(Entity):
 			if s.is_heat:
 				s.heat_color=min(s.heat_color+rtu,255)
 				if s.heat_color >= 255:
-					if distance(s,LC.ACTOR) < 4:
-						sn.obj_audio(ID=15)
 					s.refr=1
 					s.is_heat=False
 				return
@@ -1175,7 +1201,9 @@ lbff=omf+'l7/piston_ptf/piston_ptf'
 class PistonPlatform(Entity):
 	def __init__(self,pos,spd,pa):
 		s=self
-		super().__init__(model=lbff+'.obj',texture=lbff+'.tga',position=pos,scale=.1/100,collider=b,double_sided=True)
+		super().__init__(model=lbff+'.obj',texture=lbff+'.tga',name='pipf',position=pos,scale=.1/100,double_sided=True)
+		s.collider=BoxCollider(s,size=Vec3(700,700,700),center=Vec3(0,1685,0))
+		s.matr='metal'
 		s.spw_y=s.y
 		s.mvsp=spd
 		s.wait=0
@@ -1185,7 +1213,7 @@ class PistonPlatform(Entity):
 	def mv_down(self):
 		s=self
 		if s.y > s.spw_y-1.7:
-			s.y-=time.dt*s.mvsp*1.5
+			s.y-=time.dt*s.mvsp*2.5
 			return
 		s.wait=s.wt
 		s.stat=1
@@ -1196,7 +1224,7 @@ class PistonPlatform(Entity):
 		if s.y < s.spw_y:
 			s.y+=time.dt*s.mvsp
 			return
-		s.wait=s.wt
+		s.wait=s.wt*2
 		s.stat=0
 		if distance(s,LC.ACTOR) < 8:
 			sn.obj_audio(ID=13,pit=.8)
@@ -1238,7 +1266,7 @@ class LabPad(Entity):
 		s=self
 		s.tme=.5
 		if not s.locked:
-			sn.obj_audio(ID=14)
+			sn.obj_audio(ID=15,pit=.5)
 			s.locked=True
 			s.trigger_taser()
 		s.mode=1
@@ -1261,11 +1289,12 @@ lbts=omf+'l7/lab_taser/'
 class LabTaser(Entity):
 	def __init__(self,pos,ID):
 		s=self
-		super().__init__(model=lbts+'0.ply',texture=lbts+'0.tga',position=pos,scale=.1/150,rotation_x=-90)
+		super().__init__(model=lbts+'0.ply',texture=lbts+'0.tga',name='ltts',position=pos,scale=.1/150,rotation_x=-90)
 		s.frm=0
 		s.ID=ID
 		del pos,ID
 	def shoot_laser(self):
+		sn.obj_audio(ID=14)
 		ef.ElectroBall(pos=self.position)
 	def update(self):
 		if not st.gproc():
@@ -1355,6 +1384,7 @@ class CrateScore(Entity):## level reward
 		s.cc_text=Text(parent=scene,position=(s.x-.2,s.y,s.z),name=s.name,text=None,font=ui._fnt,color=color.rgb32(255,255,100),scale=10)
 		if settings.debg:
 			print(f'crates total: {st.crates_in_level}')
+		del pos
 	def update(self):
 		if st.gproc():
 			return
@@ -1429,6 +1459,7 @@ class RoomDoor(Entity):## door for start and end room
 		s.door_part=Entity(model=s.dPA+'d0.ply',name=s.name,texture=s.dPA+'d_door.tga',position=(s.x,s.y+.1,s.z),scale=.001,rotation_x=90,collider=b)
 		s.d_opn=False
 		s.d_frm=0
+		del pos
 	def update(self):
 		if not st.gproc():
 			ta=LC.ACTOR
@@ -1446,6 +1477,7 @@ class BonusPlatform(Entity):## switch -> bonus round
 			s.matr='metal'
 		super().__init__(model=omf+sIN+'.ply',texture=omf+sIN+'.tga',name='bnpt',collider=b,scale=-.001,rotation_x=90,position=pos,unlit=False)
 		s.start_y=s.y
+		del pos
 	def update(self):
 		if st.bonus_solved:
 			cc.purge_instance(self)
@@ -1468,6 +1500,7 @@ class GemPlatform(Entity):## gem platform
 		if not s.is_enabled:
 			s.collider=None
 			s.alpha=.5
+		del pos,t
 	def update(self):
 		if not st.gproc():
 			s=self
@@ -1490,6 +1523,7 @@ class PseudoGemPlatform(Entity):
 			if settings.debg:
 				t=0
 		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=LC.GMC[t],unlit=False)
+		del pos,t
 		if s.is_enabled:
 			HitBox(pos=(s.x,s.y-.15,s.z),sca=(.6,.4,.6))
 			return
@@ -1508,6 +1542,7 @@ class LevelFinish(Entity):## finish level
 		ef.WarpVortex(pos=(s.x,s.y+.7,s.z),col=color.orange,sca=.7,drc=0)
 		s.w_audio=Audio('res/snd/misc/portal.wav',volume=0,loop=True)
 		s.refr=.3
+		del p
 	def update(self):
 		s=self
 		if st.pause:
@@ -1527,6 +1562,7 @@ class LevelFinish(Entity):## finish level
 class IndoorZone(Entity):## disable rain
 	def __init__(self,pos,sca):
 		super().__init__(model='cube',name='indz',scale=sca,position=pos,collider=b,visible=False)
+		del pos,sca
 	def update(self):
 		if self.intersects(LC.ACTOR):
 			LC.ACTOR.CMS=3.2
@@ -1543,6 +1579,7 @@ class LightArea(SpotLight):
 	def __init__(self,pos):
 		super().__init__(position=pos,color=color.white)
 		self.ta=LC.ACTOR
+		del pos
 	def update(self):
 		if not st.gproc():
 			self.position=(self.ta.x+.5,self.ta.y+1.5,self.ta.z+1)

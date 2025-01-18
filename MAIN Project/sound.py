@@ -33,8 +33,9 @@ def landing_sound(c,o):
 		if o.matr == 'metal':
 			pc_audio(ID=13)
 			return
-	if not (cc.is_crate(o) or cc.is_enemie(o)):
-		pc_audio(ID=2)
+	if (cc.is_crate(o) and o.vnum != 0) or cc.is_enemie(o):
+		return
+	pc_audio(ID=2)
 
 ## ambience sound
 snd_rain=VS+'rain.wav'
@@ -43,7 +44,7 @@ SND_THU={0:'thunder_start',
 		2:'thunder1'}
 def thu_audio(ID,pit=1):
 	pth=Audio(VS+SND_THU[ID]+'.wav',pitch=random.uniform(.1,.5),volume=se.SFX_VOLUME,add_to_scene_entities=False)
-	invoke(lambda:destroy(pth),delay=pth.length*2)
+	invoke(lambda:destroy(pth),delay=pth.length*4)
 
 ## INTERFACE SFX
 SND_UI={0:'select',
@@ -74,10 +75,12 @@ SND_PC={0:'walk',
 		11:'water_step',
 		12:'metal_step',
 		13:'land_metal',
-		14:'fall_death'}
+		14:'fall_death',
+		15:'angel',
+		16:'wings'}
 def pc_audio(ID,pit=1):
 	pc=Audio(SP+SND_PC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
-	invoke(lambda:destroy(pc),delay=pc.length*2)
+	invoke(lambda:destroy(pc),delay=pc.length*4)
 
 ## CRATE SFX
 SND_CRT={0:'steel',
@@ -137,8 +140,10 @@ SND_OBJ={0:'spawn',
 		11:'log_hit',
 		12:'land_mine',
 		13:'piston',
-		14:'pad',
-		15:'heat_on'}
+		14:'pad_0',
+		15:'pad_1',
+		16:'steam',
+		17:'volt'}
 def obj_audio(ID,pit=1):
 	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 	invoke(lambda:destroy(ob),delay=ob.length*2)

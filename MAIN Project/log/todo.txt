@@ -1,8 +1,4 @@
 ## BUGS/ERORRS
-- lv 4 gem route noclip bug
-- checkpoint lagg
 
 ##TODO
 - lab assistant
-- death event, sounds
-- reduce tiles and replace

@@ -278,3 +278,14 @@ Piston
 #15.01.2025
 - Tiles, where placed below a danger Piston, has different Ground Texture.
 - Level 7 new Object: Piston Platform
+
+
+#16.01.2025
+- reduces Lab Tiles in Level 7
+- expand Bonus Round in Level 7
+- finished Level 7 Object Structure
+
+#17.01.2025
+- death event: angel fly has 2 sound effects
+- death event: electric has second frame
+- death event: sound effects included
