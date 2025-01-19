@@ -6,7 +6,7 @@ cc=_core
 LC=_loc
 
 ## short names from objects (entity.name)
-ANY_LV={'rmdr','wpvx','strm'}
+ANY_LV={'rmdr','strm'}
 BIG_OBJ={
 	0:ANY_LV,
 	1:ANY_LV|{'grsi','trrw','tssn'},
@@ -33,9 +33,9 @@ class ManageObjects(Entity):
 		s=self
 		super().__init__()
 		s.dx={1:10,2:8,3:10,4:8,5:10,6:8,7:8}[st.level_index]#side
-		s.dz={1:16,2:14,3:18,4:24,5:20,6:20,7:12}[st.level_index]#front
-		s.dv={1:4,2:4,3:4,4:5,5:5,6:4,7:4}[st.level_index]#back
-		s.BO={1:30,2:18,3:32,4:25,5:26,6:25,7:25}[st.level_index]#BIG OBJECT DISTANCE
+		s.dz={1:16,2:14,3:18,4:24,5:20,6:20,7:16}[st.level_index]#front
+		s.dv={1:4,2:4,3:4,4:5,5:5,6:4,7:3}[st.level_index]#back
+		s.BO={1:30,2:18,3:32,4:25,5:26,6:25,7:20}[st.level_index]#BIG OBJECT DISTANCE
 		s.tme=.5
 		s.CD=14
 		s.ND=12
@@ -62,6 +62,7 @@ class ManageObjects(Entity):
 					v.visible=kd < s.CD
 			if cc.is_enemie(v) and v.vnum != 15:
 				v.enabled=kd < s.ND
+		del ix,pp
 	def update(self):
 		if st.gproc():
 			return

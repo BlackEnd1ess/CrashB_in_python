@@ -289,3 +289,6 @@ Piston
 - death event: angel fly has 2 sound effects
 - death event: electric has second frame
 - death event: sound effects included
+
+#19.01.2025
+- checkpoint letters: function logic doesnt move the Text instance anymore

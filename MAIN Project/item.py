@@ -58,7 +58,7 @@ class WumpaFruit(Entity):
 class ExtraLive(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model='quad',texture=lfic,name='exlf',position=pos,scale=.3,collider=b)
+		super().__init__(model='quad',texture=lfic,name='exlf',position=pos,scale=(.4,.3),collider=b,unlit=False)
 		s.collider=BoxCollider(s,size=Vec3(1,1,1))
 		s.follow=False
 	def collect(self):
@@ -114,7 +114,8 @@ class GemStone(Entity):
 			3:(s.x-lgx,s.y+lgy,s.z-lgz),
 			4:(s.x-lgx,s.y+lgy,s.z-lgz),
 			5:(s.x-lgx,s.y+lgy,s.z-lgz),
-			6:(s.x-lgx,s.y+lgy,s.z-lgz)}
+			6:(s.x-lgx,s.y+lgy,s.z-lgz),
+			7:(s.x-lgx,s.y+lgy,s.z-lgz)}
 		s.shine=SpotLight(position=s_pos[s.gemID],color=color.gray)
 		del s_pos,lgx,lgy,lgz
 	def gem_fail(self):

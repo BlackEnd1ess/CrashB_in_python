@@ -19,7 +19,8 @@ def start_load():
 def load_object():
 	o.StartRoom(pos=(0,0,-65))
 	o.BonusPlatform(pos=(9,2.7,19.25))
-	item.GemStone(c=6,pos=(0,2.1,-.8))
+	if not 6 in status.COLOR_GEM:
+		item.GemStone(c=6,pos=(0,2.1,-.8))
 	o.FallingZone(pos=(0,-1,-40),s=(32,.1,300),v=True)
 	#tikki sculpt
 	o.TikkiSculpture(pos=(0,0,-54),spd=2,rng=.8)

@@ -22,7 +22,7 @@ def gr_block(p,vx,sca=.5):
 	for gbx in range(vx[0]):
 		for gbz in range(vx[1]):
 			GrassBlock(pos=(p[0]+gbx,p[1],p[2]+gbz),sca=sca)
-	del p,vx,sca,gbx
+	del p,vx,sca,gbx,gbz
 
 #lv2
 def plank_bridge(pos,typ,cnt,ro_y,DST):
@@ -79,7 +79,7 @@ def spw_lab_tile(p,cnt,way,typ,sca_y=.8):
 			LabTile(pos=(p[0]+lbt,p[1],p[2]),typ=typ,ro_y=0,sca_y=sca_y)
 		else:
 			LabTile(pos=(p[0],p[1],p[2]+lbt),typ=typ,ro_y=90,sca_y=sca_y)
-	del p,cnt,way,typ
+	del p,cnt,way,typ,lbt
 
 def spw_multi_lab_tile(p,cnt,typ,way):
 	for laX in range(cnt[0]):
@@ -88,7 +88,7 @@ def spw_multi_lab_tile(p,cnt,typ,way):
 				LabTile(pos=(p[0]+laX,p[1],p[2]+laZ),typ=typ,ro_y=0)
 			else:
 				LabTile(pos=(p[0]+laX,p[1],p[2]+laZ),typ=typ,ro_y=90)
-	del p,cnt,typ,way
+	del p,cnt,typ,way,laX,laZ
 ## Pseudo CrashB in Warp Room
 
 MVP=omf+'l1/p_moss/moss'
@@ -1151,6 +1151,8 @@ lbscn=omf+'l7/lab_bgs/lab_bgs'
 class LabScene(Entity):
 	def __init__(self,pos):
 		super().__init__(model=lbscn+'.ply',texture=lbscn+'.tga',name='lbbr',position=pos,scale=.015,rotation=(-90,90,0),double_sided=True)
+		if pos[1] < -15:
+			self.color=color.rgb32(200,100,200)
 		del pos
 
 lbpi=omf+'l7/piston/piston'
@@ -1380,7 +1382,7 @@ class CrateScore(Entity):## level reward
 	def __init__(self,pos):
 		s=self
 		ev='res/crate/'
-		super().__init__(model=ev+'cr_t0.ply',name='ctsc',texture=ev+'1.tga',alpha=.4,scale=.18,position=pos,origin_y=.5)
+		super().__init__(model=ev+'cr_t0.ply',texture=ev+'1.tga',alpha=.4,scale=.18,position=pos,origin_y=.5)
 		s.cc_text=Text(parent=scene,position=(s.x-.2,s.y,s.z),name=s.name,text=None,font=ui._fnt,color=color.rgb32(255,255,100),scale=10)
 		if settings.debg:
 			print(f'crates total: {st.crates_in_level}')
@@ -1390,8 +1392,7 @@ class CrateScore(Entity):## level reward
 			return
 		s=self
 		dv=(LC.C_GEM and distance(s,LC.C_GEM) < .5)
-		s.cc_text.visible=not(dv)
-		s.visible=not(dv)
+		s.cc_text.visible,s.visible=not(dv),not(dv)
 		if s.visible:
 			s.cc_text.text=f'{st.crate_count}/{st.crates_in_level}'
 			s.rotation_y-=120*time.dt
@@ -1449,6 +1450,8 @@ class EndRoom(Entity):## finish level
 			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=4)
 		if st.level_index == 2 and not 1 in st.COLOR_GEM:
 			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=1)
+		if st.level_index == 7 and not 7 in st.COLOR_GEM:
+			item.GemStone(c=7,pos=(s.x-1.1,s.y-.9,s.z))
 		del pos,c
 
 class RoomDoor(Entity):## door for start and end room
@@ -1554,8 +1557,9 @@ class LevelFinish(Entity):## finish level
 			if s.intersects(LC.ACTOR):
 				cc.jmp_lv_fin()
 				return
-			if (distance(s,LC.ACTOR) < 6):
-				s.w_audio.volume=settings.SFX_VOLUME
+			if (distance(s,LC.ACTOR) < 10):
+				nvv=max(0,1-(distance(s,LC.ACTOR)/10))
+				s.w_audio.volume=min(1,nvv*settings.SFX_VOLUME)
 				return
 			s.w_audio.volume=0
 

@@ -137,8 +137,6 @@ def c_smash(c):
 		if is_enemie(sw) and sw.vnum != 13:
 			sw.is_purge=True
 def c_attack(c):
-	if not c.is_attack or st.gproc():
-		return
 	for qd in scene.entities[:]:
 		if (qd.collider and distance(qd.position,c.position) < .5):
 			if is_crate(qd) and qd.vnum != 13:
@@ -148,9 +146,11 @@ def c_attack(c):
 					qd.destroy()
 			if is_enemie(qd):
 				if not (qd.is_purge or qd.is_hitten):
-					if (qd.vnum in {1,11}) or (qd.vnum == 5 and qd.def_mode):
+					if qd.vnum in {1,11} or (qd.vnum == 5 and qd.def_mode):
 						get_damage(c,rsn=2)
-					if not qd.vnum == 13:
+					if qd.vnum == 17:
+						get_damage(c,rsn=6)
+					if qd.vnum != 13:
 						bash_enemie(qd,h=c)
 def c_shield():
 	if st.aku_hit < 3 or st.gproc():
@@ -479,14 +479,13 @@ def hit_npc(c,m):
 	if is_enemie(m) and m.collider:
 		if not (m.is_purge or m.is_hitten):
 			RS=2
-			if m.vnum == 7:
-				RS=5
-			elif m.vnum == 15:
-				RS=7
-			elif m.vnum == 16:
-				RS=8
+			kmw={7:5,15:7,16:8,17:6}
+			if m.vnum in kmw:
+				RS=kmw[m.vnum]
+				del kmw
 			if not c.is_attack:
 				get_damage(c,rsn=RS)
+	del c,m
 
 ## interface,collectables
 def wumpa_count(n):

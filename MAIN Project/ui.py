@@ -786,18 +786,33 @@ class GemHint(Entity):
 				destroy(s)
 
 ## Checkpoint Letters
+checkp='CHECKPOINT'
 class CheckpointLetter(Entity):
 	def __init__(self,pos):
 		s=self
 		super().__init__()
-		s.ckt=Text(None,font=_fnt,position=(pos[0],pos[1]+.4,pos[2]),scale=7,parent=scene,color=color.orange,unlit=False)
+		s.ckt=Text('',font=_fnt,position=(pos[0],pos[1]+.4,pos[2]),scale=7,parent=scene,color=color.orange,unlit=False)
 		s.rev=False
 		s.tm=.075
 		s.idx=0
 		del pos
-	def purge(self):
-		destroy(self.ckt)
-		destroy(self)
+	def incr_ltr(self):
+		s=self
+		if len(s.ckt.text) > 9:
+			s.tm=.8
+			s.rev=True
+			return
+		s.ckt.text=checkp[:s.idx]
+		s.idx+=1
+	def decr_ltr(self):
+		s=self
+		if s.idx < 0:
+			destroy(s.ckt.text)
+			destroy(s)
+			return
+		s.ckt.text=checkp[:s.idx]
+		sn.pc_audio(ID=1,pit=.9)
+		s.idx-=1
 	def update(self):
 		if st.gproc():
 			return
@@ -805,19 +820,10 @@ class CheckpointLetter(Entity):
 		s.tm=max(s.tm-time.dt,0)
 		if s.tm <= 0:
 			s.tm=.075
-			s.ckt.text={False:LC.checkp[:s.idx],True:LC.checkp[-s.idx+1:]}[s.rev]
 			if s.rev:
-				sn.pc_audio(ID=1,pit=.9)
-				s.ckt.x+=time.dt*4.4
-				s.idx-=1
-				if s.idx <= 0:
-					s.purge()
+				s.decr_ltr()
 				return
-			if s.idx >= len(LC.checkp):
-				s.tm=.3
-				s.rev=True
-				return
-			s.idx+=1
+			s.incr_ltr()
 
 ## Time Trial
 class TrialTimer(Entity):

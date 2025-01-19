@@ -10,7 +10,7 @@ LC=_loc
 
 class WarpVortex(Entity):
 	def __init__(self,pos,sca,drc,col):
-		super().__init__(model=trpv+'.ply',texture=trpv+'.png',name='wpvx',position=pos,color=col,scale=sca,rotation_x=90,alpha=.5,unlit=False)
+		super().__init__(model=trpv+'.ply',texture=trpv+'.png',name='wvpx',position=pos,color=col,scale=sca,rotation_x=90,alpha=.5,unlit=False)
 		self.spd=600
 		self.drc=drc
 		del pos,sca,drc,col
