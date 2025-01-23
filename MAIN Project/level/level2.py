@@ -48,6 +48,7 @@ def load_object():
 	for ict in range(4):
 		o.IceChunk(pos=(33+ict*2.5,4.5,43.6),typ=1,rot=(-90,-90,0))
 		o.IceChunk(pos=(33.5+ict*2.5,4.8,44.3),typ=1,rot=(-90,-90,0))
+	del ict
 	#dangers
 	wlO=3.7
 	o.WoodLog(pos=(10.5,wlO,2.45))
@@ -55,46 +56,46 @@ def load_object():
 	o.Role(pos=(41.5,6.8,33.2),di=1)
 	#first pass
 	phg=-.065
-	o.sn_block(p=(0,phg,-60.5),vx=[1,2])
-	o.sn_block(p=(-1,phg,-57.5),vx=[3,2])
-	o.sn_block(p=(-1,phg,-43),vx=[3,1])
-	o.sn_block(p=(0,phg,-42),vx=[1,3])
-	o.sn_block(p=(-1,phg,-22),vx=[3,1])
-	o.sn_block(p=(0,phg,-21),vx=[1,2])
-	o.sn_block(p=(0,phg,-19),vx=[2,1])
-	o.sn_block(p=(-1,phg,-1),vx=[3,1])
-	o.sn_block(p=(0,phg,0),vx=[1,3])
+	o.spw_block(p=(0,phg,-60.5),vx=[1,2],ID=2)
+	o.spw_block(p=(-1,phg,-57.5),vx=[3,2],ID=2)
+	o.spw_block(p=(-1,phg,-43),vx=[3,1],ID=2)
+	o.spw_block(p=(0,phg,-42),vx=[1,3],ID=2)
+	o.spw_block(p=(-1,phg,-22),vx=[3,1],ID=2)
+	o.spw_block(p=(0,phg,-21),vx=[1,2],ID=2)
+	o.spw_block(p=(0,phg,-19),vx=[2,1],ID=2)
+	o.spw_block(p=(-1,phg,-1),vx=[3,1],ID=2)
+	o.spw_block(p=(0,phg,0),vx=[1,3],ID=2)
 	#2d area
 	bz=2.7
 	nh=.25
 	nv=1.2
 	nf=5
-	o.sn_block(p=(-1,nh,bz),vx=[3,1])
-	o.sn_block(p=(3,nh,bz),vx=[1,1])
-	o.sn_block(p=(4,.75,bz),vx=[1,1])
-	o.sn_block(p=(5,nv,bz),vx=[2,1])
-	o.sn_block(p=(8,nv,bz),vx=[1,1])
-	o.sn_block(p=(10,nv,bz),vx=[2,1])
-	o.sn_block(p=(12,nv+.4,bz),vx=[2,1])
+	o.spw_block(ID=2,p=(-1,nh,bz),vx=[3,1])
+	o.spw_block(ID=2,p=(3,nh,bz),vx=[1,1])
+	o.spw_block(ID=2,p=(4,.75,bz),vx=[1,1])
+	o.spw_block(ID=2,p=(5,nv,bz),vx=[2,1])
+	o.spw_block(ID=2,p=(8,nv,bz),vx=[1,1])
+	o.spw_block(ID=2,p=(10,nv,bz),vx=[2,1])
+	o.spw_block(ID=2,p=(12,nv+.4,bz),vx=[2,1])
 	o.IceGround(pos=(16.4,2.05,bz+.1),sca=(6,1))
-	o.sn_block(p=(19.8,nv+.4,bz),vx=[2,1])
-	o.sn_block(p=(21.8,nv+1,bz),vx=[1,1])
-	o.sn_block(p=(22.8,nv+2,bz),vx=[1,1])
+	o.spw_block(ID=2,p=(19.8,nv+.4,bz),vx=[2,1])
+	o.spw_block(ID=2,p=(21.8,nv+1,bz),vx=[1,1])
+	o.spw_block(ID=2,p=(22.8,nv+2,bz),vx=[1,1])
 	# final area
-	o.sn_block(p=(23,nv+3.2,3.3),vx=[1,2])
-	o.sn_block(p=(22,nv+3.2,5.3),vx=[3,3])
-	o.sn_block(p=(22,nv+3.2,20),vx=[3,1])
-	o.sn_block(p=(23,nv+3.2,21),vx=[1,2])
-	o.sn_block(p=(23,nv+3.2,24),vx=[1,1])
-	o.sn_block(p=(23,nv+3.2,26),vx=[2,2])
-	o.sn_block(p=(30.1,nv+3.2,26.7),vx=[2,1])
-	o.sn_block(p=(32.1,nv+3.8,26.7),vx=[1,1])
+	o.spw_block(ID=2,p=(23,nv+3.2,3.3),vx=[1,2])
+	o.spw_block(ID=2,p=(22,nv+3.2,5.3),vx=[3,3])
+	o.spw_block(ID=2,p=(22,nv+3.2,20),vx=[3,1])
+	o.spw_block(ID=2,p=(23,nv+3.2,21),vx=[1,2])
+	o.spw_block(ID=2,p=(23,nv+3.2,24),vx=[1,1])
+	o.spw_block(ID=2,p=(23,nv+3.2,26),vx=[2,2])
+	o.spw_block(ID=2,p=(30.1,nv+3.2,26.7),vx=[2,1])
+	o.spw_block(ID=2,p=(32.1,nv+3.8,26.7),vx=[1,1])
 	# room area
-	o.sn_block(p=(40,nf,30),vx=[4,1])
-	o.sn_block(p=(41.5,nf,31),vx=[1,2])
-	o.sn_block(p=(40.5,nf,33),vx=[3,1])
-	o.sn_block(p=(41.5,nf,34),vx=[1,3])
-	o.sn_block(p=(40.5,nf+.4,37),vx=[4,3])
+	o.spw_block(ID=2,p=(40,nf,30),vx=[4,1])
+	o.spw_block(ID=2,p=(41.5,nf,31),vx=[1,2])
+	o.spw_block(ID=2,p=(40.5,nf,33),vx=[3,1])
+	o.spw_block(ID=2,p=(41.5,nf,34),vx=[1,3])
+	o.spw_block(ID=2,p=(40.5,nf+.4,37),vx=[4,3])
 	#pillar
 	phe=1.1
 	o.pillar_twin(p=(-.75,phe,-56))
@@ -145,17 +146,20 @@ def load_object():
 	for ptf1 in range(4):
 		for ptf2 in range(3):
 			o.SnowPlatform(pos=(34+ptf1*1.5,5.8,27+ptf2*1.5))
+	del ptf1,ptf2
 	#walls
 	snz=3
 	for snw in range(7):
 		o.SnowWall(pos=(-5+snw*5.4,.1,snz))
 		o.SnowWall(pos=(-5+snw*5.4,3.2,snz))
+	del snw
 	o.SnowWall(pos=(19,6.3,snz))
 	o.SnowWall(pos=(27,6.3,snz))
 	o.SnowWall(pos=(30,2,38))
 	for sna in range(2):
 		o.SnowWall(pos=(20+sna*5.4,5,28))
 		o.SnowWall(pos=(20+sna*5.4,8.2,28))
+	del sna
 	o.EndRoom(pos=(43,8,44),c=color.rgb32(160,160,180))
 def load_crate():
 	h1=.75+.16
@@ -215,14 +219,15 @@ def load_npc():
 ## bonus level / gem path
 def bonus_zone():
 	o.FallingZone(pos=(0,-40,0),s=(64,1,64))
-	o.sn_block(p=(0,-38.5,U),vx=[1,1])
-	o.sn_block(p=(2,-38.2,U),vx=[4,1])
-	o.sn_block(p=(7,-38.2,U),vx=[3,1])
-	o.sn_block(p=(12.8,-38.2,U),vx=[3,1])
+	o.spw_block(p=(0,-38.5,U),vx=[1,1],ID=2)
+	o.spw_block(p=(2,-38.2,U),vx=[4,1],ID=2)
+	o.spw_block(p=(7,-38.2,U),vx=[3,1],ID=2)
+	o.spw_block(p=(12.8,-38.2,U),vx=[3,1],ID=2)
 	for sw in range(5):
 		o.SnowWall(pos=(-4+sw*5.4,-33.9,-2.5))
 		o.SnowWall(pos=(-4+sw*5.4,-37,-2.5))
 		o.SnowWall(pos=(-4+sw*5.4,-40.1,-2.5))
+	del sw
 	mt.crate_row(ID=0,POS=(3.8,-35,U),WAY=0,CNT=8)
 	mt.crate_wall(ID=2,POS=(4,-34.68,U),CNT=[2,2])
 	c.place_crate(ID=4,p=(5.3,-34.68,U))

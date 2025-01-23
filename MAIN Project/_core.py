@@ -61,11 +61,13 @@ def reset_state(c):
 	st.crate_count-=st.crate_to_sv
 	if st.death_route:
 		st.death_route=False
+		sn.BackgroundMusic(m=0)
 	if st.bonus_round:
 		st.wumpa_bonus=0
 		st.crate_bonus=0
 		st.lives_bonus=0
 		st.bonus_round=False
+		sn.BackgroundMusic(m=0)
 	else:
 		st.extra_lives-=1
 		st.fails+=1
@@ -565,7 +567,7 @@ def enter_bonus(c):
 	ui.BlackScreen()
 	st.bonus_round=True
 	load_b_ui()
-	sn.BonusMusic(T=st.level_index)
+	sn.BackgroundMusic(m=1)
 	ui.BonusText()
 	c.position=(0,-35,-3)
 	env.set_fog(st.level_index)
@@ -589,6 +591,7 @@ def back_to_level(c):
 		st.bonus_solved=True
 		clear_bonus()
 	c.freezed=False
+	sn.BackgroundMusic(m=0)
 	env.set_fog(st.level_index)
 	camera.y=c.y+.5
 	st.loading=False
@@ -607,9 +610,9 @@ def load_droute(c):
 		return
 	st.death_route=True
 	c.position=(200,2.3,-3)
+	sn.BackgroundMusic(m=2)
 	camera.position=(200,.5,-3)
 	st.loading,c.freezed=False,False
-	sn.SpecialMusic(T=st.level_index)
 def clear_gem_route():
 	for grd in scene.entities[:]:
 		if (grd.parent == scene) and (grd.x > 180):
@@ -618,6 +621,7 @@ def clear_gem_route():
 	del grd
 
 ## npc
+npf='res/npc/'
 def set_val_npc(m,drc=None,rng=None):
 	m.anim_frame,m.fly_time,m.turn=0,0,0
 	m.is_hitten,m.is_purge=False,False
@@ -625,7 +629,10 @@ def set_val_npc(m,drc=None,rng=None):
 	m.fly_direc=None
 	m.mov_range=rng
 	m.mov_direc=drc
-	del m,drc,rng
+	vnn=m.name
+	m.model=npf+f'{vnn}/0.ply'
+	m.texture=npf+f'{vnn}/0.tga'
+	del m,drc,rng,vnn
 def circle_move_xz(m):
 	m.angle-=time.dt*2
 	m.angle%=(2*math.pi)
@@ -670,7 +677,7 @@ def fly_away(n):
 			cache_instance(n)
 			wumpa_count(1)
 def is_enemie(n):
-	return any(isinstance(n,npc_class) for npc_class in LC.NCC)
+	return any(isinstance(n,npcc) for npcc in LC.NCC)
 def bash_enemie(e,h):
 	e.is_hitten=True
 	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)

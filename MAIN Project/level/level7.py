@@ -232,10 +232,12 @@ def load_wumpa():
 def load_npc():
 	n.spawn(ID=17,POS=(1,.1,-57),DRC=0,RNG=.005)
 	n.spawn(ID=19,POS=(7,.6,-46),DRC=0,RNG=1)
-	n.spawn(ID=19,POS=(19.5,2.1,-39),DRC=2,RNG=2)
+	n.spawn(ID=19,POS=(19.5,2.1,-39),DRC=2,RNG=1.6)
 	n.spawn(ID=19,POS=(47,3.1,-21),DRC=0,RNG=2.2)
 	n.spawn(ID=19,POS=(47,3.1,-30),DRC=0,RNG=2.2)
 	n.spawn(ID=17,POS=(51,3.1,-25.6),DRC=2,RNG=3)
+	
+	n.spawn(ID=20,POS=(0,.1,-58),DRC=0)
 
 ## bonus level / gem path
 def bonus_zone():

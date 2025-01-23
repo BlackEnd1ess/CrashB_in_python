@@ -37,7 +37,7 @@ def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True):
 		17:lambda:SpiderRobotFlat(pos=POS,drc=DRC,rng=RNG),
 		18:lambda:SpiderRobotUp(pos=POS,drc=DRC,rng=RNG),
 		19:lambda:Robot(pos=POS,drc=DRC,rng=RNG),
-		20:lambda:LabAssistant(pos=POS)}
+		20:lambda:LabAssistant(pos=POS,drc=DRC)}
 	npc_[ID]()
 	del ID,POS,DRC,RTYP,RNG,CMV,npc_
 
@@ -102,9 +102,8 @@ def npc_action(m):
 class Amadillo(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='amadillo'
 		s.vnum=0
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1
@@ -115,9 +114,8 @@ class Amadillo(Entity):
 class Turtle(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='turtle'
 		s.vnum=1
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(300,600,300))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=.7
@@ -128,9 +126,8 @@ class Turtle(Entity):
 class SawTurtle(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='saw_turtle'
 		s.vnum=2
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(300,600,300))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1
@@ -141,9 +138,8 @@ class SawTurtle(Entity):
 class Vulture(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='vulture'
 		s.vnum=3
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(300,600,300))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1.2
@@ -175,9 +171,8 @@ class Vulture(Entity):
 class Penguin(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='penguin'
 		s.vnum=4
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=.8/1100,position=pos)
+		super().__init__(rotation_x=rx,scale=.8/1100,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(300,300,600))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1.1
@@ -187,9 +182,8 @@ class Penguin(Entity):
 class Hedgehog(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='hedgehog'
 		s.vnum=5
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC/1.5,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC/1.5,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+250),size=Vec3(400,400,400))
 		cc.set_val_npc(s,drc,rng)
 		s.def_mode=False
@@ -210,9 +204,8 @@ class Hedgehog(Entity):
 class Seal(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='seal'
 		s.vnum=6
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(300,800,300))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1.1
@@ -231,9 +224,8 @@ class Seal(Entity):
 class EatingPlant(Entity):
 	def __init__(self,pos):
 		s=self
-		nN='eating_plant'
 		s.vnum=7
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=.8/900,position=pos)
+		super().__init__(rotation_x=rx,scale=.8/900,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+500),size=Vec3(400,400,700))
 		cc.set_val_npc(s)
 		s.m_direction,s.atk_frame,s.eat_frame=0,0,0
@@ -281,9 +273,8 @@ class EatingPlant(Entity):
 class Rat(Entity):
 	def __init__(self,pos,drc,rng,cmv):
 		s=self
-		nN='rat'
 		s.vnum=8
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=.8/1000,position=pos)
+		super().__init__(rotation_x=rx,scale=.8/1000,position=pos)
 		s.collider=BoxCollider(s,center=(s.x,s.y,s.z+200),size=Vec3(500,600,300))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1
@@ -323,9 +314,8 @@ class Rat(Entity):
 class Lizard(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='lizard'
 		s.vnum=9
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(500,500,700))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1.2
@@ -335,9 +325,8 @@ class Lizard(Entity):
 class Scrubber(Entity):
 	def __init__(self,pos,drc,rng,rtyp):
 		s=self
-		nN='scrubber'
 		s.vnum=10
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+350),size=Vec3(400,600,500))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1.2
@@ -360,9 +349,8 @@ class Scrubber(Entity):
 class Mouse(Entity):
 	def __init__(self,pos,drc,rng,rtyp):
 		s=self
-		nN='mouse'
 		s.vnum=11
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=(s.x,s.y,s.z+150),size=Vec3(500,700,200))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1.2
@@ -386,9 +374,8 @@ class Mouse(Entity):
 class Eel(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='eel'
 		s.vnum=12
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/0.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=(s.x,s.y,s.z+100),size=Vec3(500,700,200))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1
@@ -398,9 +385,8 @@ class Eel(Entity):
 class SewerMine(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='sewer_mine'
 		s.vnum=13
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,size=Vec3(500,700,500))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=.75
@@ -412,10 +398,9 @@ class SewerMine(Entity):
 class Gorilla(Entity):
 	def __init__(self,pos,drc):
 		s=self
-		nN='gorilla'
 		s.vnum=14
 		rmo={0:0,1:90,2:180,3:-90}
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation=(rx,rmo[drc],0),position=pos,scale=m_SC)
+		super().__init__(rotation=(rx,rmo[drc],0),position=pos,scale=m_SC)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y,s.z+450),size=Vec3(400,400,800))
 		s.throw_act={0:lambda:an.gorilla_take(s),1:lambda:an.gorilla_throw(s)}
 		cc.set_val_npc(s,drc)
@@ -441,8 +426,7 @@ class Bee(Entity):
 	def __init__(self,pos,bID=0):
 		s=self
 		s.vnum=15
-		nN='bee'
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=-90,position=pos,scale=m_SC,collider='box')
+		super().__init__(rotation_x=-90,position=pos,scale=m_SC,collider='box')
 		s.buzz_snd=Audio(sn.BE,pitch=random.uniform(1,2),loop=True,volume=settings.SFX_VOLUME)
 		cc.set_val_npc(s)
 		s.bID=bID
@@ -507,10 +491,9 @@ class Bee(Entity):
 
 class Lumberjack(Entity):
 	def __init__(self,pos):
-		nN='lumberjack'
 		s=self
 		s.vnum=16
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=-90,position=pos,scale=m_SC,collider='box')
+		super().__init__(rotation_x=-90,position=pos,scale=m_SC,collider='box')
 		cc.set_val_npc(s)
 		s.move_speed=1
 		s.sma_frm=0
@@ -546,9 +529,8 @@ class Lumberjack(Entity):
 class SpiderRobotFlat(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='spider_robot_flat'
 		s.vnum=17
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
 		s.aud=Audio('res/snd/npc/spider_robot.wav',loop=True,volume=0)
 		cc.set_val_npc(s,drc,rng)
@@ -569,9 +551,8 @@ class SpiderRobotFlat(Entity):
 class SpiderRobotUp(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='spider_robot_up'
 		s.vnum=18
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
 		s.aud=Audio('res/snd/npc/spider_robot.wav',loop=True,volume=0)
 		cc.set_val_npc(s,drc,rng)
@@ -592,9 +573,8 @@ class SpiderRobotUp(Entity):
 class Robot(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
-		nN='robot'
 		s.vnum=19
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1.8
@@ -612,17 +592,19 @@ class Robot(Entity):
 					invoke(lambda:sn.pc_audio(ID=12,pit=.8),delay=.4)
 
 class LabAssistant(Entity):
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos,drc):
 		s=self
-		nN='lab_assistant'
 		s.vnum=20
-		super().__init__(model=npf+nN+'/'+nN+'.ply',texture=npf+nN+'/'+nN+'.tga',rotation_x=rx,scale=m_SC,position=pos)
+		super().__init__(rotation_x=rx,scale=m_SC,position=pos,rotation_y={0:90,1:180,2:270,3:0}[drc])
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc)
 		s.move_speed=1
-		del pos,rng,drc
+		del pos,drc
 	def update(self):
-		npc_action(self)
+		if st.gproc():
+			return
+		s=self
+		
 
 ## passive NPC
 tpa='res/npc/akuaku/'
@@ -640,11 +622,13 @@ class AkuAkuMask(Entity):
 		s.spkw=0
 		del pos
 	def default_skin(self):
-		self.model=aku_skin0+'.ply'
-		self.texture=aku_skin0+'.tga'
+		s=self
+		s.model=aku_skin0+'.ply'
+		s.texture=aku_skin0+'.tga'
 	def special_skin(self):
-		self.model=aku_skin1+'.ply'
-		self.texture=aku_skin1+'.tga'
+		s=self
+		s.model=aku_skin1+'.ply'
+		s.texture=aku_skin1+'.tga'
 	def change_skin(self):
 		s=self
 		if st.aku_hit > 1:
@@ -682,16 +666,14 @@ class AkuAkuMask(Entity):
 		fwd=Vec3(-sin(radians(ta.rotation_y)),0,-cos(radians(ta.rotation_y)))
 		mask_pos=ta.position+fwd*.25
 		s.position=(mask_pos.x,ta.y+.5,mask_pos.z)
-		del fwd,aSP,ta,mask_pos
+		del mask_pos
 	def check_dist_player(self):
 		s=self
 		ta=LC.ACTOR
 		if not (ta or st.gproc()):
-			del ta
 			return
 		if distance(s.position,ta.position) > 2:
 			s.position=ta.position
-			del ta
 	def floating(self):
 		s=self
 		tt=time.dt/10
@@ -701,7 +683,7 @@ class AkuAkuMask(Entity):
 			s.flt_di=1
 		if (s.flt_di == 1 and s.y <= s.last_y-.2):
 			s.flt_di=0
-		del tt,ddi
+		del ddi
 	def update(self):
 		if not st.gproc():
 			s=self
@@ -712,17 +694,21 @@ class AkuAkuMask(Entity):
 			s.change_skin()
 			if akh <= 0:
 				cc.purge_instance(s)
+			del akh
 
 class Hippo(Entity):
 	def __init__(self,POS):
 		s=self
-		hPO=npf+'hippo/'
-		super().__init__(model=hPO+'0.ply',texture=hPO+'hpo.tga',position=POS,rotation_x=rx,scale=.0005)
+		super().__init__(position=POS,rotation_x=rx,scale=.0005)
 		s.col=Entity(model='cube',name='HPP',position=(s.x,s.y-.15,s.z-.2),scale=(.6,.5,1),visible=False,collider='box')
+		vgv=s.name
+		s.model=npf+f'{vgv}/0.ply'
+		s.texture=npf+f'{vgv}/0.tga'
 		s.col.active=False
 		s.active=False
 		s.a_frame=0
 		s.start_y=s.y
+		del POS,vgv
 	def do_act(self):
 		s=self
 		if not s.active:

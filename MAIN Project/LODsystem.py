@@ -9,7 +9,7 @@ LC=_loc
 ANY_LV={'rmdr','strm'}
 BIG_OBJ={
 	0:ANY_LV,
-	1:ANY_LV|{'grsi','trrw','tssn'},
+	1:ANY_LV|{'grsi','trrw'},
 	2:ANY_LV|{'snhi','snwa'},
 	3:ANY_LV|{'tmpw','scwa'},
 	4:ANY_LV|{'swec','swtu'},
@@ -19,10 +19,10 @@ BIG_OBJ={
 
 DYN_OBJ={
 	0:set(),
-	1:{'mblo','bush','htbx'},
-	2:{'plnk','sngg','ickk','snbb','wdlg'},
-	3:{'tile','wtfa','wdst'},
-	4:{'swpl','swpt','swff','drpw'},
+	1:{'bush','htbx','block','tssn'},
+	2:{'plnk','sngg','ickk','wdlg','block'},
+	3:{'wtfa','wdst','block'},
+	4:{'swpt','swff','drpw'},
 	5:{'loos','rnsp','htbx'},
 	6:{'ldmn','tksc','bbfl','bbst','sngg'},
 	7:{'labt','epad','labo','lapi','lbbr','ltts'}}

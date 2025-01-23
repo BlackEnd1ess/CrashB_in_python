@@ -386,7 +386,7 @@ class TitleScreen(Entity):
 class ProjectInfo(Entity):
 	def __init__(self):
 		LoadingScreen()
-		Audio('res/snd/music/ev/title.mp3',loop=True,volume=settings.MUSIC_VOLUME)
+		Audio('res/snd/music/title.mp3',loop=True,volume=settings.MUSIC_VOLUME)
 		Entity(model='quad',color=color.black,scale=(4,4),parent=CU)
 		super().__init__(model='quad',texture=btv+'disclaim.jpg',scale=(1.6,.8),parent=CU)
 		invoke(lambda:TitleScreen(),delay=5)

@@ -33,8 +33,8 @@ def load():
 	w.exit_button.visible=False
 	w.fullscreen=False
 	w.borderless=False
-	w.cog_menu.eternal=False
-	w.cog_menu.force_destroy=True
+	#w.cog_menu.eternal=False
+	#w.cog_menu.force_destroy=True
 	w.fps_counter.enabled=False
 	##debug info
 	w.collider_counter.enabled=debg
@@ -42,5 +42,5 @@ def load():
 	w.color=color.black
 	camera.fov=65
 	environment.init_amb_light()
-	destroy(w.cog_menu)
-	print('default settings loaded')
+	#destroy(w.cog_menu)
+	print('game settings loaded')

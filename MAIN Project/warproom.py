@@ -36,7 +36,7 @@ class BonusRoomEntry(Entity):
 class LvSelect(Entity):
 	def __init__(self):
 		super().__init__()
-		self.bgm=Audio('res/snd/music/ev/wroom.mp3',volume=settings.MUSIC_VOLUME,loop=True)
+		self.bgm=Audio('res/snd/music/level/wroom.mp3',volume=settings.MUSIC_VOLUME,loop=True)
 	def input(self,key):
 		if key in settings.BCK_KEY:
 			sn.ui_audio(ID=0,pit=.125)
@@ -87,12 +87,13 @@ class LvSelect(Entity):
 
 class Credits(Entity):
 	def __init__(self):
+		s=self
 		st.loading=False
 		super().__init__(model='quad',texture='res/background/wroom.png',scale=(32,20),z=4,color=color.rgb32(100,150,100))
-		self.bgm=Audio('res/snd/music/ev/credits.mp3',loop=True,volume=settings.MUSIC_VOLUME)
+		s.bgm=Audio('res/snd/music/credits.mp3',loop=True,volume=settings.MUSIC_VOLUME)
 		objects.PseudoCrash()
-		self.index=0
-		self.t0()
+		s.index=0
+		s.t0()
 	def t0(self):
 		s=self
 		crd_text0=[

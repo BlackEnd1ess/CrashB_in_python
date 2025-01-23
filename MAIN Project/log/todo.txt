@@ -1,4 +1,6 @@
 ## BUGS/ERORRS
+- aku mask / checkpoint lagg
+- gem route purge after bonus?
 
 ##TODO
-- lab assistant
+- lab assistant push/fall

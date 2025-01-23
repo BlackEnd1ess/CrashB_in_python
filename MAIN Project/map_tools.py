@@ -40,14 +40,14 @@ def crate_wall(ID,POS,CNT):#[x,y]
 	for cwX in range(CNT[0]):
 		for cwY in range(CNT[1]):
 			c.place_crate(ID=ID,p=(POS[0]+.32*cwX,POS[1]+.32*cwY,POS[2]))
-	del ID,POS,CNT
+	del ID,POS,CNT,cwX,cwY
 
 def crate_stair(ID,POS,CNT,WAY):# WAY: 0=up,1=down
 	for cs in range(CNT):
 		pO=.32*cs
 		c_way={0:POS[1]+pO,1:POS[1]-pO}
 		c.place_crate(ID=ID,p=(POS[0]+pO,c_way[WAY],POS[2]))
-	del ID,POS,CNT,WAY
+	del ID,POS,CNT,WAY,cs,pO
 
 def crate_block(ID,POS,CNT):#[x,y,z]
 	for cbX in range(CNT[0]):
@@ -57,7 +57,7 @@ def crate_block(ID,POS,CNT):#[x,y,z]
 				pA=.32*cbY
 				pE=.32*cbZ
 				c.place_crate(ID=ID,p=(POS[0]+pO,POS[1]+pA,POS[2]+pE))
-	del ID,POS,CNT
+	del ID,POS,CNT,cbX,cbZ,cbY,pO,pA,pE
 
 def crate_plane(ID,POS,CNT):#[x,z]
 	for cwX in range(CNT[0]):

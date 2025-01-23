@@ -61,6 +61,7 @@ class ExtraLive(Entity):
 		super().__init__(model='quad',texture=lfic,name='exlf',position=pos,scale=(.4,.3),collider=b,unlit=False)
 		s.collider=BoxCollider(s,size=Vec3(1,1,1))
 		s.follow=False
+		del pos
 	def collect(self):
 		cc.give_extra_live()
 		destroy(self)
@@ -181,3 +182,4 @@ class EnergyCrystal(Entity):
 			s.glow.visible=kr
 			s.visible=kr
 			s.rotation_y-=time.dt*70
+			del kr

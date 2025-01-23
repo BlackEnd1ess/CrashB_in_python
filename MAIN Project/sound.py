@@ -34,6 +34,7 @@ def landing_sound(c,o):
 			pc_audio(ID=13)
 			return
 	if (cc.is_crate(o) and o.vnum != 0) or cc.is_enemie(o):
+		del c,o
 		return
 	pc_audio(ID=2)
 
@@ -188,49 +189,52 @@ class Rainfall(Audio):
 
 ## Background Music
 MC='res/snd/music/'
-class LevelMusic(Audio):
-	def __init__(self,T):
-		lM=MC+'lv'+str(T)+'/0.mp3'
-		super().__init__(lM,volume=se.MUSIC_VOLUME,loop=True)
-	def update(self):
-		s=self
-		if (st.bonus_round or st.death_route or st.game_over):
-			s.fade_out()
-			cc.purge_instance(s)
-		if st.loading or st.aku_hit > 2:
-			s.volume=0
-			return
-		s.volume=se.MUSIC_VOLUME
+mdb={0:'wroom',
+	1:'woods',
+	2:'snow',
+	3:'plant',
+	4:'sewer',
+	5:'ruin',
+	6:'digin',
+	7:'piston',
+	8:'wroom'}
 
-class BonusMusic(Audio):
-	def __init__(self,T):
-		lB=MC+'lv'+str(T)+'/0b.mp3'
-		super().__init__(lB,volume=se.MUSIC_VOLUME,loop=True)
+class BackgroundMusic(Audio):
+	def __init__(self,m):
+		s=self
+		ix=st.level_index
+		kt=MC+'level/'+mdb[ix]+'.mp3'
+		if m == 1:
+			kt=MC+'bonus/'+mdb[ix]+'.mp3'
+		if m == 2:
+			kt=MC+'special/'+mdb[ix]+'.mp3'
+		super().__init__(kt,loop=True,volume=se.MUSIC_VOLUME)
+		s.mode=m
+		s.tm=.5
+		del ix,kt,m
+	def rmv_music(self):
+		s=self
+		s.stop()
+		s.fade_out()
+		destroy(s)
+	def check_scene(self):
+		s=self
+		if (s.mode == 0 and (st.bonus_round or st.death_route)) or (s.mode == 1 and (st.bonus_solved or st.death_route or not st.bonus_round)) or (s.mode == 2 and (not st.death_route or st.game_over)):
+			s.rmv_music()
 	def update(self):
 		s=self
-		if not st.bonus_round or st.death_route:
-			s.fade_out()
-			cc.purge_instance(s)
-			LevelMusic(T=st.level_index)
-			return
-		if st.gproc():
-			s.volume=0
-			return
-		s.volume=se.MUSIC_VOLUME
-
-class SpecialMusic(Audio):
-	def __init__(self,T):
-		super().__init__(MC+'lv'+str(T)+'/0c.mp3',volume=se.MUSIC_VOLUME,loop=True)
-	def update(self):
-		s=self
-		if not st.death_route or st.game_over:
-			s.fade_out()
-			cc.purge_instance(s)
-			LevelMusic(T=st.level_index)
+		s.tm=max(s.tm-time.dt,0)
+		if s.tm <= 0:
+			s.tm=.5
+			s.check_scene()
+			if st.aku_hit > 2:
+				s.volume=0
+				return
+			s.volume=se.MUSIC_VOLUME
 
 class AkuMusic(Audio):
 	def __init__(self):
-		super().__init__(MC+'ev/invinc'+str(random.randint(0,1))+'.mp3',volume=se.MUSIC_VOLUME,loop=True)
+		super().__init__(MC+'invinc'+str(random.randint(0,1))+'.mp3',volume=se.MUSIC_VOLUME,loop=True)
 		self.tme=20
 	def update(self):
 		s=self
@@ -248,7 +252,7 @@ class AkuMusic(Audio):
 
 class GameOverMusic(Audio):
 	def __init__(self):
-		super().__init__(MC+'ev/game_over.mp3',volume=se.MUSIC_VOLUME)
+		super().__init__(MC+'game_over.mp3',volume=se.MUSIC_VOLUME)
 	def update(self):
 		if not self.playing:
 			self.fade_out()

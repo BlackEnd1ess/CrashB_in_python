@@ -15,13 +15,14 @@ def free_level():
 	st.loading=False
 	cc.spawn_level_crystal(st.level_index)
 	st.fails=0
-	sn.LevelMusic(T=st.level_index)
+	sn.BackgroundMusic(m=0)
 	if st.level_index == 3:
 		sn.AmbienceSound()
 		sn.WaterRiver()
 	ui.load_interface()
 	cc.level_ready=True
 	gc.collect()
+	print(f'<info> Level {st.level_index} successfully loaded')
 
 ## level settings
 def main_instance(idx):

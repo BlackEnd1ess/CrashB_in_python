@@ -59,16 +59,16 @@ GMC={0:cglr,
 #is crate
 CCK={C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
 	C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,C.SwitchEmpty,
-	C.SwitchNitro,C.TNT,C.Nitro,C.Air,C.Protected,C.cTime,C.LvInfo}
+	C.SwitchNitro,C.TNT,C.Nitro,C.Air,C.Protected,C.LvInfo}
 
 #is npc
 NCC={N.Amadillo,N.Turtle,N.SawTurtle,
 	N.Penguin,N.Hedgehog,N.Seal,
-	N.EatingPlant,N.SawTurtle,
+	N.EatingPlant,
 	N.Eel,N.Scrubber,N.Mouse,N.SewerMine,
 	N.Gorilla,N.Rat,N.Lizard,
 	N.Bee,N.Lumberjack,
-	N.SpiderRobotFlat,N.SpiderRobotUp,N.Robot}
+	N.SpiderRobotFlat,N.SpiderRobotUp,N.Robot,N.LabAssistant}
 
 #lab taser height
 ltth=1.7

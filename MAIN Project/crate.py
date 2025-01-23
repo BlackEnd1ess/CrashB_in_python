@@ -59,7 +59,6 @@ def destroy_event(c):
 			st.crate_count+=1
 			st.show_crates=5
 	cc.cache_instance(c)
-	del c
 
 def block_destroy(c):
 	if not c.p_snd:
@@ -323,11 +322,11 @@ class SwitchNitro(Entity):
 				if nd.collider:
 					nd.destroy()
 
+tx=pp+'crate_tnt_'
 class TNT(Entity):
 	def __init__(self,pos,pse):
 		s=self
 		s.vnum=11
-		s.tx=pp+'crate_tnt_'
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
 		s.aud=Audio('res/snd/misc/tnt.wav',name='ctn',volume=0,autoplay=False,auto_destroy=True,add_to_scene_entities=False)
@@ -357,7 +356,7 @@ class TNT(Entity):
 			if s.aud.playing:
 				s.aud.volume=settings.SFX_VOLUME
 			s.countdown=max(s.countdown-time.dt/1.15,0)
-			s.texture=s.tx+str(int(s.countdown))+'.tga'
+			s.texture=tx+f'{int(s.countdown)}.tga'
 			if s.countdown <= 0:
 				s.empty_destroy()
 

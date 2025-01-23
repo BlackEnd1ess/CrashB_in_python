@@ -10,18 +10,23 @@ LC=_loc
 
 class WarpVortex(Entity):
 	def __init__(self,pos,sca,drc,col):
-		super().__init__(model=trpv+'.ply',texture=trpv+'.png',name='wvpx',position=pos,color=col,scale=sca,rotation_x=90,alpha=.5,unlit=False)
-		self.spd=600
-		self.drc=drc
+		s=self
+		super().__init__(name='wvpx',position=pos,color=col,scale=sca,rotation_x=90,alpha=.5,unlit=False)
+		s.spd=600
+		s.drc=drc
 		del pos,sca,drc,col
 	def update(self):
 		if st.gproc():
 			return
-		s=self
-		if s.drc == 1:
-			s.rotation_y+=time.dt*s.spd
-			return
-		s.rotation_y-=time.dt*s.spd
+		if LC.ACTOR.indoor > 0:
+			s=self
+			if s.texture != trpv+'.png':
+				s.model=trpv+'.ply'
+				s.texture=trpv+'.png'
+			if s.drc == 1:
+				s.rotation_y+=time.dt*s.spd
+				return
+			s.rotation_y-=time.dt*s.spd
 
 class Sparkle(Entity):
 	def __init__(self,pos):
