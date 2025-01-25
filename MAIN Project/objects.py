@@ -1515,11 +1515,15 @@ mpk={1:omf+'l1/block/block',
 	4:omf+'l4/swr_tile/swr_tile',
 	5:omf+'l5/block/block'}
 class FloorBlock(Entity):
-	def __init__(self,pos,ID,sca=0,ro_y=0,typ=0):
+	def __init__(self,pos,ID,sca=0,ro_y=0,typ=0,EMD=False):
 		s=self
 		s.vnum=ID
 		super().__init__(model=mpk[ID]+'.obj',texture=mpk[ID]+'.png',name='block',position=pos,scale=sca,rotation_y=ro_y,collider=b)
 		s.double_sided=(ID in {4,5})
+		if EMD:
+			s.collider=None
+			del pos,sca,ro_y,typ,ID,EMD
+			return
 		if ID == 2:
 			s.rotation_y=180
 			s.collider=BoxCollider(self,size=Vec3(2,4,2))

@@ -4,3 +4,5 @@
 
 ##TODO
 - lab assistant push/fall
+- level editor environment settings
+- level editor side scene

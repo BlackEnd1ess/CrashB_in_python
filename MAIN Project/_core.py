@@ -629,6 +629,8 @@ def set_val_npc(m,drc=None,rng=None):
 	m.fly_direc=None
 	m.mov_range=rng
 	m.mov_direc=drc
+	m.rotation_x=-90
+	m.scale=.8/1200
 	vnn=m.name
 	m.model=npf+f'{vnn}/0.ply'
 	m.texture=npf+f'{vnn}/0.tga'

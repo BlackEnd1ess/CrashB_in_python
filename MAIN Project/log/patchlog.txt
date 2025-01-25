@@ -297,3 +297,6 @@ Piston
 - new object Managment: all Blocks/Floor Objects are in FloorBlock class with ID 1-5
 - level 1 bonus: tree's in background scene
 - Background Music Managment: load from list instead of folder with Levelnumber as foldername
+
+#25.01.2025
+- level editor for new levels

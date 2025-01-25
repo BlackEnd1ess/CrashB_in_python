@@ -15,7 +15,8 @@ def start_load():
 	load_npc()
 
 def load_object():
-	o.StartRoom(pos=(0,0,-65))
+	o.StartRoom(pos=(8,0,-1))
+	o.EndRoom(pos=(8,2,68),c=color.gray)
 def load_crate():
 	return
 def load_wumpa():
@@ -25,6 +26,4 @@ def load_npc():
 
 ## bonus level / gem path
 def bonus_zone():
-	return
-def gem_zone():
 	return
