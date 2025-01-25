@@ -1,7 +1,12 @@
+Information: This Project is a Crash Bandicoot inspired Game written in Python3 (Ursina 7.0.0)
 ![Crash Retro Treveler Screenshot](screenshot/cb_01.jpg)
 ![Crash Retro Treveler Screenshot](screenshot/cb_02.jpg)
+![Crash Retro Treveler Screenshot](screenshot/cb_03.jpg)
+![Crash Retro Treveler Screenshot](screenshot/cb_04.jpg)
+![Crash Retro Treveler Screenshot](screenshot/cb_05.jpg)
+![Crash Retro Treveler Screenshot](screenshot/cb_06.jpg)
+![Crash Retro Treveler Screenshot](screenshot/cb_07.jpg)
 
-Information: This Project is a Crash Bandicoot inspired Game written in Python3 (Ursina 7.0.0)
 # temporary no Assets and Ressources aviable, need to renamed and encrypted! please keep patience :/ #
 # HOW TO USE CRASH EDIT / CB-EXPORT: https://www.youtube.com/watch?v=ct_G9GAoAZU #
 
