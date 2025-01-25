@@ -3,6 +3,7 @@ Information: This Project is a Crash Bandicoot inspired Game written in Python3 
 # HOW TO USE CRASH EDIT / CB-EXPORT: https://www.youtube.com/watch?v=ct_G9GAoAZU #
 
 # Functional Status: Modern PC's will run this Game with 200-300 (full loaded Game with 300-400) MB RAM per Level and 59-60 FPS
+# LEVEL CREATOR beta implemented (25.01.2025) for easy making 2D/3D Levels 
 
 required Modules:
 - ursina
