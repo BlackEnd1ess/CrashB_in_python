@@ -399,7 +399,7 @@ class LoadingScreen(Entity):
 		super().__init__(model=q,color=color.black,scale=(16,10),visible=False,parent=CU,z=-1,eternal=True)
 		s.ltext=Text('LOADING...',font=_fnt,scale=3.5,position=(-.15,.1,-1.1),color=color.orange,visible=False,parent=CU,eternal=True)
 		s.lname=Text('',font=_fnt,scale=2,position=(-.25,-.05,-1.1),color=color.azure,visible=False,parent=CU,eternal=True)
-		s.uds={0:(-.21),1:(-.23),2:(-.25),3:(-.25),4:(-.25),5:(-.175),6:(-.23),7:(-.225)}
+		s.uds={0:(-.21),1:(-.23),2:(-.25),3:(-.25),4:(-.25),5:(-.175),6:(-.23),7:(-.225),8:(-.1)}
 	def update(self):
 		s=self
 		si=st.level_index

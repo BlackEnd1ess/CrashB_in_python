@@ -1,12 +1,15 @@
+import _core,__lv_generator
 from ursina import *
-import _core,os
 cc=camera
 ##editor control info text
-ct_info=f'MOUSE L = PLACE/DELETE OBJECT\nW,A,S,D = MOVE CAM\nU/O = GRID UP/DOWN\nQ/E = ROTATE CAM\nF4 = Delete Map'
+ct_info=f'MOUSE L = PLACE/DELETE OBJECT\nW,A,S,D = MOVE CAM\nU/O = GRID UP/DOWN\nQ/E = ROTATE CAM\nF4 = Delete Map\nF9 = OUTPUT DATA'
 
 ##menu text
 mde={0:'SPAWN MAP',1:'SPAWN CRATE',2:'SPAWN NPC',3:'SPAWN WUMPA',4:'BONUS PLATFORM',5:'GEM PLATFORM'}
 mmt=['MAP OBJECT','BOXES','WUMPA','NPC','BONUS PLATFORM','GEM PLATFORM']
+
+##level name
+lv_name='level/level8.py'
 
 ##key bindings
 inp={'left arrow':	lambda:setattr(cc,'x',cc.x-1),
@@ -30,7 +33,7 @@ inp={'left arrow':	lambda:setattr(cc,'x',cc.x-1),
 	'r':			lambda:reset_cam(),
 #------------------------------------------------
 	'f4':			lambda:clear_scene(),
-	'f9':			lambda:output_data()}
+	'f9':			lambda:__lv_generator.output_data()}
 
 ##npc
 NPC={0:'amadillo/0',
@@ -66,7 +69,7 @@ grid_tex='res/terrain/grid.tga'
 ##appearance
 selected_color=color.azure
 grid_color=color.rgb32(100,100,100)
-object_alpha=.5
+object_alpha=1
 
 ##cursor instance
 cursor=None
@@ -137,18 +140,3 @@ def rotate_cam(drc):
 	cc.rotation_y+=90
 	cc.x=-21
 	cc.z=m_size[1]/8
-
-def output_data():
-	os.system('cls')
-	print('### OBJECT POSITION ###')
-	for k in MAP_DATA[:]:
-		print(k)
-	print('#'*16)
-	print('### CRATE POSITION ###')
-	for v in CRATE_DATA[:]:
-		print(v)
-	print('#'*16)
-	print('### NPC POSITION ###')
-	for n in NPC_DATA[:]:
-		print(n)
-	print('#'*16)

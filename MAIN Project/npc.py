@@ -180,7 +180,7 @@ class Hedgehog(Entity):
 	def __init__(self,pos,drc,rng):
 		s=self
 		s.vnum=5
-		super().__init__(scale=m_SC/1.5,position=pos)
+		super().__init__(scale=.8/1200/1.5,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+250),size=Vec3(400,400,400))
 		cc.set_val_npc(s,drc,rng)
 		s.def_mode=False
@@ -397,7 +397,7 @@ class Gorilla(Entity):
 		s=self
 		s.vnum=14
 		rmo={0:0,1:90,2:180,3:-90}
-		super().__init__(rotation=(rx,rmo[drc],0),position=pos,scale=m_SC)
+		super().__init__(rotation=(-90,rmo[drc],0),position=pos,scale=.8/1200)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y,s.z+450),size=Vec3(400,400,800))
 		s.throw_act={0:lambda:an.gorilla_take(s),1:lambda:an.gorilla_throw(s)}
 		cc.set_val_npc(s,drc)

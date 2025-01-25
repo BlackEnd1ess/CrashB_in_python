@@ -1,14 +1,24 @@
-import sys,os
+import settings,objects,map_tools,crate,npc,status,_loc,sys,os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import settings,objects,map_tools,crate,npc,status
 from ursina import *
 
 st=status
 mt=map_tools
 o=objects
+LC=_loc
 c=crate
 n=npc
 U=-3
+
+def map_setting():
+	LC.LV_DST=(10,15)
+	LC.BN_DST=(6,12)
+	window.color=color.rgb32(0,60,80)
+	scene.fog_density=(10,15)
+	scene.fog_color=color.rgb32(20,70,50)
+	LC.AMBIENT_LIGHT.color=color.rgb32(140,140,140)
+	st.toggle_thunder=False
+	st.toggle_rain=True
 
 def start_load():
 	load_crate()
@@ -18,6 +28,7 @@ def start_load():
 	load_object()
 	load_wumpa()
 	load_npc()
+	map_setting()
 
 def load_object():
 	o.StartRoom(pos=(-.3,1,-66.5))

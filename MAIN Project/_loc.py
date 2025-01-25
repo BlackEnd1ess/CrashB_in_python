@@ -4,7 +4,7 @@ import crate as C
 import npc as N
 
 #checkpoint - bonus
-bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(9,5,20),(26,5,-36)]
+bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(9,5,20),(26,5,-36),(0,0,0)]
 
 #display the name in pause menu and loading screen
 lv_name=[
@@ -31,8 +31,7 @@ ge_inf={0:'this is a developer test level, place the gem where you want',
 ge_0='res/ui/icon/gem_0/gem'
 ge_1='res/ui/icon/gem_1/gem'
 ge_2='res/ui/icon/gem_2/gem'
-fdc={1:ge_0,2:ge_0,3:ge_0,4:ge_1,5:ge_2,6:ge_0,7:ge_0}
-
+fdc={1:ge_0,2:ge_0,3:ge_0,4:ge_1,5:ge_2,6:ge_0,7:ge_0,8:ge_0}
 
 #gem ui color
 O=180
@@ -43,7 +42,8 @@ GMU={1:color.rgb32(0,0,O),#blue
 	4:color.rgb32(0,O,0),#green
 	5:color.rgb32(O,0,O),#yellow
 	6:cglr,#clear
-	7:cglr}#clear
+	7:cglr,
+	8:cglr}#clear
 
 #gem color
 GMC={0:cglr,
@@ -69,6 +69,10 @@ NCC={N.Amadillo,N.Turtle,N.SawTurtle,
 	N.Gorilla,N.Rat,N.Lizard,
 	N.Bee,N.Lumberjack,
 	N.SpiderRobotFlat,N.SpiderRobotUp,N.Robot,N.LabAssistant}
+
+#fog dst
+LV_DST=None
+BN_DST=None
 
 #lab taser height
 ltth=1.7

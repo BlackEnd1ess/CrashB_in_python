@@ -93,7 +93,7 @@ def reset_state(c):
 		rmv_bees()
 	check_nitro_stack()
 	c.position=status.checkpoint
-	env.set_fog(st.level_index)
+	env.set_fog()
 	camera.position=c.position
 	camera.rotation=(15,0,0)
 	c.scale_x=c.nor_sc
@@ -570,7 +570,7 @@ def enter_bonus(c):
 	sn.BackgroundMusic(m=1)
 	ui.BonusText()
 	c.position=(0,-35,-3)
-	env.set_fog(st.level_index)
+	env.set_fog()
 	camera.y=-35
 	st.loading,c.freezed=False,False
 def clear_bonus():
@@ -592,7 +592,7 @@ def back_to_level(c):
 		clear_bonus()
 	c.freezed=False
 	sn.BackgroundMusic(m=0)
-	env.set_fog(st.level_index)
+	env.set_fog()
 	camera.y=c.y+.5
 	st.loading=False
 

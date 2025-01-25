@@ -1,6 +1,7 @@
 ## BUGS/ERORRS
 - aku mask / checkpoint lagg
 - gem route purge after bonus?
+- npc size: hedgehog, plant
 
 ##TODO
 - lab assistant push/fall

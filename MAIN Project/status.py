@@ -56,6 +56,9 @@ LV_CLEAR_PROCESS=False
 LEVEL_CLEAN=False
 game_over=False
 
+toggle_thunder=False
+toggle_rain=False
+
 level_crystal=False
 level_col_gem=False
 level_cle_gem=False

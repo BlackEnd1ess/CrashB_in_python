@@ -11,7 +11,7 @@ b='box'
 
 sc=(.1,.05)
 ts=.85
-j=.6
+j=.7
 
 class Cursor(Entity):
 	def __init__(self):
@@ -62,13 +62,13 @@ class MapBlock(Entity):
 				return
 		if st.pcm == 0:
 			o.FloorBlock(pos=s.position,ID=1,sca=.5,EMD=True)
-			st.MAP_DATA.append(f'o.BlockFloor(pos={s.position},ID=1,sca=.5)')
+			st.MAP_DATA.append(f'o.FloorBlock(pos={s.position},ID=1,sca=.5)')
 		if st.pcm == 1:
 			c.place_crate(ID=st.CRATE_ID,p=(s.x,s.y+.16,s.z))
 			st.CRATE_DATA.append(f'c.place_crate(ID={st.CRATE_ID},p={s.x,s.y+.16,s.z})')
 		if st.pcm == 2:
 			Entity(model='res/npc/'+st.NPC[st.NPC_ID]+'.ply',texture='res/npc/'+st.NPC[st.NPC_ID]+'.tga',rotation_x=-90,scale=.8/1200,name='snpc',position=s.position)
-			st.NPC_DATA.append(f'npc.spawn(ID={st.NPC_ID},p={s.position})')
+			st.NPC_DATA.append(f'npc.spawn(ID={st.NPC_ID},POS={s.position})')
 	def update(self):
 		s=self
 		st.bl_height=s.y
@@ -96,8 +96,8 @@ class SpawnMenu(Button):
 		s.btn0=Button(text='BOX ID:',parent=CU,position=(j,.35),radius=.1,scale=sc,text_size=ts,collider=b,pressed_color=color.green,highlight_color=color.azure,color=color.dark_gray,on_click=lambda:s.swi_mode(1))
 		s.btn1=Button(text='NPC ID:',parent=CU,position=(j,.3),radius=.1,scale=sc,text_size=ts,collider=b,pressed_color=color.green,highlight_color=color.azure,color=color.dark_gray,on_click=lambda:s.swi_mode(2))
 		s.btn2=Button(text='WUMPA',parent=CU,position=(j,.25),radius=.1,scale=sc,text_size=ts,collider=b,pressed_color=color.green,highlight_color=color.azure,color=color.dark_gray,on_click=lambda:s.swi_mode(3))
-		s.btn3=Button(text='Bonus-Platform',parent=CU,position=(j,.2),radius=.1,scale=(.2,.05),text_size=ts,collider=b,pressed_color=color.green,highlight_color=color.azure,color=color.dark_gray,on_click=lambda:s.swi_mode(4))
-		s.btn4=Button(text='Gem-Platform',parent=CU,position=(j,.15),radius=.1,scale=(.2,.05),text_size=ts,collider=b,pressed_color=color.green,highlight_color=color.azure,color=color.dark_gray,on_click=lambda:s.swi_mode(5))
+		s.btn3=Button(text='Bonus-Platform',parent=CU,position=(j+.04,.2),radius=.1,scale=(.2,.05),text_size=ts,collider=b,pressed_color=color.green,highlight_color=color.azure,color=color.dark_gray,on_click=lambda:s.swi_mode(4))
+		s.btn4=Button(text='Gem-Platform',parent=CU,position=(j+.04,.15),radius=.1,scale=(.2,.05),text_size=ts,collider=b,pressed_color=color.green,highlight_color=color.azure,color=color.dark_gray,on_click=lambda:s.swi_mode(5))
 		s.scin=InputField(default_value='0',max_lines=1,character_limit=2,position=(s.x+.1,s.y),color=color.dark_gray,scale=(.1,.05))
 		s.bbin=InputField(default_value='0',max_lines=1,character_limit=2,position=(s.btn0.x+.1,s.btn0.y),color=color.dark_gray,scale=(.1,.05))
 		s.npin=InputField(default_value='0',max_lines=1,character_limit=2,position=(s.btn1.x+.1,s.btn1.y),color=color.dark_gray,scale=(.1,.05))
