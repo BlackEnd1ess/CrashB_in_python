@@ -1,12 +1,13 @@
-import settings,objects,map_tools,crate,npc,status,item,random,sys,os,_loc
+import settings,objects,map_tools,crate,npc,status,item,random,sys,os,_loc,danger
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from ursina import *
 
-mtx='res/terrain/l4/metal_01.jpg'
+mtx='res/terrain/metal_01.png'
 b='box'
 
 mt=map_tools
 st=status
+dg=danger
 o=objects
 LC=_loc
 c=crate
@@ -14,12 +15,12 @@ n=npc
 U=-3
 
 def map_setting():
+	LC.FOG_L_COLOR=color.rgb32(160,160,0)
+	LC.FOG_B_COLOR=color.rgb32(128,64,0)
+	LC.SKY_BG_COLOR=color.black
+	LC.AMB_M_COLOR=color.rgb32(160,180,160)
 	LC.LV_DST=(13,16)
-	LC.BN_DST=(8,15)
-	window.color=color.black
-	scene.fog_density=(13,16)
-	scene.fog_color=color.rgb32(160,160,0)
-	LC.AMBIENT_LIGHT.color=color.rgb32(160,180,160)
+	LC.BN_DST=(5,14)
 	st.toggle_thunder=False
 	st.toggle_rain=False
 
@@ -37,13 +38,13 @@ def load_object():
 	sw_tile=mtx
 	Entity(model='quad',color=color.black,scale=(300,200),z=100)
 	o.StartRoom(pos=(0,.3,-64.2))
-	o.FallingZone(pos=(0,-1,0),s=(128,.3,128))
+	dg.FallingZone(pos=(0,-1,0),s=(128,.3,128))
 	o.BonusPlatform(pos=(5.2,2,11))
 	o.GemPlatform(pos=(4.2,2,31.7),t=5)
-	o.EletricWater(pos=(0,.2,-48),sca=(8,96))
-	o.EletricWater(pos=(14.5,3.5,83),sca=(8,64))
-	o.Water(pos=(10,1,40),sca=(20,23),c=color.rgb32(100,255,0),a=1)
-	o.Water(pos=(0,-1,6),sca=(30,10),c=color.rgb32(100,255,0),a=1)
+	dg.EletricWater(pos=(0,.2,-48),sca=(8,96))
+	dg.EletricWater(pos=(14.5,3.5,83),sca=(8,64))
+	o.ObjType_Water(ID=0,pos=(10,1,40),sca=(20,23),col=color.rgb32(100,255,0),al=1,rot=(0,0,0),frames=57,spd=15)
+	o.ObjType_Water(ID=0,pos=(0,-1,6),sca=(30,10),col=color.rgb32(100,255,0),al=1,rot=(0,0,0),frames=57,spd=15)
 	o.EndRoom(pos=(15.65,5.5,78.5),c=color.rgb32(200,200,200))
 	#invisible walls
 	o.InvWall(pos=(-2,0,-30),sca=(1,15,70))
@@ -53,27 +54,29 @@ def load_object():
 	o.InvWall(pos=(12.7,4,64.6),sca=(1,15,30))
 	o.InvWall(pos=(16.15,4,64.6),sca=(1,15,30))
 	#tunnels
-	o.SewerTunnel(pos=(0,.4,-53))
-	o.SewerTunnel(pos=(0,.4,-44))
-	o.SewerTunnel(pos=(0,.4,-35))
-	o.SewerTunnel(pos=(0,.4,-26))
-	o.SewerEscape(pos=(0,-1,-22.7))
-	o.SewerEscape(pos=(0,-1,-13))
-	o.SewerEscape(pos=(0,-1,-3.3))
-	o.SewerEscape(pos=(5,1,12),typ=1)
-	o.SewerEscape(pos=(5,1,21.7),typ=1)
-	o.SewerTunnel(pos=(14.5,3.7,63))
-	o.SewerTunnel(pos=(14.5,3.7,58))
-	o.SewerTunnel(pos=(14.5,3.7,68))
-	o.SewerTunnel(pos=(14.5,3.7,78))
-	o.SewerPipe(pos=(2.9,0,9),typ=1)
-	o.SewerPipe(pos=(2.9,-3.3,9),typ=1)
-	o.SewerEntrance(pos=(.1,1,-25.1))
-	o.SewerEntrance(pos=(5.2,2.75,9.7))
-	o.SewerEntrance(pos=(5.2,2.75,8.7))
-	o.SewerEntrance(pos=(5,2.75,29.3))
-	o.SewerEntrance(pos=(14.5,4.75,49.7))
-	o.DrippingWater(pos=(.08,2,-59),sca=(.5,.3))
+	tst=(.032,.034,.03)
+	o.ObjType_Scene(ID=6,pos=(0,.4,-53),sca=tst,ro_y=90)
+	o.ObjType_Scene(ID=6,pos=(0,.4,-44),sca=tst,ro_y=90)
+	o.ObjType_Scene(ID=6,pos=(0,.4,-35),sca=tst,ro_y=90)
+	o.ObjType_Scene(ID=6,pos=(0,.4,-26),sca=tst,ro_y=90)
+	o.ObjType_Scene(ID=6,pos=(14.5,3.7,63),sca=tst,ro_y=90)
+	o.ObjType_Scene(ID=6,pos=(14.5,3.7,58),sca=tst,ro_y=90)
+	o.ObjType_Scene(ID=6,pos=(14.5,3.7,68),sca=tst,ro_y=90)
+	o.ObjType_Scene(ID=6,pos=(14.5,3.7,78),sca=tst,ro_y=90)
+	del tst
+	o.ObjType_Scene(ID=7,pos=(0,-1,-22.7),sca=.048,ro_y=90)
+	o.ObjType_Scene(ID=7,pos=(0,-1,-13),sca=.048,ro_y=90)
+	o.ObjType_Scene(ID=7,pos=(0,-1,-3.3),sca=.048,ro_y=90)
+	o.ObjType_Scene(ID=7,pos=(5,1,12),sca=.048,ro_y=90,typ=1)
+	o.ObjType_Scene(ID=7,pos=(5,1,21.7),sca=.048,ro_y=90,typ=1)
+	o.ObjType_Deco(ID=6,pos=(2.9,0,9),sca=.75,rot=(-90,-90,0))
+	o.ObjType_Deco(ID=6,pos=(2.9,-3.3,9),sca=.75,rot=(-90,-90,0))
+	o.ObjType_Scene(ID=8,pos=(.1,1,-25.1),ro_y=90,sca=2)
+	o.ObjType_Scene(ID=8,pos=(5.2,2.75,9.7),ro_y=90,sca=2)
+	o.ObjType_Scene(ID=8,pos=(5.2,2.75,8.7),ro_y=90,sca=2)
+	o.ObjType_Scene(ID=8,pos=(5,2.75,29.3),ro_y=90,sca=2)
+	o.ObjType_Scene(ID=8,pos=(14.5,4.75,49.7),ro_y=90,sca=2)
+	o.ObjType_Water(ID=4,pos=(.08,2,-59),sca=(.5,.3),rot=(0,0,90),frames=7,spd=10,al=1)
 	Entity(model='cube',scale=(16,1,96),position=(0,-.5,-48),collider=b,color=color.black)
 	Entity(model='cube',scale=(4,.5,5),position=(0,.5,1.5),texture_scale=(4,5),collider=b,texture=mtx)
 	Entity(model='cube',scale=(4,.5,5),position=(14.5,3.5,52.25),texture_scale=(4,5),collider=b,texture=mtx)
@@ -83,42 +86,42 @@ def load_object():
 	Entity(model='quad',texture=sw_tile,scale=(20,20),texture_scale=(20,20),position=(3,1,49.7),color=color.rgb32(160,150,150))
 	Entity(model='cube',texture=sw_tile,scale=(1,20,23),texture_scale=(10,20),position=(2,1,40),color=color.rgb32(160,150,150))
 	Entity(model='cube',texture=sw_tile,scale=(1,20,16),texture_scale=(10,20),position=(8,1,37),color=color.rgb32(160,150,150))
-	o.SewerWall(pos=(5.5,-3.5,9.2))
-	o.SewerWall(pos=(9.5,0,9.2))
-	o.SewerWall(pos=(15,-1,49.3))
-	o.SewerWall(pos=(19.5,4,49.3))
-	o.SewerPipe(pos=(-4,1,9),typ=2)
-	o.SewerPipe(pos=(-2,1,9),typ=2)
-	o.SewerPipe(pos=(0,1,9),typ=2)
-	o.SewerPipe(pos=(2,1,9),typ=2)
-	o.SewerPipe(pos=(-4,-.3,8.7),typ=0)
-	o.SewerPipe(pos=(-2,-.3,8.7),typ=0)
-	o.SewerPipe(pos=(0,-.3,8.7),typ=0)
-	o.SewerPipe(pos=(2,-.3,8.7),typ=0)
-	o.SewerPipe(pos=(4,3,49),typ=2)
-	o.SewerPipe(pos=(6,3,49),typ=2)
-	o.SewerPipe(pos=(8,3,49),typ=2)
-	o.SewerPipe(pos=(10,3,49),typ=2)
-	o.SewerPipe(pos=(4,1.5,49.4),typ=0)
-	o.SewerPipe(pos=(6,1.5,49.4),typ=0)
-	o.SewerPipe(pos=(8,1.5,49.4),typ=0)
-	o.SewerPipe(pos=(10,1.5,49.4),typ=0)
+	o.ObjType_Wall(ID=2,pos=(5.5,-3.5,9.2),ro_y=90,sca=.0175,col=color.rgb32(180,160,140))
+	o.ObjType_Wall(ID=2,pos=(9.5,0,9.2),ro_y=90,sca=.0175,col=color.rgb32(180,160,140))
+	o.ObjType_Wall(ID=2,pos=(15,-1,49.3),ro_y=90,sca=.0175,col=color.rgb32(180,160,140))
+	o.ObjType_Wall(ID=2,pos=(19.5,4,49.3),ro_y=90,sca=.0175,col=color.rgb32(180,160,140))
+	o.ObjType_Deco(ID=8,pos=(-4,1,9),sca=.75,rot=(-90,90,0))
+	o.ObjType_Deco(ID=8,pos=(-2,1,9),sca=.75,rot=(-90,90,0))
+	o.ObjType_Deco(ID=8,pos=(0,1,9),sca=.75,rot=(-90,90,0))
+	o.ObjType_Deco(ID=8,pos=(2,1,9),sca=.75,rot=(-90,90,0))
+	o.ObjType_Deco(ID=7,pos=(-4,-.3,8.7),sca=.75,rot=(-90,-90,0))
+	o.ObjType_Deco(ID=7,pos=(-2,-.3,8.7),sca=.75,rot=(-90,-90,0))
+	o.ObjType_Deco(ID=7,pos=(0,-.3,8.7),sca=.75,rot=(-90,-90,0))
+	o.ObjType_Deco(ID=7,pos=(2,-.3,8.7),sca=.75,rot=(-90,-90,0))
+	o.ObjType_Deco(ID=8,pos=(4,3,49),sca=.75,rot=(-90,90,0))
+	o.ObjType_Deco(ID=8,pos=(6,3,49),sca=.75,rot=(-90,90,0))
+	o.ObjType_Deco(ID=8,pos=(8,3,49),sca=.75,rot=(-90,90,0))
+	o.ObjType_Deco(ID=8,pos=(10,3,49),sca=.75,rot=(-90,90,0))
+	o.ObjType_Deco(ID=7,pos=(4,1.5,49.4),sca=.75,rot=(-90,-90,0))
+	o.ObjType_Deco(ID=7,pos=(6,1.5,49.4),sca=.75,rot=(-90,-90,0))
+	o.ObjType_Deco(ID=7,pos=(8,1.5,49.4),sca=.75,rot=(-90,-90,0))
+	o.ObjType_Deco(ID=7,pos=(10,1.5,49.4),sca=.75,rot=(-90,-90,0))
 	#platforms
 	ph=.3
 	pg=.65
 	#e0
-	o.SewerFloor(pos=(0,ph,-59.5))
-	o.SewerFloor(pos=(0,ph,-45))
-	o.SewerFloor(pos=(0,ph,-30))
+	o.ObjType_Floor(ID=4,pos=(0,ph,-59.5),sca=.5,rot=(0,0,0))
+	o.ObjType_Floor(ID=4,pos=(0,ph,-45),sca=.5,rot=(0,0,0))
+	o.ObjType_Floor(ID=4,pos=(0,ph,-30),sca=.5,rot=(0,0,0))
 	o.spw_block(ID=4,p=(-.9,ph,-23),vx=[2,2])
 	o.spw_block(ID=4,p=(-1,ph,-13),vx=[1,2])
 	o.spw_block(ID=4,p=(1.2,ph,-4),vx=[1,2])
 	#e1
-	o.SewerFloor(pos=(0,pg,5.3))
+	o.ObjType_Floor(ID=4,pos=(0,pg,5.3),sca=.5,rot=(0,0,0))
 	o.spw_block(ID=4,p=(-.5,pg,.5*16),vx=[6,1])
 	o.spw_block(ID=4,p=(3,pg+.4,.5*16),vx=[2,1])
 	o.spw_block(ID=4,p=(4,pg+.7,.5*16),vx=[2,1])
-	o.SewerFloor(pos=(5.1,pg+0.981,11))
+	o.ObjType_Floor(ID=4,pos=(5.1,pg+.981,11),sca=.5,rot=(0,0,0))
 	o.spw_block(ID=4,p=(5,pg+1,(.5*30)),vx=[2,4])
 	o.spw_block(ID=4,p=(5,pg+1,(.5*36)),vx=[2,2])
 	o.spw_block(ID=4,p=(5.5,pg+1,(.5*39)),vx=[1,6])
@@ -126,10 +129,10 @@ def load_object():
 	o.spw_block(ID=4,p=(4.5,pg+1,(.5*45)),vx=[1,6])
 	o.spw_block(ID=4,p=(4.5,pg+1,(.5*51)),vx=[2,1])
 	o.spw_block(ID=4,p=(5,pg+1,(.5*52)),vx=[1,8])
-	o.SewerFloor(pos=(5.1,pg+0.981,32.15))
+	o.ObjType_Floor(ID=4,pos=(5.1,pg+.981,32.15),sca=.5,rot=(0,0,0))
 	o.spw_block(ID=4,p=(4,pg+1,(.5*72)),vx=[5,1])
-	o.SewerFloor(pos=(5.1,pg+0.981,40))
-	o.SewerFloor(pos=(5.1,pg+0.981,46-.2))
+	o.ObjType_Floor(ID=4,pos=(5.1,pg+.981,40),sca=.5,rot=(0,0,0))
+	o.ObjType_Floor(ID=4,pos=(5.1,pg+.981,46-.2),sca=.5,rot=(0,0,0))
 	o.spw_block(ID=4,p=(6,pg+1,(.5*97)),vx=[4,1])
 	o.spw_block(ID=4,p=(9,pg+1.5,(.5*97)),vx=[2,1])
 	o.spw_block(ID=4,p=(11,pg+1.5,(.5*97)),vx=[2,1])
@@ -141,7 +144,8 @@ def load_object():
 	o.spw_block(ID=4,p=(14,pg+3,66),vx=[1,1])
 	o.spw_block(ID=4,p=(13.5,pg+3,72.5),vx=[5,3])
 	#dangers
-	o.SewerPipe(pos=(0,.9,.8),typ=3)
+	dg.HeatPipe(pos=(0,.9,.8))
+	del ph,pg
 def load_crate():
 	#crates
 	mt.crate_wall(ID=1,POS=(.25,.56,-61),CNT=[2,1])
@@ -235,20 +239,21 @@ def load_npc():
 
 ## bonus level / gem path
 def bonus_zone():
-	o.FallingZone(pos=(0,-42,0),s=(64,1,64))
+	bvb=color.rgb32(150,60,0)
+	dg.FallingZone(pos=(0,-42,0),s=(64,1,64))
 	#bg walls
-	Entity(model='quad',texture='res/terrain/l4/sewer_tiles.jpg',scale=(60,20),texture_scale=(30,10),position=(0,-35,1),color=color.rgb32(160,150,150))
+	Entity(model='quad',texture='res/terrain/sewer_tiles.png',scale=(60,20),texture_scale=(60,20),position=(0,-35,1),color=bvb)
 	#pipes
-	o.SewerPipe(pos=(8.3,-36.4,U),typ=3)
+	dg.HeatPipe(pos=(8.3,-36.4,U))
 	for swp in range(3):
-		o.SewerPipe(pos=(2+swp*13,-34,.6),typ=2)
-		o.SewerPipe(pos=(4.5+swp*13,-34,.6),typ=2)
-		o.SewerPipe(pos=(7+swp*13,-34,.6),typ=2)
-		o.SewerPipe(pos=(3+swp*13,-36,.6),typ=0)
-		o.SewerPipe(pos=(6+swp*13,-36,.6),typ=0)
+		o.ObjType_Deco(ID=8,pos=(2+swp*13,-34,.6),sca=.75,rot=(-90,90,0))
+		o.ObjType_Deco(ID=8,pos=(4.5+swp*13,-34,.6),sca=.75,rot=(-90,90,0))
+		o.ObjType_Deco(ID=8,pos=(7+swp*13,-34,.6),sca=.75,rot=(-90,90,0))
+	o.ObjType_Deco(ID=7,pos=(3+swp*13,-36,.6),sca=.75,rot=(-90,-90,0))
+	o.ObjType_Deco(ID=7,pos=(6+swp*13,-36,.6),sca=.75,rot=(-90,-90,0))
 	for swl in range(3):
-		o.SewerWall(pos=(-2+swl*13,-38,-.5))
-		o.SewerWall(pos=(-2+swl*13,-30.8,-.5))
+		o.ObjType_Wall(ID=2,pos=(-2+swl*13,-38,-.5),ro_y=90,sca=.0175,col=bvb)
+		o.ObjType_Wall(ID=2,pos=(-2+swl*13,-30.8,-.5),ro_y=90,sca=.0175,col=bvb)
 	#platform
 	o.spw_block(ID=4,p=(0,-36.5,U),vx=[3,1])
 	o.spw_block(ID=4,p=(2,-36,U),vx=[1,1])
@@ -300,11 +305,13 @@ def gem_zone():
 	o.InvWall(pos=(202,0,20),sca=(1,15,50))
 	o.InvWall(pos=(200,0,34),sca=(10,15,1))
 	o.spw_block(ID=4,p=(199.75,-.4,-3.25),vx=[2,2])
-	o.EletricWater(pos=(200,-.5,22),sca=(8,64))
-	o.SewerTunnel(pos=(200,-.3,5),c=color.rgb32(0,200,180))
-	o.SewerTunnel(pos=(200,-.3,15),c=color.rgb32(0,200,180))
-	o.SewerTunnel(pos=(200,-.3,25),c=color.rgb32(0,200,180))
-	o.SewerEntrance(pos=(200,1,-3))
+	dg.EletricWater(pos=(200,-.5,22),sca=(8,64))
+	tw=(.032,.034,.03)
+	o.ObjType_Scene(ID=6,pos=(200,-.3,5),sca=tw,ro_y=90,col=color.rgb32(0,200,180))
+	o.ObjType_Scene(ID=6,pos=(200,-.3,15),sca=tw,ro_y=90,col=color.rgb32(0,200,180))
+	o.ObjType_Scene(ID=6,pos=(200,-.3,25),sca=tw,ro_y=90,col=color.rgb32(0,200,180))
+	o.ObjType_Scene(ID=8,pos=(200,1,-3),ro_y=90,sca=2)
+	del tw
 	o.SwimPlatform(pos=(200,-.45,-.7))
 	o.SwimPlatform(pos=(200-.3,-.45,.7))
 	o.SwimPlatform(pos=(200+.3,-.45,11.8))
@@ -332,11 +339,11 @@ def gem_zone():
 	n.spawn(POS=(200,0,16),ID=13,DRC=0)
 	n.spawn(POS=(200,0,19.7),ID=13,DRC=0)
 	n.spawn(POS=(200,0,23.7),ID=13,DRC=0)
-	o.SewerEscape(pos=(200,-1,30),c=color.rgb32(0,200,180))
-	o.SewerEntrance(pos=(200,1,27))
-	o.SewerFloor(pos=(200,-.3,29.4))
+	o.ObjType_Scene(ID=7,pos=(200,-1,30),ro_y=90,sca=.048,col=color.rgb32(0,200,180))
+	o.ObjType_Scene(ID=8,pos=(200,1,27),ro_y=90,sca=2)
+	o.ObjType_Floor(ID=4,pos=(200,-.3,29.4),sca=.5,rot=(0,0,0))
 	n.spawn(POS=(200,-.25,29),ID=11,DRC=0,RTYP=1)
-	o.SewerWall(pos=(200,-1.7,33))
+	o.ObjType_Wall(ID=2,pos=(200,-1.7,33),ro_y=90,sca=.0175,col=color.rgb32(180,160,140))
 	if not 2 in status.COLOR_GEM:
 		item.GemStone(c=2,pos=(200,0,28.9))
 	o.GemPlatform(pos=(200,0,31.1),t=5)

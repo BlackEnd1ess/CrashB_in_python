@@ -2,8 +2,8 @@ import settings,objects,map_tools,crate,npc,status,_loc,sys,os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from ursina import *
 
-st=status
 mt=map_tools
+st=status
 o=objects
 LC=_loc
 c=crate
@@ -11,12 +11,12 @@ n=npc
 U=-3
 
 def map_setting():
+	LC.FOG_L_COLOR=color.rgb32(20,70,50)
+	LC.FOG_B_COLOR=color.rgb32(20,70,50)
+	LC.AMB_M_COLOR=color.rgb32(140,140,140)
+	LC.SKY_BG_COLOR=color.rgb32(0,60,80)
 	LC.LV_DST=(10,15)
 	LC.BN_DST=(6,12)
-	window.color=color.rgb32(0,60,80)
-	scene.fog_density=(10,15)
-	scene.fog_color=color.rgb32(20,70,50)
-	LC.AMBIENT_LIGHT.color=color.rgb32(140,140,140)
 	st.toggle_thunder=False
 	st.toggle_rain=True
 
@@ -32,42 +32,44 @@ def start_load():
 
 def load_object():
 	o.StartRoom(pos=(-.3,1,-66.5))
-	TS=16
 	cG=color.green
-	o.Water(pos=(0,.6,-16),sca=(10,96),c=color.rgb32(70,90,100),a=1)
+	o.ObjType_Water(ID=0,pos=(0,.6,-16),sca=(10,96),al=.9,col=color.rgb32(90,100,120),frames=57,spd=15,rot=(0,0,0))
 	o.InvWall(pos=(-5,.5,-32),sca=(5.,10,128))
 	o.InvWall(pos=(5.3,.5,-32),sca=(5.,10,128))
 	o.BonusPlatform(pos=(1.1,1.2,-6))
 	o.GemPlatform(pos=(-.3,1.2,-18),t=4)
+	gt=(1,2,1.4)
 	gs=1.6
-	o.GrassSide(pos=(-4,gs,-47),m=False)
-	o.GrassSide(pos=(-4,gs,-16),m=False)
-	o.GrassSide(pos=(-4,gs,15),m=False)
-	o.GrassSide(pos=(-4,gs,46),m=False)
-	o.GrassSide(pos=(4,gs,-47),m=True)
-	o.GrassSide(pos=(4,gs,-16),m=True)
-	o.GrassSide(pos=(4,gs,15),m=True)
-	o.GrassSide(pos=(4,gs,46),m=True)
-	o.WoodScene(pos=(0,0,128))
-	o.WoodScene(pos=(0,-20,127))
+	fgg=color.rgb32(190,200,190)
+	o.ObjType_Scene(ID=0,pos=(-4,gs,-47),ro_y=0,sca=gt,col=fgg)
+	o.ObjType_Scene(ID=0,pos=(4,gs,-47),ro_y=180,sca=gt,col=fgg)
+	o.ObjType_Scene(ID=0,pos=(-4,gs,-16),ro_y=0,sca=gt,col=fgg)
+	o.ObjType_Scene(ID=0,pos=(4,gs,-16),ro_y=180,sca=gt,col=fgg)
+	o.ObjType_Scene(ID=0,pos=(-4,gs,15),ro_y=0,sca=gt,col=fgg)
+	o.ObjType_Scene(ID=0,pos=(4,gs,15),ro_y=180,sca=gt,col=fgg)
+	o.ObjType_Scene(ID=0,pos=(-4,gs,46),ro_y=0,sca=gt,col=fgg)
+	o.ObjType_Scene(ID=0,pos=(4,gs,46),ro_y=180,sca=gt,col=fgg)
+	o.ObjType_Background(ID=1,pos=(0,0,128),sca=(250,40),txa=(5,1))
+	o.ObjType_Background(ID=1,pos=(0,-20,127),sca=(250,40),txa=(5,1))
+	del gt,gs,fgg
 	#plants
-	Entity(model='cube',texture='res/terrain/l1/bricks.png',scale=(9,2,.3),position=(0,-.2,-64.5),texture_scale=(9,2))
-	o.TreeScene(pos=(-1.2,1.2,-46),sca=.0175)
-	o.TreeScene(pos=(0,1.7,-26.4),sca=.0175)
+	Entity(model='cube',texture='res/terrain/bricks.png',scale=(9,2,.3),position=(0,-.2,-64.5),texture_scale=(9,2))
+	o.ObjType_Deco(ID=1,pos=(-1.2,1.2,-46),sca=.0175,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(0,1.7,-26.4),sca=.0175,rot=(-90,0,0))
 	for trw in range(8):
-		o.TreeRow(pos=(-4.3,1.2,-60+trw*12),sca=(.15,.16,.18))
-		o.TreeRow(pos=(4.3,1.2,-60+trw*12),sca=(.15,.16,.18))
+		o.ObjType_Scene(ID=1,pos=(-4.3,1.2,-60+trw*12),sca=(.15,.16,.18),col=color.rgb32(180,190,180))
+		o.ObjType_Scene(ID=1,pos=(4.3,1.2,-60+trw*12),sca=(.15,.16,.18),col=color.rgb32(180,190,180))
 	del trw
-	o.TreeScene(pos=(-1.5,1.2,20.3),sca=.0175)
-	o.TreeScene(pos=(1.2,1.2,20.3),sca=.0175)
-	o.TreeScene(pos=(1.1,1.5,11),sca=.0175)
-	o.TreeScene(pos=(.5,1.3,2.5),sca=.0175)
-	o.TreeScene(pos=(0,1,-2),sca=.013)
-	o.TreeScene(pos=(0,1,6),sca=.013)
-	o.TreeScene(pos=(1,1.6,-34.6),sca=.02)
-	o.TreeScene(pos=(-1.8,1.5,-21.5),sca=.02)
-	o.TreeScene(pos=(-1.5,1.2,-62.5),sca=.02)
-	o.TreeScene(pos=(1.1,1.5,-53),sca=.02)
+	o.ObjType_Deco(ID=1,pos=(-1.5,1.2,20.3),sca=.0175,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(1.2,1.2,20.3),sca=.0175,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(1.1,1.5,11),sca=.0175,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(.5,1.3,2.5),sca=.0175,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(0,1,-2),sca=.013,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(0,1,6),sca=.013,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(1,1.6,-34.6),sca=.02,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(-1.8,1.5,-21.5),sca=.02,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(-1.5,1.2,-62.5),sca=.02,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(1.1,1.5,-53),sca=.02,rot=(-90,0,0))
 	#platform
 	dz=-64
 	dy=.5
@@ -100,9 +102,9 @@ def load_object():
 	o.MossPlatform(p=(-2,.5,-6),ptm=0)
 	o.MossPlatform(p=(0,.5,13.5),ptm=0)
 	o.MossPlatform(p=(0,.5,15),ptm=0)
-	o.Corridor(pos=(0,1,-13))
-	o.Bush(pos=(-1.3,1.2,-14.2),sca=(2,1))
-	o.Bush(pos=(1.3,1.2,-14.2),sca=(2,1))
+	o.ObjType_Corridor(ID=0,pos=(0,1,-13))
+	o.ObjType_Deco(ID=0,pos=(-1.3,1.2,-14.2),sca=(2,1),rot=(0,0,0),col=color.rgb32(0,170,0))
+	o.ObjType_Deco(ID=0,pos=(1.3,1.2,-14.2),sca=(2,1),rot=(0,0,0),col=color.rgb32(0,170,0))
 	o.EndRoom(pos=(1,2.4,26.2),c=color.rgb32(160,180,160))
 def load_crate():
 	CRP=1.16
@@ -175,13 +177,13 @@ def load_npc():
 ## bonus level / gem path
 def bonus_zone():
 	o.BonusPlatform(pos=(12,-36.2,U))
-	o.Water(pos=(0,-37.5,0),sca=(48,32),c=color.rgb32(80,80,120),a=1)
-	o.TreeScene(pos=(.3,-36.6,-1.5),sca=.018)
-	o.TreeScene(pos=(3.5,-36.5,-1.5),sca=.017)
-	o.TreeScene(pos=(6.6,-36.6,-1.5),sca=.018)
-	o.TreeScene(pos=(10.5,-36.5,-1.5),sca=.017)
+	o.ObjType_Water(ID=0,pos=(0,-37.5,0),sca=(48,32),al=1,col=color.rgb32(80,80,120),rot=(0,0,0),frames=57,spd=15)
+	o.ObjType_Deco(ID=1,pos=(.3,-36.6,-1.5),sca=.018,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(3.5,-36.5,-1.5),sca=.017,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(6.6,-36.6,-1.5),sca=.018,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(10.5,-36.5,-1.5),sca=.017,rot=(-90,0,0))
 	for w in range(2):
-		o.BackgroundWall(p=(0+w*14,-37,2))
+		o.ObjType_Wall(ID=0,pos=(0+w*14,-37,2),ro_y=90,sca=.02,col=color.rgb32(160,190,160))
 	del w
 	bnh=-37
 	o.spw_block(p=(.35,bnh,U),vx=[2,1],sca=(.5,.75,.1),ID=1)
@@ -199,9 +201,9 @@ def bonus_zone():
 	mt.wumpa_row(POS=(9.4,-36.72,U),CNT=4,WAY=0)
 	mt.wumpa_row(POS=(2,-36,U),CNT=3,WAY=0)
 def gem_zone():
-	o.Water(pos=(220,-1,0),sca=(50,12),c=color.rgb32(70,70,100),a=1)
+	o.ObjType_Water(ID=0,pos=(220,-1,0),sca=(50,12),al=1,col=color.rgb32(70,70,100),rot=(0,0,0),frames=57,spd=15)
 	for w in range(4):
-		o.BackgroundWall(p=(195+w*14,1,1.5))
+		o.ObjType_Wall(ID=0,pos=(195+w*14,1,1.5),ro_y=90,sca=.02)
 	del w
 	o.spw_block(ID=1,p=(199.5,0,-3),vx=[2,2],sca=(.5,.5,.3))
 	o.spw_block(ID=1,p=(202,.5,-2),vx=[1,1],sca=(.5,.5,.3))

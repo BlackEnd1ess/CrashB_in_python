@@ -371,6 +371,8 @@ def game_pause():
 	del pm
 def game_over():
 	invoke(lambda:ui.GameOverScreen(),delay=2)
+def is_obj_scene(o):
+	return (hasattr(o,'idf') and o.idf == 'mo')
 
 ## collisions
 def check_ceiling(c):
@@ -520,6 +522,7 @@ def show_status_ui():
 
 ## crate actions
 def crate_set_val(cR,Cpos,Cpse):
+	cR.idf='cr'
 	cR.texture='res/crate/'+str(cR.vnum)+'.tga'
 	if cR.vnum == 15:
 		cR.texture='res/crate/crate_t'+str(cR.time_stop)+'.tga'
@@ -548,7 +551,7 @@ def check_nitro_stack():
 				ni.can_jmp=False
 	del nit_crt,all_crt
 def is_crate(e):
-	return any(isinstance(e,crate_class) for crate_class in LC.CCK)
+	return (hasattr(e,'idf') and e.idf == 'cr')
 
 ## bonus level
 def load_b_ui():
@@ -623,6 +626,7 @@ def clear_gem_route():
 ## npc
 npf='res/npc/'
 def set_val_npc(m,drc=None,rng=None):
+	m.idf='np'
 	m.anim_frame,m.fly_time,m.turn=0,0,0
 	m.is_hitten,m.is_purge=False,False
 	m.spawn_pos=m.position
@@ -679,7 +683,7 @@ def fly_away(n):
 			cache_instance(n)
 			wumpa_count(1)
 def is_enemie(n):
-	return any(isinstance(n,npcc) for npcc in LC.NCC)
+	return (hasattr(n,'idf') and n.idf == 'np')
 def bash_enemie(e,h):
 	e.is_hitten=True
 	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)

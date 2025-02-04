@@ -82,6 +82,9 @@ loading=False
 pause=False
 
 ## global funcs
+def wtr_dist(w,p):
+	return ((p.z < w.z+(w.scale_z/2)+4) and (p.z > w.z-(w.scale_z/2)-4) and (p.x < w.x+(w.scale_x/2)+2) and (p.x > w.x-w.scale_x/2-2))
+
 def p_idle(c):
 	return (c.landed and not any([c.jumping,c.is_attack,c.walking,c.is_landing]))
 

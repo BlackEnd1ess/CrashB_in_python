@@ -1,7 +1,5 @@
 ## lists, arrays and list access
 from ursina import color
-import crate as C
-import npc as N
 
 #checkpoint - bonus
 bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(9,5,20),(26,5,-36),(0,0,0)]
@@ -56,21 +54,11 @@ GMC={0:cglr,
 	7:cglr,
 	8:cglr}
 
-#is crate
-CCK={C.Iron,C.Normal,C.QuestionMark,C.Bounce,C.ExtraLife,
-	C.AkuAku,C.Checkpoint,C.SpringWood,C.SpringIron,C.SwitchEmpty,
-	C.SwitchNitro,C.TNT,C.Nitro,C.Air,C.Protected,C.LvInfo}
-
-#is npc
-NCC={N.Amadillo,N.Turtle,N.SawTurtle,
-	N.Penguin,N.Hedgehog,N.Seal,
-	N.EatingPlant,
-	N.Eel,N.Scrubber,N.Mouse,N.SewerMine,
-	N.Gorilla,N.Rat,N.Lizard,
-	N.Bee,N.Lumberjack,
-	N.SpiderRobotFlat,N.SpiderRobotUp,N.Robot,N.LabAssistant}
-
-#fog dst
+#fog dst/color/dst
+SKY_BG_COLOR=None
+AMB_M_COLOR=None
+FOG_L_COLOR=None
+FOG_B_COLOR=None
 LV_DST=None
 BN_DST=None
 

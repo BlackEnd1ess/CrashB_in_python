@@ -1,4 +1,4 @@
-import objects,map_tools,status,crate,npc,sys,os,_loc
+import objects,map_tools,status,crate,npc,sys,os,_loc,danger
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from ursina.shaders import *
 from ursina import *
@@ -6,19 +6,19 @@ from ursina import *
 mt=map_tools
 o=objects
 st=status
+dg=danger
 LC=_loc
-r=random
 c=crate
 n=npc
 U=-3
 
 def map_setting():
+	LC.FOG_L_COLOR=color.rgb32(25,45,25)
+	LC.FOG_B_COLOR=color.rgb32(25,45,25)
+	LC.SKY_BG_COLOR=color.rgb32(140,0,60)
+	LC.AMB_M_COLOR=color.rgb32(240,200,170)
 	LC.LV_DST=(16,20)
 	LC.BN_DST=(5,20)
-	window.color=color.rgb32(140,0,60)
-	scene.fog_density=(16,20)
-	scene.fog_color=color.rgb32(25,45,25)
-	LC.AMBIENT_LIGHT.color=color.rgb32(240,200,170)
 	st.toggle_thunder=False
 	st.toggle_rain=False
 
@@ -36,22 +36,22 @@ def load_object():
 	o.InvWall(pos=(-2.5,0,20),sca=(.5,15,140))
 	o.InvWall(pos=(2.5,0,20),sca=(.5,15,140))
 	#temple
-	o.TempleWall(pos=(-2.55,-.3,-1.4),sd=2)
-	o.TempleWall(pos=(2.7,-.3,-1.4),sd=1)
-	o.TempleWall(pos=(-2.55,.65,56.4),sd=2)
-	o.TempleWall(pos=(2.7,.65,56.4),sd=1)
+	o.ObjType_Scene(ID=4,pos=(2.55,-.3,-1.4),sca=.025,ro_y=90)
+	o.ObjType_Scene(ID=4,pos=(-2.55,-.3,-1.4),sca=(-.025,.025,.025),ro_y=-90)
+	o.ObjType_Scene(ID=4,pos=(2.55,-.3,56.4),sca=.025,ro_y=90)
+	o.ObjType_Scene(ID=4,pos=(-2.55,-.3,56.4),sca=(-.025,.025,.025),ro_y=-90)
 	#tree
-	o.TreeScene(pos=(-2.3,2.2,82.5),sca=.0175)
-	o.TreeScene(pos=(2.3,2.2,82.5),sca=.0175)
-	o.TreeScene(pos=(-3,2.8,84),sca=.0175)
-	o.TreeScene(pos=(2.4,2.8,84),sca=.0175)
-	o.Bush(pos=(-1,4.2,82),sca=2)
-	o.Bush(pos=(0,4.5,82.1),sca=2)
-	o.Bush(pos=(1,4.2,82.11),sca=2)
+	o.ObjType_Deco(ID=1,pos=(-2.3,2.2,82.5),sca=.0175,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(2.3,2.2,82.5),sca=.0175,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(-3,2.8,84),sca=.0175,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(2.4,2.8,84),sca=.0175,rot=(-90,0,0))
+	o.ObjType_Deco(ID=0,pos=(-1,4.2,82),sca=2,rot=(0,0,0),col=color.rgb32(0,170,0))
+	o.ObjType_Deco(ID=0,pos=(0,4.5,82.1),sca=2,rot=(0,0,0),col=color.rgb32(0,170,0))
+	o.ObjType_Deco(ID=0,pos=(1,4.2,82.11),sca=2,rot=(0,0,0),col=color.rgb32(0,170,0))
 	#stage
-	o.WoodStage(pos=(0,.2,-20))
-	o.WoodStage(pos=(0,.2,-10))
-	o.WoodStage(pos=(0,2,60))
+	o.ObjType_Floor(ID=1,pos=(0,.2,-20),sca=.03,rot=(-90,90,0),col=color.rgb32(100,100,0))
+	o.ObjType_Floor(ID=1,pos=(0,.2,-10),sca=.03,rot=(-90,90,0),col=color.rgb32(100,100,0))
+	o.ObjType_Floor(ID=1,pos=(0,2,60),sca=.03,rot=(-90,90,0),col=color.rgb32(100,100,0))
 	#platforms
 	o.MossPlatform(p=(0,-.3,-24.8),ptm=2)
 	o.MossPlatform(p=(0,.1,-23.25),ptm=1)
@@ -67,9 +67,9 @@ def load_object():
 	tH=-.2
 	#e0
 	o.spw_block(p=(0,tH,-29),vx=[1,1],ID=3)
-	o.StoneTileBig(pos=(0,tH,-27.3))
+	o.ObjType_Floor(ID=2,pos=(0,tH,-27.3),rot=(0,0,0),sca=.35)
 	o.spw_block(p=(-1,tH,-17),vx=[3,1],ID=3)
-	o.StoneTileBig(pos=(0,tH,-14.5))
+	o.ObjType_Floor(ID=2,pos=(0,tH,-14.5),rot=(0,0,0),sca=.35)
 	o.spw_block(p=(0,tH,-5),vx=[1,4],ID=3)
 	#e1
 	nh=1.09
@@ -79,13 +79,13 @@ def load_object():
 	o.spw_block(ID=3,p=(-.85,tH+nh,.85*5),vx=[1,8])
 	o.spw_block(ID=3,p=(0,tH+nh,.85*8),vx=[2,1])
 	o.spw_block(ID=3,p=(0,tH+nh,13),vx=[1,3])
-	o.FloorBlock(ID=3,pos=(0,tH+nh,17))
-	o.FloorBlock(ID=3,pos=(0,tH+nh,19))
+	o.ObjType_Block(ID=3,pos=(0,tH+nh,17))
+	o.ObjType_Block(ID=3,pos=(0,tH+nh,19))
 	o.spw_block(ID=3,p=(-.85,tH+nh,23),vx=[2,1])
 	o.spw_block(ID=3,p=(0,tH+nh,26),vx=[2,1])
 	o.spw_block(ID=3,p=(-.85,tH+nh,29),vx=[2,1])
 	o.spw_block(ID=3,p=(0,tH+nh,32),vx=[1,2])
-	o.StoneTileBig(pos=(0,tH+nh,41.3))
+	o.ObjType_Floor(ID=2,pos=(0,tH+nh,41.3),rot=(0,0,0),sca=.35)
 	o.spw_block(ID=3,p=(.85,tH+nh,40.5+.85*4),vx=[1,3])
 	o.spw_block(ID=3,p=(-.85,tH+nh,40.5+.85*7),vx=[3,1])
 	o.spw_block(ID=3,p=(-.85,tH+nh,40.5+.85*8),vx=[1,4])
@@ -97,31 +97,35 @@ def load_object():
 	o.spw_block(ID=3,p=(0,lb,80),vx=[1,5])
 	o.spw_block(ID=3,p=(.85,lb,80+.85),vx=[1,1])
 	#waterflow
-	o.WaterFlow(pos=(0,-.3,-16),sca=(5,32))
-	o.WaterFlow(pos=(0,.7,30),sca=(5,62))
-	o.WaterFlow(pos=(0,1.7,73),sca=(5,32))
-	#waterfall
-	o.WaterFall(pos=(0,.2,-1))
-	o.WaterFall(pos=(0,1.2,57))
+	o.ObjType_Water(ID=1,pos=(0,-.3,-16),sca=(5,32),col=color.rgb32(170,170,170),rot=(0,0,0),al=.8,frames=3,spd=10)
+	o.ObjType_Water(ID=1,pos=(0,.7,30),sca=(5,62),col=color.rgb32(170,170,170),rot=(0,0,0),al=.8,frames=3,spd=10)
+	o.ObjType_Water(ID=1,pos=(0,1.7,73),sca=(5,32),col=color.rgb32(170,170,170),rot=(0,0,0),al=.8,frames=3,spd=10)
+	##waterfall
+	o.ObjType_Water(ID=2,pos=(0,.2,-1),sca=(5,1),frames=31,rot=(0,0,0),spd=8,al=1)
+	o.ObjType_Water(ID=2,pos=(0,1.2,57),sca=(5,1),frames=31,rot=(0,0,0),spd=8,al=1)
 	#scene
-	o.SceneWall(pos=(-2.8,.3,-18),typ=1)
-	o.SceneWall(pos=(2.8,.3,-18),typ=2)
-	o.SceneWall(pos=(-2.8,.3,-4),typ=1)
-	o.SceneWall(pos=(2.8,.3,-4),typ=2)
-	o.SceneWall(pos=(-2.8,1.3,9.5),typ=1)
-	o.SceneWall(pos=(2.8,1.3,9.5),typ=2)
-	o.SceneWall(pos=(-2.8,1.3,23.5),typ=1)
-	o.SceneWall(pos=(2.8,1.3,23.5),typ=2)
-	o.SceneWall(pos=(-2.8,1.3,37.5),typ=1)
-	o.SceneWall(pos=(2.8,1.3,37.5),typ=2)
-	o.SceneWall(pos=(-2.8,1.3,51.5),typ=1)
-	o.SceneWall(pos=(2.8,1.3,51.5),typ=2)
-	o.SceneWall(pos=(-2.8,2.3,65.5),typ=1)
-	o.SceneWall(pos=(2.8,2.3,65.5),typ=2)
-	o.SceneWall(pos=(-2.8,2.3,79.5),typ=1)
-	o.SceneWall(pos=(2.8,2.3,79.5),typ=2)
+	sg=(.0225,.0265,.025)
+	sr=(-.0225,.0265,.025)
+	sh=color.gray
+	o.ObjType_Scene(ID=3,pos=(-2.8,.3,-22),ro_y=-90,sca=sg,col=sh)
+	o.ObjType_Scene(ID=3,pos=(2.8,.3,-22),ro_y=90,sca=sr,col=sh)
+	o.ObjType_Scene(ID=3,pos=(-2.8,.3,-7),ro_y=-90,sca=sg,col=sh)
+	o.ObjType_Scene(ID=3,pos=(2.8,.3,-7),ro_y=90,sca=sr,col=sh)
+	o.ObjType_Scene(ID=3,pos=(-2.8,1.3,5),ro_y=-90,sca=sg,col=sh)
+	o.ObjType_Scene(ID=3,pos=(2.8,1.3,5),ro_y=90,sca=sr,col=sh)
+	o.ObjType_Scene(ID=3,pos=(-2.8,1.3,20),ro_y=-90,sca=sg,col=sh)
+	o.ObjType_Scene(ID=3,pos=(2.8,1.3,20),ro_y=90,sca=sr,col=sh)
+	o.ObjType_Scene(ID=3,pos=(-2.8,1.3,35),ro_y=-90,sca=sg,col=sh)
+	o.ObjType_Scene(ID=3,pos=(2.8,1.3,35),ro_y=90,sca=sr,col=sh)
+	o.ObjType_Scene(ID=3,pos=(-2.8,1.3,50),ro_y=-90,sca=sg,col=sh)
+	o.ObjType_Scene(ID=3,pos=(2.8,1.3,50),ro_y=90,sca=sr,col=sh)
+	o.ObjType_Scene(ID=3,pos=(-2.8,2.3,65),ro_y=-90,sca=sg,col=sh)
+	o.ObjType_Scene(ID=3,pos=(2.8,2.3,65),ro_y=90,sca=sr,col=sh)
+	o.ObjType_Scene(ID=3,pos=(-2.8,2.3,80),ro_y=-90,sca=sg,col=sh)
+	o.ObjType_Scene(ID=3,pos=(2.8,2.3,80),ro_y=90,sca=sr,col=sh)
 	o.EndRoom(pos=(1,3.7,88),c=color.rgb32(200,210,200))
 	Entity(model='quad',color=color.black,scale=(100,20),position=(0,-10,95))
+	del sg,sr,sh
 def load_crate():
 	if not 5 in status.COLOR_GEM:
 		c.place_crate(ID=16,p=(0,.24+.16,-21))
@@ -202,36 +206,35 @@ def load_npc():
 
 ## bonus level / gem path
 def bonus_zone():
-	bn_bg='res/background/bg_woods.png'
-	Entity(model='quad',texture=bn_bg,position=(0,-45,34.9),scale=(100,20,.1),color=color.rgb32(100,140,100),texture_scale=(7,1),unlit=False,shader=unlit_shader)
-	Entity(model='quad',texture=bn_bg,position=(0,-60,34.8),scale=(100,40,.1),color=color.rgb32(120,160,120),texture_scale=(7,1),unlit=False,shader=unlit_shader)
-	o.BonusBackground(pos=(10,-40,35),sca=(80,35))
+	dg.FallingZone(pos=(0,-40,0),s=(64,1,64))
+	o.ObjType_Background(ID=1,pos=(0,-45,34.9),sca=(100,20,.1),col=color.rgb32(100,140,100),txa=(7,1),UL=True)
+	o.ObjType_Background(ID=1,pos=(0,-60,34.8),sca=(100,20,.1),col=color.rgb32(100,140,100),txa=(7,1),UL=True)
+	o.ObjType_Background(ID=2,pos=(10,-40,35),sca=(80,35),col=color.rgb32(100,60,80),txa=(1,1),UL=True)
 	mt.wumpa_double_row(POS=(12.8,-35,U),CNT=6)
 	mt.wumpa_double_row(POS=(-.5,-36.5,U),CNT=4)
 	mt.wumpa_row(POS=(1.5,-36.35,U),CNT=3,WAY=0)
 	mt.wumpa_row(POS=(3.5,-35.35,U),CNT=3,WAY=0)
 	mt.wumpa_row(POS=(5.5,-34.85,U),CNT=3,WAY=0)
 	mt.wumpa_row(POS=(17.5,-35.35,U),CNT=3,WAY=0)
-	o.FallingZone(pos=(0,-40,0),s=(64,1,64))
-	o.MushroomTree(pos=(2,-39,U+1.2))
-	o.MushroomTree(pos=(4,-39,U+1.2))
-	o.MushroomTree(pos=(6,-38.5,U+1.2))
+	o.ObjType_Floor(ID=3,pos=(2,-39,U+1.2),sca=.03,col=color.rgb32(150,170,150),rot=(-90,90,0))
+	o.ObjType_Floor(ID=3,pos=(4,-39,U+1.2),sca=.03,col=color.rgb32(150,170,150),rot=(-90,90,0))
+	o.ObjType_Floor(ID=3,pos=(6,-38.5,U+1.2),sca=.03,col=color.rgb32(150,170,150),rot=(-90,90,0))
 	mt.crate_row(ID=0,POS=(-1,-37,U),WAY=0,CNT=7)
 	mt.bounce_twin(POS=(7.2,-36,U),CNT=5,trs=1.65)
-	o.MushroomTree(pos=(9.5,-38.5,U+1.2))
-	o.MushroomTree(pos=(10.5,-38,U+1.2))
-	o.MushroomTree(pos=(11.5,-38,U+1.2))
-	o.BonusScene(pos=(-5,-43,4))
-	o.BonusScene(pos=(8,-43,3.9))
-	o.BonusScene(pos=(21,-43,3.9))
-	o.BonusScene(pos=(-3,-44,6))
-	o.BonusScene(pos=(6,-44,5.9))
-	o.BonusScene(pos=(19,-44,6))
+	o.ObjType_Floor(ID=3,pos=(9.5,-38.5,U+1.2),sca=.03,col=color.rgb32(150,170,150),rot=(-90,90,0))
+	o.ObjType_Floor(ID=3,pos=(10.5,-38,U+1.2),sca=.03,col=color.rgb32(150,170,150),rot=(-90,90,0))
+	o.ObjType_Floor(ID=3,pos=(11.5,-38,U+1.2),sca=.03,col=color.rgb32(150,170,150),rot=(-90,90,0))
+	o.ObjType_Scene(ID=5,pos=(-5,-43,4),sca=.035,ro_y=90)
+	o.ObjType_Scene(ID=5,pos=(8,-43,3.9),sca=.035,ro_y=90)
+	o.ObjType_Scene(ID=5,pos=(21,-43,3.9),sca=.035,ro_y=90)
+	o.ObjType_Scene(ID=5,pos=(-3,-44,6),sca=.035,ro_y=90)
+	o.ObjType_Scene(ID=5,pos=(6,-44,5.9),sca=.035,ro_y=90)
+	o.ObjType_Scene(ID=5,pos=(19,-44,6),sca=.035,ro_y=90)
 	c.place_crate(ID=11,p=(12.5,-36,U))
 	mt.crate_row(ID=12,POS=(12.82,-36,U),WAY=0,CNT=7)
 	mt.crate_row(ID=1,POS=(12.82,-35.68,U),WAY=0,CNT=7)
-	o.MushroomTree(pos=(16,-38,U+1.2))
-	o.MushroomTree(pos=(18,-38,U+1.2))
+	o.ObjType_Floor(ID=3,pos=(16,-38,U+1.2),sca=.03,col=color.rgb32(150,170,150),rot=(-90,90,0))
+	o.ObjType_Floor(ID=3,pos=(18,-38,U+1.2),sca=.03,col=color.rgb32(150,170,150),rot=(-90,90,0))
 	mt.crate_wall(ID=1,POS=(16,-35.65+.16,U+.1),CNT=[2,2])
 	c.place_crate(ID=2,p=(4,-36.65+.16,U+.1))
 	c.place_crate(ID=4,p=(5.8,-35.1,U))

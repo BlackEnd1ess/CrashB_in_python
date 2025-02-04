@@ -1,7 +1,8 @@
-import settings,_core,math,animation,status,sound,_loc,effect,objects,time,random
+import settings,_core,math,animation,status,sound,_loc,effect,time,random
 from ursina import BoxCollider,Vec3,Entity,Audio,distance,lerp,invoke
 from ursina.ursinastuff import destroy
 from math import radians,cos,sin,pi
+from danger import LogDanger
 
 di={0:'x',1:'y',2:'z'}
 npf='res/npc/'
@@ -407,7 +408,7 @@ class Gorilla(Entity):
 		s.t_frame=0
 	def throw_log(self):
 		s=self
-		invoke(lambda:objects.LogDanger(pos=(s.x,s.y+.6,s.z),ro_y=s.rotation_y),delay=.1)
+		invoke(lambda:LogDanger(pos=(s.x,s.y+.6,s.z),ro_y=s.rotation_y),delay=.1)
 	def update(self):
 		if st.gproc():
 			return
@@ -453,6 +454,8 @@ class Bee(Entity):
 	def fly_event(self):
 		s=self
 		an.bee_fly(s,sp=14)
+		nvv=max(0,1-(distance(s,LC.ACTOR)/10))
+		s.buzz_snd.volume=min(1,nvv*settings.SFX_VOLUME)
 		if (LC.ACTOR.z < s.spawn_pos[2]+8):
 			s.buzz_snd.pitch=1.5
 			s.hunt_p()

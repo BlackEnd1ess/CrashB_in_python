@@ -53,7 +53,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(1.1,4,-6)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(.85,1.3,.85*8)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
@@ -92,7 +92,7 @@ class CrashB(Entity):
 		s.direc=mvD
 		if s.is_slippery:
 			cc.c_slide(s)
-		if (mvD.length() > 0):
+		if mvD.length() > 0:
 			st.p_last_direc=mvD
 			mc=raycast(s.world_position+(0,.1,0),s.direc,distance=.2,ignore=[s,LC.shdw],debug=False)
 			me=mc.entity

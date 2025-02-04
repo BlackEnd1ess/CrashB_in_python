@@ -1,9 +1,10 @@
-import objects,map_tools,crate,status,npc,sys,os,_loc
+import objects,map_tools,crate,status,npc,sys,os,_loc,danger
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from ursina import *
 
 mt=map_tools
 o=objects
+dg=danger
 st=status
 LC=_loc
 r=random
@@ -12,12 +13,12 @@ n=npc
 U=-3
 
 def map_setting():
+	LC.FOG_L_COLOR=color.white
+	LC.FOG_B_COLOR=color.white
+	LC.SKY_BG_COLOR=color.white
+	LC.AMB_M_COLOR=color.rgb32(200,160,210)
 	LC.LV_DST=(3,12)
 	LC.BN_DST=(4,4.5)
-	window.color=color.white
-	scene.fog_density=(3,12)
-	scene.fog_color=color.white
-	LC.AMBIENT_LIGHT.color=color.rgb32(200,160,210)
 	st.toggle_thunder=False
 	st.toggle_rain=False
 
@@ -37,35 +38,34 @@ def load_object():
 	o.spawn_ice_wall(pos=(20,4,15.5),cnt=2,d=0)
 	o.spawn_ice_wall(pos=(26,4,10),cnt=1,d=1)
 	o.spawn_ice_wall(pos=(44,4,29),cnt=1,d=1)
-	o.Water(pos=(12,-.5,-32),sca=(32,128),c=color.cyan,a=1)
-	o.Water(pos=(51,4.5,23.5),sca=(64,40),c=color.cyan,a=1)
+	o.ObjType_Water(ID=0,pos=(12,-.5,-32),sca=(32,128),al=1,rot=(0,0,0),col=color.cyan,frames=0,spd=0)
+	o.ObjType_Water(ID=0,pos=(51,4.5,23.5),sca=(64,40),al=1,rot=(0,0,0),col=color.cyan,frames=0,spd=0)
 	Entity(model='quad',scale=(256,128,1),color=color.white,z=64)
 	#invisible walls
 	o.InvWall(pos=(-2.3,3,-30),sca=(1,10,70))
 	o.InvWall(pos=(2.3,3,-30),sca=(1,10,60))
 	o.InvWall(pos=(44,5,30),sca=(.5,15,40))
-	
 	o.InvWall(pos=(21,5,3),sca=(3,5,.5))
 	o.InvWall(pos=(25,5,3),sca=(3,5,.5))
 	o.InvWall(pos=(40,-.1,3),sca=(100,11,.5))
 	#ice chunk
-	o.IceChunk(pos=(21.7,6,2.6),typ=1,rot=(-180,-90,0))
-	o.IceChunk(pos=(24.4,6,2.6),typ=1,rot=(0,-90,0))
-	o.IceChunk(pos=(21.2,5.3,3.2),typ=1,rot=(260,-90,0))
-	o.IceChunk(pos=(24.8,5.3,3.2),typ=1,rot=(-80,-90,0))
-	o.IceChunk(pos=(28,5.35,28.1),typ=1,rot=(-180,-90,0))
-	o.IceChunk(pos=(28,7.8,28),typ=1,rot=(-180,-90,0))
-	o.IceChunk(pos=(0,3.3,-60.4),typ=1,rot=(90,-90,0))
-	o.IceChunk(pos=(41.7,8.5,38.3),typ=1,rot=(90,-90,0))
+	o.ObjType_Deco(ID=4,sca=.8,pos=(21.7,6,2.6),rot=(-180,-90,0))
+	o.ObjType_Deco(ID=4,sca=.8,pos=(24.4,6,2.6),rot=(0,-90,0))
+	o.ObjType_Deco(ID=4,sca=.8,pos=(21.2,5.3,3.2),rot=(260,-90,0))
+	o.ObjType_Deco(ID=4,sca=.8,pos=(24.8,5.3,3.2),rot=(-80,-90,0))
+	o.ObjType_Deco(ID=4,sca=.8,pos=(28,5.35,28.1),rot=(-180,-90,0))
+	o.ObjType_Deco(ID=4,sca=.8,pos=(28,7.8,28),rot=(-180,-90,0))
+	o.ObjType_Deco(ID=4,sca=.8,pos=(0,3.3,-60.4),rot=(90,-90,0))
+	o.ObjType_Deco(ID=4,sca=.8,pos=(41.7,8.5,38.3),rot=(90,-90,0))
 	for ict in range(4):
-		o.IceChunk(pos=(33+ict*2.5,4.5,43.6),typ=1,rot=(-90,-90,0))
-		o.IceChunk(pos=(33.5+ict*2.5,4.8,44.3),typ=1,rot=(-90,-90,0))
+		o.ObjType_Deco(ID=4,sca=.8,pos=(33+ict*2.5,4.5,43.6),rot=(-90,-90,0))
+		o.ObjType_Deco(ID=4,sca=.8,pos=(33.5+ict*2.5,4.8,44.3),rot=(-90,-90,0))
 	del ict
 	#dangers
 	wlO=3.7
-	o.WoodLog(pos=(10.5,wlO,2.45))
-	o.WoodLog(pos=(8.2,wlO,2.45))
-	o.Role(pos=(41.5,6.8,33.2),di=1)
+	dg.WoodLog(pos=(10.5,wlO,2.45))
+	dg.WoodLog(pos=(8.2,wlO,2.45))
+	dg.Role(pos=(41.5,6.8,33.2),di=1)
 	#first pass
 	phg=-.065
 	o.spw_block(p=(0,phg,-60.5),vx=[1,2],ID=2)
@@ -89,7 +89,7 @@ def load_object():
 	o.spw_block(ID=2,p=(8,nv,bz),vx=[1,1])
 	o.spw_block(ID=2,p=(10,nv,bz),vx=[2,1])
 	o.spw_block(ID=2,p=(12,nv+.4,bz),vx=[2,1])
-	o.IceGround(pos=(16.4,2.05,bz+.1),sca=(6,1))
+	o.ObjType_Floor(ID=0,pos=(16.4,2.05,bz+.1),sca=(6,1))
 	o.spw_block(ID=2,p=(19.8,nv+.4,bz),vx=[2,1])
 	o.spw_block(ID=2,p=(21.8,nv+1,bz),vx=[1,1])
 	o.spw_block(ID=2,p=(22.8,nv+2,bz),vx=[1,1])
@@ -118,8 +118,8 @@ def load_object():
 	o.pillar_twin(p=(22.25,5.35,19.85))
 	o.Ropes(pos=(-.475,.7,-56),le=55)
 	o.Ropes(pos=(22.5,5.3,7),le=13)
-	o.Pillar(pos=(40.25,6.55,38.7))
-	o.Pillar(pos=(43.75,6.55,38.7))
+	o.ObjType_Deco(ID=2,pos=(40.25,6.55,38.7),sca=.2,rot=(-90,45,0),col=color.cyan)
+	o.ObjType_Deco(ID=2,pos=(43.75,6.55,38.7),sca=.2,rot=(-90,45,0),col=color.cyan)
 	#planks
 	_pl=.7
 	#bridge1
@@ -162,15 +162,15 @@ def load_object():
 	#walls
 	snz=3
 	for snw in range(7):
-		o.SnowWall(pos=(-5+snw*5.4,.1,snz))
-		o.SnowWall(pos=(-5+snw*5.4,3.2,snz))
+		o.ObjType_Wall(ID=1,pos=(-5+snw*5.4,.1,snz),sca=.02,ro_y=90)
+		o.ObjType_Wall(ID=1,pos=(-5+snw*5.4,3.2,snz),sca=.02,ro_y=90)
 	del snw
-	o.SnowWall(pos=(19,6.3,snz))
-	o.SnowWall(pos=(27,6.3,snz))
-	o.SnowWall(pos=(30,2,38))
+	o.ObjType_Wall(ID=1,pos=(19,6.3,snz),sca=.02,ro_y=90)
+	o.ObjType_Wall(ID=1,pos=(27,6.3,snz),sca=.02,ro_y=90)
+	o.ObjType_Wall(ID=1,pos=(30,2,38),sca=.02,ro_y=90)
 	for sna in range(2):
-		o.SnowWall(pos=(20+sna*5.4,5,28))
-		o.SnowWall(pos=(20+sna*5.4,8.2,28))
+		o.ObjType_Wall(ID=1,pos=(20+sna*5.4,5,28),sca=.02,ro_y=90)
+		o.ObjType_Wall(ID=1,pos=(20+sna*5.4,8.2,28),sca=.02,ro_y=90)
 	del sna
 	o.EndRoom(pos=(43,8,44),c=color.rgb32(160,160,180))
 def load_crate():
@@ -230,15 +230,15 @@ def load_npc():
 
 ## bonus level / gem path
 def bonus_zone():
-	o.FallingZone(pos=(0,-40,0),s=(64,1,64))
+	dg.FallingZone(pos=(0,-40,0),s=(64,1,64))
 	o.spw_block(p=(0,-38.5,U),vx=[1,1],ID=2)
 	o.spw_block(p=(2,-38.2,U),vx=[4,1],ID=2)
 	o.spw_block(p=(7,-38.2,U),vx=[3,1],ID=2)
 	o.spw_block(p=(12.8,-38.2,U),vx=[3,1],ID=2)
 	for sw in range(5):
-		o.SnowWall(pos=(-4+sw*5.4,-33.9,-2.5))
-		o.SnowWall(pos=(-4+sw*5.4,-37,-2.5))
-		o.SnowWall(pos=(-4+sw*5.4,-40.1,-2.5))
+		o.ObjType_Wall(ID=1,pos=(-4+sw*5.4,-33.9,-2.5),sca=.02,ro_y=90)
+		o.ObjType_Wall(ID=1,pos=(-4+sw*5.4,-37,-2.5),sca=.02,ro_y=90)
+		o.ObjType_Wall(ID=1,pos=(-4+sw*5.4,-40.1,-2.5),sca=.02,ro_y=90)
 	del sw
 	mt.crate_row(ID=0,POS=(3.8,-35,U),WAY=0,CNT=8)
 	mt.crate_wall(ID=2,POS=(4,-34.68,U),CNT=[2,2])

@@ -1,5 +1,6 @@
 from ursina import Animation,Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,curve
 import status,_core,_loc,sound,settings,warproom,level,time
+from objects import ObjType_Background
 from ursina.ursinastuff import destroy
 from time import strftime,gmtime
 
@@ -450,7 +451,7 @@ class LevelSelector(Entity):
 		s.lv_col_gem=Entity(model=q,texture=LC.fdc[idx]+'0.png',position=(s.x+.8,s.y,s.z),scale=oi,parent=CU,color=req_col)
 		s.lv_clr_gem=Entity(model=q,texture=LC.ge_0+'0.png',position=(s.x+1.09,s.y,s.z),scale=oi,parent=CU,color=req_col)
 		s.lv_name=Text(LC.lv_name[idx],font=_fnt,position=(s.x,s.y+.04,s.z),scale=2.5,color=color.orange,parent=CU)
-		s.bgd=Entity(model=q,texture='res/background/wroom.png',scale=(40,20),position=(0,0,4),color=color.rgb32(140,160,140))
+		ObjType_Background(ID=0,sca=(40,20),pos=(0,0,4),col=color.rgb32(140,160,140),txa=(1,1))
 		s.lf0=Entity(model=q,texture=ivy_+'_m.png',scale=.2,position=(-.8,.4,.1),parent=CU)
 		s.lf1=Entity(model=q,texture=ivy_+'_m.png',scale=.2,position=(-.8,-.4,.1),rotation_z=-90,parent=CU)
 		s.lf2=Entity(model=q,texture=ivy_+'.png',scale=.2,position=(.8,.4,.1),parent=CU)

@@ -25,13 +25,14 @@ def free_level():
 	print(f'<info> Level {st.level_index} successfully loaded')
 
 ## level settings
-def main_instance(idx):
+def load(idx):
 	sys.path.append(os.path.join(os.path.dirname(__file__),lv))
 	st.loading=True
 	st.weather_thunder=(idx == 5)
 	goto={1:level1,2:level2,3:level3,4:level4,5:level5,6:level6,7:level7,8:level8,9:test}
 	goto[idx]()
-	environment.env_switch(idx)
+	environment.env_switch()
+	print(f'<info> init Level {st.level_index} ...')
 	del idx,goto
 
 ## levels to load

@@ -11,20 +11,24 @@ def init_amb_light():#called 1 time
 		print(f'<info> Environment for level {st.level_index} enabled.')
 
 ##start environment
-def env_switch(idx):
+def env_switch():
+	LC.AMBIENT_LIGHT.color=LC.AMB_M_COLOR
+	window.color=LC.SKY_BG_COLOR
 	if st.toggle_thunder:
 		Thunderbolt()
 	if st.toggle_rain:
 		WeatherRain()
-	print(f'<info> Weather for level {idx} enabled.')
-	del idx
+	set_fog()
+	print(f'<info> Weather for level {st.level_index} enabled.')
 
 ##Fog Distance
 def set_fog():
 	if st.bonus_round:
+		scene.fog_color=LC.FOG_B_COLOR
 		scene.fog_density=LC.BN_DST
 		return
 	scene.fog_density=LC.LV_DST
+	scene.fog_color=LC.FOG_L_COLOR
 
 ##Rainfall Func
 class WeatherRain(Entity):
@@ -57,26 +61,27 @@ class WeatherRain(Entity):
 		s.alpha=lerp(s.alpha,0,ft)
 
 ##Thunder SFX/SKY
+skp='res/background/ruin'
 class Thunderbolt(Entity):
 	def __init__(self):
 		s=self
-		s.bgr='res/background/'
 		super().__init__()
 		s.flash=PointLight(position=s.position,color=color.black)
 		s.thnt=3
 	def thunder_bolt(self):
 		s=self
 		AC=LC.ACTOR
-		LC.bgT.texture=s.bgr+'bg_ruins_th.jpg'
+		LC.bgT.texture=skp+'_th.jpg'
 		LC.bgT.texture_scale=LC.bgT.orginal_tsc
 		s.flash.position=(AC.x,AC.y+3,AC.z)
 		s.flash.color=color.white
 		sound.thu_audio(ID=0,pit=random.uniform(.1,.5))
 		invoke(lambda:sound.thu_audio(ID=random.randint(1,2),pit=random.uniform(.1,.5)),delay=.5)
 		invoke(s.reset_sky,delay=random.uniform(.1,.4))
+		del AC
 	def reset_sky(self):
 		s=self
-		LC.bgT.texture=s.bgr+'bg_ruins.jpg'
+		LC.bgT.texture=skp+'.jpg'
 		LC.bgT.texture_scale=LC.bgT.orginal_tsc
 		s.flash.color=color.black
 		s.thnt=random.randint(4,10)

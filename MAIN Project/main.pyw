@@ -21,7 +21,7 @@ def dev_start(idx):
 	if idx == 0:
 		ui.TitleScreen()
 	else:
-		level.main_instance(idx)
+		level.load(idx)
 	del idx
 
 game()

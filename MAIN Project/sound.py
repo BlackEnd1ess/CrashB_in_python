@@ -11,7 +11,7 @@ VS='res/snd/ambience/'
 SP='res/snd/player/'
 SN='res/snd/misc/'
 SA='res/snd/npc/'
-dd=.8
+dd=1.2
 
 ##footstep
 def footstep(c):

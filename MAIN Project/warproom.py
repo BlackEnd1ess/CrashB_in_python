@@ -83,7 +83,7 @@ class LvSelect(Entity):
 			scene.clear()
 			st.level_index=st.selected_level
 			st.loading=True
-			level.main_instance(st.selected_level)
+			level.load(st.selected_level)
 
 class Credits(Entity):
 	def __init__(self):

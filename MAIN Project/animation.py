@@ -264,7 +264,7 @@ class CollapseFloor(Entity):
 	def __init__(self,t,pos):
 		s=self
 		dc=.01/15
-		super().__init__(model=cl+f'{t}/0.ply',texture=cl+f'{t}/0.tga',position=pos,scale=(-dc,dc,dc),rotation=(-90,-270,0))
+		super().__init__(model=cl+f'{t}/0.ply',texture=cl+f'{t}/0.png',position=pos,scale=(-dc,dc,dc),rotation=(-90,-270,0))
 		s.typ=t
 		s.frm=0
 		del t,pos,dc
