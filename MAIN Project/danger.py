@@ -418,12 +418,51 @@ class LandMine(Entity):
 			if lmd < 2:
 				s.m_audio()
 
+def multi_heat_tile(p,typ,ro_y,sca,CNT):
+	for mhx in range(CNT[0]):
+		for mhz in range(CNT[1]):
+			HeatTile(pos=(p[0]+mhx,p[1],p[2]+mhz),typ=typ,ro_y=ro_y,sca=sca)
+	del mhx,mhz,p,typ,ro_y,sca,CNT
+
+lbcb=omf+'l7/lab_ptf/lab_ptf'
+class HeatTile(Entity):
+	def __init__(self,pos,ro_y=0,typ=0,sca=(.5,.8,.5)):
+		s=self
+		super().__init__(model=lbcb+'.obj',texture=lbcb+'.png',position=pos,scale=sca,collider=b,rotation_y=ro_y,color=color.red,unlit=False)
+		s.matr='metal'
+		s.danger=True
+		if typ == 1:
+			s.is_heat=True
+			s.heat_color=0
+			s.refr=0
+		s.typ=typ
+		del pos,typ,ro_y,sca
+	def update(self):
+		s=self
+		if st.gproc():
+			return
+		if s.typ == 1:
+			s.danger=(s.heat_color <= 0)
+			s.color=color.rgb32(255,int(s.heat_color),int(s.heat_color))
+			s.refr=max(s.refr-time.dt,0)
+			rtu=time.dt*80
+			if s.refr <= 0:
+				if s.is_heat:
+					s.heat_color=min(s.heat_color+rtu,255)
+					if s.heat_color >= 255:
+						s.refr=1
+						s.is_heat=False
+					return
+				s.heat_color=max(s.heat_color-rtu,0)
+				if s.heat_color <= 0:
+					s.refr=1
+					s.is_heat=True
+
 lbpi=omf+'l7/piston/piston'
 class Piston(Entity):
 	def __init__(self,pos,typ,spd):
 		s=self
-		rj=-90
-		super().__init__(model=lbpi+'.ply',texture=lbpi+'.tga',position=pos,scale=(.1/110,.1/110,.1/100),rotation=(rj,0,0),collider=b)
+		super().__init__(model=lbpi+'.ply',texture=lbpi+'.tga',position=(pos[0],pos[1],pos[2]),scale=(.1/110,.1/110,.1/100),rotation=(-90,0,0),collider=b)
 		s.danger=True
 		s.spawn_y=s.y
 		s.mvspd=spd
@@ -461,49 +500,6 @@ class Piston(Entity):
 			pva={0:lambda:s.stomp(),1:lambda:s.reset()}
 			pva[s.mode]()
 			del pva
-
-#if typ == 3:
-#	s.texture=lbcb+'_e.png'
-
-def multi_heat_tile(p,typ,ro_y,sca,CNT):
-	for mhx in range(CNT[0]):
-		for mhz in range(CNT[1]):
-			HeatTile(pos=(p[0]+mhx,p[1],p[2]+mhz),typ=typ,ro_y=ro_y,sca=sca)
-	del mhx,mhz,p,typ,ro_y,sca,CNT
-
-lbcb=omf+'l7/lab_ptf/lab_ptf'
-class HeatTile(Entity):
-	def __init__(self,pos,ro_y=0,typ=0,sca=(.5,.8,.5)):
-		s=self
-		super().__init__(model=lbcb+'.obj',texture=lbcb+'.png',name='labt',position=pos,scale=sca,collider=b,rotation_y=ro_y,color=color.red,unlit=False)
-		s.matr='metal'
-		s.danger=True
-		if typ == 1:
-			s.is_heat=True
-			s.heat_color=0
-			s.refr=0
-		s.typ=typ
-		del pos,typ,ro_y,sca
-	def update(self):
-		s=self
-		if st.gproc():
-			return
-		if s.typ == 1:
-			s.danger=(s.heat_color <= 0)
-			s.color=color.rgb32(255,int(s.heat_color),int(s.heat_color))
-			s.refr=max(s.refr-time.dt,0)
-			rtu=time.dt*80
-			if s.refr <= 0:
-				if s.is_heat:
-					s.heat_color=min(s.heat_color+rtu,255)
-					if s.heat_color >= 255:
-						s.refr=1
-						s.is_heat=False
-					return
-				s.heat_color=max(s.heat_color-rtu,0)
-				if s.heat_color <= 0:
-					s.refr=1
-					s.is_heat=True
 
 lpad=omf+'l7/e_pad/'
 class LabPad(Entity):

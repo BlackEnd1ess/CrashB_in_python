@@ -16,15 +16,6 @@ omf='res/objects/'
 bgg='res/background/'
 b='box'
 
-#multi tiles/blocks
-trhs={1:1,2:.985,3:.85,4:.501,5:.75}
-def spw_block(p,vx,ID,sca=.5):
-	fgx=st.level_index
-	for gbx in range(vx[0]):
-		for gbz in range(vx[1]):
-			ObjType_Block(pos=(p[0]+trhs[fgx]*gbx,p[1],p[2]+trhs[fgx]*gbz),sca=.5,ID=ID)
-	del p,vx,ID,sca,gbx,gbz,fgx
-
 #lv2
 def plank_bridge(pos,typ,cnt,ro_y,DST):
 	for wP in range(cnt):
@@ -44,18 +35,10 @@ def spawn_ice_wall(pos,cnt,d):
 	del pos,cnt,d,icew
 
 #lv7
-def spw_lab_tile(p,cnt,way,sca=(.5,.8,.5)):
-	for lbt in range(cnt):
-		if way == 0:
-			ObjType_Block(ID=6,pos=(p[0]+lbt,p[1],p[2]),sca=sca,ro_y=0)
-		else:
-			ObjType_Block(ID=6,pos=(p[0],p[1],p[2]+lbt),sca=sca,ro_y=90)
-	del p,cnt,way,lbt,sca
-
 def spw_multi_lab_tile(p,cnt,way,sca):
 	for laX in range(cnt[0]):
 		for laZ in range(cnt[1]):
-			FloorBlock(ID=6,pos=(p[0]+laX,p[1],p[2]+laZ),sca=sca,ro_y={0:0,1:90}[way])
+			ObjType_Block(ID=6,pos=(p[0]+laX,p[1],p[2]+laZ),sca=sca,ro_y=ro_y)
 	del p,cnt,way,laX,laZ
 ## Pseudo CrashB in Warp Room
 
@@ -69,39 +52,44 @@ class PseudoCrash(Entity):
 		s.idfr=0
 	def update(self):
 		animation.idle(self,sp=18)
+
 ### OBJECT TYPES #######
 ##level block platforms
-mpk={1:'l1/block/block',
-	2:'l2/block/block',
-	3:'l3/tile/tile',
-	4:'l4/swr_tile/swr_tile',
-	5:'l5/block/block',
-	6:'l7/lab_ptf/lab_ptf'}
+mpk={0:'l1/block/block',
+	1:'l2/block/block',
+	2:'l3/tile/tile',
+	3:'l4/swr_tile/swr_tile',
+	4:'l5/block/block',
+	5:'l7/lab_ptf/lab_ptf'}
 class ObjType_Block(Entity):
-	def __init__(self,pos,ID,sca=0,ro_y=0,typ=0,EMD=False):
+	def __init__(self,pos,ID,sca=0,ro_y=0,typ=0):
 		s=self
 		s.vnum=ID
-		super().__init__(model=omf+mpk[ID]+'.obj',texture=mpk[ID]+'.png',position=pos,scale=sca,rotation_y=ro_y,collider=b)
-		s.double_sided=(ID in {4,5})
-		if EMD:
-			s.collider=None
-			del pos,sca,ro_y,typ,ID,EMD
-			return
-		if ID == 2:
-			s.rotation_y=180
-			s.collider=BoxCollider(self,size=Vec3(2,4,2))
-		if ID == 3:
-			s.scale=.35
-			s.collider=BoxCollider(s,center=Vec3(0,-.1,0),size=Vec3(2.4,1,2.4))
+		super().__init__(model=omf+mpk[ID]+'.obj',texture=mpk[ID]+'.png',position=pos,rotation_y=ro_y,scale=sca)
+		s.double_sided=ID in {1,3,4}
+		bl_c={0:lambda:setattr(s,'collider',b),
+			1:lambda:setattr(s,'collider',BoxCollider(s,size=Vec3(2,4,2))),
+			2:lambda:setattr(s,'collider',BoxCollider(s,size=Vec3(2.4,1,2.4),center=Vec3(0,-.1,0))),
+			3:lambda:setattr(s,'collider',BoxCollider(s,center=Vec3(0,-.1,0),size=Vec3(2.4,1,2.4))),
+			4:lambda:setattr(s,'collider',BoxCollider(s,size=Vec3(25,4,25))),
+			5:lambda:setattr(s,'collider',BoxCollider(s,center=Vec3(0,-7.5,0),size=(25,15,25))),
+			6:lambda:setattr(s,'collider',b)}
+		bl_c[ID]()
 		if ID == 4:
-			s.scale=.02
-			s.collider=BoxCollider(s,size=Vec3(25,4,25))
 			s.matr='metal'
-		if ID == 5:
-			s.scale=.03
-			s.rotation_y=-90
-			s.collider=BoxCollider(s,center=Vec3(0,-7.5,0),size=(25,15,25))
-		del pos,sca,ro_y,typ,ID
+		if ID == 6 and typ == 1:
+			s.texture=omf+mpk[ID]+'_e.png'
+		s.collider.visible=True
+		del pos,sca,ro_y,typ,ID,bl_c
+
+#multi tiles/blocks
+block_sca={0:.5,1:.5,2:.35,3:.02,5:.03,6:(.5,.8,.5)}
+trhs={0:1,1:.985,2:.85,3:.501,4:.75,5:1}
+def spw_block(ID,p,vx,sca=0,ro_y=0):
+	for gbx in range(vx[0]):
+		for gbz in range(vx[1]):
+			ObjType_Block(ID=ID,pos=(p[0]+trhs[ID]*gbx,p[1],p[2]+trhs[ID]*gbz),sca=block_sca[ID],ro_y=ro_y)
+	del p,vx,ID,sca,gbx,gbz,ro_y
 
 ##level side wall scenes
 sds={0:'l1/grass_side/grass_sd',
@@ -554,8 +542,6 @@ class LoosePlatform(Entity):
 
 ####################
 ## level 7 objects #
-
-
 lbff=omf+'l7/piston_ptf/piston_ptf'
 class PistonPlatform(Entity):
 	def __init__(self,pos,spd,pa):

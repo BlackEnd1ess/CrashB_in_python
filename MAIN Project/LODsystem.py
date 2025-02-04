@@ -38,7 +38,9 @@ class ManageObjects(Entity):
 				v.enabled=j < 12
 			if v.name == WM:
 				v.enabled=j < 8
-			if v.name in {CORRIDOR,BLOCK,SCENE,FLOOR,WALL,DECO}:
+			if v.name == SCENE:
+				v.enabled= j < 32
+			if v.name in {CORRIDOR,BLOCK,FLOOR,WALL,DECO}:
 				v.enabled=k
 		del ac,v,k,j
 	def update(self):
