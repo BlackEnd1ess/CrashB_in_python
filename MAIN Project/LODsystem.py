@@ -35,7 +35,10 @@ class ManageObjects(Entity):
 			if cc.is_crate(v) and v.vnum != 15:
 				v.enabled=j < 15
 			if cc.is_enemie(v) and v.vnum != 15:
-				v.enabled=j < 12
+				if v.vnum == 17:
+					v.visible= j < 12
+				else:
+					v.enabled=j < 12
 			if v.name == WM:
 				v.enabled=j < 8
 			if v.name == SCENE:

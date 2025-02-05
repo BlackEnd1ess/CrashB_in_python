@@ -551,7 +551,7 @@ def check_nitro_stack():
 				ni.can_jmp=False
 	del nit_crt,all_crt
 def is_crate(e):
-	return (hasattr(e,'idf') and e.idf == 'cr')
+	return hasattr(e,'idf') and e.idf == 'cr'
 
 ## bonus level
 def load_b_ui():
@@ -683,7 +683,7 @@ def fly_away(n):
 			cache_instance(n)
 			wumpa_count(1)
 def is_enemie(n):
-	return (hasattr(n,'idf') and n.idf == 'np')
+	return hasattr(n,'idf') and n.idf == 'np'
 def bash_enemie(e,h):
 	e.is_hitten=True
 	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)

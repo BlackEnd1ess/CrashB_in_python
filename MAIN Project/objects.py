@@ -1,4 +1,4 @@
-from ursina import Entity,color,time,distance,invoke,BoxCollider,Vec3,SpotLight,camera,Audio,Text,scene
+from ursina import Entity,color,time,distance,invoke,BoxCollider,Vec3,SpotLight,camera,Audio,Text,scene,Shader,Vec2,load_texture
 import _core,status,item,sound,animation,player,_loc,settings,effect,npc,ui,danger,random
 from ursina.shaders import *
 
@@ -16,45 +16,17 @@ omf='res/objects/'
 bgg='res/background/'
 b='box'
 
-#lv2
-def plank_bridge(pos,typ,cnt,ro_y,DST):
-	for wP in range(cnt):
-		plNK={90:lambda:Plank(pos=(pos[0]+wP*DST,pos[1],pos[2]),ro_y=ro_y,typ=typ),
-			0:lambda:Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)}
-		plNK[ro_y]()
-	del pos,typ,cnt,ro_y,DST
+### OBJECT TYPES #########
+##level block platforms ##
 
-def pillar_twin(p):
-	ObjType_Deco(ID=2,sca=.2,col=color.cyan,rot=(-90,45,0),pos=(p[0],p[1],p[2]))
-	ObjType_Deco(ID=2,sca=.2,col=color.cyan,rot=(-90,45,0),pos=(p[0]+1.5,p[1],p[2]))
-	del p
+block_sca={0:.5,1:.5,2:.35,3:.02,4:.03,5:(.5,.8,.5)}
+trhs={0:1,1:.985,2:.85,3:.501,4:.75,5:1}
+def spw_block(ID,p,vx,sca=0,ro_y=0,typ=0):
+	for gbx in range(vx[0]):
+		for gbz in range(vx[1]):
+			ObjType_Block(ID=ID,pos=(p[0]+trhs[ID]*gbx,p[1],p[2]+trhs[ID]*gbz),sca=block_sca[ID],ro_y=ro_y,typ=typ)
+	del p,vx,ID,sca,gbx,gbz,ro_y,typ
 
-def spawn_ice_wall(pos,cnt,d):
-	for icew in range(cnt):
-		ObjType_Scene(ID=2,pos=(pos[0],pos[1],pos[2]+icew*16.4),ro_y={0:90,1:-90}[d],sca=(.6,.5,.4),col=color.white)
-	del pos,cnt,d,icew
-
-#lv7
-def spw_multi_lab_tile(p,cnt,way,sca):
-	for laX in range(cnt[0]):
-		for laZ in range(cnt[1]):
-			ObjType_Block(ID=6,pos=(p[0]+laX,p[1],p[2]+laZ),sca=sca,ro_y=ro_y)
-	del p,cnt,way,laX,laZ
-## Pseudo CrashB in Warp Room
-
-MVP=omf+'l1/p_moss/moss'
-rp='res/pc/crash'
-class PseudoCrash(Entity):
-	def __init__(self):
-		s=self
-		super().__init__(model=rp+'.ply',texture=rp+'.tga',scale=.1/20,rotation=(-90,30,0),position=(9,-4,0),unlit=False)
-		Entity(model=MVP+'.obj',texture=MVP+'.png',scale=.75/30,position=(s.x,s.y,s.z),double_sided=True,color=color.rgb32(170,190,180))
-		s.idfr=0
-	def update(self):
-		animation.idle(self,sp=18)
-
-### OBJECT TYPES #######
-##level block platforms
 mpk={0:'l1/block/block',
 	1:'l2/block/block',
 	2:'l3/tile/tile',
@@ -70,28 +42,28 @@ class ObjType_Block(Entity):
 		bl_c={0:lambda:setattr(s,'collider',b),
 			1:lambda:setattr(s,'collider',BoxCollider(s,size=Vec3(2,4,2))),
 			2:lambda:setattr(s,'collider',BoxCollider(s,size=Vec3(2.4,1,2.4),center=Vec3(0,-.1,0))),
-			3:lambda:setattr(s,'collider',BoxCollider(s,center=Vec3(0,-.1,0),size=Vec3(2.4,1,2.4))),
-			4:lambda:setattr(s,'collider',BoxCollider(s,size=Vec3(25,4,25))),
-			5:lambda:setattr(s,'collider',BoxCollider(s,center=Vec3(0,-7.5,0),size=(25,15,25))),
-			6:lambda:setattr(s,'collider',b)}
+			3:lambda:setattr(s,'collider',BoxCollider(s,size=Vec3(25,4,25))),
+			4:lambda:setattr(s,'collider',BoxCollider(s,center=Vec3(0,-7.5,0),size=(25,15,25))),
+			5:lambda:setattr(s,'collider',b)}
 		bl_c[ID]()
-		if ID == 4:
+		if ID == 0 and typ == 1:
+			s.scale=(.5,.5,.3)
+		if ID == 5:
+			if typ == 1:
+				s.texture=omf+mpk[ID]+'_e.png'
+			if typ == 2:
+				s.scale_y=1.2
+		if ID in {3,5}:
 			s.matr='metal'
-		if ID == 6 and typ == 1:
-			s.texture=omf+mpk[ID]+'_e.png'
-		s.collider.visible=True
 		del pos,sca,ro_y,typ,ID,bl_c
 
-#multi tiles/blocks
-block_sca={0:.5,1:.5,2:.35,3:.02,5:.03,6:(.5,.8,.5)}
-trhs={0:1,1:.985,2:.85,3:.501,4:.75,5:1}
-def spw_block(ID,p,vx,sca=0,ro_y=0):
-	for gbx in range(vx[0]):
-		for gbz in range(vx[1]):
-			ObjType_Block(ID=ID,pos=(p[0]+trhs[ID]*gbx,p[1],p[2]+trhs[ID]*gbz),sca=block_sca[ID],ro_y=ro_y)
-	del p,vx,ID,sca,gbx,gbz,ro_y
+###########################
+##level side wall scenes ##
+def spawn_ice_wall(pos,cnt,d):
+	for icew in range(cnt):
+		ObjType_Scene(ID=2,pos=(pos[0],pos[1],pos[2]+icew*16.4),ro_y={0:90,1:-90}[d],sca=(.6,.5,.4),col=color.white)
+	del pos,cnt,d,icew
 
-##level side wall scenes
 sds={0:'l1/grass_side/grass_sd',
 	1:'l1/tree/multi_tree',
 	2:'l2/snw_hill/sn_hill',
@@ -123,7 +95,8 @@ class ObjType_Scene(Entity):
 		s.model=omf+sds[s.vnum]+'.ply'
 		s.rotation_x=-90
 
-##level front walls
+######################
+##level front walls ##
 smd={0:'l1/turtle_wall/turtle_wall',
 	1:'l2/snow_wall/snow_wall',
 	2:'l4/swr_wall/swr_wall',
@@ -142,7 +115,13 @@ class ObjType_Wall(Entity):
 			s.collider='box'
 		del ID,pos,sca,ro_y,col
 
-##level decorations
+######################
+##level decorations ##
+def pillar_twin(p):
+	ObjType_Deco(ID=2,sca=.2,col=color.cyan,rot=(-90,45,0),pos=(p[0],p[1],p[2]))
+	ObjType_Deco(ID=2,sca=.2,col=color.cyan,rot=(-90,45,0),pos=(p[0]+1.5,p[1],p[2]))
+	del p
+
 dms={0:'l1/bush/bush',
 	1:'l1/tree_s/tree_s',
 	2:'l2/pillar/pillar',
@@ -178,7 +157,8 @@ class ObjType_Deco(Entity):
 			return
 		s.model=omf+dms[s.vnum]+'.ply'
 
-##level corridors
+####################
+##level corridors ##
 cor={0:'l1/turtle_corridor/turtle_corridor',
 	1:'l5/ruin_corridor/ruin_corridor'}
 class ObjType_Corridor(Entity):
@@ -207,9 +187,10 @@ class ObjType_Corridor(Entity):
 			HitBox(pos=(s.x+1.4,s.y+1.7,s.z),sca=(.5,2,3))
 			IndoorZone(pos=(s.x,s.y+2.55,s.z),sca=3)
 
-##level Grounds
+#################
+##level Grounds##
 flr={0:None,
-	1:'l3/wood_stage/wood_stage',#sca=.03,rot=(-90,90,0),col=color.rgb32(100,100,0)
+	1:'l3/wood_stage/wood_stage',
 	2:'l3/big_tile/big_tile',
 	3:'l3/wt_tree/wt_tree',#sca=.03,col=color.rgb32(180,180,180),rot=rotation=(-90,90,0),
 	4:'l4/floor/swr_floor',#sca=.5
@@ -245,6 +226,7 @@ class ObjType_Floor(Entity):
 				HitBox(pos=(s.x-.9,s.y+.4,s.z),sca=(.3,.5,1.7))
 		if ID == 8:
 			s.texture_scale=(sca[0],sca[2])
+			s.name='befl'
 		s.set_collider()
 		del ID,pos,sca,rot,col
 	def set_model(self):
@@ -273,7 +255,8 @@ class ObjType_Floor(Entity):
 			cdl[s.vnum]()
 		del cdl
 
-##level background
+#####################
+##level background ##
 bpb={0:'warp_room.png',
 	1:'jungle.png',
 	2:'island.jpg',
@@ -305,7 +288,8 @@ class ObjType_Background(Entity):
 		if s.y != s.spawn_y:
 			s.y=s.spawn_y
 
-##level water
+################
+##level water ##
 wtr={0:'ev/water/water_',
 	1:'l3/water_flow/water_flow',
 	2:'l3/water_fall/waterf',
@@ -323,7 +307,6 @@ class ObjType_Water(Entity):
 			if ID == 1:
 				s.texture_scale=(1,12)
 			dg.WaterHit(p=(pos[0],pos[1]-.1,pos[2]),sc=sca)
-			CobbleStone(pos=(pos[0],pos[1]-.6,pos[2]+.05))
 		else:
 			s.model='quad'
 			s.scale=(sca[0],sca[1])
@@ -362,9 +345,9 @@ class ObjType_Water(Entity):
 				return
 			s.flow_normal()
 
-##################################
-####################
-## level 1 objects #
+#####################
+## level 1 objects ##
+MVP=omf+'l1/p_moss/moss'
 class MossPlatform(Entity):
 	def __init__(self,p,ptm,pts=.5,ptw=3):
 		s=self
@@ -422,8 +405,15 @@ class MossPlatform(Entity):
 		if s.ptm > 1:
 			s.ptf_move(di=s.drc)
 
-####################
-## level 2 objects #
+#####################
+## level 2 objects ##
+def plank_bridge(pos,typ,cnt,ro_y,DST):
+	for wP in range(cnt):
+		plNK={90:lambda:Plank(pos=(pos[0]+wP*DST,pos[1],pos[2]),ro_y=ro_y,typ=typ),
+			0:lambda:Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)}
+		plNK[ro_y]()
+	del pos,typ,cnt,ro_y,DST
+
 plob=omf+'l2/plank/plank.png'
 class Plank(Entity):
 	def __init__(self,pos,typ,ro_y):
@@ -471,16 +461,16 @@ class SnowPlatform(Entity):
 		s.co=Entity(model=wfc,scale=(.85,1,.85),name=s.name,position=(s.x,s.y-.5,s.z),collider=b,visible=False)
 		del pos
 
-####################
-## level 3 objects #
+#####################
+## level 3 objects ##
 cbls=omf+'l3/cobble_stone/cobble_stone'
 class CobbleStone(Entity):
 	def __init__(self,pos):
 		super().__init__(model=cbls+'.ply',texture=cbls+'.png',position=pos,scale=(2,4,.75),rotation=(-90,0,0))
 		del pos
 
-####################
-## level 4 objects #
+#####################
+## level 4 objects ##
 swmi=omf+'l4/swr_swim/swr_swim'
 class SwimPlatform(Entity):##box collider
 	def __init__(self,pos):
@@ -510,8 +500,8 @@ class SwimPlatform(Entity):##box collider
 				if s.f_time >= .5:
 					s.sink()
 
-####################
-## level 5 objects #
+#####################
+## level 5 objects ##
 lpp=omf+'l5/loose_ptf/'
 class LoosePlatform(Entity):
 	def __init__(self,pos,t):
@@ -540,8 +530,8 @@ class LoosePlatform(Entity):
 			s.active=True
 			s.action()
 
-####################
-## level 7 objects #
+#####################
+## level 7 objects ##
 lbff=omf+'l7/piston_ptf/piston_ptf'
 class PistonPlatform(Entity):
 	def __init__(self,pos,spd,pa):
@@ -634,8 +624,8 @@ class LabPlatform(Entity):
 		svd[s.direc]()
 		del svd
 
-##################
-## logic objects #
+###################
+## logic objects ##
 class CrateScore(Entity):## level reward
 	def __init__(self,pos):
 		s=self
@@ -790,8 +780,8 @@ class PseudoGemPlatform(Entity):
 			return
 		s.alpha=.5
 
-#############
-## Switches #
+##############
+## Switches ##
 class LevelFinish(Entity):## finish level
 	def __init__(self,p):
 		s=self
@@ -830,8 +820,8 @@ class IndoorZone(Entity):## disable rain
 			LC.ACTOR.CMS=3.2
 			LC.ACTOR.indoor=.3
 
-###################
-## global objects #
+####################
+## global objects ##
 class HitBox(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model=wfc,position=pos,scale=sca,collider=b,name='htbx',visible=False)
@@ -850,3 +840,14 @@ class InvWall(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model=wfc,position=pos,scale=sca,visible=False,collider=b)
 		del pos,sca
+
+## Pseudo CrashB in Warp Room
+rp='res/pc/crash'
+class PseudoCrash(Entity):
+	def __init__(self):
+		s=self
+		super().__init__(model=rp+'.ply',texture=rp+'.tga',scale=.1/20,rotation=(-90,30,0),position=(9,-4,0),unlit=False)
+		Entity(model=MVP+'.obj',texture=MVP+'.png',scale=.75/30,position=(s.x,s.y,s.z),double_sided=True,color=color.rgb32(170,190,180))
+		s.idfr=0
+	def update(self):
+		animation.idle(self,sp=18)
