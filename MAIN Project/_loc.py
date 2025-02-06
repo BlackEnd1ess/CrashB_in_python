@@ -1,6 +1,6 @@
 ## lists, arrays and list access
 from ursina import color
-
+c=color
 #checkpoint - bonus
 bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(9,5,20),(26,5,-36),(0,0,0)]
 
@@ -33,26 +33,32 @@ fdc={1:ge_0,2:ge_0,3:ge_0,4:ge_1,5:ge_2,6:ge_0,7:ge_0,8:ge_0}
 
 #gem ui color
 O=180
-cglr=color.rgb32(O,O,O)#clear gem
-GMU={1:color.rgb32(0,0,O),#blue
-	2:color.rgb32(O,0,0),#red
-	3:color.rgb32(O,O,0),#violet
-	4:color.rgb32(0,O,0),#green
-	5:color.rgb32(O,0,O),#yellow
+cglr=c.rgb32(O,O,O)#clear gem
+GMU={1:c.rgb32(0,0,O),#blue
+	2:c.rgb32(O,0,0),#red
+	3:c.rgb32(O,O,0),#violet
+	4:c.rgb32(0,O,0),#green
+	5:c.rgb32(O,0,O),#yellow
 	6:cglr,#clear
 	7:cglr,
 	8:cglr}#clear
 
 #gem color
 GMC={0:cglr,
-	1:color.rgb32(O,0,0),
-	2:color.rgb32(0,O,0),
-	3:color.rgb32(O,0,O),
-	4:color.rgb32(0,0,O),
-	5:color.rgb32(O,O,0),
+	1:c.rgb32(O,0,0),
+	2:c.rgb32(0,O,0),
+	3:c.rgb32(O,0,O),
+	4:c.rgb32(0,0,O),
+	5:c.rgb32(O,O,0),
 	6:cglr,
 	7:cglr,
 	8:cglr}
+
+#crate break animation color
+cbrc={3:c.rgb32(140,70,0),
+	11:c.rgb32(190,0,0),
+	12:c.rgb32(0,190,0),
+	16:c.rgb32(160,0,160)}
 
 #fog dst/color/dst
 SKY_BG_COLOR=None

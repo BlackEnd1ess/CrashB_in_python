@@ -1,17 +1,14 @@
 ## BUGS/ERORRS
 - aku mask / checkpoint lagg
-- gem route purge after bonus?
-- npc size: hedgehog, plant
-- ice_ptf no mtl / 2 texture
-- room door open stuck
-- dth event sound, splash(water)
 
-##TODO
-- lab assistant push/fall
+#LEVEL EDITOR
 - level editor environment settings
 - level editor side scene
 - level editor bonus maker
 - level editor 2,5D settings
+
+##TODO
+- lab assistant push/fall
 - firetrap
 - new level prototyp with lights
-- crash belly smash wave
+- cobblestone row l1/l3

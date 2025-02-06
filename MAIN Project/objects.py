@@ -1,4 +1,4 @@
-from ursina import Entity,color,time,distance,invoke,BoxCollider,Vec3,SpotLight,camera,Audio,Text,scene,Shader,Vec2,load_texture
+from ursina import Entity,color,time,distance,invoke,BoxCollider,Vec3,SpotLight,camera,Audio,Text,scene
 import _core,status,item,sound,animation,player,_loc,settings,effect,npc,ui,danger,random
 from ursina.shaders import *
 
@@ -663,6 +663,7 @@ class StartRoom(Entity):## game spawn point
 		Entity(model='plane',name=s.name,position=(s.x,s.y+0.01,s.z),color=color.black,scale=3)
 		Entity(model='quad',name=s.name,color=color.black,scale=(6,.5),position=(s.x,s.y+2.3,s.z+2.4))
 		RoomDoor(pos=(s.x,s.y+1.875,s.z+2.3))
+		an.CrateBreak(pos=(0,-5,-10),col=color.white)
 		player.CrashB(pos=(s.x,s.y+.85,s.z-.1))
 		if st.aku_hit > 0:
 			npc.AkuAkuMask(pos=(s.x-.3,s.y+1,s.z+.5))
@@ -708,16 +709,25 @@ class RoomDoor(Entity):## door for start and end room
 		s.idf='mo'
 		super().__init__(model=s.dPA+'u0.ply',texture=s.dPA+'u_door.tga',name='rmdr',position=pos,scale=.001,rotation_x=90,collider=b)
 		s.door_part=Entity(model=s.dPA+'d0.ply',name=s.name,texture=s.dPA+'d_door.tga',position=(s.x,s.y+.1,s.z),scale=.001,rotation_x=90,collider=b)
+		s.active=False
 		s.d_opn=False
 		s.d_frm=0
 		del pos
 	def update(self):
-		if not st.gproc():
-			ta=LC.ACTOR
-			s=self
-			qf=(distance(ta.position,s.position) < 2.4 or ta.z > s.z)
-			ptw={True:lambda:an.door_open(s),False:lambda:an.door_close(s)}
-			ptw[qf]()
+		if st.gproc():
+			return
+		s=self
+		fvd=distance(s,LC.ACTOR)
+		if fvd > 4:
+			s.active=False
+		if fvd < 2.4:
+			s.active=True
+		if s.active:
+			if not s.d_opn:
+				an.door_open(s)
+			return
+		if s.d_opn:
+			an.door_close(s)
 
 class BonusPlatform(Entity):## switch -> bonus round
 	def __init__(self,pos):

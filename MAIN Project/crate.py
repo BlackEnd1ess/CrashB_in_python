@@ -42,15 +42,19 @@ def place_crate(p,ID,m=0,l=1,pse=False):
 	del p,ID,m,l,pse,CRATES
 
 def destroy_event(c):
-	cc.crate_stack(c)
+	cc.crate_stack(c.position)
 	c.collider=None
-	if not c.poly:
-		st.C_RESET.append(c)
 	if c.vnum in {11,12}:
 		explosion(c)
+	if not c.poly:
+		st.C_RESET.append(c)
 	if c.visible:
 		sn.crate_audio(ID=2)
-		an.CrateBreak(c)
+		if c.vnum in LC.cbrc:
+			twc=LC.cbrc[c.vnum]
+		else:
+			twc=color.rgb32(180,80,0)
+		an.CrateBreak(c.position,col=twc)
 	if st.bonus_round:
 		st.crate_bonus+=1
 	else:
@@ -76,25 +80,24 @@ def spawn_ico(c):
 	ico.animate_y(c.y+1,duration=1.2)
 	invoke(lambda:cc.purge_instance(ico),delay=3)
 
-def explosion(cr):
-	if cr.visible:
-		effect.Fireball(cr)
+def explosion(c):
+	if c.visible:
+		effect.Fireball(c)
 	sn.crate_audio(ID=10)
-	if cr.vnum == 12:
+	if c.vnum == 12:
 		invoke(lambda:sn.crate_audio(ID=11,pit=1.4),delay=.1)
-	rk={tt for tt in scene.entities if (distance(cr.position,tt.position) < 1)}
-	for exR in rk:
-		if cc.is_crate(exR) and exR.collider:
-			if exR.vnum in {3,11}:
-				exR.empty_destroy()
-			else:
-				exR.destroy()
-		if cc.is_enemie(exR):
-			if not exR.is_hitten:
-				cc.bash_enemie(e=exR,h=cr)
-		if exR == LC.ACTOR:
-			cc.get_damage(exR,rsn=4)
-	del cr,rk
+	for nbc in scene.entities[:]:
+		if distance(c,nbc) < 1 and nbc.collider:
+			if cc.is_crate(nbc):
+				if nbc.vnum in {3,11}:
+					nbc.empty_destroy()
+				else:
+					nbc.destroy()
+			if cc.is_enemie(nbc) and not nbc.is_hitten:
+				cc.bash_enemie(nbc,c)
+			if nbc == LC.ACTOR:
+				cc.get_damage(LC.ACTOR,rsn=4)
+	del c,nbc
 
 ##Crate Logics
 class Iron(Entity):
@@ -186,9 +189,10 @@ class ExtraLife(Entity):
 
 class AkuAku(Entity):
 	def __init__(self,pos,pse):
-		self.vnum=5
+		s=self
+		s.vnum=5
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		del pos,pse
 	def destroy(self):
 		s=self
@@ -200,20 +204,21 @@ class AkuAku(Entity):
 					st.is_invincible=True
 					sn.AkuMusic()
 		if not st.aku_exist:
-			npc.AkuAkuMask(pos=(s.x,s.y,s.z))
+			npc.AkuAkuMask(s.position)
 		destroy_event(s)
 
 class Checkpoint(Entity):
 	def __init__(self,pos,pse):
-		self.vnum=6
+		s=self
+		s.vnum=6
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		del pos,pse
 	def destroy(self):
 		s=self
 		st.checkpoint=(s.x,s.y+1.5,s.z)
 		sn.crate_audio(ID=6)
-		ui.CheckpointLetter(pos=s.position)
+		ui.CheckpointLetter(s.position)
 		destroy_event(s)
 		cc.collect_reset()
 
@@ -317,10 +322,10 @@ class SwitchNitro(Entity):
 			s.texture=pp+'0.tga'
 			spawn_ico(s)
 			st.C_RESET.append(s)
-			ni={nt for nt in scene.entities if (isinstance(nt,Nitro))}
-			for nd in ni:
-				if nd.collider:
-					nd.destroy()
+			for nt in scene.entities[:]:
+				if isinstance(nt,Nitro) and nt.collider:
+					nt.destroy()
+			del nt
 
 tx=pp+'crate_tnt_'
 class TNT(Entity):
@@ -366,12 +371,12 @@ class Nitro(Entity):
 		s.vnum=12
 		super().__init__(model=cr2,color=color.white)
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
-		s.acustic=False
 		s.can_jmp=True
 		s.snd_time=1
 		del pos,pse
 	def destroy(self):
-		destroy_event(self)
+		s=self
+		destroy_event(s)
 	def c_action(self):
 		s=self
 		s.snd_time=max(s.snd_time-time.dt,0)

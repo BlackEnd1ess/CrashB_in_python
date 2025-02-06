@@ -30,13 +30,6 @@ def start_load():
 def load_object():
     o.StartRoom(pos=(8,0,-1))
     o.EndRoom(pos=(8,2,68),c=color.gray)
-    o.FloorBlock(pos=Vec3(5, 0, 6),ID=1,sca=.5)
-    o.FloorBlock(pos=Vec3(6, 0, 6),ID=1,sca=.5)
-    o.FloorBlock(pos=Vec3(7, 0, 6),ID=1,sca=.5)
-    o.FloorBlock(pos=Vec3(8, 0, 6),ID=1,sca=.5)
-    o.FloorBlock(pos=Vec3(9, 0, 6),ID=1,sca=.5)
-    o.FloorBlock(pos=Vec3(10, 0, 6),ID=1,sca=.5)
-    o.FloorBlock(pos=Vec3(11, 0, 6),ID=1,sca=.5)
 
 def load_crate():
     c.place_crate(ID=1,p=(5.0, 0.66, 6.0))

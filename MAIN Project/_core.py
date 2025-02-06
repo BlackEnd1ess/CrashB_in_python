@@ -1,7 +1,8 @@
 import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,time,random,json,math,objects
 from ursina import Entity,Text,camera,scene,invoke,Vec3,color,distance,boxcast,raycast,window
 from ursina.ursinastuff import destroy
-from math import atan2,sqrt,pi
+from effect import PressureWave
+from math import atan2,sqrt,pi,sin,cos,radians
 
 level_ready=False
 env=environment
@@ -402,8 +403,10 @@ def check_wall(c):
 		if not xa in LC.trigger_lst:
 			c.position-=c.direc*time.dt*c.move_speed
 def check_floor(c):
-	lkh={r for r in scene.entities if (str(r) in LC.item_lst|LC.dangers|LC.trigger_lst) or r in [c,LC.shdw]}
-	vj=boxcast(c.world_position,Vec3(0,1,0),distance=.01,thickness=(.125,.125),ignore=lkh,debug=False)
+	lkh={r for r in scene.entities if (str(r) in LC.item_lst|LC.dangers|LC.trigger_lst) or r in {c,LC.shdw}}
+	fwd_drc=Vec3(-sin(radians(c.rotation_y))*.05,0,-cos(radians(c.rotation_y))*.05)
+	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.14,.14),ignore=lkh,debug=True)
+	del fwd_drc
 	vp=vj.entity
 	if not c.landed:
 		fall_interact(c,vp)
@@ -427,6 +430,8 @@ def land_act(c,vp):
 		c.space_time,c.fall_time=0,0
 		c.anim_land()
 		sn.landing_sound(c,vp)
+		if c.b_smash:
+			PressureWave(pos=c.position,col=color.light_gray)
 def fall_interact(c,e):
 	if (is_crate(e) and c.fall_time > .05):
 		if not ((e.vnum == 0) or (e.vnum in {9,10,11} and e.activ)):
@@ -534,14 +539,14 @@ def crate_set_val(cR,Cpos,Cpse):
 	cR.poly=Cpse
 	cR.scale=.16
 	del cR,Cpos,Cpse
-def crate_stack(c):
-	crf={pk for pk in scene.entities if (is_crate(pk) and (pk.x == c.x and pk.z == c.z) and pk.vnum != 3)}
+def crate_stack(c_pos):
 	sdi=0
-	for wm in crf:
-		sdi+=1
-		if (wm.y > c.y) and (wm.y-c.y) <= .33*sdi:
-			wm.animate_y(wm.y-.32,duration=.175)
-	sdi=0
+	for wm in scene.entities[:]:
+		if is_crate(wm) and wm.x == c_pos[0] and wm.z == c_pos[2]:
+			if wm.y > c_pos[1] and abs(wm.y-c_pos[1]) <= .32*sdi:
+				wm.animate_y(wm.y-.32,duration=.175)
+			sdi+=1
+	del c_pos,wm,sdi
 def check_nitro_stack():
 	nit_crt={ct for ct in scene.entities if is_crate(ct) and ct.vnum == 12 and ct.can_jmp}
 	all_crt={ct for ct in scene.entities if is_crate(ct)}
@@ -578,7 +583,7 @@ def enter_bonus(c):
 	st.loading,c.freezed=False,False
 def clear_bonus():
 	for brd in scene.entities[:]:
-		if (brd.parent == scene) and (brd.x > 180):
+		if brd.parent == scene and brd.y < -12:
 			if not (is_crate(brd) or brd in {LC.shdw,LC.ACTOR}):
 				destroy(brd)
 	del brd
@@ -618,7 +623,7 @@ def load_droute(c):
 	st.loading,c.freezed=False,False
 def clear_gem_route():
 	for grd in scene.entities[:]:
-		if (grd.parent == scene) and (grd.x > 180):
+		if grd.parent == scene and grd.x > 180:
 			if not (is_crate(grd) or grd in {LC.shdw,LC.ACTOR}):
 				destroy(grd)
 	del grd

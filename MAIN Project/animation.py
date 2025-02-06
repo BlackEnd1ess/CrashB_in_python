@@ -2,37 +2,16 @@ import status,_core,_loc,sound,time,random
 from ursina.ursinastuff import destroy
 from ursina import Entity,color,invoke
 
-## walk frame count npc
-npc_anim={0:7,#amadillo
-		1:12,#turtle
-		2:12,#saw turtle
-		3:13,#vulture
-		4:15,#penguin
-		5:12,#hedgehog
-		6:14,#seal
-		7:13,#eating plant
-		8:8,#rat
-		9:11,#lizard
-		10:3,#scrubber
-		11:8,#mouse
-		12:12,#eel
-		13:16,#sewer mine
-		14:0,#gorilla
-		15:0,#bee
-		16:10,#lumberjack
-		17:13,#spider robot f
-		18:13,#spider robot t
-		19:29,#robot
-		20:0}#lab assistant
-
 cl='res/objects/l5/loose_ptf/'
 cf='res/crate/anim/'
 nf='res/npc/'
 af='res/pc/'
 mo='model'
+
 st=status
 sn=sound
 cc=_core
+
 bT=50
 t=18
 
@@ -171,6 +150,9 @@ def dth_angelfly(c):
 
 def dth_wtr_swim(c):
 	c.dth_fr=min(c.dth_fr+time.dt*t,25.999)
+	if not c.dth_snd:
+		c.dth_snd=True
+		sn.pc_audio(ID=10,pit=.75)
 	if c.dth_fr > 25.99:
 		c.dth_fr=25
 	c.model=af+f'death/water/{int(c.dth_fr)}.ply'
@@ -232,33 +214,22 @@ def prtc_anim(c):
 		c.hitten=False
 	c.model=cf+f'prt/{int(c.frm)}.ply'
 
-br='brk/0'
 class CrateBreak(Entity):
-	def __init__(self,cr):
+	def __init__(self,pos,col):
 		s=self
-		super().__init__(model=cf+br+'.ply',texture=cf+br+'.tga',rotation=(-90,random.randint(0,360),0),scale=.4/1000,position=(cr.x,cr.y-.16,cr.z),unlit=False)
-		s.frame_break=0
-		s.color=color.rgb32(180,80,0)
-		if cr.vnum == 3:
-			s.color=color.rgb32(140,70,0)
-		if cr.vnum == 11:
-			s.color=color.rgb32(190,0,0)
-		if cr.vnum == 12:
-			s.color=color.rgb32(0,190,0)
-		if cr.vnum == 16:
-			s.color=color.rgb32(160,0,160)
-		del cr
+		super().__init__(model=cf+'brk/0.ply',texture=cf+'brk/0.tga',rotation=(-90,0,0),scale=.4/1000,position=(pos[0],pos[1]-.16,pos[2]),color=col,unlit=False)
+		s.frm=0
+		del pos,col
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		s.frame_break=min(s.frame_break+time.dt*t,13.999)
-		if s.frame_break > 13.99:
-			s.frame_break=0
-			s.texture=None
+		s.frm=min(s.frm+time.dt*t,13.999)
+		if s.frm > 13.99:
+			s.frm=0
 			destroy(s)
 			return
-		s.model=cf+f'brk/{int(s.frame_break)}.ply'
+		s.model=cf+f'brk/{int(s.frm)}.ply'
 
 class CollapseFloor(Entity):
 	def __init__(self,t,pos):
@@ -281,11 +252,11 @@ class CollapseFloor(Entity):
 		s.model=cl+f'{s.typ}/{int(s.frm)}.ply'
 
 ##warp rings
+wrv='res/objects/ev/'
 class WarpRingEffect(Entity): ## spawn animation
 	def __init__(self,pos):
 		s=self
-		s.omf='res/objects/ev/'
-		super().__init__(model=s.omf+'warp_rings/0.ply',texture=s.omf+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.9,unlit=False)
+		super().__init__(model=wrv+'warp_rings/0.ply',texture=wrv+'warp_rings/ring.tga',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.9,unlit=False)
 		s.activ=False
 		s.rings=0
 		s.times=0
@@ -301,17 +272,17 @@ class WarpRingEffect(Entity): ## spawn animation
 				s.rings=0
 				s.times+=1
 				sn.pc_audio(ID=1,pit=.35)
-			s.model=s.omf+'warp_rings/'+str(int(s.rings))+'.ply'
+			s.model=wrv+'warp_rings/'+str(int(s.rings))+'.ply'
 			if s.times > 7:
 				_loc.ACTOR.warped=True
 				destroy(s)
 
 ## npc animation
 def npc_walking(m):
-	m.anim_frame=min(m.anim_frame+time.dt*t,npc_anim[m.vnum]+.999)
-	if m.anim_frame > npc_anim[m.vnum]+.99:
+	m.anim_frame=min(m.anim_frame+time.dt*t,m.max_frm+.999)
+	if m.anim_frame > m.max_frm+.99:
 		m.anim_frame=0
-	m.model=nf+str(m)+'/'+str(int(m.anim_frame))+'.ply'
+	m.model=nf+f'{m}/{int(m.anim_frame)}.ply'
 
 #plant attack
 plt=nf+'eating_plant/'
@@ -461,26 +432,24 @@ def taser_rotation(t):
 ## door animation
 dpw='res/objects/ev/door/'
 def door_open(d):
-	if not d.d_opn:
-		d.d_frm=min(d.d_frm+time.dt*15,3.9)
-		if d.d_frm >= 3.9:
-			d.d_opn=True
-			d.door_part.collider=None
-			d.collider=None
-			d.d_frm=3
-			sn.obj_audio(ID=1)
-		fk=str(int(d.d_frm))+'.ply'
-		d.model=dpw+'u'+fk
-		d.door_part.model=dpw+'d'+fk
+	d.d_frm=min(d.d_frm+time.dt*15,3.9)
+	if d.d_frm >= 3.9:
+		d.d_opn=True
+		d.door_part.collider=None
+		d.collider=None
+		d.d_frm=3
+		sn.obj_audio(ID=1)
+	fk=str(int(d.d_frm))+'.ply'
+	d.model=dpw+'u'+fk
+	d.door_part.model=dpw+'d'+fk
 def door_close(d):
-	if d.d_opn:
-		d.d_frm=max(d.d_frm-time.dt*15,0)
-		if d.d_frm <= 0:
-			d.d_opn=False
-			d.door_part.collider='box'
-			d.collider='box'
-			d.d_frm=0
-			sn.obj_audio(ID=1,pit=.85)
-		fk=str(int(d.d_frm))+'.ply'
-		d.model=dpw+'u'+fk
-		d.door_part.model=dpw+'d'+fk
+	d.d_frm=max(d.d_frm-time.dt*15,0)
+	if d.d_frm <= 0:
+		d.d_opn=False
+		d.door_part.collider='box'
+		d.collider='box'
+		d.d_frm=0
+		sn.obj_audio(ID=1,pit=.85)
+	fk=str(int(d.d_frm))+'.ply'
+	d.model=dpw+'u'+fk
+	d.door_part.model=dpw+'d'+fk

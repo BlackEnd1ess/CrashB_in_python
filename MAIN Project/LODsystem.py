@@ -33,12 +33,12 @@ class ManageObjects(Entity):
 			k=s.check_dst(v,ac)
 			j=distance(v,ac)
 			if cc.is_crate(v) and v.vnum != 15:
-				v.enabled=j < 15
+				v.enabled=j < 12
 			if cc.is_enemie(v) and v.vnum != 15:
 				if v.vnum == 17:
-					v.visible= j < 12
+					v.visible= j < 16
 				else:
-					v.enabled=j < 12
+					v.enabled=j < 16
 			if v.name == WM:
 				v.enabled=j < 8
 			if v.name == SCENE:

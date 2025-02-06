@@ -5,3 +5,12 @@
 
 #29.01.2025
 - new asset for level 3: river cobblestone ground
+
+#05.02.2025
+- Crash belly-smash attack spawn a Pressure Wave Animation
+- sorted most Objects into single categories
+
+#06.02.2025
+- Fixxed Crashs landing Collider more into the middle of Vec3 X/Z. 
+  This prevents you from accidentally hitting the neighboring box when jumping onto a box.
+  In addition, it ensures that you actually land better on top of enemies and npc on Vec3 Y

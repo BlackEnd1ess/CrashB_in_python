@@ -56,32 +56,46 @@ class JumpDust(Entity):
 		if s.scale_x > .6:
 			destroy(s)
 
+prsv='res/crate/anim/exp_wave/'
+class PressureWave(Entity):
+	def __init__(self,pos,col):
+		s=self
+		super().__init__(model=prsv+'0.ply',texture=prsv+'0.png',position=pos,scale=.0008,color=col,rotation_x=90,alpha=.8,unlit=False)
+		s.frm=0
+		del pos,col
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.frm=min(s.frm+time.dt*15,4.999)
+		if s.frm > 4.99:
+			s.frm=0
+			destroy(s)
+			return
+		s.model=prsv+f'{int(s.frm)}.ply'
+
+frb='res/crate/anim/exp_fire/'
 class Fireball(Entity):
 	def __init__(self,cr):
 		s=self
 		nC=color.red
-		if str(cr) == 'ldmn':
+		if cr.name == 'ldmn':
 			nC=color.orange
 		if cc.is_crate(cr) and cr.vnum == 12:
 			nC=color.green
-		super().__init__(model='quad',texture=None,position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC,scale=.75,unlit=False)
-		s.wave=Entity(model=None,texture='res/crate/anim/exp_wave/0.tga',position=s.position,scale=.001,rotation_x=-90,color=nC,alpha=.8,unlit=False)
+		super().__init__(model='quad',texture=frb+'0.png',position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC,scale=.75,unlit=False)
+		PressureWave(pos=s.position,col=nC)
 		s.ex_step=0
-		s.wv_step=0
-		del cr
-	def purge(self):
-		destroy(self.wave)
-		destroy(self)
+		del cr,nC
 	def update(self):
+		if st.gproc():
+			return
 		s=self
-		s.wv_step=min(s.wv_step+time.dt*15,4.999)
 		s.ex_step=min(s.ex_step+time.dt*25,14.999)
-		s.wave.model='res/crate/anim/exp_wave/'+str(int(s.wv_step))+'.ply'
-		s.texture='res/crate/anim/exp_fire/'+str(int(s.ex_step))+'.png'
-		s.wave.visible=(s.wv_step < 4.99)
+		s.texture=frb+f'{int(s.ex_step)}.png'
 		s.visible=(s.ex_step < 14.99)
-		if (s.ex_step > 14.99) and (s.wv_step > 4.99):
-			s.purge()
+		if (s.ex_step > 14.99):
+			destroy(s)
 
 class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
