@@ -62,7 +62,7 @@ class PlayerDBG(Entity):
 		s=self
 		s.tme=max(s.tme-time.dt,0)
 		if s.tme <= 0:
-			s.tme=1
+			s.tme=.5
 			rv=LC.ACTOR
 			mem_usage=s.process.memory_info().rss/(1024*1024)
 			s.ent_state.text=f'INSTANCES   : {s.count_entities()}/{len(scene.entities)}'

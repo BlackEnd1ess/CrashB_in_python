@@ -541,12 +541,14 @@ def crate_set_val(cR,Cpos,Cpse):
 	del cR,Cpos,Cpse
 def crate_stack(c_pos):
 	sdi=0
+	fct=c_pos[1]
 	for wm in scene.entities[:]:
-		if is_crate(wm) and wm.x == c_pos[0] and wm.z == c_pos[2]:
-			if wm.y > c_pos[1] and abs(wm.y-c_pos[1]) <= .32*sdi:
-				wm.animate_y(wm.y-.32,duration=.175)
-			sdi+=1
-	del c_pos,wm,sdi
+		if is_crate(wm) and (wm.x == c_pos[0] and wm.z == c_pos[2]):
+			if wm.y > c_pos[1] and abs(wm.y-c_pos[1]) < .36*sdi:
+				wm.animate_y(fct,duration=.4)
+				fct+=.32
+		sdi+=1
+	del c_pos,wm,sdi,fct
 def check_nitro_stack():
 	nit_crt={ct for ct in scene.entities if is_crate(ct) and ct.vnum == 12 and ct.can_jmp}
 	all_crt={ct for ct in scene.entities if is_crate(ct)}

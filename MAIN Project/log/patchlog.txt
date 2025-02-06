@@ -14,3 +14,5 @@
 - Fixxed Crashs landing Collider more into the middle of Vec3 X/Z. 
   This prevents you from accidentally hitting the neighboring box when jumping onto a box.
   In addition, it ensures that you actually land better on top of enemies and npc on Vec3 Y
+
+- improved crate fall physic: crates that are above the first destroyed crate, stack on the position of the first crate instead of just changing the position down by 1 unit.
