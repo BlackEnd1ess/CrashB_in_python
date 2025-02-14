@@ -1,5 +1,6 @@
 from ursina import Entity,color,time,distance,invoke,BoxCollider,Vec3,SpotLight,camera,Audio,Text,scene
 import _core,status,item,sound,animation,player,_loc,settings,effect,npc,ui,danger,random
+from ursina.ursinastuff import destroy
 from ursina.shaders import *
 
 an=animation
@@ -128,12 +129,13 @@ dms={0:'l1/bush/bush',
 	3:'l2/ice_cry/ice_cry',
 	4:'l2/ice_pce/ice_pce',
 	5:'l2/ice_shard/ice_shard',
-	6:'l4/swr_dmg_pipe/swr_dmg_pipe',
-	7:'l4/swr_drain/swr_drain',
-	8:'l4/swr_drain_big/swr_drain_big',
-	9:'l6/stone_board/stone_board',
-	10:'l7/lab_pipe/lab_pipe',
-	11:'l7/boiler/boiler'}
+	6:'l3/cobble_stone/cobble_stone',
+	7:'l4/swr_dmg_pipe/swr_dmg_pipe',
+	8:'l4/swr_drain/swr_drain',
+	9:'l4/swr_drain_big/swr_drain_big',
+	10:'l6/stone_board/stone_board',
+	11:'l7/lab_pipe/lab_pipe',
+	12:'l7/boiler/boiler'}
 #dm_sca={0:,1:,2:,3:,4:,5}
 class ObjType_Deco(Entity):
 	def __init__(self,ID,pos,sca,rot,col=color.white):
@@ -312,7 +314,6 @@ class ObjType_Water(Entity):
 			s.scale=(sca[0],sca[1])
 			s.texture_scale=(s.scale_x,1)
 			if ID == 2:
-				Entity(model='plane',color=color.black,scale=(18,1,20),position=(s.x,s.y-.75,s.z+1.3))
 				ObjType_Water(ID=3,pos=(s.x,s.y-.49,s.z-.5),sca=(5,1),rot=(90,0,0),frames=15,spd=6,al=1)
 				ObjType_Water(ID=3,pos=(s.x,s.y+.501,s.z+.49),sca=(5,1),rot=(90,180,0),frames=15,spd=6,col=color.rgb32(210,210,210),rev=True,al=1)
 		if rev:
@@ -463,10 +464,10 @@ class SnowPlatform(Entity):
 
 #####################
 ## level 3 objects ##
-cbls=omf+'l3/cobble_stone/cobble_stone'
+cbls=omf+''
 class CobbleStone(Entity):
 	def __init__(self,pos):
-		super().__init__(model=cbls+'.ply',texture=cbls+'.png',position=pos,scale=(2,4,.75),rotation=(-90,0,0))
+		super().__init__(model=cbls+'.ply',texture=cbls+'.png',position=pos,)
 		del pos
 
 #####################

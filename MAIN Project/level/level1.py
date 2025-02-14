@@ -52,6 +52,10 @@ def load_object():
 	o.ObjType_Background(ID=1,pos=(0,0,128),sca=(250,40),txa=(5,1))
 	o.ObjType_Background(ID=1,pos=(0,-20,127),sca=(250,40),txa=(5,1))
 	del gt,gs,fgg
+	#cobblestone underwater
+	for cbb in range(3):
+		o.ObjType_Deco(ID=6,pos=(0,.6-cbb/7,-64+cbb*44.4),sca=(2,3,.75),rot=(-90,0,0))
+	del cbb
 	#plants
 	Entity(model='cube',texture='res/terrain/bricks.png',scale=(9,2,.3),position=(0,-.2,-64.5),texture_scale=(9,2))
 	o.ObjType_Deco(ID=1,pos=(-1.2,1.2,-46),sca=.0175,rot=(-90,0,0))

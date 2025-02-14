@@ -102,23 +102,9 @@ class GemStone(Entity):
 		s.color=LC.GMC[s.gemID]
 		##scale - info: blue gem and yellow gem are Y scaled
 		if s.gemID in {4,5}:
-			gSC={4:s.scale_z/2,5:s.scale_z*1.5}
-			s.scale_z=gSC[s.gemID]
-			del gSC
-		##light reflection
-		lgx=0
-		lgy=.32
-		lgz=.18
-		s_pos={0:(s.x-lgx,s.y+lgy,s.z-lgz),
-			1:(s.x-lgx,s.y+lgy,s.z-lgz),
-			2:(s.x-lgx,s.y+lgy,s.z-lgz),
-			3:(s.x-lgx,s.y+lgy,s.z-lgz),
-			4:(s.x-lgx,s.y+lgy,s.z-lgz),
-			5:(s.x-lgx,s.y+lgy,s.z-lgz),
-			6:(s.x-lgx,s.y+lgy,s.z-lgz),
-			7:(s.x-lgx,s.y+lgy,s.z-lgz)}
-		s.shine=SpotLight(position=s_pos[s.gemID],color=color.gray)
-		del s_pos,lgx,lgy,lgz
+			s.scale_z={4:s.scale_z/2,5:s.scale_z*1.5}[s.gemID]
+		##fake light reflection
+		s.shine=SpotLight(position=(s.x-0,s.y+.32,s.z-.18),color=color.gray)
 	def gem_fail(self):
 		gi=self.gemID
 		if gi == 4 and (st.level_index == 1 and st.crate_count > 0):#blue gem

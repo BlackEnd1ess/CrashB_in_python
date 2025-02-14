@@ -10,12 +10,12 @@ c=crate
 n=npc
 
 def map_setting():
-    LC.LV_DST=(10,15)
-    LC.BN_DST=(5,10)
-    window.color=color.black
-    scene.fog_density=(15,20)
-    scene.fog_color=color.black
-    LC.AMBIENT_LIGHT.color=color.rgb32(140,140,200)
+    LC.FOG_L_COLOR=color.gray
+    LC.FOG_B_COLOR=color.black
+    LC.SKY_BG_COLOR=color.black
+    LC.AMB_M_COLOR=color.rgb32(240,240,200)
+    LC.LV_DST=(140,160)
+    LC.BN_DST=(10,14)
     st.toggle_thunder=False
     st.toggle_rain=False
 
@@ -28,24 +28,18 @@ def start_load():
     map_setting()
 
 def load_object():
-    o.StartRoom(pos=(8,0,-1))
-    o.EndRoom(pos=(8,2,68),c=color.gray)
+    o.StartRoom(pos=(8,.5,-1))
+    o.EndRoom(pos=(8,2,14),c=color.gray)
+    o.spw_block(ID=0,p=(7,0,1),vx=[15,60],sca=(.5,.5,.3))
+
+    o.ObjType_Deco(ID=12,pos=(14,1.1,44.4),sca=(2,3,.75),rot=(-90,0,0))
+    o.ObjType_Deco(ID=12,pos=(14,1.1,0),sca=(2,3,.75),rot=(-90,0,0))
 
 def load_crate():
-    c.place_crate(ID=1,p=(5.0, 0.66, 6.0))
-    c.place_crate(ID=1,p=(8.0, 0.66, 6.0))
-    c.place_crate(ID=1,p=(11.0, 0.66, 6.0))
-    c.place_crate(ID=1,p=(8.0, 0.66, 5.0))
-    c.place_crate(ID=1,p=(8.0, 0.66, 4.0))
-    c.place_crate(ID=1,p=(8.0, 0.66, 3.0))
-    c.place_crate(ID=1,p=(8.0, 0.66, 2.0))
-    c.place_crate(ID=1,p=(8.0, 0.66, 7.0))
-    c.place_crate(ID=1,p=(8.0, 0.66, 8.0))
-    c.place_crate(ID=1,p=(8.0, 0.66, 9.0))
+    mt.crate_wall(ID=1,POS=(8,.66,6),CNT=[1,20])
 
 def load_npc():
-    npc.spawn(ID=2,POS=Vec3(6, 0.5, 6))
-    npc.spawn(ID=2,POS=Vec3(10, 0.5, 6))
+    return
 
 def load_wumpa():
     return

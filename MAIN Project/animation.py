@@ -53,6 +53,7 @@ def spin(d,sp):
 	d.spfr=min(d.spfr+time.dt*sp,11.999)
 	if d.spfr > 11.99:
 		d.spfr=0
+		d.is_attack=False
 	d.model=af+'spn/'+str(int(d.spfr))+'.ply'
 	del d,sp
 

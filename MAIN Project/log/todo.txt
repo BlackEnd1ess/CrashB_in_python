@@ -1,5 +1,6 @@
 ## BUGS/ERORRS
 - aku mask / checkpoint lagg
+- GPU optimzing for modern PC's
 
 #LEVEL EDITOR
 - level editor environment settings
@@ -11,4 +12,4 @@
 - lab assistant push/fall
 - firetrap
 - new level prototyp with lights
-- cobblestone row l1/l3
+

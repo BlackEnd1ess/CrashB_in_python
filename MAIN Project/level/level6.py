@@ -73,8 +73,8 @@ def load_object():
 	dg.LandMine(pos=(9.4,2.41,30.7))
 	dg.LandMine(pos=(8.6,2.41,33.3))
 	#e0
-	o.ObjType_Deco(ID=9,pos=(1.8,.5,-53.8),sca=.5,rot=(-90,0,0),col=color.rgb32(200,170,180))
-	o.ObjType_Deco(ID=9,pos=(-1.8,.5,-53.8),sca=.5,rot=(-90,0,0),col=color.rgb32(200,170,180))
+	o.ObjType_Deco(ID=10,pos=(1.8,.5,-53.8),sca=.5,rot=(-90,0,0),col=color.rgb32(200,170,180))
+	o.ObjType_Deco(ID=10,pos=(-1.8,.5,-53.8),sca=.5,rot=(-90,0,0),col=color.rgb32(200,170,180))
 	o.ObjType_Scene(ID=11,pos=(-1.7,.4,-60),sca=(-.01,.01,.01),ro_y=90,col=ccw)
 	o.ObjType_Scene(ID=11,pos=(1.7,.4,-60),sca=.01,ro_y=-90,col=ccw)
 	o.ObjType_Scene(ID=11,pos=(-1.7,.4,-56.3),sca=(-.01,.01,.01),ro_y=90,col=ccw)

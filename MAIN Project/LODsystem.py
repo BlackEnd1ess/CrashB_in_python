@@ -17,7 +17,6 @@ WALL='obj_type__wall'
 DECO='obj_type__deco'
 WM='wmpf'
 
-## func for render culling
 class ManageObjects(Entity):
 	def __init__(self):
 		s=self
@@ -44,7 +43,8 @@ class ManageObjects(Entity):
 			if v.name == SCENE:
 				v.enabled= j < 32
 			if v.name in {CORRIDOR,BLOCK,FLOOR,WALL,DECO}:
-				v.enabled=k
+				if v.vnum != 12:
+					v.enabled=k
 		del ac,v,k,j
 	def update(self):
 		if st.gproc():

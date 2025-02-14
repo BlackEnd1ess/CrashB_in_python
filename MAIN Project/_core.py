@@ -9,6 +9,8 @@ env=environment
 sn=sound
 st=status
 LC=_loc
+
+o=objects
 C=crate
 N=npc
 
@@ -405,8 +407,7 @@ def check_wall(c):
 def check_floor(c):
 	lkh={r for r in scene.entities if (str(r) in LC.item_lst|LC.dangers|LC.trigger_lst) or r in {c,LC.shdw}}
 	fwd_drc=Vec3(-sin(radians(c.rotation_y))*.05,0,-cos(radians(c.rotation_y))*.05)
-	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.14,.14),ignore=lkh,debug=True)
-	del fwd_drc
+	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.125,.125),ignore=lkh,debug=False)
 	vp=vj.entity
 	if not c.landed:
 		fall_interact(c,vp)
@@ -417,13 +418,12 @@ def check_floor(c):
 		if not (is_crate(vp) or is_enemie(vp)):
 			spc_floor(c,vp)
 		land_act(c,vp)
+		del vp
 		return
 	c.falling,c.landed=True,False
-	fsp={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}
-	c.y-=fsp[c.b_smash]
+	c.y-={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}[c.b_smash]
 	c.fall_time+=time.dt
 	c.anim_fall()
-	del fsp
 def land_act(c,vp):
 	if c.frst_lnd:
 		c.frst_lnd,c.stun=False,False
@@ -541,14 +541,12 @@ def crate_set_val(cR,Cpos,Cpse):
 	del cR,Cpos,Cpse
 def crate_stack(c_pos):
 	sdi=0
-	fct=c_pos[1]
-	for wm in scene.entities[:]:
-		if is_crate(wm) and (wm.x == c_pos[0] and wm.z == c_pos[2]):
-			if wm.y > c_pos[1] and abs(wm.y-c_pos[1]) < .36*sdi:
-				wm.animate_y(fct,duration=.4)
-				fct+=.32
+	crf={pk for pk in scene.entities if (is_crate(pk) and (pk.x == c_pos[0] and pk.z == c_pos[2]) and pk.vnum != 3)}
+	for wm in crf:
+		if (wm.y > c_pos[1]) and (wm.y-c_pos[1]) <= .32*sdi:
+			wm.animate_y(wm.y-.32,duration=.18)
 		sdi+=1
-	del c_pos,wm,sdi,fct
+	del c_pos,sdi,crf
 def check_nitro_stack():
 	nit_crt={ct for ct in scene.entities if is_crate(ct) and ct.vnum == 12 and ct.can_jmp}
 	all_crt={ct for ct in scene.entities if is_crate(ct)}
@@ -585,8 +583,8 @@ def enter_bonus(c):
 	st.loading,c.freezed=False,False
 def clear_bonus():
 	for brd in scene.entities[:]:
-		if brd.parent == scene and brd.y < -12:
-			if not (is_crate(brd) or brd in {LC.shdw,LC.ACTOR}):
+		if brd and brd.y < -15:
+			if isinstance(brd,(o.ObjType_Block,o.ObjType_Wall)):
 				destroy(brd)
 	del brd
 def back_to_level(c):
@@ -626,7 +624,7 @@ def load_droute(c):
 def clear_gem_route():
 	for grd in scene.entities[:]:
 		if grd.parent == scene and grd.x > 180:
-			if not (is_crate(grd) or grd in {LC.shdw,LC.ACTOR}):
+			if not (is_crate(grd) or grd in {LC.shdw,LC.ACTOR} or isinstance(grd,N.AkuAkuMask)):
 				destroy(grd)
 	del grd
 

@@ -53,7 +53,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(26,5,-37)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(0,4,57.3)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
@@ -81,7 +81,6 @@ class CrashB(Entity):
 			s.is_attack=True
 			s.standup,s.is_landing=False,False
 			sn.pc_audio(ID=3)
-			invoke(lambda:setattr(s,'is_attack',False),delay=.5)
 			return
 		sn.pc_audio(ID=4)
 	def move(self):
@@ -234,7 +233,7 @@ class CrashB(Entity):
 			an.stand_up(s,sp=18)
 			return
 		if s.is_attack:
-			an.spin(s,sp=22)
+			an.spin(s,sp=24)
 			return
 		if s.is_flip and not (s.landed and s.is_attack):
 			an.flip(s,sp=20)
