@@ -14,7 +14,7 @@ lv_name=[
 	'LEVEL 5 - RUINED',
 	'LEVEL 6 - TOTALLY BEE',
 	'LEVEL 7 - PISTON PUSH',
-	'LEVEL 8 - ?????? ?????',
+	'LEVEL 8 - POLAR LIGHTS',
 	'DEVELOPER TEST LEVEL']
 
 #gem box info
@@ -24,6 +24,12 @@ ge_inf={0:'this is a developer test level, place the gem where you want',
 		3:'yellow gem - reach the end of level before time up',
 		4:'green gem - unlock the yellow gem path',
 		5:'purple gem - unlock the green gem path'}
+
+#warp room bg
+wrbg='res/background/warp_room.png'
+
+#crash default texture
+ctx='res/pc/crash'
 
 #2d gem animation
 ge_0='res/ui/icon/gem_0/gem'

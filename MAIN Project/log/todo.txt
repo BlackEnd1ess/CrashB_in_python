@@ -1,14 +1,12 @@
 ## BUGS/ERORRS
-- GPU optimzing for modern PC's
+- level 1-8 better LOD,BF-Culling
 
 #LEVEL EDITOR
 - level editor environment settings
 - level editor side scene
 - level editor bonus maker
-- level editor 2,5D settings
 
 ##TODO
-- lab assistant player collision + push player back
+- lab assistant - push player back
 - firetrap
-- new level prototyp with lights
 

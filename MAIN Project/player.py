@@ -10,13 +10,12 @@ sn=sound
 cc=_core
 LC=_loc
 
-cHr='res/pc/'
-atp=cHr+'/spn/crash.tga'
-dtp=cHr+'crash.tga'
+atp='res/pc/spn/crash.png'
+dtp='res/pc/crash.png'
 
 class pShadow(Entity):## shadow point
 	def __init__(self):
-		super().__init__(model='quad',texture=cHr+'shdw.png',color=color.black,rotation_x=90,scale=.25,origin_z=.01,alpha=.9)
+		super().__init__(model='quad',texture='res/pc/shdw.png',color=color.black,rotation_x=90,scale=.25,origin_z=.01,alpha=.9)
 		_loc.shdw=self
 	def update(self):
 		if st.gproc():
@@ -32,7 +31,7 @@ class pShadow(Entity):## shadow point
 class CrashB(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=cHr+'crash.ply',texture=cHr+'crash.tga',scale=.1/110,rotation_x=-90,position=pos,unlit=False)
+		super().__init__(model=LC.ctx+'.ply',texture=LC.ctx+'.png',scale=.1/115,rotation_x=-90,position=pos,unlit=False)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(200,200,600))
 		cc.set_val(s)
 		an.WarpRingEffect(pos=s.position)
@@ -80,7 +79,7 @@ class CrashB(Entity):
 		sn.pc_audio(ID=4)
 	def move(self):
 		s=self
-		if (s.b_smash or st.p_rst(s) or s.stun):
+		if s.b_smash or st.p_rst(s) or s.stun:
 			return
 		mvD=Vec3(held_keys[sg.RGT_KEY]-held_keys[sg.LFT_KEY],0,held_keys[sg.FWD_KEY]-held_keys[sg.BCK_KEY]).normalized()
 		s.direc=mvD
@@ -90,12 +89,11 @@ class CrashB(Entity):
 			st.p_last_direc=mvD
 			mc=raycast(s.world_position+(0,.1,0),s.direc,distance=.2,ignore=[s,LC.shdw],debug=False)
 			me=mc.entity
-			mn=str(me)
-			if not mc or (mc and mn in LC.item_lst|LC.trigger_lst):
+			if not mc or (mc and str(me) in LC.item_lst|LC.trigger_lst):
 				s.position+=mvD*(time.dt*s.move_speed)
-			if (mn == 'fthr'):
+			if str(me) == 'fthr':
 				cc.get_damage(s,rsn=4)
-			if (cc.is_crate(me) and me.vnum == 12):
+			if cc.is_crate(me) and me.vnum == 12:
 				me.destroy()
 			cc.hit_npc(c=s,m=me)
 			s.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi

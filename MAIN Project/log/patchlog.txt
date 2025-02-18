@@ -30,4 +30,9 @@
 #18.02.2025
 - Dangers: WoodLog, Pistons keep clear, while Player invincible
 - Taser: collision doesnt stop crashs walk
-- Player Shadowpoint: improved function 
+- Player Shadowpoint: improved function
+- Player Spin: fixed invisible texture in water or other transparent objects
+
+#19.02.2025
+- Warp Room E2 has new Background and Tree in Background
+- Level 8 Prototype: Polar Lights

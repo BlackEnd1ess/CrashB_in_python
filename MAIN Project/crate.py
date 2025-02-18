@@ -376,16 +376,7 @@ class Nitro(Entity):
 		s.snd_time=1
 		s.jmp_y=s.y
 		s.mode=0
-		s.has_stack()
 		del pos,pse
-	def has_stack(self):
-		s=self
-		for nt in scene.entities[:]:
-			if cc.is_crate(nt) and (nt.x == s.x and nt.z == s.z and nt.y < s.y):
-				if nt.vnum == 12:
-					nt.can_jmp=False
-				else:
-					s.can_jmp=False
 	def c_freeze(self):
 		self.can_jmp=False
 	def destroy(self):

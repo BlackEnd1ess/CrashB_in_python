@@ -29,10 +29,10 @@ def set_fog():
 	scene.fog_color=LC.FOG_L_COLOR
 
 ##Rainfall Func
+rnf='res/ui/misc/rain/'
 class WeatherRain(Entity):
 	def __init__(self):
 		s=self
-		s.rnf='res/ui/misc/rain/'
 		super().__init__(model='quad',texture=None,scale=(1.8,1),parent=camera.ui,z=1,visible=False)
 		LC.ACTOR.indoor=.5
 		sound.Rainfall()
@@ -45,7 +45,7 @@ class WeatherRain(Entity):
 		s.frm=min(s.frm+time.dt*s.fp,58.999)
 		if s.frm > 58.99:
 			s.frm=0
-		s.texture=s.rnf+f'{int(s.frm)}.png'
+		s.texture=rnf+f'{int(s.frm)}.png'
 	def update(self):
 		s=self
 		if st.pause:

@@ -369,15 +369,14 @@ class MossPlatform(Entity):
 	def ptf_move(self,di):
 		s=self
 		pdv={2:s.spawn_pos[0],3:s.spawn_pos[2]}
-		spd=time.dt*s.pts
 		kv=getattr(s,di)
-		pmd={0:lambda:setattr(s,di,kv+spd),1:lambda:setattr(s,di,kv-spd)}
+		pmd={0:lambda:setattr(s,di,kv+time.dt*s.pts),1:lambda:setattr(s,di,kv-time.dt*s.pts)}
 		pmd[s.turn]()
 		if (s.turn == 0 and kv >= pdv[s.ptm]+1):
 			s.turn=1
 		if (s.turn == 1 and kv <= pdv[s.ptm]-1):
 			s.turn=0
-		del pmd,spd,kv,pdv
+		del pmd,kv,pdv
 	def mv_player(self):
 		s=self
 		if s.ptm < 2:
@@ -668,6 +667,9 @@ class StartRoom(Entity):## game spawn point
 		st.checkpoint=(s.x,s.y+2,s.z)
 		camera.position=(s.x,s.y+2,s.z-3)
 		IndoorZone(pos=(s.x,s.y+1.5,s.z),sca=(3,2,7))
+		if st.level_index == 8:
+			s.color=color.rgb32(60,60,60)
+			s.unlit=False
 		del pos
 
 eR=omf+'ev/e_room/e_room'
@@ -697,6 +699,9 @@ class EndRoom(Entity):## finish level
 		if st.level_index == 2 and not 1 in st.COLOR_GEM:
 			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=1)
 		if st.level_index in {6,7,8} and not st.level_index in st.COLOR_GEM:
+			if st.level_index == 8:
+				s.unlit=False
+				s.color=color.rgb32(60,60,60)
 			item.GemStone(c=st.level_index,pos=(s.x-1.1,s.y-.9,s.z))
 		del pos,c
 
@@ -710,6 +715,11 @@ class RoomDoor(Entity):## door for start and end room
 		s.active=False
 		s.d_opn=False
 		s.d_frm=0
+		if st.level_index == 8:
+			s.door_part.color=color.rgb32(60,60,60)
+			s.color=color.rgb32(60,60,60)
+			s.door_part.unlit=False
+			s.unlit=False
 		del pos
 	def update(self):
 		if st.gproc():
@@ -850,11 +860,10 @@ class InvWall(Entity):
 		del pos,sca
 
 ## Pseudo CrashB in Warp Room
-rp='res/pc/crash'
 class PseudoCrash(Entity):
 	def __init__(self):
 		s=self
-		super().__init__(model=rp+'.ply',texture=rp+'.tga',scale=.1/20,rotation=(-90,30,0),position=(9,-4,0),unlit=False)
+		super().__init__(model=LC.ctx+'.ply',texture=LC.ctx+'.png',scale=.1/20,rotation=(-90,30,0),position=(9,-4,0),unlit=False)
 		Entity(model=MVP+'.obj',texture=MVP+'.png',scale=.75/30,position=(s.x,s.y,s.z),double_sided=True,color=color.rgb32(170,190,180))
 		s.idfr=0
 	def update(self):

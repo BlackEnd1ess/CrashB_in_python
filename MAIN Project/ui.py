@@ -1,6 +1,6 @@
 from ursina import Animation,Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,curve
 import status,_core,_loc,sound,settings,warproom,level,time
-from objects import ObjType_Background
+from objects import ObjType_Background,ObjType_Deco
 from ursina.ursinastuff import destroy
 from time import strftime,gmtime
 
@@ -400,7 +400,7 @@ class LoadingScreen(Entity):
 		super().__init__(model=q,color=color.black,scale=(16,10),visible=False,parent=CU,z=-1,eternal=True)
 		s.ltext=Text('LOADING...',font=_fnt,scale=3.5,position=(-.15,.1,-1.1),color=color.orange,visible=False,parent=CU,eternal=True)
 		s.lname=Text('',font=_fnt,scale=2,position=(-.25,-.05,-1.1),color=color.azure,visible=False,parent=CU,eternal=True)
-		s.uds={0:(-.21),1:(-.23),2:(-.25),3:(-.25),4:(-.25),5:(-.175),6:(-.23),7:(-.225),8:(-.1)}
+		s.uds={0:(-.21),1:(-.23),2:(-.25),3:(-.25),4:(-.25),5:(-.175),6:(-.23),7:(-.225),8:(-.225)}
 	def update(self):
 		s=self
 		si=st.level_index
@@ -499,11 +499,13 @@ class SpecialLevelSelector(Entity):
 		req_col=color.rgb32(25,25,25)
 		super().__init__(position=pos,parent=CU)
 		s.lv_name=Text(LC.lv_name[idx],font=_fnt,position=(s.x,s.y+.04,s.z),scale=2.5,color=color.orange,parent=CU)
-		s.bgd=Entity(model='cube',texture='res/background/wroom.png',scale=(40,10,1),position=(0,-5,4),color=color.rgb32(130,130,160))
+		s.bgd=Entity(model='sphere',texture='res/terrain/grass_flat.png',scale=(16,5,8),texture_scale=(8,8),position=(10,-8,2),color=color.green)
 		s.lf0=Entity(model=q,texture=ivy_+'_m.png',scale=.2,position=(-.8,-.4,.1),rotation_z=-90,parent=CU)
 		s.lf1=Entity(model=q,texture=ivy_+'.png',scale=.2,position=(.8,-.4,.1),rotation_z=90,parent=CU)
 		s.lv_clr_gem0=Entity(model=q,texture=LC.ge_0+'0.png',position=(s.x+.8,s.y,s.z),scale=oi,parent=CU,color=req_col)
 		s.lv_clr_gem1=Entity(model=q,texture=LC.ge_0+'0.png',position=(s.x+.945,s.y,s.z),scale=oi,parent=CU,color=req_col)
+		ObjType_Background(ID=2,sca=(38,24),pos=(0,0,5),col=color.rgb32(0,80,80),txa=(1,1),UL=True)
+		ObjType_Deco(ID=1,pos=(7,-3.6,2),sca=.06,rot=(-90,0,0))
 		s.lvID=idx
 		for iwb in range(2):
 			Entity(model=q,texture=icb,position=(s.lv_clr_gem0.x+iwb/7,s.y,1),scale=.16,parent=CU,color=color.rgb32(120,120,150))

@@ -1,8 +1,9 @@
 import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,time,random,json,math,objects
 from ursina import Entity,Text,camera,scene,invoke,Vec3,color,distance,boxcast,raycast,window
+from math import atan2,sqrt,pi,sin,cos,radians
 from ursina.ursinastuff import destroy
 from effect import PressureWave
-from math import atan2,sqrt,pi,sin,cos,radians
+from danger import LandMine
 
 level_ready=False
 env=environment
@@ -101,7 +102,7 @@ def reset_state(c):
 	c.scale_x=c.nor_sc
 	st.death_event=False
 	c.dth_fr=0
-	c.texture='res/pc/crash.tga'
+	setattr(c,'texture',LC.ctx)
 	c.dth_snd=False
 	c.visible=True
 	c.stun=False
@@ -129,7 +130,7 @@ def c_slide(c):
 		if c.move_speed > 0:
 			c.slide_fwd=c.move_speed
 def c_smash(c):
-	k=[dp for dp in scene.entities if (distance(c.position,dp.position) < .4 and dp.collider and (is_crate(dp) or is_enemie(dp)))]
+	k={dp for dp in scene.entities if (distance(c.position,dp.position) < .4 and dp.collider and (is_crate(dp) or is_enemie(dp)))}
 	for sw in k:
 		if is_crate(sw):
 			if sw.vnum in {3,11}:
@@ -246,6 +247,7 @@ def reset_crates():
 				c_subtract(cY=cv.y)
 			C.place_crate(p=cv.spawn_pos,ID=cv.vnum)
 	st.C_RESET.clear()
+	check_nitro_stack()
 	st.crate_to_sv=0
 def reset_wumpas():
 	for wres in status.W_RESET[:]:
@@ -736,5 +738,5 @@ def rmv_bees():
 			vbw.purge()
 def reset_mines():
 	for rsm in LC.LDM_POS[:]:
-		objects.LandMine(pos=rsm)
+		LandMine(pos=rsm)
 	LC.LDM_POS.clear()
