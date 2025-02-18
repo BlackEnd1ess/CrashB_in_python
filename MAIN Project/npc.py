@@ -52,16 +52,16 @@ def npc_mv_back(m,spd):
 def npc_walk(m):
 	pdv={0:m.spawn_pos[0],1:m.spawn_pos[1],2:m.spawn_pos[2]}
 	spd=time.dt*m.move_speed
-	qr=LC.ACTOR
 	mm=m.mov_direc
 	mt=m.turn
 	kv=getattr(m,di[mm])
-	mdp=distance(qr,m)
+	mdp=distance(LC.ACTOR,m)
 	pmd={0:lambda:setattr(m,di[mm],kv+spd),1:lambda:setattr(m,di[mm],kv-spd)}
 	pmd[mt]()
+	del pmd
 	if mm == 2:
-		if mdp < 2 and qr.y == m.y:
-			follow_p(m,qr,spd)
+		if mdp < 2 and LC.ACTOR.y == m.y:
+			follow_p(m,LC.ACTOR,spd)
 		else:
 			npc_mv_back(m,spd)
 	if (mt == 0 and kv >= pdv[mm]+m.mov_range) or (mt == 1 and kv <= pdv[mm]-m.mov_range):
@@ -69,13 +69,13 @@ def npc_walk(m):
 			mr={0:90,1:0,2:0}
 			m.rotation_y=mr[mm]
 			m.turn=1
-			del mr
+			del mr,pdv
 			return
 		mr={0:270,1:0,2:180}
 		m.rotation_y=mr[mm]
 		m.turn=0
 		del mr
-	del pdv,pmd
+	del pdv
 
 def npc_action(m):
 	if not st.gproc():
@@ -619,15 +619,37 @@ class LabAssistant(Entity):
 		s=self
 		s.vnum=20
 		super().__init__(position=pos,rotation_y={0:90,1:180,2:270,3:0}[drc])
-		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
+		s.collider=BoxCollider(s,size=Vec3(600,600,1200),center=Vec3(0,150,600))
 		cc.set_val_npc(s,drc)
+		s.do_push=False
+		s.p_snd=False
 		s.move_speed=1
 		s.max_frm=0
+		s.tme=1
 		del pos,drc
 	def update(self):
 		if st.gproc():
 			return
-		s=self##
+		s=self
+		s.tme=max(s.tme-time.dt,0)
+		if s.intersects(LC.ACTOR) and s.do_push:
+			LC.ACTOR.x-=.5
+		if s.is_hitten or s.is_purge:
+			if not s.p_snd:
+				s.p_snd=True
+				setattr(s,'collider',None)
+				s.rotation_y+=90
+				sn.npc_audio(ID=8)
+			an.lba_fall(s)
+			return
+		if s.do_push:
+			an.lba_push(s)
+			return
+		if s.tme <= 0:
+			sn.npc_audio(ID=7)
+			s.tme=random.randint(1,3)
+			s.do_push=True
+
 
 ## passive NPC
 tpa='res/npc/akuaku/'
@@ -681,23 +703,18 @@ class AkuAkuMask(Entity):
 			if not ta.walking and ta.landed:
 				s.floating()
 			else:
-				s.position=lerp(s.position,(ta.x-.25,ta.y+.6,ta.z-.4),aSP)
+				s.position=lerp(s.position,(ta.x-.2,ta.y+.5,ta.z-.35),aSP)
 				s.last_y=s.y
-			del aSP,ta
 			return
 		s.scale=.0012
-		fwd=Vec3(-sin(radians(ta.rotation_y)),0,-cos(radians(ta.rotation_y)))
-		mask_pos=ta.position+fwd*.25
+		mask_pos=ta.position+Vec3(-sin(radians(ta.rotation_y)),0,-cos(radians(ta.rotation_y)))*.25
 		s.position=(mask_pos.x,ta.y+.5,mask_pos.z)
-		del mask_pos,ta,fwd
 	def check_dist_player(self):
 		s=self
-		ta=LC.ACTOR
-		if not (ta or st.gproc()):
+		if not (LC.ACTOR or st.gproc()):
 			return
-		if distance(s.position,ta.position) > 2:
-			s.position=ta.position
-		del ta
+		if distance(s.position,LC.ACTOR.position) > 2:
+			s.position=LC.ACTOR.position
 	def floating(self):
 		s=self
 		tt=time.dt/10
@@ -707,19 +724,17 @@ class AkuAkuMask(Entity):
 			s.flt_di=1
 		if (s.flt_di == 1 and s.y <= s.last_y-.2):
 			s.flt_di=0
-		del ddi,tt
+		del ddi
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		akh=st.aku_hit
-		s.unlit=(akh < 2)
+		s.unlit=(st.aku_hit < 2)
 		s.check_dist_player()
 		s.follow_player()
 		s.change_skin()
-		if akh <= 0:
+		if st.aku_hit <= 0:
 			cc.purge_instance(s)
-		del akh
 
 class Hippo(Entity):
 	def __init__(self,POS):

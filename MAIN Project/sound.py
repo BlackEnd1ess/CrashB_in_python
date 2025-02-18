@@ -121,7 +121,9 @@ SND_NPC={0:'plant_bite',
 		3:'seal',
 		4:'rat_idle',
 		5:'buzzing',
-		6:'spider_robot'}
+		6:'spider_robot',
+		7:'lab_assistant_push',
+		8:'lab_assistant_fall'}
 def npc_audio(ID,pit=1):
 	np=Audio(SA+SND_NPC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 	invoke(lambda:destroy(np),delay=np.length*2)

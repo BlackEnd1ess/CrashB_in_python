@@ -342,6 +342,7 @@ class TNT(Entity):
 		s=self
 		if not s.activ:
 			s.activ=True
+			s.unlit=False
 			if st.aku_hit < 3:
 				s.aud.fade_in()
 				s.aud.play()
@@ -369,28 +370,52 @@ class Nitro(Entity):
 	def __init__(self,pos,pse):
 		s=self
 		s.vnum=12
-		super().__init__(model=cr2,color=color.white)
+		super().__init__(model=cr2,color=color.white,unlit=False)
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		s.can_jmp=True
 		s.snd_time=1
+		s.jmp_y=s.y
+		s.mode=0
+		s.has_stack()
 		del pos,pse
-	def destroy(self):
+	def has_stack(self):
 		s=self
-		destroy_event(s)
-	def c_action(self):
+		for nt in scene.entities[:]:
+			if cc.is_crate(nt) and (nt.x == s.x and nt.z == s.z and nt.y < s.y):
+				if nt.vnum == 12:
+					nt.can_jmp=False
+				else:
+					s.can_jmp=False
+	def c_freeze(self):
+		self.can_jmp=False
+	def destroy(self):
+		destroy_event(self)
+	def c_jmp(self):
+		s=self
+		s.y+=time.dt*3
+		if s.y >= s.jmp_y:
+			s.mode=2
+	def c_fall(self):
+		s=self
+		s.y-=time.dt*3
+		if s.y <= s.spawn_pos[1]:
+			s.y=s.spawn_pos[1]
+			s.mode=0
+	def refr(self):
 		s=self
 		s.snd_time=max(s.snd_time-time.dt,0)
 		if s.snd_time <= 0:
 			s.snd_time=random.randint(2,3)
 			sn.crate_audio(ID=9,pit=random.uniform(.8,1.1))
+			s.jmp_y=s.y+random.uniform(.3,.5)
 			if s.can_jmp:
-				s.animate_y(s.y+random.uniform(.1,.2),duration=.025)
-				invoke(lambda:s.animate_y(s.spawn_pos[1],duration=.2),delay=.15)
+				s.mode=1
 	def update(self):
 		s=self
-		if not st.gproc() and s.visible:
-			if (distance(LC.ACTOR,s) <= 3):
-				s.c_action()
+		if st.gproc() or not s.visible:
+			return
+		if distance(LC.ACTOR,s) <= 3:
+			{0:s.refr,1:s.c_jmp,2:s.c_fall}[s.mode]()
 
 class Air(Entity):
 	def __init__(self,pos,m,l,pse):

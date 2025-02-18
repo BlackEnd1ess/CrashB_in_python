@@ -128,7 +128,7 @@ class FireThrow(Entity):
 
 class ElectroBall(Entity):
 	def __init__(self,pos):
-		super().__init__(model='quad',texture=ef+'sparkle.tga',position=pos,scale=.8,collider='box',color=color.rgb32(0,60,255),unlit=False,alpha=.75)
+		super().__init__(model='quad',texture=ef+'sparkle.tga',name='eball',position=pos,scale=.8,collider='box',color=color.rgb32(0,60,255),unlit=False,alpha=.75)
 		self.spawn_y=self.y
 	def update(self):
 		if not st.gproc():

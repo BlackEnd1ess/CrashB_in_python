@@ -51,7 +51,7 @@ class CrashB(Entity):
 				sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),
 				sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
 		if sg.debg:
-			debg.PlayerDBG()
+			#debg.PlayerDBG()
 			s.dev_act={
 					sg.DEV_WARP:lambda:setattr(s,'position',(0,4,57.3)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
@@ -114,11 +114,11 @@ class CrashB(Entity):
 		if not s.landed:
 			return
 		if s.is_slippery:
-			an.run_s(s,sp=16)
+			an.run_s(s)
 		else:
 			if s.is_landing:
 				s.is_landing=False
-			an.run(s,sp=17)
+			an.run(s)
 		s.wksn=max(s.wksn-time.dt,0)
 		if s.wksn <= 0:
 			sn.footstep(self)
@@ -151,7 +151,7 @@ class CrashB(Entity):
 		if s.walking:
 			s.is_flip=True
 		if not s.is_flip:
-			an.jup(s,sp=16)
+			an.jump_up(s)
 		if (s.y >= s.vpos+hgt[kt]):
 			s.space_time=0
 			s.jumping=False
@@ -184,9 +184,9 @@ class CrashB(Entity):
 		if st.death_event or (s.is_flip or s.is_attack):
 			return
 		if s.b_smash:
-			an.belly_smash(s,sp=14)
+			an.belly_smash(s)
 			return
-		an.fall(s,sp=14)
+		an.fall(s)
 	def c_camera(self):
 		s=self
 		if not st.death_event:
@@ -227,28 +227,28 @@ class CrashB(Entity):
 	def refr_anim(self):
 		s=self
 		if s.stun:
-			an.c_stun(s,sp=16)
+			an.c_stun(s)
 			return
 		if s.standup:
-			an.stand_up(s,sp=18)
+			an.stand_up(s)
 			return
 		if s.is_attack:
-			an.spin(s,sp=24)
+			an.spin(s)
 			return
 		if s.is_flip and not (s.landed and s.is_attack):
-			an.flip(s,sp=20)
+			an.flip(s)
 			return
 		if (s.landed and s.is_landing) and not any([s.walking,s.jumping,s.is_attack,s.falling]):
 			if s.b_smash:
-				an.belly_land(s,sp=16)
+				an.belly_land(s)
 			else:
-				an.land(s,sp=19)
+				an.land(s)
 			return
 		if st.p_idle(s) or s.freezed:
 			if s.is_slippery:
-				an.slide_stop(s,sp=16)
+				an.slide_stop(s)
 			else:
-				an.idle(s,sp=18)
+				an.idle(s)
 	def hurt_visual(self):
 		for vkh in range(7):
 			invoke(lambda:cc.hurt_blink(self),delay=vkh/3)

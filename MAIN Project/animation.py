@@ -8,6 +8,7 @@ nf='res/npc/'
 af='res/pc/'
 mo='model'
 
+LC=_loc
 st=status
 sn=sound
 cc=_core
@@ -16,80 +17,73 @@ bT=50
 t=18
 
 ## crash play animation
-def idle(d,sp):
-	d.idfr=min(d.idfr+time.dt*sp,10.999)
-	if d.idfr > 10.99:
-		d.idfr=0
-	d.model=af+'idle/'+str(int(d.idfr))+'.ply'
-	del d,sp
+def idle(c):
+	c.idfr=min(c.idfr+time.dt*17,10.999)
+	if c.idfr > 10.99:
+		c.idfr=0
+	setattr(c,'model',af+f'idle/{int(c.idfr)}.ply')
 
-def run(d,sp):
-	d.rnfr=min(d.rnfr+time.dt*sp,10.999)
-	if d.rnfr > 10.99:
-		d.rnfr=0
-	d.model=af+'run/'+str(int(d.rnfr))+'.ply'
-	del d,sp
+def run(c):
+	c.rnfr=min(c.rnfr+time.dt*17,10.999)
+	if c.rnfr > 10.99:
+		c.rnfr=0
+	c.model=af+f'run/{int(c.rnfr)}.ply'
 
-def run_s(d,sp):
-	d.srfr=min(d.srfr+time.dt*sp,6.999)
+def run_s(d):
+	d.srfr=min(d.srfr+time.dt*16,6.999)
 	if d.srfr > 6.99:
 		d.srfr=0
-	d.model=af+'slide_start/'+str(int(d.srfr))+'.ply'
+	d.model=af+f'slide_start/{int(d.srfr)}.ply'
 
-def slide_stop(d,sp):
-	d.ssfr=min(d.ssfr+time.dt*sp,3.999)
+def slide_stop(d):
+	d.ssfr=min(d.ssfr+time.dt*18,3.999)
 	if d.ssfr > 3.99:
 		d.ssfr=3
-	d.model=af+'slide_stop/'+str(int(d.ssfr))+'.ply'
+	d.model=af+f'slide_stop/{int(d.ssfr)}.ply'
 
-def jup(d,sp):
-	d.jmfr=min(d.jmfr+time.dt*sp,2.999)
+def jump_up(d):
+	d.jmfr=min(d.jmfr+time.dt*16,2.999)
 	if d.jmfr > 2.99:
 		return
-	d.model=af+'jmup/'+str(int(d.jmfr))+'.ply'
-	del d,sp
+	d.model=af+f'jmup/{int(d.jmfr)}.ply'
 
-def spin(d,sp):
-	d.spfr=min(d.spfr+time.dt*sp,11.999)
+def spin(d):
+	d.spfr=min(d.spfr+time.dt*24,11.999)
 	if d.spfr > 11.99:
 		d.spfr=0
 		d.is_attack=False
 	d.model=af+'spn/'+str(int(d.spfr))+'.ply'
-	del d,sp
 
-def land(d,sp):
-	d.ldfr=min(d.ldfr+time.dt*sp,12.999)
+def land(d):
+	d.ldfr=min(d.ldfr+time.dt*18,12.999)
 	if d.ldfr > 12.99:
 		d.is_landing=False
 		d.ldfr=0
 		return
 	d.model=af+'lnd/'+str(int(d.ldfr))+'.ply'
-	del d,sp
 
-def fall(d,sp):
+def fall(d):
 	if d.fafr < 7.99:
-		d.fafr=min(d.fafr+time.dt*sp,7.99)
+		d.fafr=min(d.fafr+time.dt*14,7.99)
 	d.model=af+'fall/'+str(int(d.fafr))+'.ply'
-	del d,sp
 
-def flip(d,sp):
-	d.flfr=min(d.flfr+time.dt*sp,16.999)
+def flip(d):
+	d.flfr=min(d.flfr+time.dt*19,16.999)
 	if d.flfr > 16.99:
 		d.is_flip=False
 		d.flfr=0
 		return
 	d.model=af+'flp/'+str(int(d.flfr))+'.ply'
-	del d,sp
 
-def belly_smash(d,sp):
-	d.smfr=min(d.smfr+time.dt*sp,2.999)
+def belly_smash(d):
+	d.smfr=min(d.smfr+time.dt*14,2.999)
 	if d.smfr > 2.99:
 		d.smfr=2
 		return
 	d.model=af+'smash/'+str(int(d.smfr))+'.ply'
 
-def belly_land(d,sp):
-	d.blfr=min(d.blfr+time.dt*sp,3.999)
+def belly_land(d):
+	d.blfr=min(d.blfr+time.dt*16,3.999)
 	if d.blfr > 3.99:
 		d.blfr=0
 		d.standup=True
@@ -97,8 +91,8 @@ def belly_land(d,sp):
 		return
 	d.model=af+'smash_land/'+str(int(d.blfr))+'.ply'
 
-def stand_up(d,sp):
-	d.sufr=min(d.sufr+time.dt*sp,8.999)
+def stand_up(d):
+	d.sufr=min(d.sufr+time.dt*17,8.999)
 	if d.sufr > 8.99:
 		d.sufr=0
 		d.blfr=0
@@ -107,33 +101,29 @@ def stand_up(d,sp):
 		return
 	d.model=af+'stand_up/'+str(int(d.sufr))+'.ply'
 
-def diggin_in(d,sp):
-	d.dgifr=min(d.dgifr+time.dt*sp,7.999)
+def diggin_in(d):
+	d.dgifr=min(d.dgifr+time.dt*16,7.999)
 	if d.dgifr > 7.99:
 		d.dig_in=False
 		d.digged=True
 		d.visible=False
 		return
 	d.model=af+'dig_in/'+str(int(d.dgifr))+'.ply'
-	del d,sp
 
-def diggin_out(d,sp):
-	d.dgofr=min(d.dgofr+time.dt*sp,2.999)
+def diggin_out(d):
+	d.dgofr=min(d.dgofr+time.dt*16,2.999)
 	if d.dgofr > 2.99:
 		d.dig_out,d.dig_in,d.digged=False,False,False
 		d.visible=True
 		return
 	d.model=af+'dig_out/'+str(int(d.dgofr))+'.ply'
-	del d,sp
 
-def c_stun(d,sp):
-	d.stnfr=min(d.stnfr+time.dt*sp,14.999)
+def c_stun(d):
+	d.stnfr=min(d.stnfr+time.dt*16,14.999)
 	if d.stnfr > 14.99:
 		d.stnfr=0
 		return
 	d.model=af+'stun/'+str(int(d.stnfr))+'.ply'
-	del d,sp
-
 
 ## crash death animations
 def dth_angelfly(c):
@@ -357,6 +347,21 @@ def gorilla_fall(m):
 		cc.purge_instance(m)
 		return
 	m.model=go+'/fall/'+str(int(m.f_frame))+'.ply'
+
+lbas=nf+'lab_assistant/'
+def lba_push(m):
+	m.anim_frame=min(m.anim_frame+time.dt*12,4.999)
+	if m.anim_frame > 4.99:
+		m.do_push=False
+		m.anim_frame=0
+	m.model=lbas+f'push/{int(m.anim_frame)}.ply'
+def lba_fall(m):
+	m.anim_frame=min(m.anim_frame+time.dt*12,5.999)
+	if m.anim_frame > 5.99:
+		m.enabled=False
+		destroy(m)
+		return
+	m.model=lbas+f'fall/{int(m.anim_frame)}.ply'
 
 #hive
 hpf='res/objects/l6/hive/'

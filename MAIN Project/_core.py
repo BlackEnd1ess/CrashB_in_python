@@ -94,7 +94,6 @@ def reset_state(c):
 		c.sma_dth=False
 		reset_mines()
 		rmv_bees()
-	check_nitro_stack()
 	c.position=status.checkpoint
 	env.set_fog()
 	camera.position=c.position
@@ -471,7 +470,7 @@ def spc_floor(c,e):
 	if u == 'wtrh':
 		dth_event(c,rsn=3)
 		return
-	if u == 'mptf' and not c.walking:
+	if u in {'mptf','lbbt'} and not c.walking:
 		e.mv_player()
 def ptf_up(p,c):
 	if not c.freezed:
@@ -484,17 +483,18 @@ def ptf_up(p,c):
 		go_to={'bnpt':lambda:load_bonus(c),'gmpt':lambda:load_gem_route(c)}
 		go_to[p.name]()
 		del go_to
+
+kmw={7:5,15:7,16:8,17:6}
 def hit_npc(c,m):
 	if is_enemie(m) and m.collider:
+		if m.vnum == 20:
+			return
 		if not (m.is_purge or m.is_hitten):
 			RS=2
-			kmw={7:5,15:7,16:8,17:6}
 			if m.vnum in kmw:
 				RS=kmw[m.vnum]
-				del kmw
 			if not c.is_attack:
 				get_damage(c,rsn=RS)
-	del c,m
 
 ## interface,collectables
 def wumpa_count(n):
@@ -541,9 +541,9 @@ def crate_set_val(cR,Cpos,Cpse):
 	del cR,Cpos,Cpse
 def crate_stack(c_pos):
 	sdi=0
-	crf={pk for pk in scene.entities if (is_crate(pk) and (pk.x == c_pos[0] and pk.z == c_pos[2]) and pk.vnum != 3)}
+	crf={pk for pk in scene.entities if is_crate(pk) and pk.x == c_pos[0] and pk.z == c_pos[2] and pk.vnum != 3}
 	for wm in crf:
-		if (wm.y > c_pos[1]) and (wm.y-c_pos[1]) <= .32*sdi:
+		if (wm.y > c_pos[1]) and abs(wm.y-c_pos[1]) <= .35*sdi:
 			wm.animate_y(wm.y-.32,duration=.18)
 		sdi+=1
 	del c_pos,sdi,crf

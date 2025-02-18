@@ -10,8 +10,8 @@ flt=5
 ## start level
 def free_level():
 	camera.rotation_x=15
-	cc.check_nitro_stack()
 	LODsystem.ManageObjects()
+	cc.check_nitro_stack()
 	st.loading=False
 	cc.spawn_level_crystal(st.level_index)
 	st.fails=0

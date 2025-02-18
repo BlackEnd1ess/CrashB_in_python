@@ -23,7 +23,7 @@ DEV_ECAM='e'#		edior camera
 
 
 ## global volume
-MUSIC_VOLUME=0
+MUSIC_VOLUME=1
 SFX_VOLUME=1
 
 ## window
@@ -33,8 +33,6 @@ def load():
 	w.exit_button.visible=False
 	w.fullscreen=False
 	w.borderless=False
-	#w.cog_menu.eternal=False
-	#w.cog_menu.force_destroy=True
 	w.fps_counter.enabled=False
 	##debug info
 	w.collider_counter.enabled=debg
@@ -42,5 +40,8 @@ def load():
 	w.color=color.black
 	camera.fov=65
 	environment.init_amb_light()
-	#destroy(w.cog_menu)
+	if hasattr(w,'cog_menu') and w.cog_menu:
+		w.cog_menu.eternal=False
+		w.cog_menu.force_destroy=True
+		destroy(w.cog_menu)
 	print('game settings loaded')

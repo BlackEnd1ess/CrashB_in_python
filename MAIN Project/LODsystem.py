@@ -27,10 +27,9 @@ class ManageObjects(Entity):
 		return v.z < p.z+fw and p.z < v.z+bw and abs(p.x-v.x) < sw
 	def run(self):
 		s=self
-		ac=LC.ACTOR
 		for v in scene.entities[:]:
-			k=s.check_dst(v,ac)
-			j=distance(v,ac)
+			k=s.check_dst(v,LC.ACTOR)
+			j=distance(v,LC.ACTOR)
 			if cc.is_crate(v) and v.vnum != 15:
 				v.enabled=j < 12
 			if cc.is_enemie(v) and v.vnum != 15:
@@ -42,10 +41,10 @@ class ManageObjects(Entity):
 				v.enabled=j < 8
 			if v.name == SCENE:
 				v.enabled= j < 32
-			if v.name in {CORRIDOR,BLOCK,FLOOR,WALL,DECO}:
-				if v.vnum != 12:
-					v.enabled=k
-		del ac,v,k,j
+			if v.name in DECO and v.vnum != 6:
+				v.enabled=k
+			if v.name in {CORRIDOR,BLOCK,FLOOR,WALL} or hasattr(v,'danger'):
+				v.enabled=k
 	def update(self):
 		if st.gproc():
 			return

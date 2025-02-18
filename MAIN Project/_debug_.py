@@ -12,9 +12,9 @@ def pos_info(c):
 	syc=f"{c.y+.16:.2f}"#crate
 	syw=f"{c.y+.2:.2f}"#wumpa
 	sz=f"{c.z:.1f}"
-	print(f"mt.crate_block(ID=14,POS=({sx},{syc},{sz}),CNT=[2,2,2])")
+	#print(f"mt.crate_block(ID=14,POS=({sx},{syc},{sz}),CNT=[2,2,2])")
 	#print(f"c.place_crate(ID=0,p=({sx},{syc},{sz}))")
-	#print(f"mt.wumpa_double_row(POS=({sx},{syw},{sz}),CNT=3)")
+	print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=1)")
 
 #player attr info
 class PlayerDBG(Entity):

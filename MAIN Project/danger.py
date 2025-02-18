@@ -42,11 +42,16 @@ class WoodLog(Entity):
 			s.stat=0
 	def update(self):
 		s=self
-		if not st.gproc():
-			if s.intersects(LC.ACTOR) and s.danger:
-				cc.get_damage(LC.ACTOR,rsn=2)
-			ttr={0:s.reset_pos,1:s.stomp}
-			ttr[s.stat]()
+		if st.gproc():
+			return
+		if st.aku_hit > 2:
+			s.stat=1
+			s.reset_pos()
+			return
+		if s.intersects(LC.ACTOR) and s.danger:
+			cc.get_damage(LC.ACTOR,rsn=2)
+		ttr={0:s.reset_pos,1:s.stomp}
+		ttr[s.stat]()
 
 rol=omf+'l2/role/role'
 class Role(Entity):
@@ -428,7 +433,7 @@ lbcb=omf+'l7/lab_ptf/lab_ptf'
 class HeatTile(Entity):
 	def __init__(self,pos,ro_y=0,typ=0,sca=(.5,.8,.5)):
 		s=self
-		super().__init__(model=lbcb+'.obj',texture=lbcb+'.png',position=pos,scale=sca,collider=b,rotation_y=ro_y,color=color.red,unlit=False)
+		super().__init__(model=lbcb+'.obj',texture=lbcb+'.png',name='labt',position=pos,scale=sca,collider=b,rotation_y=ro_y,color=color.red,unlit=False)
 		s.matr='metal'
 		s.danger=True
 		if typ == 1:
@@ -462,7 +467,8 @@ lbpi=omf+'l7/piston/piston'
 class Piston(Entity):
 	def __init__(self,pos,typ,spd):
 		s=self
-		super().__init__(model=lbpi+'.ply',texture=lbpi+'.tga',position=(pos[0],pos[1],pos[2]),scale=(.1/110,.1/110,.1/100),rotation=(-90,0,0),collider=b)
+		super().__init__(model=lbpi+'.ply',texture=lbpi+'.png',position=(pos[0],pos[1],pos[2]),scale=(.1/110,.1/110,.1/100),rotation=(-90,0,0),collider=b)
+		s.collider=BoxCollider(s,center=Vec3(0,0,-1100),size=Vec3(900,900,1800))
 		s.danger=True
 		s.spawn_y=s.y
 		s.mvspd=spd
@@ -475,8 +481,9 @@ class Piston(Entity):
 		s.y=max(s.y-time.dt*s.mvspd,s.spawn_y-2.051)
 		if s.y <= s.spawn_y-2.05:
 			jg=s.intersects(LC.ACTOR)
-			if jg and jg.normal == Vec3(0,-1,0) and s.danger:
-				cc.get_damage(LC.ACTOR,rsn=2)
+			if jg and s.danger:
+				if jg.normal == Vec3(0,-1,0):
+					cc.get_damage(LC.ACTOR,rsn=2)
 			s.danger=False
 			if distance(s,LC.ACTOR) < 8:
 				sn.obj_audio(ID=13,pit=.8)
@@ -487,7 +494,7 @@ class Piston(Entity):
 		s.y=min(s.y+time.dt*s.mvspd,s.spawn_y+.1)
 		if s.y >= s.spawn_y:
 			s.danger=True
-			if distance(s,LC.ACTOR) < 8:
+			if distance(s,LC.ACTOR) < 8 and st.aku_hit < 3:
 				sn.obj_audio(ID=13,pit=.5)
 			s.mode=0
 			s.tme=1-(1/s.mvspd)
@@ -495,6 +502,10 @@ class Piston(Entity):
 		if st.gproc():
 			return
 		s=self
+		if st.aku_hit > 2:
+			s.mode=1
+			s.reset()
+			return
 		s.tme=max(s.tme-time.dt,0)
 		if s.tme <= 0:
 			pva={0:lambda:s.stomp(),1:lambda:s.reset()}

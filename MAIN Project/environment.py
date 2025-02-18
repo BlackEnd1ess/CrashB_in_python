@@ -7,8 +7,6 @@ c=color
 def init_amb_light():#called 1 time
 	amv=AmbientLight(color=c.gray)
 	LC.AMBIENT_LIGHT=amv
-	if st.level_index > 0:
-		print(f'<info> Environment for level {st.level_index} enabled.')
 
 ##start environment
 def env_switch():
@@ -19,7 +17,7 @@ def env_switch():
 	if st.toggle_rain:
 		WeatherRain()
 	set_fog()
-	print(f'<info> Weather for level {st.level_index} enabled.')
+	print(f'<info> Environment Setting for Level {st.level_index} loaded.')
 
 ##Fog Distance
 def set_fog():

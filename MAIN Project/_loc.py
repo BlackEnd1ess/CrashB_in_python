@@ -74,7 +74,7 @@ ltth=1.7
 #lv6 mine position
 LDM_POS=[]
 #triggers
-trigger_lst={'indz','lvfi','elwt','fthr'}
+trigger_lst={'indz','lvfi','elwt','fthr','eball'}
 
 #item/obj name list
 item_lst={'wmpf','exlf','gems','crys'}

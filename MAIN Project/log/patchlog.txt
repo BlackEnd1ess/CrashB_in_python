@@ -21,3 +21,12 @@
 - black planes where placed under waterfalls, was replaced by leveldesign-cobblestone
 - reduced size for crashs landing collider, to avoid to land on forward positions
 - sorted cobblestone into Obj List for Decorations
+
+#17.02.2025
+- Lab Assistant push/fall Animation + Audio Event
+- Nitro Crate: incrased jump height, unlit for Lightning in dark
+- TNT Crate: unlit for Lightning in dark
+
+#18.02.2025
+- Dangers: WoodLog, Pistons keep clear, while Player invincible
+- Taser: collision doesnt stop crashs walk

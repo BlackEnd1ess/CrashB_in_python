@@ -52,7 +52,8 @@ class ObjType_Block(Entity):
 		if ID == 5:
 			if typ == 1:
 				s.texture=omf+mpk[ID]+'_e.png'
-			if typ == 2:
+			#temp collision landing fixx
+			if st.level_index == 7 and s.y > 4:
 				s.scale_y=1.2
 		if ID in {3,5}:
 			s.matr='metal'
@@ -537,7 +538,7 @@ lbff=omf+'l7/piston_ptf/piston_ptf'
 class PistonPlatform(Entity):
 	def __init__(self,pos,spd,pa):
 		s=self
-		super().__init__(model=lbff+'.obj',texture=lbff+'.tga',name='pipf',position=pos,scale=.1/100,double_sided=True)
+		super().__init__(model=lbff+'.obj',texture=lbff+'.png',name='pipf',position=pos,scale=.1/100,double_sided=True)
 		s.collider=BoxCollider(s,size=Vec3(700,700,700),center=Vec3(0,1685,0))
 		s.matr='metal'
 		s.spw_y=s.y
@@ -579,7 +580,7 @@ llpt=omf+'l7/space_ptf/space_ptf'
 class LabPlatform(Entity):
 	def __init__(self,pos,drc,spd,rng):
 		s=self
-		super().__init__(model=llpt+'.ply',texture=llpt+'.tga',position=pos,scale=.1/120,rotation_x=-90,unlit=False,collider=b)
+		super().__init__(model=llpt+'.ply',texture=llpt+'.png',name='lbbt',position=pos,scale=.1/120,rotation_x=-90,unlit=False,collider=b)
 		s.spawn_pos=pos
 		s.matr='metal'
 		s.mv_rng=rng
@@ -617,6 +618,10 @@ class LabPlatform(Entity):
 				s.mode=1
 				return
 			s.mode=0
+	def mv_player(self):
+		s=self
+		LC.ACTOR.x=s.x
+		LC.ACTOR.z=s.z
 	def update(self):
 		if st.gproc():
 			return
@@ -861,4 +866,4 @@ class PseudoCrash(Entity):
 		Entity(model=MVP+'.obj',texture=MVP+'.png',scale=.75/30,position=(s.x,s.y,s.z),double_sided=True,color=color.rgb32(170,190,180))
 		s.idfr=0
 	def update(self):
-		animation.idle(self,sp=18)
+		animation.idle(self)
