@@ -65,12 +65,16 @@ class Thunderbolt(Entity):
 		s=self
 		super().__init__()
 		s.flash=PointLight(position=s.position,color=color.black)
+		s.org_bgc=window.color
 		s.thnt=3
 	def thunder_bolt(self):
 		s=self
 		AC=LC.ACTOR
-		LC.bgT.texture=skp+'_th.jpg'
-		LC.bgT.texture_scale=LC.bgT.orginal_tsc
+		if LC.bgT:
+			LC.bgT.texture=skp+'_th.jpg'
+			LC.bgT.texture_scale=LC.bgT.orginal_tsc
+		else:
+			window.color=color.white
 		s.flash.position=(AC.x,AC.y+3,AC.z)
 		s.flash.color=color.white
 		sound.thu_audio(ID=0,pit=random.uniform(.1,.5))
@@ -79,8 +83,11 @@ class Thunderbolt(Entity):
 		del AC
 	def reset_sky(self):
 		s=self
-		LC.bgT.texture=skp+'.jpg'
-		LC.bgT.texture_scale=LC.bgT.orginal_tsc
+		if LC.bgT:
+			LC.bgT.texture=skp+'.jpg'
+			LC.bgT.texture_scale=LC.bgT.orginal_tsc
+		else:
+			window.color=s.org_bgc
 		s.flash.color=color.black
 		s.thnt=random.randint(4,10)
 	def update(self):

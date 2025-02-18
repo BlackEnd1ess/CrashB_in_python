@@ -16,23 +16,18 @@ dtp=cHr+'crash.tga'
 
 class pShadow(Entity):## shadow point
 	def __init__(self):
-		super().__init__(model='quad',texture=cHr+'shdw.png',color=color.black,rotation_x=90,scale=.25,origin_z=.01,alpha=.9,collider='box')
+		super().__init__(model='quad',texture=cHr+'shdw.png',color=color.black,rotation_x=90,scale=.25,origin_z=.01,alpha=.9)
 		_loc.shdw=self
-	def flw_p(self):
-		s=self
-		ta=LC.ACTOR
-		s.x,s.z=ta.x,ta.z
-		s.visible=not(ta.freezed)
-		vSH=raycast(ta.world_position,-Vec3(0,1,0),distance=2,ignore=[s,ta],debug=False)
-		if vSH.hit:
-			if not (str(vSH.entity) in LC.item_lst|LC.trigger_lst):
-				s.y=vSH.world_point.y
-			return
-		if ta.landed and ta.fall_time <= 0:
-			s.y=(ta.y+.001)
 	def update(self):
-		if not st.gproc():
-			self.flw_p()
+		if st.gproc():
+			return
+		s=self
+		krf=raycast(LC.ACTOR.world_position,-Vec3(0,1,0),distance=2,ignore=[s,LC.ACTOR],debug=False)
+		s.visible=not(LC.ACTOR.freezed)
+		s.x,s.z=LC.ACTOR.x,LC.ACTOR.z
+		if krf.hit:
+			if not str(krf.entity) in LC.item_lst|LC.trigger_lst:
+				s.y=krf.world_point.y+.1/10
 
 class CrashB(Entity):
 	def __init__(self,pos):
@@ -51,7 +46,7 @@ class CrashB(Entity):
 				sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),
 				sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
 		if sg.debg:
-			#debg.PlayerDBG()
+			debg.PlayerDBG()
 			s.dev_act={
 					sg.DEV_WARP:lambda:setattr(s,'position',(0,4,57.3)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),

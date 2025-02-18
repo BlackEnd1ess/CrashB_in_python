@@ -22,11 +22,11 @@ b='box'
 
 block_sca={0:.5,1:.5,2:.35,3:.02,4:.03,5:(.5,.8,.5)}
 trhs={0:1,1:.985,2:.85,3:.501,4:.75,5:1}
-def spw_block(ID,p,vx,sca=0,ro_y=0,typ=0):
+def spw_block(ID,p,vx,ro_y=0,typ=0):
 	for gbx in range(vx[0]):
 		for gbz in range(vx[1]):
 			ObjType_Block(ID=ID,pos=(p[0]+trhs[ID]*gbx,p[1],p[2]+trhs[ID]*gbz),sca=block_sca[ID],ro_y=ro_y,typ=typ)
-	del p,vx,ID,sca,gbx,gbz,ro_y,typ
+	del p,vx,ID,gbx,gbz,ro_y,typ
 
 mpk={0:'l1/block/block',
 	1:'l2/block/block',
@@ -461,14 +461,6 @@ class SnowPlatform(Entity):
 		s=self
 		super().__init__(model=snPL+'.ply',texture=snPL+'.png',name='sngg',position=pos,scale=.0075,rotation_x=-90)
 		s.co=Entity(model=wfc,scale=(.85,1,.85),name=s.name,position=(s.x,s.y-.5,s.z),collider=b,visible=False)
-		del pos
-
-#####################
-## level 3 objects ##
-cbls=omf+''
-class CobbleStone(Entity):
-	def __init__(self,pos):
-		super().__init__(model=cbls+'.ply',texture=cbls+'.png',position=pos,)
 		del pos
 
 #####################

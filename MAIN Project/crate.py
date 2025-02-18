@@ -471,9 +471,12 @@ class cTime(Entity):
 
 class LvInfo(Entity):
 	def __init__(self,pos,pse):
-		self.vnum=16
+		s=self
+		s.vnum=16
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
+		if st.level_col_gem:
+			destroy(s)
 		del pos,pse
 	def destroy(self):
 		s=self

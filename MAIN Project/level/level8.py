@@ -11,39 +11,38 @@ c=crate
 n=npc
 
 def map_setting():
-    LC.FOG_L_COLOR=color.gray
-    LC.FOG_B_COLOR=color.black
-    LC.SKY_BG_COLOR=color.black
-    LC.AMB_M_COLOR=color.rgb32(240,240,200)
-    LC.LV_DST=(140,160)
-    LC.BN_DST=(10,14)
-    st.toggle_thunder=False
-    st.toggle_rain=False
+	LC.FOG_L_COLOR=color.azure
+	LC.FOG_B_COLOR=color.azure
+	LC.SKY_BG_COLOR=color.black
+	LC.AMB_M_COLOR=color.rgb32(150,150,190)
+	LC.LV_DST=(140,160)
+	LC.BN_DST=(10,14)
+	st.toggle_thunder=False
+	st.toggle_rain=False
 
 def start_load():
-    bonus_zone()
-    load_crate()
-    load_object()
-    load_wumpa()
-    load_npc()
-    map_setting()
+	bonus_zone()
+	load_crate()
+	load_object()
+	load_wumpa()
+	load_npc()
+	map_setting()
 
 def load_object():
-    o.StartRoom(pos=(8,.5,-1))
-    o.EndRoom(pos=(8,2,14),c=color.gray)
-    o.spw_block(ID=0,p=(7,0,1),vx=[5,9],sca=(.5,.5,.3))
-    o.ObjType_Block(ID=5,pos=(9,.6,6),sca=(.5,.8,.5),typ=1,ro_y=90)
-    dg.Piston(pos=(9,.6+4.2,6),typ=0,spd=2)
+	o.StartRoom(pos=(8,.5,-1))
+	o.EndRoom(pos=(48,2,120),c=color.gray)
+	o.spw_block(ID=1,p=(7,-.5,1.5),vx=[5,9],ro_y=180)
+	o.spw_block(ID=1,p=(9,0,6),vx=[1,1],ro_y=180)
 
 def load_crate():
-    mt.crate_wall(ID=11,POS=(8,.66+.32*4,8),CNT=[1,1])
-    mt.crate_wall(ID=12,POS=(8,.66,8),CNT=[1,4])
+	mt.crate_wall(ID=11,POS=(8,.66+.32*4,8),CNT=[1,1])
+	mt.crate_wall(ID=12,POS=(8,.66,8),CNT=[1,4])
 
 def load_npc():
-    return
+	return
 
 def load_wumpa():
-    return
+	return
 
 def bonus_zone():
-    return
+	return

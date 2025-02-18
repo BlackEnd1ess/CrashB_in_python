@@ -30,7 +30,7 @@ class ManageObjects(Entity):
 		for v in scene.entities[:]:
 			k=s.check_dst(v,LC.ACTOR)
 			j=distance(v,LC.ACTOR)
-			if cc.is_crate(v) and v.vnum != 15:
+			if cc.is_crate(v) and not v.vnum in [3,15]:
 				v.enabled=j < 12
 			if cc.is_enemie(v) and v.vnum != 15:
 				if v.vnum == 17:
