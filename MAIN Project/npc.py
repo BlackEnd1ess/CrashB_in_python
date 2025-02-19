@@ -1,5 +1,5 @@
+from ursina import BoxCollider,Vec3,Entity,Audio,distance,lerp,invoke,PointLight,color
 import settings,_core,math,animation,status,sound,_loc,effect,time,random
-from ursina import BoxCollider,Vec3,Entity,Audio,distance,lerp,invoke
 from ursina.ursinastuff import destroy
 from math import radians,cos,sin,pi
 from danger import LogDanger
@@ -652,7 +652,6 @@ class AkuAkuMask(Entity):
 		st.aku_exist=True
 		s.cur_skin=None
 		s.last_y=s.y
-		s.flt_di=0
 		s.spt=.5
 		s.spkw=0
 		del pos
@@ -691,7 +690,7 @@ class AkuAkuMask(Entity):
 		if st.aku_hit < 3:
 			s.scale=.00075
 			if not ta.walking and ta.landed:
-				s.floating()
+				s.y=s.last_y+sin(time.time())*time.dt*4
 			else:
 				s.position=lerp(s.position,(ta.x-.2,ta.y+.5,ta.z-.35),aSP)
 				s.last_y=s.y
@@ -705,16 +704,6 @@ class AkuAkuMask(Entity):
 			return
 		if distance(s.position,LC.ACTOR.position) > 2:
 			s.position=LC.ACTOR.position
-	def floating(self):
-		s=self
-		tt=time.dt/10
-		ddi={0:lambda:setattr(s,'y',s.y+tt),1:lambda:setattr(s,'y',s.y-tt)}
-		ddi[s.flt_di]()
-		if (s.flt_di == 0 and s.y >= s.last_y+.2):
-			s.flt_di=1
-		if (s.flt_di == 1 and s.y <= s.last_y-.2):
-			s.flt_di=0
-		del ddi
 	def update(self):
 		if st.gproc():
 			return
@@ -766,3 +755,30 @@ class Hippo(Entity):
 				animation.hippo_wait(s)
 				return
 			animation.hippo_dive(s)
+
+ffly=npf+'firefly/0'
+class Firefly(Entity):
+	def __init__(self,pos):
+		s=self
+		super().__init__(model=ffly+'.ply',texture=ffly+'.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False)
+		s.lgt=PointLight(position=s.position,scale=.1,color=color.rgb32(255,200,180))
+		s.spawn_pos=pos
+		s.active=False
+		s.move_speed=8
+		s.mov_range=1
+		s.angle=0
+		del pos
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.y=s.spawn_pos[1]+sin(time.time()*2)*.2
+		s.lgt.position=s.position
+		if s.active:
+			s.position=lerp((s.x,s.y,s.z),(LC.ACTOR.x+.4,s.y,LC.ACTOR.z+.6),time.dt*2)
+			s.rotation_y=0
+			return
+		s.mov_range=.5+abs(sin(time.time()))*.5
+		cc.circle_move_xz(s)
+		if distance(LC.ACTOR,s) < 1:
+			s.active=True

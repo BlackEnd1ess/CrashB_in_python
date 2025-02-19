@@ -647,7 +647,7 @@ def set_val_npc(m,drc=None,rng=None):
 	m.texture=npf+f'{vnn}/0.tga'
 	del m,drc,rng,vnn
 def circle_move_xz(m):
-	m.angle-=time.dt*2
+	m.angle-=time.dt*m.move_speed
 	m.angle%=(2*math.pi)
 	new_x=m.spawn_pos[0]-m.mov_range*math.cos(m.angle)
 	new_z=m.spawn_pos[2]-m.mov_range*math.sin(m.angle)
@@ -655,7 +655,7 @@ def circle_move_xz(m):
 	rot=math.degrees(math.atan2(new_z-m.spawn_pos[2],new_x-m.spawn_pos[0]))
 	m.rotation_y=-rot
 def circle_move_y(m):
-	m.angle+=time.dt*2
+	m.angle+=time.dt*m.move_speed
 	m.angle%=(2*math.pi)
 	new_x=m.spawn_pos[0]+m.mov_range*math.cos(m.angle)
 	new_y=m.spawn_pos[1]+m.mov_range*math.sin(m.angle)

@@ -45,7 +45,7 @@ class CrashB(Entity):
 				sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),
 				sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
 		if sg.debg:
-			debg.PlayerDBG()
+			#debg.PlayerDBG()
 			s.dev_act={
 					sg.DEV_WARP:lambda:setattr(s,'position',(0,4,57.3)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
