@@ -18,6 +18,7 @@ Information: This Project is a Crash Bandicoot inspired Game written in Python3 
   <tr>
     <td><img src="screenshot/cb_10.jpg" width="300" /></td>
     <td><img src="screenshot/cb_11.jpg" width="300" /></td>
+    <td><img src="screenshot/cb_13.jpg" width="300" /></td>
   </tr>
 </table>
 
