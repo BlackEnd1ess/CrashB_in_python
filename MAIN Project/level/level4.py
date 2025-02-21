@@ -94,7 +94,6 @@ def load_object():
 	o.ObjType_Deco(ID=9,pos=(-2,1,9),sca=.75,rot=(-90,90,0))
 	o.ObjType_Deco(ID=9,pos=(0,1,9),sca=.75,rot=(-90,90,0))
 	o.ObjType_Deco(ID=9,pos=(2,1,9),sca=.75,rot=(-90,90,0))
-	
 	o.ObjType_Deco(ID=8,pos=(-4,-.3,8.7),sca=.75,rot=(-90,-90,0))
 	o.ObjType_Deco(ID=8,pos=(-2,-.3,8.7),sca=.75,rot=(-90,-90,0))
 	o.ObjType_Deco(ID=8,pos=(0,-.3,8.7),sca=.75,rot=(-90,-90,0))

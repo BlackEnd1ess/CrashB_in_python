@@ -14,7 +14,7 @@ def map_setting():
 	LC.FOG_L_COLOR=color.black
 	LC.FOG_B_COLOR=color.black
 	LC.SKY_BG_COLOR=color.black
-	LC.AMB_M_COLOR=color.rgb32(30,30,30)
+	LC.AMB_M_COLOR=color.rgb32(210,225,225)
 	LC.LV_DST=(14,16)
 	LC.BN_DST=(10,14)
 	st.toggle_thunder=False
@@ -30,15 +30,26 @@ def start_load():
 
 def load_object():
 	o.StartRoom(pos=(8,.5,-1))
-	o.EndRoom(pos=(48,2,120),c=color.gray)
-	o.spw_block(ID=0,p=(7,0,1.5),vx=[5,8],ro_y=180)
-	n.Firefly(pos=(11,1,8))
+	o.EndRoom(pos=(10,2,16),c=color.gray)
+	#skybox
+	o.ObjType_Background(ID=4,pos=(8,0,300),sca=(400,300),txa=(1,1),col=color.cyan,UL=True)
+	#wall
+	o.ObjType_Wall(ID=7,pos=(6,0,10),ro_y=180,sca=.5,col=color.dark_gray)
+	o.ObjType_Wall(ID=7,pos=(10.5,0,6),ro_y=0,sca=.5,col=color.dark_gray)
+	#water
+	Entity(model='plane',scale=(256,.19,256),color=color.black,position=(8,.1,-16))
+	o.ObjType_Water(ID=5,pos=(8,.2,-16),sca=(32,128),al=1,rot=(0,0,0),col=color.rgb32(0,160,160),frames=0,spd=0,UL=True)
+	
+	#blocks
+	o.spw_block(ID=1,p=(7,-.5,1.5),vx=[5,5],ro_y=180)
+	o.spw_block(ID=1,p=(7,-.5,7.5),vx=[5,5],ro_y=180)
 
 def load_crate():
-	return
+	c.place_crate(ID=1,p=(8,.66,8))
+	c.place_crate(ID=2,p=(9,.66,10))
 
 def load_npc():
-	return
+	n.Firefly(pos=(11,1,8))
 
 def load_wumpa():
 	return

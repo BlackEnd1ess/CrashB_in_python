@@ -25,7 +25,8 @@ class PlayerDBG(Entity):
 		s=self
 		super().__init__()
 		tct=settings.debg_color
-		Entity(model='quad',position=(-.76,-.25),color=color.black,alpha=.75,scale=(.4,.8),z=1,parent=CV)
+		Entity(model='quad',position=(-.76,-.25),color=color.black,alpha=.75,scale=(.4,.9),z=1,parent=CV)
+		s.fwt_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.05),parent=CV,scale=fw)
 		s.frz_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.075),parent=CV,scale=fw)
 		s.sta_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.1),parent=CV,scale=fw)
 		s.gnd_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.125),parent=CV,scale=fw)
@@ -87,6 +88,7 @@ class PlayerDBG(Entity):
 			s.sta_state.text=f'STAND UP    : {rv.standup}'
 			s.inj_state.text=f'INJURED     : {rv.injured}'
 			s.frz_state.text=f'FREEZED     : {rv.freezed}'
+			s.fwt_state.text=f'FALL TIME   : {rv.fall_time:.1f}'
 
 #check multible objects where in memory
 def chck_mem():

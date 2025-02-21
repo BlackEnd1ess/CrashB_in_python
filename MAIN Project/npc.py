@@ -767,6 +767,7 @@ class Firefly(Entity):
 		s.move_speed=8
 		s.mov_range=1
 		s.angle=0
+		s.tme=30
 		del pos
 	def update(self):
 		if st.gproc():
@@ -775,6 +776,13 @@ class Firefly(Entity):
 		s.y=s.spawn_pos[1]+sin(time.time()*2)*.2
 		s.lgt.position=s.position
 		if s.active:
+			s.tme=max(s.tme-time.dt,0)
+			if s.tme <= 0:
+				s.lgt.color=color.black
+				LC.ACTOR.color=color.dark_gray
+				destroy(s)
+				return
+			LC.ACTOR.color=color.gray
 			s.position=lerp((s.x,s.y,s.z),(LC.ACTOR.x+.4,s.y,LC.ACTOR.z+.6),time.dt*2)
 			s.rotation_y=0
 			return

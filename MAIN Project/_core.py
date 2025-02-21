@@ -33,6 +33,8 @@ def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun
 	c.indoor=.5
 	c.CMS=3
 	_loc.ACTOR=c
+	if st.level_index == 8:
+		c.color=color.dark_gray
 	del _a,_v,c
 def get_damage(c,rsn):
 	if st.aku_hit > 2:
@@ -414,6 +416,7 @@ def check_floor(c):
 		fall_interact(c,vp)
 	if vj and vj.normal:
 		c.falling,c.landed=False,True
+		c.fall_time=0
 		if not c.jumping:
 			c.y=vj.world_point.y
 		if not (is_crate(vp) or is_enemie(vp)):
@@ -428,7 +431,7 @@ def check_floor(c):
 def land_act(c,vp):
 	if c.frst_lnd:
 		c.frst_lnd,c.stun=False,False
-		c.space_time,c.fall_time=0,0
+		c.space_time=0
 		c.anim_land()
 		sn.landing_sound(c,vp)
 		if c.b_smash:
@@ -540,15 +543,18 @@ def crate_set_val(cR,Cpos,Cpse):
 	cR.collider='box'
 	cR.poly=Cpse
 	cR.scale=.16
+	if st.level_index == 8:
+		cR.color=color.dark_gray
+		cR.unlit=False
 	del cR,Cpos,Cpse
 def crate_stack(c_pos):
 	sdi=0
-	crf={pk for pk in scene.entities if is_crate(pk) and pk.x == c_pos[0] and pk.z == c_pos[2] and pk.vnum != 3}
-	for wm in crf:
-		if (wm.y > c_pos[1]) and abs(wm.y-c_pos[1]) <= .35*sdi:
-			wm.animate_y(wm.y-.32,duration=.18)
+	for wm in scene.entities[:]:
+		if (is_crate(wm) and wm.vnum != 3) and (wm.x == c_pos[0] and wm.z == c_pos[2]):
+			if (wm.y > c_pos[1]) and abs(wm.y-c_pos[1]) <= sdi*.32:
+				wm.animate_y(wm.y-.32,duration=.18)
 		sdi+=1
-	del c_pos,sdi,crf
+	del c_pos,sdi,wm
 def check_nitro_stack():
 	nit_crt={ct for ct in scene.entities if is_crate(ct) and ct.vnum == 12 and ct.can_jmp}
 	all_crt={ct for ct in scene.entities if is_crate(ct)}

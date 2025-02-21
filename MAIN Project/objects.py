@@ -105,7 +105,8 @@ smd={0:'l1/turtle_wall/turtle_wall',
 	3:'l5/broken_wall/broken_wall',
 	4:'l6/stone_wall/stone_wall',
 	5:'l6/bonus_wall/bonus_wall',
-	6:'l7/lab_bgs/lab_bgs'}
+	6:'l7/lab_bgs/lab_bgs',
+	7:'l8/polar_hills/polar_hills'}
 class ObjType_Wall(Entity):
 	def __init__(self,ID,pos,sca,ro_y=0,col=color.white):
 		s=self
@@ -115,6 +116,8 @@ class ObjType_Wall(Entity):
 			s.color=color.rgb32(0,140,160)
 		if ID == 2:
 			s.collider='box'
+		if ID == 7:
+			s.unlit=False
 		del ID,pos,sca,ro_y,col
 
 ######################
@@ -136,7 +139,8 @@ dms={0:'l1/bush/bush',
 	9:'l4/swr_drain_big/swr_drain_big',
 	10:'l6/stone_board/stone_board',
 	11:'l7/lab_pipe/lab_pipe',
-	12:'l7/boiler/boiler'}
+	12:'l7/boiler/boiler',
+	13:'l8/polar_sky/polar_sky'}
 #dm_sca={0:,1:,2:,3:,4:,5}
 class ObjType_Deco(Entity):
 	def __init__(self,ID,pos,sca,rot,col=color.white):
@@ -148,10 +152,13 @@ class ObjType_Deco(Entity):
 			HitBox(pos=pos,sca=(1,5,1))
 		if ID == 2:
 			ObjType_Deco(ID=3,pos=(s.x,s.y+1.1,s.z+.075),sca=(.025,.02,.03),rot=(-90,45,0),col=col)
-		if ID == 8:
+		if ID in {8,9}:
 			vvf=random.randint(0,1)
-			if vvf == 0:
-				ObjType_Water(ID=4,pos=(s.x,s.y-.2,s.z-.5),sca=(.9,.4),rot=(0,0,90),frames=7,spd=10,al=1)
+			#if vvf == 0:
+			ObjType_Water(ID=4,pos=(s.x,s.y-{8:1,9:.2}[ID],s.z-{8:.25,9:.5}[ID]),sca=(.9,.4),rot=(0,0,90),frames=7,spd=10,al=1)
+		if ID == 13:
+			s.unlit=False
+			s.shader=unlit_shader
 		del ID,pos,sca,rot,col
 	def check_model(self):
 		s=self
@@ -263,7 +270,8 @@ class ObjType_Floor(Entity):
 bpb={0:'warp_room.png',
 	1:'jungle.png',
 	2:'island.jpg',
-	3:'ruin.jpg'}
+	3:'ruin.jpg',
+	4:'polar.jpg'}
 class ObjType_Background(Entity):
 	def __init__(self,ID,pos,sca,txa,col=color.white,UL=False):
 		s=self
@@ -297,35 +305,41 @@ wtr={0:'ev/water/water_',
 	1:'l3/water_flow/water_flow',
 	2:'l3/water_fall/waterf',
 	3:'l3/foam/foam',
-	4:'l4/drips/'}#frames 7
+	4:'l4/drips/',#wrong pos
+	5:'l8/polar_water/'}
 class ObjType_Water(Entity):
-	def __init__(self,ID,pos,frames,spd,sca,rot,al=0,col=color.white,rev=False):
+	def __init__(self,ID,pos,frames,spd,sca,rot,al=0,col=color.white,rev=False,UL=False):
 		s=self
 		s.vnum=ID
 		super().__init__(texture=omf+wtr[s.vnum]+'0.png',position=pos,rotation=rot,color=col)
-		if ID in {0,1}:
-			s.model='plane'
-			s.scale=(sca[0],.1,sca[1])
-			s.texture_scale=(sca[0]/3,sca[1]/3)
-			if ID == 1:
-				s.texture_scale=(1,12)
-			dg.WaterHit(p=(pos[0],pos[1]-.1,pos[2]),sc=sca)
-		else:
-			s.model='quad'
-			s.scale=(sca[0],sca[1])
-			s.texture_scale=(s.scale_x,1)
-			if ID == 2:
-				ObjType_Water(ID=3,pos=(s.x,s.y-.49,s.z-.5),sca=(5,1),rot=(90,0,0),frames=15,spd=6,al=1)
-				ObjType_Water(ID=3,pos=(s.x,s.y+.501,s.z+.49),sca=(5,1),rot=(90,180,0),frames=15,spd=6,col=color.rgb32(210,210,210),rev=True,al=1)
-		if rev:
-			s.frm=frames+.999
-		else:
-			s.frm=0
+		s.frm=frames+.999 if rev else 0
 		s.frames=frames
 		s.reverse=rev
 		s.speed=spd
 		s.alpha=al
-		del ID,pos,frames,spd,sca,rot,al,col,rev
+		if ID in {0,1,5}:
+			s.wtr_surface(ID,sca)
+		else:
+			s.water_fall(ID,sca)
+		if UL:
+			s.unlit=False
+		del ID,pos,frames,spd,sca,rot,al,col,rev,UL
+	def wtr_surface(self,ID,sca):
+		s=self
+		s.model='plane'
+		s.scale=(sca[0],.1,sca[1])
+		s.texture_scale={0:(sca[0]/3,sca[1]/3),1:(1,12),5:(sca[0],sca[1])}[ID]
+		dg.WaterHit(p=(s.x,s.y-.1,s.z),sc=sca)
+		del sca,ID
+	def water_fall(self,ID,sca):
+		s=self
+		s.model='quad'
+		s.scale=(sca[0],sca[1])
+		s.texture_scale=(s.scale_x,1)
+		if ID == 2:
+			ObjType_Water(ID=3,pos=(s.x,s.y-.49,s.z-.5),sca=(5,1),rot=(90,0,0),frames=15,spd=6,al=1)
+			ObjType_Water(ID=3,pos=(s.x,s.y+.501,s.z+.49),sca=(5,1),rot=(90,180,0),frames=15,spd=6,col=color.rgb32(210,210,210),rev=True,al=1)
+		del ID,sca
 	def flow_reverse(self):
 		s=self
 		s.frm-=time.dt*s.speed
@@ -338,7 +352,7 @@ class ObjType_Water(Entity):
 			s.frm=0
 	def update(self):
 		s=self
-		if st.gproc() or (0 in {s.speed,s.frames}) or (s.y < -15 and not st.bonus_round):
+		if st.gproc() or 0 in {s.speed,s.frames} or (s.y < -15 and not st.bonus_round):
 			return
 		if st.wtr_dist(s,LC.ACTOR):
 			s.texture=omf+wtr[s.vnum]+f'{int(s.frm)}.png'
@@ -686,7 +700,7 @@ class EndRoom(Entity):## finish level
 		HitBox(sca=(6,1,2.5),pos=(s.x-1,s.y-1.85,s.z+.45))#pod1
 		HitBox(sca=(.85,1,.85),pos=(s.x-1.1,s.y-1.6,s.z+.3))#pod2
 		HitBox(sca=(1.6,1,1),pos=(s.x-1.1,s.y-1.51,s.z+6.5))#pod3
-		IndoorZone(pos=(s.x-1,s.y,s.z+1),sca=(5,2,12))
+		IndoorZone(pos=(s.x-1,s.y-.15,s.z+1),sca=(5,2,12))
 		LevelFinish(p=(s.x-1.1,s.y-1.1,s.z+7))
 		RoomDoor(pos=(s.x-1.1,s.y+.25,s.z-4.78))
 		if st.level_index != 5:

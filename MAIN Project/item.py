@@ -75,8 +75,7 @@ class ExtraLive(Entity):
 			destroy(s)
 			return
 		if s.follow:
-			q=LC.ACTOR
-			s.position=lerp(s.position,(q.x,q.y+.2,q.z),time.dt*16)
+			s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.2,LC.ACTOR.z),time.dt*16)
 			return
 		s.p_follow()
 
@@ -168,4 +167,3 @@ class EnergyCrystal(Entity):
 			s.glow.visible=kr
 			s.visible=kr
 			s.rotation_y-=time.dt*70
-			del kr

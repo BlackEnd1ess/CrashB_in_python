@@ -41,9 +41,9 @@ class ManageObjects(Entity):
 				v.enabled=j < 8
 			if v.name == SCENE:
 				v.enabled= j < 32
-			if v.name in DECO and v.vnum != 6:
+			if v.name in DECO and not v.vnum in {6,13}:
 				v.enabled=k
-			if v.name in {CORRIDOR,BLOCK,FLOOR,WALL} or hasattr(v,'danger'):
+			if v.name in {CORRIDOR,BLOCK,FLOOR,WALL} or hasattr(v,'danger') or v.name == 'mptf':
 				v.enabled=k
 	def update(self):
 		if st.gproc():
