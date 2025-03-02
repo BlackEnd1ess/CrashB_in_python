@@ -1,4 +1,4 @@
-Information: This Project is a Crash Bandicoot inspired Game written in Python3 (Ursina 7.0.0)
+Information: This Project is a Cube based Crash Bandicoot inspired Game written in Python3 (Ursina 7.0.0)
 <table>
   <tr>
     <td><img src="screenshot/cb_01.jpg" width="300" /></td>
