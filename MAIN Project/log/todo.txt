@@ -1,7 +1,7 @@
 ## BUGS/ERORRS
 - level 1-8 better LOD,BF-Culling
-- aku mask floating speed,pos
 - lab taser animation - shrink player
+- render distance in level settings
 
 #LEVEL EDITOR
 - level editor environment settings

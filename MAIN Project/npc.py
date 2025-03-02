@@ -760,7 +760,7 @@ class Firefly(Entity):
 	def __init__(self,pos):
 		s=self
 		super().__init__(model=ffly+'.ply',texture=ffly+'.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False)
-		s.lgt=PointLight(position=s.position,scale=.1,color=color.rgb32(255,200,180))
+		s.lgt=PointLight(position=s.position,scale=.3,color=color.rgb32(255,200,180))
 		s.spawn_pos=pos
 		s.active=False
 		s.move_speed=8
@@ -768,24 +768,33 @@ class Firefly(Entity):
 		s.angle=0
 		s.tme=30
 		del pos
+	#def lgt_fdout(self):
+	#	s=self
+	#	ttd=time.dt*40
+	#	setattr(s.lgt,'color',(s.lgt.color[0],s.lgt.color[1],s.lgt.color[2])-(ttd,ttd,ttd))
+	#	if s.lgt.color <= (0,0,0):
+	#		LC.ACTOR.color=color.dark_gray
+	#		destroy(s)
+	#		del ttd
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		s.y=s.spawn_pos[1]+sin(time.time()*2)*.2
 		s.lgt.position=s.position
 		if s.active:
 			s.tme=max(s.tme-time.dt,0)
 			if s.tme <= 0:
-				s.lgt.color=color.black
 				LC.ACTOR.color=color.dark_gray
+				s.lgt.color=color.black
 				destroy(s)
+				#s.lgt_fdout()
 				return
 			LC.ACTOR.color=color.gray
-			s.position=lerp((s.x,s.y,s.z),(LC.ACTOR.x+.4,s.y,LC.ACTOR.z+.6),time.dt*2)
+			s.position=lerp(s.position,(LC.ACTOR.x+.3,LC.ACTOR.y+.5,LC.ACTOR.z+.4),time.dt*2)
 			s.rotation_y=0
 			return
 		s.mov_range=.5+abs(sin(time.time()))*.5
+		s.y=s.spawn_pos[1]+sin(time.time()*2)*.2
 		cc.circle_move_xz(s)
 		if distance(LC.ACTOR,s) < 1:
 			s.active=True

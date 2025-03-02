@@ -474,7 +474,7 @@ def wall_hit(o):
 		o.collect()
 	if is_enemie(o) and o.vnum != 20:
 		if not (o.is_purge or o.is_hitten):
-			RS=kmw[m.vnum] if o.vnum in kmw else 2
+			RS=kmw[o.vnum] if o.vnum in kmw else 2
 		if not LC.ACTOR.is_attack:
 			get_damage(LC.ACTOR,rsn=RS)
 

@@ -4,9 +4,9 @@ st=status
 cc=_core
 LC=_loc
 
-fw=24
-sw=10
-bw=5
+fw=60#24
+sw=20#10
+bw=10#5
 
 CORRIDOR='obj_type__corridor'
 BLOCK='obj_type__block'

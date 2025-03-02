@@ -81,7 +81,7 @@ class Role(Entity):
 			s.direc=0
 			invoke(s.p_snd,delay=.5)
 	def p_snd(self):
-		if distance(self,LC.ACTOR) < 3:
+		if distance(self,LC.ACTOR) < 4:
 			sn.obj_audio(ID=4)
 	def update(self):
 		s=self

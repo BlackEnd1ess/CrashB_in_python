@@ -47,7 +47,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(52.5,6.5,77)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(60.5,4,139)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
@@ -83,13 +83,13 @@ class CrashB(Entity):
 		mvD=Vec3(held_keys[sg.RGT_KEY]-held_keys[sg.LFT_KEY],0,held_keys[sg.FWD_KEY]-held_keys[sg.BCK_KEY]).normalized()
 		hT=s.intersects(ignore=uq,debug=False)
 		s.direc=mvD
-		if s.is_slp:
-			cc.c_slide(s)
 		if hT.hit and not hT.normal in {Vec3(0,1,0),Vec3(0,-1,0)}:
 			if not str(hT.entity) in LC.item_lst|LC.trigger_lst:
 				s.position+=hT.normal*time.dt*s.move_speed
 			if hT.entity:
 				cc.wall_hit(hT.entity)
+		if s.is_slp:
+			cc.c_slide(s)
 		if mvD.length() > 0:
 			if s.b_smash or st.p_rst(s) or s.stun:
 				return

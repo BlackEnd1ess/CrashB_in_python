@@ -48,4 +48,5 @@
 - changed wall/floor functions, improved physics on landing
 - fixxed ice floor scale
 - reduce Memory Usage by refractoring functions
-- fixxed Polar Waters alpha value 
+- fixxed Polar Waters alpha value
+- bnc sound after jump on crate

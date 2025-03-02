@@ -89,7 +89,7 @@ class Credits(Entity):
 	def __init__(self):
 		s=self
 		st.loading=False
-		super().__init__(model='quad',texture=LC.wrbg,scale=(32,20),z=4,color=color.rgb32(100,150,100))
+		super().__init__(model='quad',texture=_loc.wrbg,scale=(32,20),z=4,color=color.rgb32(100,150,100))
 		s.bgm=Audio('res/snd/music/credits.mp3',loop=True,volume=settings.MUSIC_VOLUME)
 		objects.PseudoCrash()
 		s.index=0
