@@ -211,15 +211,15 @@ flr={0:None,
 	9:'l6/stone_ground/stone_ground'}
 trx={0:'ice_ground.png',8:'bee_terra.png'}
 class ObjType_Floor(Entity):
-	def __init__(self,ID,pos,sca,rot=(0,0,0),col=color.white):
+	def __init__(self,ID,pos,sca,rot=(0,0,0),txa=(1,1),al=1,col=color.white):
 		s=self
 		s.vnum=ID
 		super().__init__(position=pos,scale=sca,rotation=rot,color=col)
-		s.set_model()
+		s.set_model(txa)
 		if ID == 0:
-			s.texture_scale=(sca[0],sca[1])
 			s.name='iceg'
-			s.alpha=.9
+			s.alpha=al
+			s.texture_scale=txa
 		if ID == 1:
 			HitBox(pos=(s.x,s.y-.46,s.z-1.5),sca=(4.2,1,1.2))
 			HitBox(pos=(s.x,s.y-.46,s.z+.2),sca=(1.2,1,2.3))
@@ -238,8 +238,8 @@ class ObjType_Floor(Entity):
 			s.texture_scale=(sca[0],sca[2])
 			s.name='befl'
 		s.set_collider()
-		del ID,pos,sca,rot,col
-	def set_model(self):
+		del ID,pos,sca,rot,col,al,txa
+	def set_model(self,txa):
 		s=self
 		if s.vnum in {0,8}:
 			s.model='cube'
@@ -264,6 +264,10 @@ class ObjType_Floor(Entity):
 		if s.vnum in cdl:
 			cdl[s.vnum]()
 		del cdl
+	def pl_touch(self):
+		ac=LC.ACTOR
+		ac.is_slp=.4
+		del ac
 
 #####################
 ##level background ##

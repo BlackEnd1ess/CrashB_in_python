@@ -43,3 +43,9 @@
 - fixxed fall time reset
 - debug window show crashs fall time
 - fixxed water drip position on leve 4 deco pipes
+
+#02.03.2025
+- changed wall/floor functions, improved physics on landing
+- fixxed ice floor scale
+- reduce Memory Usage by refractoring functions
+- fixxed Polar Waters alpha value 

@@ -47,7 +47,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(0,4,57.3)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(52.5,6.5,77)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
@@ -79,25 +79,28 @@ class CrashB(Entity):
 		sn.pc_audio(ID=4)
 	def move(self):
 		s=self
-		if s.b_smash or st.p_rst(s) or s.stun:
-			return
+		uq=[s,LC.shdw]
 		mvD=Vec3(held_keys[sg.RGT_KEY]-held_keys[sg.LFT_KEY],0,held_keys[sg.FWD_KEY]-held_keys[sg.BCK_KEY]).normalized()
+		hT=s.intersects(ignore=uq,debug=False)
 		s.direc=mvD
-		if s.is_slippery:
+		if s.is_slp:
 			cc.c_slide(s)
+		if hT.hit and not hT.normal in {Vec3(0,1,0),Vec3(0,-1,0)}:
+			if not str(hT.entity) in LC.item_lst|LC.trigger_lst:
+				s.position+=hT.normal*time.dt*s.move_speed
+			if hT.entity:
+				cc.wall_hit(hT.entity)
 		if mvD.length() > 0:
-			st.p_last_direc=mvD
-			mc=raycast(s.world_position+(0,.1,0),s.direc,distance=.2,ignore=[s,LC.shdw],debug=False)
-			me=mc.entity
-			if not mc or (mc and str(me) in LC.item_lst|LC.trigger_lst):
-				s.position+=mvD*(time.dt*s.move_speed)
-			if str(me) == 'fthr':
-				cc.get_damage(s,rsn=4)
-			if cc.is_crate(me) and me.vnum == 12:
-				me.destroy()
-			cc.hit_npc(c=s,m=me)
+			if s.b_smash or st.p_rst(s) or s.stun:
+				return
+			mc=raycast(s.world_position+(0,.2,0),mvD,distance=.25,ignore=uq,debug=False)
 			s.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
+			st.p_last_direc=mvD
 			s.walk_event()
+			if not mc or str(mc.entity) in LC.item_lst|LC.trigger_lst:
+				s.position+=mvD*(time.dt*s.move_speed)
+			if mc.entity:
+				cc.wall_hit(mc.entity)
 			return
 		s.wksn=0
 		s.walking=False
@@ -106,7 +109,7 @@ class CrashB(Entity):
 		s.walking=True
 		if not s.landed:
 			return
-		if s.is_slippery:
+		if s.is_slp:
 			an.run_s(s)
 		else:
 			if s.is_landing:
@@ -115,7 +118,7 @@ class CrashB(Entity):
 		s.wksn=max(s.wksn-time.dt,0)
 		if s.wksn <= 0:
 			sn.footstep(self)
-			if s.is_slippery:
+			if s.is_slp:
 				s.wksn=.5
 				return
 			s.wksn=.35
@@ -238,7 +241,7 @@ class CrashB(Entity):
 				an.land(s)
 			return
 		if st.p_idle(s) or s.freezed:
-			if s.is_slippery:
+			if s.is_slp:
 				an.slide_stop(s)
 			else:
 				an.idle(s)
@@ -247,7 +250,6 @@ class CrashB(Entity):
 			invoke(lambda:cc.hurt_blink(self),delay=vkh/3)
 	def c_physic(self):
 		s=self
-		cc.check_wall(s)
 		cc.various_val(s)
 		cc.check_ceiling(s)
 		if not s.jumping:
@@ -262,10 +264,8 @@ class CrashB(Entity):
 		if s.jumping:s.jump()
 		if s.b_smash:cc.c_smash(s)
 		if s.is_attack:cc.c_attack(s)
-		if held_keys[settings.JMP_KEY]:
-			s.space_time+=time.dt/2
-		if st.aku_hit >= 3:
-			cc.c_shield()
+		if held_keys[settings.JMP_KEY]:s.space_time+=time.dt/2
+		if st.aku_hit >= 3:cc.c_shield()
 	def update(self):
 		if not st.gproc():
 			s=self
@@ -275,5 +275,4 @@ class CrashB(Entity):
 			s.c_physic()
 			if not st.p_rst(s):
 				s.c_interact()
-			s.refr_tex()
-			s.refr_anim()
+			s.refr_tex(),s.refr_anim()

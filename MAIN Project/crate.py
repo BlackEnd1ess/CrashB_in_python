@@ -149,6 +149,7 @@ class Bounce(Entity):
 		destroy_event(self)
 	def bnc_event(self):
 		s=self
+		LC.ACTOR.jump_typ(t=3)
 		cc.wumpa_count(2)
 		sn.crate_audio(ID=4,pit=1+s.b_cnt/10)
 		s.b_cnt+=1
@@ -232,6 +233,7 @@ class SpringWood(Entity):
 		s.frm=0
 		del pos,pse
 	def c_action(self):
+		LC.ACTOR.jump_typ(t=4)
 		self.is_bounc=True
 		sn.crate_audio(ID=5)
 	def destroy(self):
@@ -255,6 +257,7 @@ class SpringIron(Entity):
 		s.frm=0
 		del pos,pse
 	def c_action(self):
+		LC.ACTOR.jump_typ(t=4)
 		self.is_bounc=True
 		sn.crate_audio(ID=5)
 	def destroy(self):

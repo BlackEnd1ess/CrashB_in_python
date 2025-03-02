@@ -684,15 +684,14 @@ class AkuAkuMask(Entity):
 				effect.Sparkle((s.x+random.uniform(-.1,.1),s.y+random.uniform(-.1,.1),s.z+random.uniform(-.1,.1)))
 	def follow_player(self):
 		s=self
-		aSP=time.dt*8
 		ta=LC.ACTOR
-		s.rotation_y=lerp(s.rotation_y,ta.rotation_y,aSP)
+		s.rotation_y=lerp(s.rotation_y,ta.rotation_y,time.dt*10)
 		if st.aku_hit < 3:
 			s.scale=.00075
 			if not ta.walking and ta.landed:
-				s.y=s.last_y+sin(time.time())*time.dt*4
+				s.y=s.last_y+sin(time.time())*time.dt*3
 			else:
-				s.position=lerp(s.position,(ta.x-.2,ta.y+.5,ta.z-.35),aSP)
+				s.position=lerp(s.position,(ta.x-.2,ta.y+.5,ta.z-.35),time.dt*8)
 				s.last_y=s.y
 			return
 		s.scale=.0012

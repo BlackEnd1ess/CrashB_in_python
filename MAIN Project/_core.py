@@ -5,6 +5,7 @@ from ursina.ursinastuff import destroy
 from effect import PressureWave
 from danger import LandMine
 
+kmw={7:5,15:7,16:8,17:6}
 level_ready=False
 env=environment
 sn=sound
@@ -19,7 +20,7 @@ N=npc
 def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound					inwater
 	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','space_time','stnfr','stun_tme','dth_cause','dth_fr'}:
 		setattr(c,_a,0)#values
-	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','is_slippery','b_smash','standup','falling','stun','sma_dth','dth_snd'}:
+	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','sma_dth','dth_snd','is_slp','cwall'}:
 		setattr(c,_v,False)#flags
 	c.move_speed=LC.dfsp
 	c.cur_tex=c.texture
@@ -112,25 +113,25 @@ def reset_state(c):
 def various_val(c):
 	c.inwt=max(c.inwt-time.dt,0)
 	c.indoor=max(c.indoor-time.dt,0)
-	if not c.is_slippery:
+	if not c.is_slp:
 		c.move_speed=LC.dfsp
 	if st.bonus_solved and not st.wait_screen:
 		c.aq_bonus=(st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0)
 def c_slide(c):
 	if not c.walking:
-		if c.slide_fwd > 0 and status.p_last_direc != None:
+		if c.slide_fwd > 0 and st.p_last_direc:
 			if c.move_speed > 0:
 				c.move_speed-=time.dt
-			c.position+=status.p_last_direc*time.dt*c.slide_fwd
+			c.position+=st.p_last_direc*time.dt*c.slide_fwd
 			c.slide_fwd-=time.dt
 			if c.slide_fwd <= 0:
 				c.slide_fwd=0
 				st.p_last_direc=None
 		return
-	if c.move_speed < 4:
-		c.move_speed+=time.dt
-		if c.move_speed > 0:
-			c.slide_fwd=c.move_speed
+	c.is_landing=False
+	c.move_speed=min(c.move_speed+time.dt/2,3)
+	if c.move_speed > 0:
+		c.slide_fwd=c.move_speed
 def c_smash(c):
 	k={dp for dp in scene.entities if (distance(c.position,dp.position) < .4 and dp.collider and (is_crate(dp) or is_enemie(dp)))}
 	for sw in k:
@@ -171,7 +172,7 @@ def c_shield():
 				if (is_enemie(rf) and rf.vnum != 13):
 					bash_enemie(e=rf,h=q)
 				if (is_crate(rf) and not rf.vnum in {0,8,13}):
-					if rf.vnum in [3,11]:
+					if rf.vnum in {3,11}:
 						rf.empty_destroy()
 					if rf.vnum == 14:
 						rf.c_destroy()
@@ -393,113 +394,89 @@ def check_ceiling(c):
 					invoke(lambda:setattr(c,'tcr',False),delay=.1)
 			c.y=c.y
 			c.jumping=False
-def check_wall(c):
-	hT=c.intersects(ignore=[c,LC.shdw])
-	jV=hT.entity
-	xa=str(jV)
-	if hT and hT.hit and not (hT.normal in {Vec3(0,1,0),Vec3(0,-1,0)}):
-		if xa == 'nitro':
-			jV.destroy()
-			return
-		if xa in LC.item_lst:
-			jV.collect()
-			return
-		hit_npc(c,m=jV)
-		if not xa in LC.trigger_lst:
-			c.position-=c.direc*time.dt*c.move_speed
 def check_floor(c):
 	lkh={r for r in scene.entities if (str(r) in LC.item_lst|LC.dangers|LC.trigger_lst) or r in {c,LC.shdw}}
 	fwd_drc=Vec3(-sin(radians(c.rotation_y))*.05,0,-cos(radians(c.rotation_y))*.05)
 	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.125,.125),ignore=lkh,debug=False)
-	vp=vj.entity
-	if not c.landed:
-		fall_interact(c,vp)
-	if vj and vj.normal:
-		c.falling,c.landed=False,True
-		c.fall_time=0
-		if not c.jumping:
-			c.y=vj.world_point.y
-		if not (is_crate(vp) or is_enemie(vp)):
-			spc_floor(c,vp)
-		land_act(c,vp)
-		del vp
+	stm=bool(vj and vj.normal)
+	c.falling=not stm
+	c.landed=stm
+	if not vj:
+		c.y-={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}[c.b_smash]
+		c.fall_time+=time.dt
+		c.anim_fall()
 		return
-	c.falling,c.landed=True,False
-	c.y-={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}[c.b_smash]
-	c.fall_time+=time.dt
-	c.anim_fall()
-def land_act(c,vp):
+	c.y=vj.world_point.y
 	if c.frst_lnd:
-		c.frst_lnd,c.stun=False,False
-		c.space_time=0
-		c.anim_land()
-		sn.landing_sound(c,vp)
-		if c.b_smash:
-			PressureWave(pos=c.position,col=color.light_gray)
-def fall_interact(c,e):
-	if (is_crate(e) and c.fall_time > .05):
-		if not ((e.vnum == 0) or (e.vnum in {9,10,11} and e.activ)):
-			if e.vnum in {7,8}:
-				c.jump_typ(t=4)
-				e.c_action()
-				del c,e
-				return
-			if e.vnum == 3:
-				c.jump_typ(t=3)
-			else:
-				if not e.vnum == 14:
-					c.jump_typ(t=2)
-			e.destroy()
+		c.frst_lnd=False
+		land_act(c,vj.entity)
+	c.fall_time=0
+	spc_floor(vj.entity)
+def land_act(c,vp):
+	c.stun=False
+	c.space_time=0
+	c.anim_land()
+	floor_act(vp)
+	sn.landing_sound(vp)
+	if c.b_smash:
+		PressureWave(pos=c.position,col=color.light_gray)
+def floor_act(vp):
+	if is_crate(vp) and LC.ACTOR.fall_time > .01:
+		if (vp.vnum in {9,10,11} and vp.activ) or vp.vnum == 0:
 			return
-	if is_enemie(e) and not (e.is_hitten or e.is_purge):
-		if (e.vnum in {2,9,13}) or (e.vnum == 5 and e.def_mode):
-			get_damage(c,rsn=2)
-		e.is_purge=True
-		c.jump_typ(t=2)
-		sn.pc_audio(ID=5)
-def spc_floor(c,e):
+		if vp.vnum in {7,8}:
+			vp.c_action()
+		else:
+			if not vp.vnum == 14:
+				LC.ACTOR.jump_typ(t=2)
+			vp.destroy()
+		return
+	if is_enemie(vp) and not (vp.is_hitten or vp.is_purge):
+		if vp.vnum in {2,9,13} or (vp.vnum == 5 and vp.def_mode):
+			get_damage(LC.ACTOR,rsn=2)
+		vp.is_purge=True
+		LC.ACTOR.jump_typ(t=2)
+def spc_floor(e):
 	u=str(e)
-	c.is_slippery=(u == 'iceg')
 	if u in {'bnpt','gmpt'}:
-		ptf_up(p=e,c=c)
+		ptf_up(e,LC.ACTOR)
 		return
 	if u in {'swpt','HPP','epad'}:
 		e.active=True
 		return
-	if (u == 'plnk' and e.typ == 1) or u == 'loos':
+	if (u == 'plnk' and e.typ == 1) or u in {'loos','iceg'}:
 		e.pl_touch()
 		return
+	LC.ACTOR.is_slp=False
 	if (u == 'swpi' and e.typ == 3) or (u == 'labt' and e.danger):
-		get_damage(c,rsn=4)
+		get_damage(LC.ACTOR,rsn=4)
 		return
 	if u == 'wtrh':
-		dth_event(c,rsn=3)
+		dth_event(LC.ACTOR,rsn=3)
 		return
-	if u in {'mptf','lbbt'} and not c.walking:
+	if u in {'mptf','lbbt'} and not LC.ACTOR.walking:
 		e.mv_player()
-def ptf_up(p,c):
+def ptf_up(e,c):
 	if not c.freezed:
 		c.freezed=True
-		c.position=(p.x,c.y,p.z)
+		c.position=(e.x,c.y,e.z)
 		c.rotation_y=0
-	p.y+=time.dt/1.5
-	if p.y > p.start_y+3:
-		p.y=p.start_y
-		go_to={'bnpt':lambda:load_bonus(c),'gmpt':lambda:load_gem_route(c)}
-		go_to[p.name]()
-		del go_to
-
-kmw={7:5,15:7,16:8,17:6}
-def hit_npc(c,m):
-	if is_enemie(m) and m.collider:
-		if m.vnum == 20:
-			return
-		if not (m.is_purge or m.is_hitten):
-			RS=2
-			if m.vnum in kmw:
-				RS=kmw[m.vnum]
-			if not c.is_attack:
-				get_damage(c,rsn=RS)
+	e.y+=time.dt/1.5
+	if e.y > e.start_y+3:
+		e.y=e.start_y
+		{'bnpt':lambda:load_bonus(c),'gmpt':lambda:load_gem_route(c)}[e.name]()
+def wall_hit(o):
+	if str(o) == 'fthr':
+		get_damage(LC.ACTOR,rsn=4)
+	if is_crate(o) and o.vnum == 12:
+		me.destroy()
+	if str(o) in LC.item_lst:
+		o.collect()
+	if is_enemie(o) and o.vnum != 20:
+		if not (o.is_purge or o.is_hitten):
+			RS=kmw[m.vnum] if o.vnum in kmw else 2
+		if not LC.ACTOR.is_attack:
+			get_damage(LC.ACTOR,rsn=RS)
 
 ## interface,collectables
 def wumpa_count(n):

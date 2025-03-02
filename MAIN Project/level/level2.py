@@ -89,8 +89,7 @@ def load_object():
 	o.spw_block(ID=1,ro_y=180,p=(8,nv,bz),vx=[1,1])
 	o.spw_block(ID=1,ro_y=180,p=(10,nv,bz),vx=[2,1])
 	o.spw_block(ID=1,ro_y=180,p=(12,nv+.4,bz),vx=[2,1])
-	
-	o.ObjType_Floor(ID=0,pos=(16.4,2.05,bz+.1),sca=(6,1))
+	o.ObjType_Floor(ID=0,pos=(16.4,2.05,bz+.1),sca=(6,1),txa=(6,1))
 	o.spw_block(ID=1,ro_y=180,p=(19.8,nv+.4,bz),vx=[2,1])
 	o.spw_block(ID=1,ro_y=180,p=(21.8,nv+1,bz),vx=[1,1])
 	o.spw_block(ID=1,ro_y=180,p=(22.8,nv+2,bz),vx=[1,1])

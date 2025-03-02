@@ -73,7 +73,7 @@ class PlayerDBG(Entity):
 			s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'
 			s.ind_state.text=f'INDOOR ZONE : {(rv.indoor > 0)}'
 			s.inw_state.text=f'WATER ZONE  : {(rv.inwt > 0)}'
-			s.slp_state.text=f'IS SLIPPERY : {rv.is_slippery}'
+			s.slp_state.text=f'IS SLIPPERY : {rv.is_slp > 0}'
 			s.bns_state.text=f'BONUS ROUND : {st.bonus_round}'
 			s.idl_state.text=f'IDLE STATUS : {st.p_idle(LC.ACTOR)}'
 			s.run_state.text=f'WALK STATUS : {rv.walking}'
