@@ -52,7 +52,7 @@ class WumpaFruit(Entity):
 			return
 		if fp < 5:
 			ui.wmp_anim(s)
-			if fp < .5:
+			if fp < .4:
 				s.follow=True
 
 class ExtraLive(Entity):

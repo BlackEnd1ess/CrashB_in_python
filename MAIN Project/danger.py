@@ -240,6 +240,14 @@ class MonkeySculpture(Entity):
 		if s.rot:
 			s.rot_to_crash()
 
+ftf=omf+'l5/fire_trap/fire_trap'
+class FireTrap(Entity):
+	def __init__(self,pos):
+		s=self
+		super().__init__(model=ftf+'.obj',texture=ftf+'.png',position=pos,scale=.2,color=color.yellow,collider=b,double_sided=True)
+		ef.LightFire(pos=(s.x,s.y+.2,s.z))
+		del pos
+
 ldg=omf+'l5/log_danger/log_danger'
 class LogDanger(Entity):
 	def __init__(self,pos,ro_y):
@@ -401,9 +409,7 @@ class LandMine(Entity):
 	def explosion(self):
 		s=self
 		s.frm=0
-		LC.ACTOR.stun_fd=(s.x,s.y,s.z+2)
-		LC.ACTOR.stun=True
-		s.explode=True
+		LC.ACTOR.stun,s.explode=True,True
 		if not s.p_snd:
 			s.p_snd=True
 			ef.Fireball(s)

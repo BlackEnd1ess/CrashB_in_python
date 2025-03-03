@@ -118,77 +118,93 @@ def diggin_out(d):
 		return
 	d.model=af+'dig_out/'+str(int(d.dgofr))+'.ply'
 
-def c_stun(d):
-	d.stnfr=min(d.stnfr+time.dt*16,14.999)
-	if d.stnfr > 14.99:
-		d.stnfr=0
+def c_stun(c):
+	c.position+=(0,time.dt*3,time.dt*4.5)
+	c.stnfr=min(c.stnfr+time.dt*16,14.999)
+	if c.stnfr > 14.99:
+		c.stnfr=0
+		c.stun=False
 		return
-	d.model=af+'stun/'+str(int(d.stnfr))+'.ply'
+	c.model=af+f'stun/{int(c.stnfr)}.ply'
+
+def c_push_back(c):
+	c.x-=time.dt*4
+	c.pshfr=min(c.pshfr+time.dt*12,4.999)
+	if c.pshfr > 4.99:
+		c.pshfr=0
+		c.pushed=False
+		return
+	c.model=af+f'push/{int(c.pshfr)}.ply'
 
 ## crash death animations
 def dth_angelfly(c):
 	c.y+=time.dt
-	c.dth_fr=min(c.dth_fr+time.dt*t,20.999)
+	c.dthfr=min(c.dthfr+time.dt*t,20.999)
 	if c.texture != af+'death/angel/0.tga':
 		c.texture=af+'death/angel/0.tga'
 	if not c.dth_snd:
 		c.dth_snd=True
 		sn.pc_audio(ID=15,pit=.35)
-	if c.dth_fr > 20.99:
-		c.dth_fr=0
+	if c.dthfr > 20.99:
+		c.dthfr=0
 		sn.pc_audio(ID=16)
-	c.model=af+f'death/angel/{int(c.dth_fr)}.ply'
+	c.model=af+f'death/angel/{int(c.dthfr)}.ply'
 
 def dth_wtr_swim(c):
-	c.dth_fr=min(c.dth_fr+time.dt*t,25.999)
+	c.dthfr=min(c.dthfr+time.dt*t,25.999)
 	if not c.dth_snd:
 		c.dth_snd=True
 		sn.pc_audio(ID=10,pit=.75)
-	if c.dth_fr > 25.99:
-		c.dth_fr=25
-	c.model=af+f'death/water/{int(c.dth_fr)}.ply'
+	if c.dthfr > 25.99:
+		c.dthfr=25
+	c.model=af+f'death/water/{int(c.dthfr)}.ply'
 
 def dth_fire_ash(c):
 	if not c.dth_snd:
 		c.dth_snd=True
 		sn.obj_audio(ID=16,pit=1.1)
-	c.dth_fr=min(c.dth_fr+time.dt*t,24.999)
-	if c.dth_fr > 24.99:
-		c.dth_fr=24
-	c.model=af+f'death/fire/{int(c.dth_fr)}.ply'
+	c.dthfr=min(c.dthfr+time.dt*t,24.999)
+	if c.dthfr > 24.99:
+		c.dthfr=24
+	c.model=af+f'death/fire/{int(c.dthfr)}.ply'
 
 def dth_el_shock(c):
 	if not c.dth_snd:
 		c.dth_snd=True
 		sn.obj_audio(ID=17)
-	c.dth_fr=min(c.dth_fr+time.dt*t,1.999)
-	if c.dth_fr > 1.99:
-		c.dth_fr=0
-	c.texure=af+f'death/volt/{int(c.dth_fr)}.tga'
-	c.model=af+f'death/volt/{int(c.dth_fr)}.ply'
+	c.dthfr=min(c.dthfr+time.dt*t,1.999)
+	if c.dthfr > 1.99:
+		c.dthfr=0
+	c.texure=af+f'death/volt/{int(c.dthfr)}.tga'
+	c.model=af+f'death/volt/{int(c.dthfr)}.ply'
 
 def dth_beesting(c):
 	if not c.landed:
 		c.y=(c.y-c.y)
 	c.rotation_y=0
-	c.dth_fr=min(c.dth_fr+time.dt*t,47.999)
-	if c.dth_fr > 47.99:
-		c.dth_fr=47
-	c.model=af+f'death/sting/{int(c.dth_fr)}.ply'
+	c.dthfr=min(c.dthfr+time.dt*t,47.999)
+	if c.dthfr > 47.99:
+		c.dthfr=47
+	c.model=af+f'death/sting/{int(c.dthfr)}.ply'
 
 def dth_c_buried(c):
 	c.scale_x=c.inv_sc
 	c.rotation_y=0
-	if not c.sma_dth:
+	if not c.sma_dth:#flag for mirror anim
 		c.sma_dth=True
 		c.y-=.3
 	if c.texture != af+'death/buried/0.tga':
 		c.texture=af+'death/buried/0.tga'
-	c.dth_fr=min(c.dth_fr+time.dt*t,10.999)
-	if c.dth_fr > 10.99:
-		c.dth_fr=10
-	c.model=af+f'death/buried/{int(c.dth_fr)}.ply'
+	c.dthfr=min(c.dthfr+time.dt*t,10.999)
+	if c.dthfr > 10.99:
+		c.dthfr=10
+	c.model=af+f'death/buried/{int(c.dthfr)}.ply'
 
+def dth_shrink(c):
+	fv=time.dt/1000
+	idle(c)
+	if c.scale > (.1/400,.1/400,.1/400):
+		c.scale-=(fv,fv,fv)
 
 ## crate animation
 def bnc_anim(c):

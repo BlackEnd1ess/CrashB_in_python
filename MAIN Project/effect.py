@@ -97,6 +97,31 @@ class Fireball(Entity):
 		if (s.ex_step > 14.99):
 			destroy(s)
 
+llfr=ef+'fire/fire_'
+class LightFire(Entity):
+	def __init__(self,pos,lft=None):
+		s=self
+		super().__init__(model='quad',texture=llfr+'0.png',position=pos,scale=.4,unlit=False)
+		s.life_time=lft
+		s.frm=0
+		del pos,lft
+	def refr_anim(self):
+		s=self
+		s.frm=min(s.frm+time.dt*12,31.999)
+		if s.frm > 31.99:
+			s.frm=0
+		s.texture=llfr+f'{int(s.frm)}.png'
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if s.life_time:
+			s.life_time=max(s.life_time-time.dt,0)
+			if s.life_time <= 0:
+				destroy(s)
+				return
+		s.refr_anim()
+
 class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
 		s=self
@@ -128,14 +153,15 @@ class FireThrow(Entity):
 
 class ElectroBall(Entity):
 	def __init__(self,pos):
-		super().__init__(model='quad',texture=ef+'sparkle.tga',name='eball',position=pos,scale=.8,collider='box',color=color.rgb32(0,60,255),unlit=False,alpha=.75)
+		super().__init__(model='quad',texture=ef+'sparkle.tga',name='eball',position=pos,scale=.9,collider='box',color=color.rgb32(0,60,255),unlit=False,alpha=.75)
 		self.spawn_y=self.y
 	def update(self):
-		if not st.gproc():
-			s=self
-			s.rotation_z+=time.dt*500
-			s.y-=time.dt*2
-			if s.intersects(LC.ACTOR):
-				cc.get_damage(LC.ACTOR,rsn=6)
-			if s.y <= s.spawn_y-LC.ltth:
-				destroy(s)
+		if st.gproc():
+			return
+		s=self
+		s.rotation_z+=time.dt*500
+		s.y-=time.dt*2
+		if s.intersects(LC.ACTOR):
+			cc.get_damage(LC.ACTOR,rsn=9)
+		if s.y <= s.spawn_y-LC.ltth:
+			destroy(s)

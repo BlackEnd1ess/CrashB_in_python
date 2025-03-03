@@ -1,14 +1,11 @@
 ## BUGS/ERORRS
 - level 1-8 better LOD,BF-Culling
-- lab taser animation - shrink player
-- render distance in level settings
 
 #LEVEL EDITOR
 - level editor environment settings
 - level editor side scene
 - level editor bonus maker
+- level editor saves render distance x,z,y
 
 ##TODO
-- lab assistant - push player back
-- firetrap
-
+- level 8, bonus zone, npc, wumpa, crate, gem zone, boulder

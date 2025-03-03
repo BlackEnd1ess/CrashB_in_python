@@ -50,3 +50,9 @@
 - reduce Memory Usage by refractoring functions
 - fixxed Polar Waters alpha value
 - bnc sound after jump on crate
+
+#03.03.2025
+- new animation: crash push back by lab assistant
+- changed land mine function: position changes by animation
+- new asset/danger: Lightfire for Traps or Lanterns
+- death event by LabTaser: player shrink instead of electric shock animation

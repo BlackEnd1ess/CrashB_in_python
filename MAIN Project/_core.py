@@ -18,16 +18,15 @@ N=npc
 
 ## player
 def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound					inwater
-	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','space_time','stnfr','stun_tme','dth_cause','dth_fr'}:
+	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','dthfr','pshfr','stnfr','dth_cause','space_time'}:
 		setattr(c,_a,0)#values
-	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','sma_dth','dth_snd','is_slp','cwall'}:
+	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','sma_dth','dth_snd','is_slp','pushed'}:
 		setattr(c,_v,False)#flags
 	c.move_speed=LC.dfsp
 	c.cur_tex=c.texture
 	c.gravity=LC.dfsp
-	c.inv_sc=-.1/110
-	c.nor_sc=.1/110
-	c.stun_fd=(0,0,0)
+	c.inv_sc=-.1/114
+	c.nor_sc=.1/114
 	c.direc=(0,0,0)
 	c.vpos=c.y
 	c.dth_timer=4
@@ -90,8 +89,8 @@ def reset_state(c):
 		if not st.aku_exist:
 			sn.crate_audio(ID=14,pit=1.2)
 			npc.AkuAkuMask(pos=(c.x,c.y,c.z))
+	{wf.destroy() for wf in scene.entities if (isinstance(wf,item.WumpaFruit) and wf.c_purge)}
 	reset_crates()
-	rmv_wumpas()
 	reset_wumpas()
 	reset_npc()
 	if st.level_index == 6:
@@ -102,10 +101,12 @@ def reset_state(c):
 	env.set_fog()
 	camera.position=c.position
 	camera.rotation=(15,0,0)
-	c.scale_x=c.nor_sc
+	if c.scale_x < 0:
+		c.scale_x=c.nor_sc
 	st.death_event=False
-	c.dth_fr=0
+	c.dthfr=0
 	setattr(c,'texture',LC.ctx)
+	setattr(c,'scale',.1/114)
 	c.dth_snd=False
 	c.visible=True
 	c.stun=False
@@ -256,10 +257,6 @@ def reset_wumpas():
 	for wres in status.W_RESET[:]:
 		item.WumpaFruit(p=wres,c_prg=False)
 	st.W_RESET.clear()
-def rmv_wumpas():
-	for wu in scene.entities[:]:
-		if isinstance(wu,item.WumpaFruit) and wu.c_purge:
-			wu.destroy()
 def reset_npc():
 	for NP in st.NPC_RESET[:]:
 		if NP.vnum in {10,11}:
@@ -341,7 +338,6 @@ def purge_instance(v):
 def cache_instance(v):
 	if str(v) == 'bee':
 		destroy(v)
-		del v
 		return
 	if is_enemie(v):
 		st.NPC_RESET.append(v)
@@ -349,12 +345,8 @@ def cache_instance(v):
 	v.parent=None
 	v.children=None
 	scene.entities.remove(v)
-	del v
 def game_pause():
-	if not st.pause:
-		st.pause=True
-	else:
-		st.pause=False
+	st.pause=not st.pause
 	pa=st.pause
 	pm=LC.p_menu
 	pm.crystal_counter.visible=(pa)
@@ -469,12 +461,13 @@ def wall_hit(o):
 	if str(o) == 'fthr':
 		get_damage(LC.ACTOR,rsn=4)
 	if is_crate(o) and o.vnum == 12:
-		me.destroy()
+		o.destroy()
 	if str(o) in LC.item_lst:
 		o.collect()
 	if is_enemie(o) and o.vnum != 20:
-		if not (o.is_purge or o.is_hitten):
-			RS=kmw[o.vnum] if o.vnum in kmw else 2
+		if o.is_purge or o.is_hitten:
+			return
+		RS=kmw[o.vnum] if o.vnum in kmw else 2
 		if not LC.ACTOR.is_attack:
 			get_damage(LC.ACTOR,rsn=RS)
 

@@ -125,6 +125,7 @@ def load_crate():
 	c.place_crate(ID=2,p=(60.5,1.6,118))
 	c.place_crate(ID=1,p=(60.5,1.2,120))
 	c.place_crate(ID=1,p=(60.5,.8,122))
+	dg.LabPad(pos=(8,1,10),ID=142)
 
 def load_npc():
 	n.Firefly(pos=(9,1,8))

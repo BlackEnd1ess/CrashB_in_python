@@ -31,7 +31,7 @@ class pShadow(Entity):## shadow point
 class CrashB(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=LC.ctx+'.ply',texture=LC.ctx+'.png',scale=.1/115,rotation_x=-90,position=pos,unlit=False)
+		super().__init__(model=LC.ctx+'.ply',texture=LC.ctx+'.png',scale=.1/114,rotation_x=-90,position=pos,unlit=False)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(200,200,600))
 		cc.set_val(s)
 		an.WarpRingEffect(pos=s.position)
@@ -91,7 +91,7 @@ class CrashB(Entity):
 		if s.is_slp:
 			cc.c_slide(s)
 		if mvD.length() > 0:
-			if s.b_smash or st.p_rst(s) or s.stun:
+			if any([s.stun,s.b_smash,s.pushed,st.p_rst(s)]):
 				return
 			mc=raycast(s.world_position+(0,.2,0),mvD,distance=.25,ignore=uq,debug=False)
 			s.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
@@ -152,16 +152,6 @@ class CrashB(Entity):
 			s.space_time=0
 			s.jumping=False
 			del hgt,fgt,kt
-	def stun_fly(self):
-		s=self
-		sdf=s.stun_fd[2]
-		s.stun_tme+=time.dt
-		if abs(s.z-sdf) > .2:
-			s.z=lerp(s.z,sdf,time.dt*4)
-			return
-		if s.landed or s.stun_tme > 2:
-			s.stun_tme=0
-			s.stun=False
 	def check_jump(self):
 		s=self
 		if s.landed and not (s.jumping or s.falling):
@@ -209,7 +199,8 @@ class CrashB(Entity):
 			4:lambda:an.dth_fire_ash(s),
 			6:lambda:an.dth_el_shock(s),
 			7:lambda:an.dth_beesting(s),
-			8:lambda:an.dth_c_buried(s)}
+			8:lambda:an.dth_c_buried(s),
+			9:lambda:an.dth_shrink(s)}
 		cbda[dtc]()
 		del cbda
 	def refr_tex(self):
@@ -222,29 +213,18 @@ class CrashB(Entity):
 			s.texture,s.cur_tex=dtp,dtp
 	def refr_anim(self):
 		s=self
-		if s.stun:
-			an.c_stun(s)
-			return
-		if s.standup:
-			an.stand_up(s)
-			return
-		if s.is_attack:
-			an.spin(s)
-			return
-		if s.is_flip and not (s.landed and s.is_attack):
-			an.flip(s)
-			return
-		if (s.landed and s.is_landing) and not any([s.walking,s.jumping,s.is_attack,s.falling]):
-			if s.b_smash:
-				an.belly_land(s)
-			else:
-				an.land(s)
-			return
-		if st.p_idle(s) or s.freezed:
-			if s.is_slp:
-				an.slide_stop(s)
-			else:
-				an.idle(s)
+		anim={(s.pushed,an.c_push_back),
+			(s.landed and s.is_landing and not any([s.walking,s.jumping,s.is_attack,s.falling,s.standup]),an.land if not s.b_smash else an.belly_land),
+			(s.stun,an.c_stun),
+			(s.standup,an.stand_up),
+			(s.is_attack,an.spin),
+			(s.is_flip and not (s.landed and s.is_attack),an.flip),
+			((st.p_idle(s) or s.freezed),an.slide_stop if s.is_slp else an.idle)}
+		for cds,do_anim in anim:
+			if cds:
+				do_anim(s)
+				del anim,cds
+				return
 	def hurt_visual(self):
 		for vkh in range(7):
 			invoke(lambda:cc.hurt_blink(self),delay=vkh/3)
@@ -258,9 +238,6 @@ class CrashB(Entity):
 		s=self
 		s.move()
 		s.c_camera()
-		if s.stun:
-			s.stun_fly()
-			return
 		if s.jumping:s.jump()
 		if s.b_smash:cc.c_smash(s)
 		if s.is_attack:cc.c_attack(s)

@@ -193,8 +193,11 @@ class ObjType_Corridor(Entity):
 			s.collider=b
 			Entity(model=omf+cor[s.vnum]+'.ply',texture=omf+cor[s.vnum]+'.png',position=(s.x,s.y+.5,s.z),scale=.03,rotation=(-90,90,0))
 			s.visible=False
-			HitBox(pos=(s.x-1.4,s.y+1.7,s.z),sca=(.5,2,3))
-			HitBox(pos=(s.x+1.4,s.y+1.7,s.z),sca=(.5,2,3))
+			dg.FireTrap(pos=(s.x-1.34,s.y+1.58,s.z+.675))
+			dg.FireTrap(pos=(s.x+1.225,s.y+1.58,s.z+.675))
+			for pvb in {(s.x-1.4,s.y+1.7,s.z),(s.x+1.4,s.y+1.7,s.z)}:
+				HitBox(pos=pvb,sca=(.5,2,3))
+			del pvb
 			IndoorZone(pos=(s.x,s.y+2.55,s.z),sca=3)
 
 #################

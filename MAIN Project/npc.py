@@ -622,8 +622,9 @@ class LabAssistant(Entity):
 			return
 		s=self
 		s.tme=max(s.tme-time.dt,0)
-		if s.intersects(LC.ACTOR) and s.do_push:
-			LC.ACTOR.x-=.5
+		dv=distance(s,LC.ACTOR)
+		if dv < .6 and s.do_push:
+			LC.ACTOR.pushed=True
 		if s.is_hitten or s.is_purge:
 			if not s.p_snd:
 				s.p_snd=True
@@ -636,7 +637,8 @@ class LabAssistant(Entity):
 			an.lba_push(s)
 			return
 		if s.tme <= 0:
-			sn.npc_audio(ID=7)
+			if dv < 6:
+				sn.npc_audio(ID=7)
 			s.tme=random.randint(1,3)
 			s.do_push=True
 
