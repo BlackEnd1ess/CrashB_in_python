@@ -142,14 +142,15 @@ class Bounce(Entity):
 		s.lf_time=5
 		s.b_cnt=0
 		s.frm=0
-		del pos,pse
+		del pos,pse,s
 	def empty_destroy(self):
 		if st.aku_hit > 2:
 			cc.wumpa_count(10)
 		destroy_event(self)
 	def bnc_event(self):
 		s=self
-		LC.ACTOR.jump_typ(t=3)
+		if st.aku_hit < 3:
+			LC.ACTOR.jump_typ(t=3)
 		cc.wumpa_count(2)
 		sn.crate_audio(ID=4,pit=1+s.b_cnt/10)
 		s.b_cnt+=1
@@ -194,7 +195,7 @@ class AkuAku(Entity):
 		s.vnum=5
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
-		del pos,pse
+		del pos,pse,s
 	def destroy(self):
 		s=self
 		sn.crate_audio(ID=14,pit=1.2)
@@ -214,7 +215,7 @@ class Checkpoint(Entity):
 		s.vnum=6
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
-		del pos,pse
+		del pos,pse,s
 	def destroy(self):
 		s=self
 		st.checkpoint=(s.x,s.y+1.5,s.z)
@@ -231,11 +232,7 @@ class SpringWood(Entity):
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		s.is_bounc=False
 		s.frm=0
-		del pos,pse
-	def c_action(self):
-		LC.ACTOR.jump_typ(t=4)
-		self.is_bounc=True
-		sn.crate_audio(ID=5)
+		del pos,pse,s
 	def destroy(self):
 		item.place_wumpa(self.position,cnt=1,c_prg=True)
 		destroy_event(self)
@@ -255,11 +252,7 @@ class SpringIron(Entity):
 		s.is_bounc=False
 		s.p_snd=False
 		s.frm=0
-		del pos,pse
-	def c_action(self):
-		LC.ACTOR.jump_typ(t=4)
-		self.is_bounc=True
-		sn.crate_audio(ID=5)
+		del pos,pse,s
 	def destroy(self):
 		block_destroy(self)
 	def update(self):
@@ -278,7 +271,7 @@ class SwitchEmpty(Entity):
 		s.p_snd=False
 		s.activ=False
 		s.mark=m
-		del pos,pse
+		del pos,pse,s
 	def c_reset(self):
 		s=self
 		s.model=cr2
@@ -310,7 +303,7 @@ class SwitchNitro(Entity):
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		s.p_snd=False
 		s.activ=False
-		del pos,pse
+		del pos,pse,s
 	def c_reset(self):
 		s=self
 		s.model=cr2
@@ -325,10 +318,7 @@ class SwitchNitro(Entity):
 			s.texture=pp+'0.tga'
 			spawn_ico(s)
 			st.C_RESET.append(s)
-			for nt in scene.entities[:]:
-				if isinstance(nt,Nitro) and nt.collider:
-					nt.destroy()
-			del nt
+			{nt.destroy() for nt in scene.entities if isinstance(nt,Nitro) and nt.collider}
 
 tx=pp+'crate_tnt_'
 class TNT(Entity):
@@ -337,10 +327,10 @@ class TNT(Entity):
 		s.vnum=11
 		super().__init__(model=cr2)
 		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
-		s.aud=Audio('res/snd/misc/tnt.wav',name='ctn',volume=0,autoplay=False,auto_destroy=True,add_to_scene_entities=False)
+		s.aud=Audio(sn.TC,name='ctn',volume=0,autoplay=False,auto_destroy=True,add_to_scene_entities=False)
 		s.activ=False
 		s.countdown=0
-		del pos,pse
+		del pos,pse,s
 	def destroy(self):
 		s=self
 		if not s.activ:
@@ -379,7 +369,7 @@ class Nitro(Entity):
 		s.snd_time=1
 		s.jmp_y=s.y
 		s.mode=0
-		del pos,pse
+		del pos,pse,s
 	def c_freeze(self):
 		self.can_jmp=False
 	def destroy(self):
@@ -420,7 +410,7 @@ class Air(Entity):
 		s.collider=None
 		s.mark=m
 		s.c_ID=l
-		del pos,pse
+		del pos,pse,s
 	def destroy(self):
 		s=self
 		place_crate(p=s.position,ID=s.c_ID,pse=True)
@@ -437,7 +427,7 @@ class Protected(Entity):
 		s.hitten=False
 		s.p_snd=False
 		s.frm=0
-		del pos,pse
+		del pos,pse,s
 	def destroy(self):
 		s=self
 		s.hitten=True
@@ -459,7 +449,7 @@ class cTime(Entity):
 		super().__init__(model=cr2)
 		s.time_stop=tm
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
-		del pos,pse
+		del pos,pse,s
 	def destroy(self):
 		destroy_event(self)
 
@@ -471,7 +461,7 @@ class LvInfo(Entity):
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		if st.level_col_gem:
 			destroy(s)
-		del pos,pse
+		del pos,pse,s
 	def destroy(self):
 		s=self
 		if st.level_index == 3:

@@ -15,10 +15,13 @@ def map_setting():
 	LC.FOG_B_COLOR=color.rgb32(20,70,50)
 	LC.AMB_M_COLOR=color.rgb32(140,140,140)
 	LC.SKY_BG_COLOR=color.rgb32(0,60,80)
-	LC.LV_DST=(10,15)
-	LC.BN_DST=(6,12)
 	st.toggle_thunder=False
 	st.toggle_rain=True
+	LC.LV_DST=(10,15)
+	LC.BN_DST=(6,12)
+	LC.RCZ=30
+	LC.RCX=16
+	LC.RCB=6
 
 def start_load():
 	load_crate()

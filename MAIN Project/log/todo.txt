@@ -1,11 +1,9 @@
 ## BUGS/ERORRS
-- level 1-8 better LOD,BF-Culling
 
 #LEVEL EDITOR
 - level editor environment settings
 - level editor side scene
 - level editor bonus maker
-- level editor saves render distance x,z,y
 
 ##TODO
 - level 8, bonus zone, npc, wumpa, crate, gem zone, boulder

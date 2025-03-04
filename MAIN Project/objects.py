@@ -481,7 +481,10 @@ class SnowPlatform(Entity):
 		s=self
 		super().__init__(model=snPL+'.ply',texture=snPL+'.png',name='sngg',position=pos,scale=.0075,rotation_x=-90)
 		s.co=Entity(model=wfc,scale=(.85,1,.85),name=s.name,position=(s.x,s.y-.5,s.z),collider=b,visible=False)
-		del pos
+		if st.level_index == 8:
+			s.color=color.dark_gray
+			s.unlit=False
+		del pos,s
 
 #####################
 ## level 4 objects ##
@@ -722,7 +725,6 @@ class EndRoom(Entity):## finish level
 		if st.level_index in {6,7,8} and not st.level_index in st.COLOR_GEM:
 			if st.level_index == 8:
 				s.unlit=False
-				s.color=color.rgb32(60,60,60)
 			item.GemStone(c=st.level_index,pos=(s.x-1.1,s.y-.9,s.z))
 		del pos,c
 

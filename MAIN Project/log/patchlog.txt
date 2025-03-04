@@ -56,3 +56,4 @@
 - changed land mine function: position changes by animation
 - new asset/danger: Lightfire for Traps or Lanterns
 - death event by LabTaser: player shrink instead of electric shock animation
+- backface culling distance settings load from level.py->map_settings

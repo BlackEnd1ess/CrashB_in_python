@@ -25,8 +25,8 @@ def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun
 	c.move_speed=LC.dfsp
 	c.cur_tex=c.texture
 	c.gravity=LC.dfsp
-	c.inv_sc=-.1/114
-	c.nor_sc=.1/114
+	c.inv_sc=-.1/115
+	c.nor_sc=.1/115
 	c.direc=(0,0,0)
 	c.vpos=c.y
 	c.dth_timer=4
@@ -97,6 +97,8 @@ def reset_state(c):
 		c.sma_dth=False
 		reset_mines()
 		rmv_bees()
+	if st.level_index == 8:
+		reset_fireflies()
 	c.position=status.checkpoint
 	env.set_fog()
 	camera.position=c.position
@@ -106,7 +108,7 @@ def reset_state(c):
 	st.death_event=False
 	c.dthfr=0
 	setattr(c,'texture',LC.ctx)
-	setattr(c,'scale',.1/114)
+	setattr(c,'scale',.1/115)
 	c.dth_snd=False
 	c.visible=True
 	c.stun=False
@@ -145,6 +147,12 @@ def c_smash(c):
 				sw.destroy()
 		if is_enemie(sw) and sw.vnum != 13:
 			sw.is_purge=True
+def p_bounce(m):
+	if st.aku_hit < 3:
+		LC.ACTOR.jump_typ(t=4)
+		m.is_bounc=True
+		sn.crate_audio(ID=5)
+	del m
 def c_attack(c):
 	for qd in scene.entities[:]:
 		if (qd.collider and distance(qd.position,c.position) < .5):
@@ -417,7 +425,7 @@ def floor_act(vp):
 		if (vp.vnum in {9,10,11} and vp.activ) or vp.vnum == 0:
 			return
 		if vp.vnum in {7,8}:
-			vp.c_action()
+			p_bounce(vp)
 		else:
 			if not vp.vnum == 14:
 				LC.ACTOR.jump_typ(t=2)
@@ -513,7 +521,7 @@ def crate_set_val(cR,Cpos,Cpse):
 	cR.collider='box'
 	cR.poly=Cpse
 	cR.scale=.16
-	if st.level_index == 8:
+	if st.level_index == 8 and cR.vnum != 12:
 		cR.color=color.dark_gray
 		cR.unlit=False
 	del cR,Cpos,Cpse
@@ -621,6 +629,9 @@ def set_val_npc(m,drc=None,rng=None):
 	vnn=m.name
 	m.model=npf+f'{vnn}/0.ply'
 	m.texture=npf+f'{vnn}/0.tga'
+	if st.level_index == 8:
+		m.color=color.dark_gray
+		m.unlit=False
 	del m,drc,rng,vnn
 def circle_move_xz(m):
 	m.angle-=time.dt*m.move_speed
@@ -716,3 +727,9 @@ def reset_mines():
 	for rsm in LC.LDM_POS[:]:
 		LandMine(pos=rsm)
 	LC.LDM_POS.clear()
+
+##lv8 firefly position
+def reset_fireflies():
+	for fpp in LC.FF_POS[:]:
+		N.Firefly(pos=fpp)
+	LC.FF_POS.clear()

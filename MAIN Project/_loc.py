@@ -31,6 +31,11 @@ wrbg='res/background/warp_room.png'
 #crash default texture
 ctx='res/pc/crash'
 
+#render culling distance
+RCX=0#x pos
+RCZ=0#z pos
+RCB=0#back dst
+
 #2d gem animation
 ge_0='res/ui/icon/gem_0/gem'
 ge_1='res/ui/icon/gem_1/gem'
@@ -79,6 +84,9 @@ ltth=1.7
 
 #lv6 mine position
 LDM_POS=[]
+
+#lv8 fireflies
+FF_POS=[]
 #triggers
 trigger_lst={'indz','lvfi','elwt','fthr','eball'}
 

@@ -6,11 +6,14 @@ cc=_core
 st=status
 LC=_loc
 
-BE='res/snd/npc/bee.wav'
-VS='res/snd/ambience/'
-SP='res/snd/player/'
-SN='res/snd/misc/'
-SA='res/snd/npc/'
+SNF='res/snd/'
+
+TC=SNF+'misc/tnt.wav'
+BE=SNF+'npc/bee.wav'
+VS=SNF+'ambience/'
+SP=SNF+'player/'
+SN=SNF+'misc/'
+SA=SNF+'npc/'
 dd=1.2
 
 ##footstep

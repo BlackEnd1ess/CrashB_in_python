@@ -11,10 +11,13 @@ def pos_info(c):
 	sx=f"{c.x:.1f}"
 	syc=f"{c.y+.16:.2f}"#crate
 	syw=f"{c.y+.2:.2f}"#wumpa
+	sym=f"{c.y:.2f}"#npc
 	sz=f"{c.z:.1f}"
 	#print(f"mt.crate_block(ID=14,POS=({sx},{syc},{sz}),CNT=[2,2,2])")
-	#print(f"c.place_crate(ID=0,p=({sx},{syc},{sz}))")
-	print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=1)")
+	#print(f"c.place_crate(ID=5,p=({sx},{syc},{sz}))")
+	#print(f"mt.crate_row(ID=12,POS=({sx},{syc},{sz}),WAY=0,CNT=4)")
+	#print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=1)")
+	print(f"n.Firefly(pos=({sx},{sym},{sz}))")
 
 #player attr info
 class PlayerDBG(Entity):

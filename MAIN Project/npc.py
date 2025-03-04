@@ -96,7 +96,7 @@ class Amadillo(Entity):
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1
 		s.max_frm=7
-		del pos,rng,drc
+		del pos,rng,drc,s
 	def update(self):
 		npc_action(self)
 
@@ -109,7 +109,7 @@ class Turtle(Entity):
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=.7
 		s.max_frm=12
-		del pos,rng,drc
+		del pos,rng,drc,s
 	def update(self):
 		npc_action(self)
 
@@ -122,7 +122,7 @@ class SawTurtle(Entity):
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1
 		s.max_frm=12
-		del pos,rng,drc
+		del pos,rng,drc,s
 	def update(self):
 		npc_action(self)
 
@@ -135,6 +135,7 @@ class Vulture(Entity):
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1.2
 		s.max_frm=13
+		del pos,drc,rng,s
 	def wait_on_player(self):
 		s=self
 		target=LC.ACTOR
@@ -169,6 +170,7 @@ class Penguin(Entity):
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1.1
 		s.max_frm=15
+		del pos,drc,rng,s
 	def update(self):
 		npc_action(self)
 
@@ -184,6 +186,7 @@ class Hedgehog(Entity):
 		s.move_speed=1.1
 		s.def_frame=0
 		s.max_frm=12
+		del pos,drc,rng,s
 	def anim_act(self):
 		an.hedge_defend(self)
 	def update(self):
@@ -206,6 +209,7 @@ class Seal(Entity):
 		s.move_speed=1.1
 		s.max_frm=14
 		s.n_snd=False
+		del pos,drc,rng,s
 	def update(self):
 		s=self
 		if st.gproc():
@@ -228,7 +232,7 @@ class EatingPlant(Entity):
 		s.atk,s.eat=False,False
 		s.scale=.8/900
 		s.max_frm=13
-		del pos
+		del pos,s
 	def action(self):
 		s=self
 		ta=LC.ACTOR
@@ -281,6 +285,7 @@ class Rat(Entity):
 		s.snd_time=1
 		s.max_frm=8
 		s.idl_frm=0
+		del pos,drc,rng,cmv,s
 	def npc_snd(self):
 		s=self
 		s.snd_time=max(s.snd_time-time.dt,0)
@@ -320,6 +325,7 @@ class Lizard(Entity):
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1.2
 		s.max_frm=11
+		del pos,drc,rng,s
 	def update(self):
 		npc_action(self)
 
@@ -335,6 +341,7 @@ class Scrubber(Entity):
 		s.ro_mode=rtyp
 		s.max_frm=3
 		s.angle=0
+		del pos,drc,rng,rtyp,s
 	def npc_snd(self):
 		s=self
 		if not s.n_snd:
@@ -361,6 +368,7 @@ class Mouse(Entity):
 		s.n_snd=False
 		s.ro_mode=rtyp
 		s.angle=0
+		del pos,drc,rng,rtyp,s
 	def npc_snd(self):
 		s=self
 		if not s.n_snd:
@@ -383,6 +391,7 @@ class Eel(Entity):
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1
 		s.max_frm=12
+		del pos,drc,rng,s
 	def update(self):
 		npc_action(self)
 
@@ -395,6 +404,7 @@ class SewerMine(Entity):
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=.75
 		s.max_frm=16
+		del pos,drc,rng,s
 	def update(self):
 		if not st.gproc():
 			an.npc_walking(self)
@@ -414,6 +424,7 @@ class Gorilla(Entity):
 		s.f_frame=0
 		s.t_frame=0
 		s.max_frm=0
+		del pos,drc,s
 	def throw_log(self):
 		s=self
 		invoke(lambda:LogDanger(pos=(s.x,s.y+.6,s.z),ro_y=s.rotation_y),delay=.1)
@@ -439,7 +450,7 @@ class Bee(Entity):
 		s.max_frm=0
 		s.frm=0
 		s.tme=0
-		del pos
+		del pos,s
 	def fly_home(self):
 		s=self
 		s.position=lerp(s.position,s.spawn_pos,time.dt*.5)
@@ -508,7 +519,7 @@ class Lumberjack(Entity):
 		s.max_frm=10
 		s.sma_frm=0
 		s.is_atk=False
-		del pos
+		del pos,s
 	def update(self):
 		if st.gproc():
 			return
@@ -546,7 +557,7 @@ class SpiderRobotFlat(Entity):
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1
 		s.max_frm=13
-		del pos,rng,drc
+		del pos,rng,drc,s
 	def update(self):
 		s=self
 		if s.is_hitten or s.is_purge:
@@ -569,7 +580,7 @@ class SpiderRobotUp(Entity):
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=1
 		s.max_frm=13
-		del pos,rng,drc
+		del pos,rng,drc,s
 	def update(self):
 		s=self
 		if s.is_hitten or s.is_purge:
@@ -592,7 +603,7 @@ class Robot(Entity):
 		s.move_speed=1.8
 		s.max_frm=29
 		s.tme=.6
-		del pos,rng,drc
+		del pos,rng,drc,s
 	def update(self):
 		s=self
 		npc_action(s)
@@ -616,7 +627,7 @@ class LabAssistant(Entity):
 		s.move_speed=1
 		s.max_frm=0
 		s.tme=1
-		del pos,drc
+		del pos,drc,s
 	def update(self):
 		if st.gproc():
 			return
@@ -656,7 +667,7 @@ class AkuAkuMask(Entity):
 		s.last_y=s.y
 		s.spt=.5
 		s.spkw=0
-		del pos
+		del pos,s
 	def default_skin(self):
 		s=self
 		s.model=aku_skin0+'.ply'
@@ -728,7 +739,7 @@ class Hippo(Entity):
 		s.active=False
 		s.a_frame=0
 		s.start_y=s.y
-		del POS,vgv
+		del POS,vgv,s
 	def do_act(self):
 		s=self
 		if not s.active:
@@ -761,42 +772,55 @@ ffly=npf+'firefly/0'
 class Firefly(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=ffly+'.ply',texture=ffly+'.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False)
+		super().__init__(model=ffly+'.ply',texture=ffly+'.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False,collider='box')
 		s.lgt=PointLight(position=s.position,scale=.3,color=color.rgb32(255,200,180))
 		s.spawn_pos=pos
 		s.active=False
 		s.move_speed=8
 		s.mov_range=1
 		s.angle=0
-		s.tme=30
-		del pos
-	#def lgt_fdout(self):
-	#	s=self
-	#	ttd=time.dt*40
-	#	setattr(s.lgt,'color',(s.lgt.color[0],s.lgt.color[1],s.lgt.color[2])-(ttd,ttd,ttd))
-	#	if s.lgt.color <= (0,0,0):
-	#		LC.ACTOR.color=color.dark_gray
-	#		destroy(s)
-	#		del ttd
+		s.tme=15
+		del pos,s
+	def purge(self):
+		s=self
+		LC.FF_POS.append(s.spawn_pos)
+		LC.ACTOR.color=color.dark_gray
+		s.lgt.color=color.black
+		destroy(s.lgt)
+		destroy(s)
+	def follow_p(self):
+		s=self
+		s.tme=max(s.tme-time.dt,0)
+		if s.tme <= 0 or st.death_event:
+			s.purge()
+			return
+		LC.ACTOR.color=color.gray
+		s.position=lerp(s.position,(LC.ACTOR.x+.35,LC.ACTOR.y+.6,LC.ACTOR.z+.4),time.dt*2)
+		s.rotation_y=0
+	def fly_spawn(self):
+		s=self
+		s.mov_range=.3+abs(sin(time.time()))*.4
+		s.y=s.spawn_pos[1]+sin(time.time()*3)*.2
+		cc.circle_move_xz(s)
+		if distance(LC.ACTOR,s) < 1:
+			s.active=True
+#	def lgt_fdout(self):
+#		s=self
+#		ttd=time.dt*40
+#		setattr(s.lgt,'color',(s.lgt.color[0],s.lgt.color[1],s.lgt.color[2])-(ttd,ttd,ttd))
+#		if s.lgt.color <= (0,0,0):
+#			LC.ACTOR.color=color.dark_gray
+#			destroy(s)
+#			del ttd
 	def update(self):
 		if st.gproc():
 			return
 		s=self
+		if str(s.intersects(ignore=[LC.ACTOR,LC.shdw]).entity) == s.name:
+			s.purge()
+			return
 		s.lgt.position=s.position
 		if s.active:
-			s.tme=max(s.tme-time.dt,0)
-			if s.tme <= 0:
-				LC.ACTOR.color=color.dark_gray
-				s.lgt.color=color.black
-				destroy(s)
-				#s.lgt_fdout()
-				return
-			LC.ACTOR.color=color.gray
-			s.position=lerp(s.position,(LC.ACTOR.x+.3,LC.ACTOR.y+.5,LC.ACTOR.z+.4),time.dt*2)
-			s.rotation_y=0
+			s.follow_p()
 			return
-		s.mov_range=.5+abs(sin(time.time()))*.5
-		s.y=s.spawn_pos[1]+sin(time.time()*2)*.2
-		cc.circle_move_xz(s)
-		if distance(LC.ACTOR,s) < 1:
-			s.active=True
+		s.fly_spawn()

@@ -32,6 +32,7 @@ class Sparkle(Entity):
 	def __init__(self,pos):
 		super().__init__(model='quad',texture=ef+'sparkle.tga',position=pos,scale=.04,color=color.gold,unlit=False)
 		self.mode=0
+		del pos
 	def update(self):
 		if st.gproc():
 			return
@@ -48,6 +49,7 @@ class Sparkle(Entity):
 class JumpDust(Entity):
 	def __init__(self,pos):
 		super().__init__(model='quad',texture=ef+'fire_ball.png',position=pos,scale=.1,color=color.gray)
+		del pos
 	def update(self):
 		if st.gproc():
 			return
@@ -131,6 +133,7 @@ class FireThrow(Entity):
 		s.mvs=4
 		if ro_y in {90,-90}:
 			s.z=s.z+random.uniform(-.1,.1)
+		del pos,ro_y
 	def fly_away(self):
 		s=self
 		mt=time.dt*s.mvs
@@ -155,6 +158,7 @@ class ElectroBall(Entity):
 	def __init__(self,pos):
 		super().__init__(model='quad',texture=ef+'sparkle.tga',name='eball',position=pos,scale=.9,collider='box',color=color.rgb32(0,60,255),unlit=False,alpha=.75)
 		self.spawn_y=self.y
+		del pos
 	def update(self):
 		if st.gproc():
 			return

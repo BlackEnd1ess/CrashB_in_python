@@ -274,14 +274,14 @@ class WarpRingEffect(Entity): ## spawn animation
 			if not s.activ:
 				s.activ=True
 				sn.obj_audio(ID=0)
-			s.rings=min(s.rings+time.dt*30,8.999)
+			s.rings=min(s.rings+time.dt*35,8.999)
 			if s.rings > 8.99:
 				s.rings=0
 				s.times+=1
 				sn.pc_audio(ID=1,pit=.35)
-			s.model=wrv+'warp_rings/'+str(int(s.rings))+'.ply'
-			if s.times > 7:
-				_loc.ACTOR.warped=True
+			s.model=wrv+f'warp_rings/{int(s.rings)}.ply'
+			if s.times > 8:
+				LC.ACTOR.warped=True
 				destroy(s)
 
 ## npc animation

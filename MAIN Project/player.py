@@ -10,6 +10,9 @@ sn=sound
 cc=_core
 LC=_loc
 
+hgt={True:.3,False:.1}
+fgt={True:2.2,False:2}
+
 atp='res/pc/spn/crash.png'
 dtp='res/pc/crash.png'
 
@@ -31,7 +34,7 @@ class pShadow(Entity):## shadow point
 class CrashB(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=LC.ctx+'.ply',texture=LC.ctx+'.png',scale=.1/114,rotation_x=-90,position=pos,unlit=False)
+		super().__init__(model=LC.ctx+'.ply',texture=LC.ctx+'.png',scale=.1/115,rotation_x=-90,position=pos,unlit=False)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(200,200,600))
 		cc.set_val(s)
 		an.WarpRingEffect(pos=s.position)
@@ -47,7 +50,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(60.5,4,139)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(34,7,61)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
@@ -140,18 +143,16 @@ class CrashB(Entity):
 	def jump(self):
 		s=self
 		s.frst_lnd=True
-		hgt={True:.3,False:.1}
-		fgt={True:2.2,False:2}
-		kt=(s.space_time > .09)
+		kt=bool(s.space_time > .09)
 		s.y=lerp(s.y,s.vpos+hgt[kt]+.1,(time.dt*s.gravity)*fgt[kt])
 		if s.walking:
 			s.is_flip=True
 		if not s.is_flip:
 			an.jump_up(s)
-		if (s.y >= s.vpos+hgt[kt]):
+		if s.y >= s.vpos+hgt[kt]:
 			s.space_time=0
 			s.jumping=False
-			del hgt,fgt,kt
+		del kt
 	def check_jump(self):
 		s=self
 		if s.landed and not (s.jumping or s.falling):
@@ -165,9 +166,7 @@ class CrashB(Entity):
 		s.is_landing=True
 	def anim_fall(self):
 		s=self
-		if s.stun:
-			return
-		if st.death_event or (s.is_flip or s.is_attack):
+		if any([s.is_flip,s.is_attack,s.stun,st.death_event]):
 			return
 		if s.b_smash:
 			an.belly_smash(s)
@@ -175,14 +174,15 @@ class CrashB(Entity):
 		an.fall(s)
 	def c_camera(self):
 		s=self
-		if not st.death_event:
-			if st.bonus_round:
-				cc.cam_bonus(s)
-				return
-			if s.indoor > 0:
-				cc.cam_indoor(s)
-				return
-			cc.cam_level(s)
+		if st.death_event:
+			return
+		if st.bonus_round:
+			cc.cam_bonus(s)
+			return
+		if s.indoor > 0:
+			cc.cam_indoor(s)
+			return
+		cc.cam_level(s)
 	def death_action(self):
 		s=self
 		dtc=s.dth_cause
@@ -191,7 +191,7 @@ class CrashB(Entity):
 			s.dth_timer=4
 			cc.reset_state(s)
 			return
-		if dtc in [1,5]:
+		if dtc in {1,5}:
 			s.visible=False
 			return
 		cbda={2:lambda:an.dth_angelfly(s),

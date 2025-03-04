@@ -63,7 +63,10 @@ class Role(Entity):
 		s.danger=False
 		s.roll_wait=1
 		s.direc=di
-		del pos,di
+		if st.level_index == 8:
+			s.color=color.dark_gray
+			s.unlit=False
+		del pos,di,s
 	def roll_right(self):
 		s=self
 		s.x+=time.dt*2

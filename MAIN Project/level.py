@@ -6,7 +6,7 @@ st=status
 cc=_core
 sn=sound
 
-flt=5
+flt=7
 ## start level
 def free_level():
 	camera.rotation_x=15
