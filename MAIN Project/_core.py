@@ -20,7 +20,7 @@ N=npc
 def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound					inwater
 	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','dthfr','pshfr','stnfr','dth_cause','space_time'}:
 		setattr(c,_a,0)#values
-	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','sma_dth','dth_snd','is_slp','pushed'}:
+	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','sma_dth','dth_snd','is_slp','pushed','cwall'}:
 		setattr(c,_v,False)#flags
 	c.move_speed=LC.dfsp
 	c.cur_tex=c.texture
@@ -105,6 +105,7 @@ def reset_state(c):
 	camera.rotation=(15,0,0)
 	if c.scale_x < 0:
 		c.scale_x=c.nor_sc
+	c.is_slp=False
 	st.death_event=False
 	c.dthfr=0
 	setattr(c,'texture',LC.ctx)
@@ -148,10 +149,10 @@ def c_smash(c):
 		if is_enemie(sw) and sw.vnum != 13:
 			sw.is_purge=True
 def p_bounce(m):
-	if st.aku_hit < 3:
-		LC.ACTOR.jump_typ(t=4)
-		m.is_bounc=True
-		sn.crate_audio(ID=5)
+	LC.ACTOR.is_flip=False
+	LC.ACTOR.jump_typ(t=4)
+	m.is_bounc=True
+	sn.crate_audio(ID=5)
 	del m
 def c_attack(c):
 	for qd in scene.entities[:]:
@@ -397,7 +398,7 @@ def check_ceiling(c):
 def check_floor(c):
 	lkh={r for r in scene.entities if (str(r) in LC.item_lst|LC.dangers|LC.trigger_lst) or r in {c,LC.shdw}}
 	fwd_drc=Vec3(-sin(radians(c.rotation_y))*.05,0,-cos(radians(c.rotation_y))*.05)
-	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.125,.125),ignore=lkh,debug=False)
+	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=lkh,debug=False)
 	stm=bool(vj and vj.normal)
 	c.falling=not stm
 	c.landed=stm
@@ -438,23 +439,23 @@ def floor_act(vp):
 		LC.ACTOR.jump_typ(t=2)
 def spc_floor(e):
 	u=str(e)
+	LC.ACTOR.is_slp=u == 'iceg'
 	if u in {'bnpt','gmpt'}:
 		ptf_up(e,LC.ACTOR)
 		return
 	if u in {'swpt','HPP','epad'}:
 		e.active=True
 		return
-	if (u == 'plnk' and e.typ == 1) or u in {'loos','iceg'}:
+	if (u == 'plnk' and e.typ == 1) or u == 'loos':
 		e.pl_touch()
 		return
-	LC.ACTOR.is_slp=False
 	if (u == 'swpi' and e.typ == 3) or (u == 'labt' and e.danger):
 		get_damage(LC.ACTOR,rsn=4)
 		return
 	if u == 'wtrh':
 		dth_event(LC.ACTOR,rsn=3)
 		return
-	if u in {'mptf','lbbt'} and not LC.ACTOR.walking:
+	if u in {'mptf','lbbt'} and not any([LC.ACTOR.walking,LC.ACTOR.jumping]):
 		e.mv_player()
 def ptf_up(e,c):
 	if not c.freezed:

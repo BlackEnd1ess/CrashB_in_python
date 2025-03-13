@@ -769,12 +769,14 @@ class Hippo(Entity):
 			animation.hippo_dive(s)
 
 ffly=npf+'firefly/0'
+tfd=.01
 class Firefly(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=ffly+'.ply',texture=ffly+'.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False,collider='box')
-		s.lgt=PointLight(position=s.position,scale=.3,color=color.rgb32(255,200,180))
+		super().__init__(model=ffly+'.ply',texture=ffly+'.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False)
+		s.lgt=PointLight(position=s.position,name='fflg',scale=.2,color=color.rgb32(255,200,180))
 		s.spawn_pos=pos
+		s.zone_switch=False
 		s.active=False
 		s.move_speed=8
 		s.mov_range=1
@@ -786,16 +788,18 @@ class Firefly(Entity):
 		LC.FF_POS.append(s.spawn_pos)
 		LC.ACTOR.color=color.dark_gray
 		s.lgt.color=color.black
-		destroy(s.lgt)
-		destroy(s)
+		destroy(s.lgt),destroy(s)
 	def follow_p(self):
 		s=self
 		s.tme=max(s.tme-time.dt,0)
-		if s.tme <= 0 or st.death_event:
+		if st.death_event:
 			s.purge()
 			return
+		if s.tme <= 0:
+			s.lgt_fadeout()
+			return
 		LC.ACTOR.color=color.gray
-		s.position=lerp(s.position,(LC.ACTOR.x+.35,LC.ACTOR.y+.6,LC.ACTOR.z+.4),time.dt*2)
+		s.position=lerp(s.position,(LC.ACTOR.x+.4,LC.ACTOR.y+.7,LC.ACTOR.z),time.dt*2)
 		s.rotation_y=0
 	def fly_spawn(self):
 		s=self
@@ -804,21 +808,17 @@ class Firefly(Entity):
 		cc.circle_move_xz(s)
 		if distance(LC.ACTOR,s) < 1:
 			s.active=True
-#	def lgt_fdout(self):
-#		s=self
-#		ttd=time.dt*40
-#		setattr(s.lgt,'color',(s.lgt.color[0],s.lgt.color[1],s.lgt.color[2])-(ttd,ttd,ttd))
-#		if s.lgt.color <= (0,0,0):
-#			LC.ACTOR.color=color.dark_gray
-#			destroy(s)
-#			del ttd
+	def lgt_fadeout(self):
+		s=self
+		s.lgt.color-=(tfd*1.25,tfd,tfd,0)
+		if s.lgt.color[0] <= 0:
+			s.purge()
+			del s
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		if str(s.intersects(ignore=[LC.ACTOR,LC.shdw]).entity) == s.name:
-			s.purge()
-			return
+		s.lgt.color=color.black if st.bonus_round and s.y > -10 else color.rgb32(255,200,180)
 		s.lgt.position=s.position
 		if s.active:
 			s.follow_p()

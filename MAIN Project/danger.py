@@ -593,3 +593,15 @@ class FallingZone(Entity):## falling
 		ac=LC.ACTOR
 		if self.intersects(ac):
 			cc.dth_event(ac,rsn=1)
+
+bldr=omf+'l8/boulder/boulder'
+class Boulder(Entity):
+	def __init__(self,pos,sca):
+		super().__init__(model=bldr+'.ply',texture=bldr+'.png',position=pos,scale=.01,rotation_x=-90)
+		self.active=False
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if s.active:
+			s.rotation_x+=time.dt

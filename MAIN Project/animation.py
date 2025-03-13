@@ -16,7 +16,36 @@ cc=_core
 bT=50
 t=18
 
-## crash play animation
+##animation logic
+def c_animation(c):
+	if c.stun:
+		c_stun(c)
+		return
+	if c.pushed:
+		c_push_back(c)
+		return
+	if c.standup:
+		stand_up(c)
+		return
+	if c.is_attack:
+		spin(c)
+		return
+	if c.is_flip and not (c.landed and c.is_attack):
+		flip(c)
+		return
+	if (c.landed and c.is_landing) and not any([c.walking,c.jumping,c.is_attack,c.falling]):
+		if c.b_smash:
+			belly_land(c)
+		else:
+			land(c)
+		return
+	if st.p_idle(c) or c.freezed:
+		if c.is_slp:
+			slide_stop(c)
+		else:
+			idle(c)
+
+##animations
 def idle(c):
 	c.idfr=min(c.idfr+time.dt*17,10.999)
 	if c.idfr > 10.99:
@@ -68,7 +97,7 @@ def fall(d):
 	d.model=af+'fall/'+str(int(d.fafr))+'.ply'
 
 def flip(d):
-	d.flfr=min(d.flfr+time.dt*19,16.999)
+	d.flfr=min(d.flfr+time.dt*21,16.999)
 	if d.flfr > 16.99:
 		d.is_flip=False
 		d.flfr=0
@@ -136,7 +165,7 @@ def c_push_back(c):
 		return
 	c.model=af+f'push/{int(c.pshfr)}.ply'
 
-## crash death animations
+##death animations
 def dth_angelfly(c):
 	c.y+=time.dt
 	c.dthfr=min(c.dthfr+time.dt*t,20.999)
@@ -206,7 +235,7 @@ def dth_shrink(c):
 	if c.scale > (.1/400,.1/400,.1/400):
 		c.scale-=(fv,fv,fv)
 
-## crate animation
+##crate animation
 def bnc_anim(c):
 	c.frm=min(c.frm+time.dt*bT,12.999)
 	if c.frm > 12.99:
@@ -284,7 +313,7 @@ class WarpRingEffect(Entity): ## spawn animation
 				LC.ACTOR.warped=True
 				destroy(s)
 
-## npc animation
+##npc animation
 def npc_walking(m):
 	m.anim_frame=min(m.anim_frame+time.dt*t,m.max_frm+.999)
 	if m.anim_frame > m.max_frm+.99:

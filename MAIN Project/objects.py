@@ -202,6 +202,12 @@ class ObjType_Corridor(Entity):
 
 #################
 ##level Grounds##
+def multi_ice_floor(pos,cnt):
+	for ifx in range(cnt[0]):
+		for ifz in range(cnt[1]):
+			ObjType_Floor(ID=0,pos=(pos[0]+ifx,pos[1],pos[2]+ifz),sca=(1,2,1),txa=(1,1),col=color.rgb32(0,140,200),al=1)
+	del pos,cnt,ifx,ifz
+
 flr={0:None,
 	1:'l3/wood_stage/wood_stage',
 	2:'l3/big_tile/big_tile',
@@ -267,10 +273,6 @@ class ObjType_Floor(Entity):
 		if s.vnum in cdl:
 			cdl[s.vnum]()
 		del cdl
-	def pl_touch(self):
-		ac=LC.ACTOR
-		ac.is_slp=.4
-		del ac
 
 #####################
 ##level background ##

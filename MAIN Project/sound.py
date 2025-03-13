@@ -225,7 +225,7 @@ class BackgroundMusic(Audio):
 		destroy(s)
 	def check_scene(self):
 		s=self
-		if (s.mode == 0 and (st.bonus_round or st.death_route)) or (s.mode == 1 and (st.bonus_solved or st.death_route or not st.bonus_round)) or (s.mode == 2 and (not st.death_route or st.game_over)):
+		if st.game_over or (s.mode == 0 and (st.bonus_round or st.death_route)) or (s.mode == 1 and (st.bonus_solved or not st.bonus_round)) or (s.mode == 2 and (not st.death_route or st.gem_path_solved)):
 			s.rmv_music()
 	def update(self):
 		s=self
@@ -240,7 +240,7 @@ class BackgroundMusic(Audio):
 
 class AkuMusic(Audio):
 	def __init__(self):
-		super().__init__(MC+'invinc'+str(random.randint(0,1))+'.mp3',volume=se.MUSIC_VOLUME,loop=True)
+		super().__init__(MC+f'invinc{random.randint(0,1)}.mp3',volume=se.MUSIC_VOLUME,loop=True)
 		self.tme=20
 	def update(self):
 		s=self

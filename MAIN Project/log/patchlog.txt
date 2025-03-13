@@ -57,3 +57,8 @@
 - new asset/danger: Lightfire for Traps or Lanterns
 - death event by LabTaser: player shrink instead of electric shock animation
 - backface culling distance settings load from level.py->map_settings
+
+#13.03.2025
+- new Asset: Boulder
+- fixxed AkuAku jump on Spring crates
+- New Music for Level 8 Gem Route

@@ -35,7 +35,7 @@ class CrashB(Entity):
 	def __init__(self,pos):
 		s=self
 		super().__init__(model=LC.ctx+'.ply',texture=LC.ctx+'.png',scale=.1/115,rotation_x=-90,position=pos,unlit=False)
-		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(200,200,600))
+		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+500),size=Vec3(300,300,500))
 		cc.set_val(s)
 		an.WarpRingEffect(pos=s.position)
 		pShadow()
@@ -50,7 +50,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(34,7,61)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(60.5,3,124)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
@@ -86,9 +86,10 @@ class CrashB(Entity):
 		mvD=Vec3(held_keys[sg.RGT_KEY]-held_keys[sg.LFT_KEY],0,held_keys[sg.FWD_KEY]-held_keys[sg.BCK_KEY]).normalized()
 		hT=s.intersects(ignore=uq,debug=False)
 		s.direc=mvD
-		if hT.hit and not hT.normal in {Vec3(0,1,0),Vec3(0,-1,0)}:
+		if hT:
 			if not str(hT.entity) in LC.item_lst|LC.trigger_lst:
-				s.position+=hT.normal*time.dt*s.move_speed
+				if hT.normal in {Vec3(1,0,0),Vec3(-1,0,0),Vec3(0,0,1),Vec3(0,0,-1)}:
+					s.position-=mvD*(time.dt*s.move_speed)
 			if hT.entity:
 				cc.wall_hit(hT.entity)
 		if s.is_slp:
@@ -102,8 +103,6 @@ class CrashB(Entity):
 			s.walk_event()
 			if not mc or str(mc.entity) in LC.item_lst|LC.trigger_lst:
 				s.position+=mvD*(time.dt*s.move_speed)
-			if mc.entity:
-				cc.wall_hit(mc.entity)
 			return
 		s.wksn=0
 		s.walking=False
@@ -127,7 +126,7 @@ class CrashB(Entity):
 			s.wksn=.35
 	def jump_typ(self,t):
 		s=self
-		grv={1:(2.5),2:(2.8),3:(3.0),4:(2.7)}
+		grv={1:(2.6),2:(2.9),3:(3.1),4:(2.8)}
 		jmh={1:s.y+.8,#		normal jump
 			2:s.y+1,#		crate jump
 			3:s.y+1.1,#		bounce jump
@@ -211,20 +210,6 @@ class CrashB(Entity):
 			return
 		if not dtp in {s.texture,s.cur_tex}:
 			s.texture,s.cur_tex=dtp,dtp
-	def refr_anim(self):
-		s=self
-		anim={(s.pushed,an.c_push_back),
-			(s.landed and s.is_landing and not any([s.walking,s.jumping,s.is_attack,s.falling,s.standup]),an.land if not s.b_smash else an.belly_land),
-			(s.stun,an.c_stun),
-			(s.standup,an.stand_up),
-			(s.is_attack,an.spin),
-			(s.is_flip and not (s.landed and s.is_attack),an.flip),
-			((st.p_idle(s) or s.freezed),an.slide_stop if s.is_slp else an.idle)}
-		for cds,do_anim in anim:
-			if cds:
-				do_anim(s)
-				del anim,cds
-				return
 	def hurt_visual(self):
 		for vkh in range(7):
 			invoke(lambda:cc.hurt_blink(self),delay=vkh/3)
@@ -252,4 +237,4 @@ class CrashB(Entity):
 			s.c_physic()
 			if not st.p_rst(s):
 				s.c_interact()
-			s.refr_tex(),s.refr_anim()
+			s.refr_tex(),an.c_animation(s)
