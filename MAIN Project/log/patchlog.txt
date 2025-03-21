@@ -62,3 +62,6 @@
 - new Asset: Boulder
 - fixxed AkuAku jump on Spring crates
 - New Music for Level 8 Gem Route
+
+#20.03.2025
+- Firefly NPC: Pathfinding, firefly follow all point directions by list

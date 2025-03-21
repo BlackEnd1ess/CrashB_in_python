@@ -1,5 +1,5 @@
 import objects,map_tools,status,crate,npc,sys,os,_loc,danger
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 from ursina.shaders import *
 from ursina import *
 

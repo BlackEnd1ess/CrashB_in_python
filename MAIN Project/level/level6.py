@@ -1,5 +1,5 @@
 import objects,map_tools,crate,npc,item,sys,os,_loc,status,danger
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 from ursina import *
 
 ccw=color.white

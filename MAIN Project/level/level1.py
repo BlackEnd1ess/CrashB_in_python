@@ -1,5 +1,5 @@
 import settings,objects,map_tools,crate,npc,status,_loc,sys,os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 from ursina import *
 
 mt=map_tools

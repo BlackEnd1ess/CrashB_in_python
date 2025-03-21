@@ -1,5 +1,5 @@
 import settings,objects,map_tools,crate,npc,status,item,random,sys,os,_loc,danger
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 from ursina import *
 
 mtx='res/terrain/metal_01.png'

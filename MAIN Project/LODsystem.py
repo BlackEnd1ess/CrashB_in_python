@@ -31,21 +31,19 @@ class ManageObjects(Entity):
 			j=distance(v,LC.ACTOR)
 			if cc.is_crate(v):
 				if not v.vnum in {3,12,15}:
-					v.enabled=bool(j < s.box_dst)
+					v.enabled=j < s.box_dst
 				else:
-					v.visible=bool(j < s.box_dst)
+					v.visible=j < s.box_dst
 			if cc.is_enemie(v):
-				v.enabled=bool(j < s.npc_dst and v.vnum != 15)
+				v.enabled=j < s.npc_dst and v.vnum != 15
 			if v.name == WM:
-				v.enabled=bool(j < s.frt_dst)
+				v.enabled=j < s.frt_dst
 			if v.name == SCENE:
-				v.enabled=bool(j < LC.RCZ)
+				v.enabled=j < LC.RCZ
 			if v.name in DECO and not v.vnum in {6,13}:
 				v.enabled=k
 			if v.name in {CORRIDOR,BLOCK,FLOOR,WALL} or hasattr(v,'danger') or v.name == 'mptf':
 				v.enabled=k
-			del j,k
-		del v
 	def update(self):
 		if st.gproc():
 			return

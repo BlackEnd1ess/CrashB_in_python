@@ -1,5 +1,4 @@
 ## BUGS/ERORRS
-- Firefly lights goes out, if player to far away
 
 #LEVEL EDITOR
 - level editor environment settings

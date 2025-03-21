@@ -1,5 +1,5 @@
 import objects,map_tools,crate,npc,item,sys,os,_loc,status,danger
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 from ursina import *
 
 mt=map_tools
@@ -16,7 +16,9 @@ def map_setting():
 	LC.FOG_B_COLOR=color.black
 	LC.SKY_BG_COLOR=color.black
 	LC.AMB_M_COLOR=color.rgb32(0,0,0)
+	#LC.AMB_M_COLOR=color.rgb32(250,250,250)
 	LC.LV_DST=(7,12)
+	#LC.LV_DST=(70,120)
 	LC.BN_DST=(10,14)
 	LC.RCX=12
 	LC.RCB=8
@@ -160,8 +162,7 @@ def load_crate():
 	c.place_crate(ID=6,p=(22,1.16,34.7))
 	c.place_crate(ID=6,p=(34,4.16,61.7))
 	c.place_crate(ID=6,p=(52.5,2.66,79.5))
-	c.place_crate(ID=6,p=(53,1.66,105.3))
-	c.place_crate(ID=6,p=(60.5,2.16,111.5))
+	c.place_crate(ID=6,p=(53,1.66,103.7))
 	#aku
 	c.place_crate(ID=5,p=(7.9,.66,11.3))
 	c.place_crate(ID=7,p=(7.9+.32,.66,11.3))
@@ -176,20 +177,25 @@ def load_crate():
 	c.place_crate(ID=1,p=(53.4,2.66+.96,81))
 	mt.crate_row(ID=14,POS=(53.4,2.66,82.1),WAY=2,CNT=4)
 	c.place_crate(ID=14,p=(53.4,2.66+1.28,82.1))
-	c.place_crate(ID=3,p=(57,1.4,79.4))
-	c.place_crate(ID=3,p=(58.5,1.6,79.4))
+	mt.crate_wall(ID=1,POS=(8.7,.66,4.8),CNT=[1,3])
+	mt.crate_block(ID=2,POS=(7.5,.66,8.9),CNT=[2,2,2])
+	mt.crate_wall(ID=14,POS=(7.4,.61,16),CNT=[1,3])
+	mt.crate_block(ID=1,POS=(9.3,.61,18.3),CNT=[2,2,1])
+	mt.crate_wall(ID=1,POS=(7.6,.61,20.5),CNT=[3,1])
+	mt.crate_block(ID=2,POS=(22.5,.66,43.3),CNT=[2,2,2])
+	mt.crate_wall(ID=2,POS=(22.6,.66,49.3),CNT=[2,1])
+	mt.crate_block(ID=2,POS=(20.5,1.16,56.9),CNT=[2,2,2])
+	mt.crate_wall(ID=14,POS=(19.1,4.16,59.1),CNT=[2,2])
+	mt.crate_block(ID=1,POS=(53.7,2.66,89.5),CNT=[2,2,2])
+	mt.crate_wall(ID=1,POS=(61.4,.66,138),CNT=[2,1])
+	c.place_crate(ID=3,p=(58,1.6,111.5))
 
 def load_npc():
-	n.Firefly(pos=(9,1,8))
-	n.Firefly(pos=(18,1.7,26))
-	n.Firefly(pos=(20.4,4.00,59.0))
-	n.Firefly(pos=(21.1,1.4,44.3))
-	n.Firefly(pos=(34,4,64))
-	n.Firefly(pos=(52.5,3,78.3))
-	n.Firefly(pos=(52.2,2.5,67.1))
-	n.Firefly(pos=(53,2,104))
-	n.Firefly(pos=(60.5,2.8,114.4))
-	n.Firefly(pos=(60.5,1.4,124))
+	n.Firefly(pos=(8,1,4.5),fldd=[(9,1,20),(17,1.75,22),(17,1.75,26),(22,3.4,26),(22,1.5,34)])
+	n.Firefly(pos=(21.7,1,37),fldd=[(21.7,2,56.5),(21.7,5,56.5),(21.7,5,59),(34,5,59)])
+	n.Firefly(pos=(34,4,64),fldd=[(34,3.5,67),(52,3,67),(52,3,78)])
+	n.Firefly(pos=(52.3,3,81),fldd=[(52.5,3,90),(51.6,3,93),(53.1,3,96),(53,2.5,102)])
+	n.Firefly(pos=(53,2,107),fldd=[(53,2,111.5),(60.5,3,111.5),(60.5,1.5,123.5),(60.5,1.5,146)])
 	#enemies
 	n.spawn(ID=4,POS=(8.2,.50,9.4),DRC=0,RNG=1)
 	n.spawn(ID=4,POS=(19.5,2,25.9),DRC=0,RNG=1)
@@ -209,9 +215,42 @@ def load_npc():
 	n.spawn(ID=5,POS=(57.6,1,111.5),DRC=0,RNG=1)
 
 def load_wumpa():
-	return
+	mt.wumpa_row(POS=(8.9,0.70,8.5),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(8.8,0.65,18.9),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(17.0,1.20,24.1),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(22.0,2.20,25.9),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(22.0,1.20,32.0),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(21.9,0.70,38.1),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(20.9,0.70,42.1),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(21.9,0.70,46.4),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(34.0,4.20,59.2),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(34.0,3.20,65.8),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(52.0,2.70,70.3),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(52.0,2.70,73.7),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(51.5,2.70,92.5),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(53.0,2.70,94.4),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(53.0,2.70,98.7),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(60.5,2.20,112.4),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(60.5,0.70,122.9),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(60.5,0.70,124.9),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(60.5,0.70,140.4),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(60.5,0.70,143.5),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(19.0,2.20,26.0),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(20.7,0.70,52.1),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(21.6,1.20,56.9),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(20.8,2.70,58.0),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(20.4,4.20,59.0),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(27.0,4.20,59.0),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(37.8,2.70,67.1),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(43.1,2.70,67.1),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(45.2,2.70,67.1),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(49.4,2.70,67.1),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(51.6,2.70,84.0),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(52.7,2.70,86.0),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(53.0,1.70,111.5),CNT=4,WAY=0)
 
 def bonus_zone():
+	o.ObjType_Water(ID=5,pos=(0,-40,0),sca=(128,32),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
 	o.ObjType_Wall(ID=7,pos=(0,-38,0),ro_y=-90,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(11,-38,0),ro_y=-90,sca=.5,col=color.dark_gray)
 	o.spw_block(ID=1,p=(-1,-38,U),vx=[3,1],ro_y=180)

@@ -720,7 +720,7 @@ class AkuAkuMask(Entity):
 		if st.gproc():
 			return
 		s=self
-		s.unlit=(st.aku_hit < 2)
+		s.unlit=st.aku_hit < 2
 		s.check_dist_player()
 		s.follow_player()
 		s.change_skin()
@@ -771,56 +771,55 @@ class Hippo(Entity):
 ffly=npf+'firefly/0'
 tfd=.01
 class Firefly(Entity):
-	def __init__(self,pos):
+	def __init__(self,pos,fldd):
 		s=self
 		super().__init__(model=ffly+'.ply',texture=ffly+'.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False)
-		s.lgt=PointLight(position=s.position,name='fflg',scale=.2,color=color.rgb32(255,200,180))
+		s.lgt=PointLight(position=s.position,scale=.2,color=color.rgb32(255,200,180),enabled=False)
 		s.spawn_pos=pos
-		s.zone_switch=False
+		s.ffly_drc=fldd
 		s.active=False
 		s.move_speed=8
+		s.way_index=0
 		s.mov_range=1
 		s.angle=0
-		s.tme=15
-		del pos,s
-	def purge(self):
+		del pos,fldd,s
+	def reset(self):
 		s=self
-		LC.FF_POS.append(s.spawn_pos)
-		LC.ACTOR.color=color.dark_gray
-		s.lgt.color=color.black
-		destroy(s.lgt),destroy(s)
-	def follow_p(self):
-		s=self
-		s.tme=max(s.tme-time.dt,0)
-		if st.death_event:
-			s.purge()
-			return
-		if s.tme <= 0:
-			s.lgt_fadeout()
-			return
-		LC.ACTOR.color=color.gray
-		s.position=lerp(s.position,(LC.ACTOR.x+.4,LC.ACTOR.y+.7,LC.ACTOR.z),time.dt*2)
-		s.rotation_y=0
-	def fly_spawn(self):
-		s=self
-		s.mov_range=.3+abs(sin(time.time()))*.4
-		s.y=s.spawn_pos[1]+sin(time.time()*3)*.2
-		cc.circle_move_xz(s)
-		if distance(LC.ACTOR,s) < 1:
-			s.active=True
+		s.position=s.spawn_pos
+		s.active=False
+		s.way_index=0
+		s.lgt.color=color.rgb32(255,200,180)
 	def lgt_fadeout(self):
 		s=self
 		s.lgt.color-=(tfd*1.25,tfd,tfd,0)
 		if s.lgt.color[0] <= 0:
-			s.purge()
-			del s
+			s.reset()
+	def m_idle(self):
+		s=self
+		cc.circle_move_xz(s)
+		s.mov_range=.3+abs(sin(time.time()))*.4
+		s.y=s.spawn_pos[1]+sin(time.time()*3)*.2
+		s.lgt.color=color.black if st.bonus_round and s.y > -10 or distance(s,LC.ACTOR) > 16 else color.rgb32(255,200,180)
+	def path_follow(self):
+		s=self
+		if s.way_index < len(s.ffly_drc):
+			direction=(Vec3(s.ffly_drc[s.way_index])-s.position).normalized()
+			s.position+=direction*time.dt*1.2
+			if distance(Vec3(s.position),s.ffly_drc[s.way_index]) < .3:
+				s.way_index+=1
+			return
+		s.lgt_fadeout()
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		s.lgt.color=color.black if st.bonus_round and s.y > -10 else color.rgb32(255,200,180)
 		s.lgt.position=s.position
-		if s.active:
-			s.follow_p()
+		if st.death_event:
+			s.reset()
 			return
-		s.fly_spawn()
+		if distance(s,LC.ACTOR) < 1:
+			s.active=True
+		if s.active:
+			s.path_follow()
+			return
+		s.m_idle()
