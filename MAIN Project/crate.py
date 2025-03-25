@@ -293,6 +293,7 @@ class SwitchEmpty(Entity):
 						ccount=0
 					else:
 						ccount+=.8
+			del _air
 			spawn_ico(s)
 
 class SwitchNitro(Entity):
@@ -318,7 +319,10 @@ class SwitchNitro(Entity):
 			s.texture=pp+'0.tga'
 			spawn_ico(s)
 			st.C_RESET.append(s)
-			{nt.destroy() for nt in scene.entities if isinstance(nt,Nitro) and nt.collider}
+			for nt in scene.entities[:]:
+				if isinstance(nt,Nitro) and nt.collider:
+					nt.destroy()
+			del nt
 
 tx=pp+'crate_tnt_'
 class TNT(Entity):

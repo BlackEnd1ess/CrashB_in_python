@@ -122,6 +122,7 @@ def various_val(c):
 	if st.bonus_solved and not st.wait_screen:
 		c.aq_bonus=(st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0)
 def c_slide(c):
+	return
 	if not c.walking:
 		if c.slide_fwd > 0 and st.p_last_direc:
 			if c.move_speed > 0:

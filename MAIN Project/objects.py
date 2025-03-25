@@ -115,9 +115,11 @@ class ObjType_Wall(Entity):
 		if ID == 0 and pos[0] > 190:
 			s.color=color.rgb32(0,140,160)
 		if ID == 2:
-			s.collider='box'
+			s.collider=b
 		if ID == 7:
 			s.unlit=False
+			if ro_y in {180,0}:
+				s.collider=BoxCollider(s,center=Vec3(-1,-4,5),size=Vec3(2,24,20))
 		del ID,pos,sca,ro_y,col
 
 ######################
@@ -143,7 +145,7 @@ dms={0:'l1/bush/bush',
 	13:'l8/polar_sky/polar_sky'}
 #dm_sca={0:,1:,2:,3:,4:,5}
 class ObjType_Deco(Entity):
-	def __init__(self,ID,pos,sca,rot,col=color.white):
+	def __init__(self,ID,pos,sca,rot,col=color.white,UL=False):
 		s=self
 		s.vnum=ID
 		super().__init__(model=None,texture=omf+dms[ID]+'.png',position=pos,scale=sca,rotation=rot,color=col)
@@ -157,8 +159,9 @@ class ObjType_Deco(Entity):
 			#if vvf == 0:
 			ObjType_Water(ID=4,pos=(s.x,s.y-{8:1,9:.2}[ID],s.z-{8:.25,9:.5}[ID]),sca=(.9,.4),rot=(0,0,90),frames=7,spd=10,al=1)
 		if ID == 13:
-			s.unlit=False
 			s.shader=unlit_shader
+		if UL:
+			s.unlit=False
 		del ID,pos,sca,rot,col
 	def check_model(self):
 		s=self
