@@ -6,4 +6,4 @@
 - level editor bonus maker
 
 ##TODO
-- level 8, bonus zone, npc, wumpa, crate, gem zone, boulder
+- level 8, bonus zone, wumpa, crate, gem zone, boulder

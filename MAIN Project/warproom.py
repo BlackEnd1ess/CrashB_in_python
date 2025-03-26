@@ -28,10 +28,7 @@ class BonusRoomEntry(Entity):
 		s.tme=max(s.tme-time.dt,0)
 		if s.tme <= 0:
 			s.tme=.3
-			if s.desc_w.color == color.white:
-				s.desc_w.color=color.magenta
-				return
-			s.desc_w.color=color.white
+			s.desc_w.color=color.magenta if s.desc_w.color == color.white else color.white
 
 class LvSelect(Entity):
 	def __init__(self):
@@ -41,20 +38,16 @@ class LvSelect(Entity):
 		if key in settings.BCK_KEY:
 			sn.ui_audio(ID=0,pit=.125)
 			if st.bonus_warp_room:
-				if st.selected_level < 8:
-					st.selected_level+=1
+				st.selected_level=st.selected_level+1 if st.selected_level < 8 else 8
 			else:
-				if st.selected_level < 5:
-					st.selected_level+=1
+				st.selected_level=st.selected_level+1 if st.selected_level < 5 else 5
 			return
 		if key == settings.FWD_KEY:
 			sn.ui_audio(ID=0,pit=.125)
 			if st.bonus_warp_room:
-				if st.selected_level > 6:
-					st.selected_level-=1
+				st.selected_level=st.selected_level-1 if st.selected_level > 6 else 6
 			else:
-				if st.selected_level > 1:
-					st.selected_level-=1
+				st.selected_level=st.selected_level-1 if st.selected_level > 1 else 1
 			return
 		if key == 'f2':
 			sn.ui_audio(ID=1)
@@ -69,12 +62,8 @@ class LvSelect(Entity):
 			return
 		if key == 'f1' and st.collected_crystals >= 5:
 			sn.ui_audio(ID=1)
-			if st.bonus_warp_room:
-				st.bonus_warp_room=False
-				st.selected_level=0
-			else:
-				st.bonus_warp_room=True
-				st.selected_level=6
+			st.bonus_warp_room=not st.bonus_warp_room
+			st.selected_level=6 if st.bonus_warp_room else 0
 			scene.clear()
 			level_select()
 			return
@@ -94,6 +83,9 @@ class Credits(Entity):
 		objects.PseudoCrash()
 		s.index=0
 		s.t0()
+	def input(self,key):
+		if key == settings.JMP_KEY:
+			level_select()
 	def t0(self):
 		s=self
 		crd_text0=[

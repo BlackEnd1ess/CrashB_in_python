@@ -20,7 +20,7 @@ N=npc
 def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound					inwater
 	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','dthfr','pshfr','stnfr','dth_cause','space_time'}:
 		setattr(c,_a,0)#values
-	for _v in {'aq_bonus','walking','jumping','landed','tcr','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','sma_dth','dth_snd','is_slp','pushed','cwall'}:
+	for _v in {'aq_bonus','walking','jumping','landed','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','sma_dth','dth_snd','is_slp','pushed','cwall'}:
 		setattr(c,_v,False)#flags
 	c.move_speed=LC.dfsp
 	c.cur_tex=c.texture
@@ -89,7 +89,7 @@ def reset_state(c):
 		if not st.aku_exist:
 			sn.crate_audio(ID=14,pit=1.2)
 			npc.AkuAkuMask(pos=(c.x,c.y,c.z))
-	{wf.destroy() for wf in scene.entities if (isinstance(wf,item.WumpaFruit) and wf.c_purge)}
+	purge_wumpa()
 	reset_crates()
 	reset_wumpas()
 	reset_npc()
@@ -97,8 +97,6 @@ def reset_state(c):
 		c.sma_dth=False
 		reset_mines()
 		rmv_bees()
-	if st.level_index == 8:
-		reset_fireflies()
 	c.position=status.checkpoint
 	env.set_fog()
 	camera.position=c.position
@@ -120,9 +118,8 @@ def various_val(c):
 	if not c.is_slp:
 		c.move_speed=LC.dfsp
 	if st.bonus_solved and not st.wait_screen:
-		c.aq_bonus=(st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0)
+		c.aq_bonus=bool(st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0)
 def c_slide(c):
-	return
 	if not c.walking:
 		if c.slide_fwd > 0 and st.p_last_direc:
 			if c.move_speed > 0:
@@ -174,21 +171,21 @@ def c_attack(c):
 def c_shield():
 	if st.aku_hit < 3 or st.gproc():
 		return
-	q=LC.ACTOR
 	for rf in scene.entities[:]:
-		if (rf.collider and rf.enabled):
-			if distance(rf.position,q.position) < 1.5:
-				if (rf.name in LC.item_lst):
-					rf.collect()
-				if (is_enemie(rf) and rf.vnum != 13):
-					bash_enemie(e=rf,h=q)
-				if (is_crate(rf) and not rf.vnum in {0,8,13}):
-					if rf.vnum in {3,11}:
-						rf.empty_destroy()
-					if rf.vnum == 14:
-						rf.c_destroy()
-					if not (rf.vnum in {9,10} and rf.activ):
-						rf.destroy()
+		if distance(rf,LC.ACTOR) < 1.5 and rf.collider:
+			if rf.name in LC.item_lst:
+				rf.collect()
+				return
+			if is_enemie(rf) and rf.vnum != 13:
+				bash_enemie(rf,LC.ACTOR)
+				return
+			if is_crate(rf) and not rf.vnum in {0,8,13}:
+				if rf.vnum in {3,11}:
+					rf.empty_destroy()
+				if rf.vnum == 14:
+					rf.c_destroy()
+				if not (rf.vnum in {9,10} and rf.activ):
+					rf.destroy()
 
 ## camera actor
 def cam_indoor(c):
@@ -297,6 +294,8 @@ def delete_states():
 	st.level_index=0
 	st.crates_in_bonus=0
 	st.crates_in_level=0
+	st.wumpas_in_level=0
+	st.npc_in_level=0
 	st.crate_bonus=0
 	st.crate_count=0
 	st.crate_to_sv=0
@@ -382,18 +381,20 @@ def game_over():
 	invoke(lambda:ui.GameOverScreen(),delay=2)
 def is_obj_scene(o):
 	return (hasattr(o,'idf') and o.idf == 'mo')
+def purge_wumpa():
+	for wf in scene.entities[:]:
+		if isinstance(wf,item.WumpaFruit) and wf.c_purge:
+			wf.destroy()
+	del wf
 
 ## collisions
 def check_ceiling(c):
 	vc=c.intersects(ignore=[c,LC.shdw])
 	ve=vc.entity
 	if vc and vc.normal == Vec3(0,-1,0):
-		if not (ve.name in LC.item_lst|LC.trigger_lst):
+		if not ve.name in LC.item_lst|LC.trigger_lst:
 			if is_crate(ve):
-				if not c.tcr:
-					c.tcr=True
-					ve.destroy()
-					invoke(lambda:setattr(c,'tcr',False),delay=.1)
+				ve.destroy()
 			c.y=c.y
 			c.jumping=False
 def check_floor(c):
@@ -685,6 +686,15 @@ def bash_enemie(e,h):
 	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)
 	sn.obj_audio(ID=8)
 	del e,h
+def npc_pathfinding(m):
+	if m.way_index < len(m.ffly_drc):
+		ddrc=(Vec3(m.ffly_drc[m.way_index])-m.position).normalized()
+		m.position+=ddrc*time.dt*1.2
+		if distance(Vec3(m.position),m.ffly_drc[m.way_index]) < .3:
+			m.way_index+=1
+		return
+	if isinstance(m,N.Firefly):
+		m.lgt_fadeout()
 
 ## game progress
 save_file='savegame.json'
@@ -729,9 +739,3 @@ def reset_mines():
 	for rsm in LC.LDM_POS[:]:
 		LandMine(pos=rsm)
 	LC.LDM_POS.clear()
-
-##lv8 firefly position
-def reset_fireflies():
-	for fpp in LC.FF_POS[:]:
-		N.Firefly(pos=fpp)
-	LC.FF_POS.clear()

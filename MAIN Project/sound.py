@@ -241,15 +241,14 @@ class BackgroundMusic(Audio):
 class AkuMusic(Audio):
 	def __init__(self):
 		super().__init__(MC+f'invinc{random.randint(0,1)}.mp3',volume=se.MUSIC_VOLUME,loop=True)
-		self.tme=20
 	def update(self):
 		s=self
 		if st.gproc():
 			s.volume=0
 			return
 		s.volume=se.MUSIC_VOLUME
-		s.tme=max(s.tme-time.dt,0)
-		if s.tme <= 0 or (st.death_event or st.bonus_round or LC.ACTOR.freezed):
+		st.aku_inv_time=max(st.aku_inv_time-time.dt,0)
+		if st.aku_inv_time <= 0 or bool(st.death_event or st.bonus_round or LC.ACTOR.freezed):
 			st.aku_hit=2
 			st.is_invincible=False
 			pc_audio(ID=6,pit=.8)

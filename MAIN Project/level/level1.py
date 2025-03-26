@@ -185,10 +185,10 @@ def load_npc():
 def bonus_zone():
 	o.BonusPlatform(pos=(12,-36.2,U))
 	o.ObjType_Water(ID=0,pos=(0,-37.5,0),sca=(48,32),al=1,col=color.rgb32(80,80,120),rot=(0,0,0),frames=57,spd=15)
-	o.ObjType_Deco(ID=1,pos=(.3,-36.6,-1.5),sca=.018,rot=(-90,0,0))
-	o.ObjType_Deco(ID=1,pos=(3.5,-36.5,-1.5),sca=.017,rot=(-90,0,0))
-	o.ObjType_Deco(ID=1,pos=(6.6,-36.6,-1.5),sca=.018,rot=(-90,0,0))
-	o.ObjType_Deco(ID=1,pos=(10.5,-36.5,-1.5),sca=.017,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(.3,-36.6,-1.75),sca=.018,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(3.5,-36.5,-1.75),sca=.017,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(6.6,-36.6,-1.75),sca=.018,rot=(-90,0,0))
+	o.ObjType_Deco(ID=1,pos=(10.5,-36.5,-1.75),sca=.017,rot=(-90,0,0))
 	for w in range(2):
 		o.ObjType_Wall(ID=0,pos=(0+w*14,-37,2),ro_y=90,sca=.02,col=color.rgb32(160,190,160))
 	del w

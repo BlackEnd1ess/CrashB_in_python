@@ -37,6 +37,7 @@ def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True):
 		19:lambda:Robot(pos=POS,drc=DRC,rng=RNG),
 		20:lambda:LabAssistant(pos=POS,drc=DRC)}
 	npc_[ID]()
+	st.npc_in_level+=1
 	del ID,POS,DRC,RTYP,RNG,CMV,npc_
 
 def follow_p(m):
@@ -417,7 +418,7 @@ class Gorilla(Entity):
 		rmo={0:0,1:90,2:180,3:-90}
 		super().__init__(rotation=(-90,rmo[drc],0),position=pos,scale=.8/1200)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y,s.z+450),size=Vec3(400,400,800))
-		s.throw_act={0:lambda:an.gorilla_take(s),1:lambda:an.gorilla_throw(s)}
+		s.throw_act={0:lambda:an.gorilla_take(self),1:lambda:an.gorilla_throw(self)}
 		cc.set_val_npc(s,drc)
 		s.t_sleep=.5
 		s.t_mode=0
@@ -656,68 +657,54 @@ class LabAssistant(Entity):
 
 ## passive NPC
 tpa='res/npc/akuaku/'
-aku_skin0=tpa+'aku'
-aku_skin1=tpa+'aku2'
 class AkuAkuMask(Entity):
 	def __init__(self,pos):
 		s=self
 		super().__init__(model=None,texture=None,scale=.00075,rotation_x=-90,position=pos)
 		st.aku_exist=True
-		s.cur_skin=None
-		s.last_y=s.y
+		s.cur_skin=123
 		s.spt=.5
+		s.mode=0
 		s.spkw=0
 		del pos,s
-	def default_skin(self):
-		s=self
-		s.model=aku_skin0+'.ply'
-		s.texture=aku_skin0+'.png'
-	def special_skin(self):
-		s=self
-		s.model=aku_skin1+'.ply'
-		s.texture=aku_skin1+'.png'
 	def change_skin(self):
 		s=self
 		if st.aku_hit > 1:
-			if s.cur_skin != 1:
-				s.cur_skin=1
-				s.special_skin()
 			s.spark()
-			return
-		if s.cur_skin != 0:
-			s.cur_skin=0
-			s.default_skin()
+		if st.aku_hit != s.cur_skin:
+			s.cur_skin=st.aku_hit
+			s.model=tpa+'aku.ply' if st.aku_hit < 2 else tpa+'aku2.ply'
+			s.texture=tpa+'aku.png' if st.aku_hit < 2 else tpa+'aku2.png'
 	def spark(self):
 		s=self
 		s.spt=max(s.spt-time.dt,0)
 		if s.spt <= 0:
 			s.spt=.5
-			s.spkw+=1
+			s.spkw=s.spkw+1 if s.spkw < 3 else 3
 			if s.spkw > 2:
 				effect.Sparkle((s.x+random.uniform(-.1,.1),s.y+random.uniform(-.1,.1),s.z+random.uniform(-.1,.1)))
 	def follow_player(self):
 		s=self
 		ta=LC.ACTOR
 		s.rotation_y=lerp(s.rotation_y,ta.rotation_y,time.dt*10)
+		s.scale=.00075 if st.aku_hit < 3 else .0012
 		if st.aku_hit < 3:
-			s.scale=.00075
-			if not ta.walking and ta.landed:
-				s.y=s.last_y+sin(time.time())*time.dt*3
-			else:
+			if ta.is_slp or not st.p_idle(LC.ACTOR):
 				s.position=lerp(s.position,(ta.x-.2,ta.y+.5,ta.z-.35),time.dt*8)
-				s.last_y=s.y
+				return
+			tfn=time.dt/6
+			{0:lambda:setattr(s,'y',s.y-tfn),1:lambda:setattr(s,'y',s.y+tfn)}[s.mode]()
+			if abs(s.y-(ta.y+.6)) > .2:
+				s.mode=0 if s.mode == 1 else 1
 			return
-		s.scale=.0012
 		mask_pos=ta.position+Vec3(-sin(radians(ta.rotation_y)),0,-cos(radians(ta.rotation_y)))*.25
 		s.position=(mask_pos.x,ta.y+.5,mask_pos.z)
 	def check_dist_player(self):
 		s=self
-		if not (LC.ACTOR or st.gproc()):
-			return
 		if distance(s.position,LC.ACTOR.position) > 2:
 			s.position=LC.ACTOR.position
 	def update(self):
-		if st.gproc():
+		if not LC.ACTOR or st.gproc():
 			return
 		s=self
 		s.unlit=st.aku_hit < 2
@@ -725,7 +712,7 @@ class AkuAkuMask(Entity):
 		s.follow_player()
 		s.change_skin()
 		if st.aku_hit <= 0:
-			cc.purge_instance(s)
+			destroy(s)
 
 class Hippo(Entity):
 	def __init__(self,POS):
@@ -800,15 +787,6 @@ class Firefly(Entity):
 		s.mov_range=.3+abs(sin(time.time()))*.4
 		s.y=s.spawn_pos[1]+sin(time.time()*3)*.2
 		s.lgt.color=color.black if st.bonus_round and s.y > -10 or distance(s,LC.ACTOR) > 16 else color.rgb32(255,200,180)
-	def path_follow(self):
-		s=self
-		if s.way_index < len(s.ffly_drc):
-			direction=(Vec3(s.ffly_drc[s.way_index])-s.position).normalized()
-			s.position+=direction*time.dt*1.2
-			if distance(Vec3(s.position),s.ffly_drc[s.way_index]) < .3:
-				s.way_index+=1
-			return
-		s.lgt_fadeout()
 	def update(self):
 		if st.gproc():
 			return
@@ -820,6 +798,6 @@ class Firefly(Entity):
 		if distance(s,LC.ACTOR) < 1:
 			s.active=True
 		if s.active:
-			s.path_follow()
+			cc.npc_pathfinding(s)
 			return
 		s.m_idle()

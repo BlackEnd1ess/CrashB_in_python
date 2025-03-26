@@ -22,6 +22,9 @@ def free_level():
 	ui.load_interface()
 	cc.level_ready=True
 	gc.collect()
+	print(f'<info> level {st.level_index} boxes: {st.crates_in_level}')
+	print(f'<info> level {st.level_index} wumpa: {st.wumpas_in_level}')
+	print(f'<info> level {st.level_index} npc: {st.npc_in_level}')
 	print(f'<info> Level {st.level_index} successfully loaded')
 
 ## level settings

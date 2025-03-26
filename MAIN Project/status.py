@@ -16,11 +16,16 @@ C_RESET=[]
 ## player rule
 p_last_direc=None
 selected_level=1
+aku_inv_time=20
 level_index=0
 aku_hit=0
 fails=0
 
+##npc count
+npc_in_level=0
+
 ## wumpa count
+wumpas_in_level=0
 wumpa_fruits=0
 wumpa_bonus=0
 

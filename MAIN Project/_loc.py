@@ -85,8 +85,6 @@ ltth=1.7
 #lv6 mine position
 LDM_POS=[]
 
-#lv8 fireflies
-FF_POS=[]
 #triggers
 trigger_lst={'indz','lvfi','elwt','fthr','eball'}
 

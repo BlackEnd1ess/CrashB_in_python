@@ -65,3 +65,11 @@
 
 #20.03.2025
 - Firefly NPC: Pathfinding, firefly follow all point directions by list
+
+#26.03.2025
+- Level 8 finished main structure
+- Level 8 added ice-shards in front of slide floors
+- AkuAku Time will incrased now by destroy Aku Aku Box with state 3 (invincible)
+- Credits can skipped now by press jump button
+- developer console shows amount of npc, wumpa and boxes by enter the level
+- fixxed AkuAku floating while player idle

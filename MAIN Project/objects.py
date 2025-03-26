@@ -20,12 +20,16 @@ b='box'
 ### OBJECT TYPES #########
 ##level block platforms ##
 
-block_sca={0:.5,1:.5,2:.35,3:.02,4:.03,5:(.5,.8,.5)}
+block_sca_level={0:.5,1:.5,2:.35,3:.02,4:.03,5:(.5,.8,.5)}
+block_sca_bonus={0:(.5,.5,.2),1:(.5,.5,.2),2:.35,3:.02,4:.03,5:(.5,.8,.5)}
 trhs={0:1,1:.985,2:.85,3:.501,4:.75,5:1}
 def spw_block(ID,p,vx,ro_y=0,typ=0):
 	for gbx in range(vx[0]):
 		for gbz in range(vx[1]):
-			ObjType_Block(ID=ID,pos=(p[0]+trhs[ID]*gbx,p[1],p[2]+trhs[ID]*gbz),sca=block_sca[ID],ro_y=ro_y,typ=typ)
+			if p[1] < -10:
+				ObjType_Block(ID=ID,pos=(p[0]+trhs[ID]*gbx,p[1],p[2]+trhs[ID]*gbz),sca=block_sca_bonus[ID],ro_y=ro_y,typ=typ)
+			else:
+				ObjType_Block(ID=ID,pos=(p[0]+trhs[ID]*gbx,p[1],p[2]+trhs[ID]*gbz),sca=block_sca_level[ID],ro_y=ro_y,typ=typ)
 	del p,vx,ID,gbx,gbz,ro_y,typ
 
 mpk={0:'l1/block/block',
@@ -658,7 +662,6 @@ class CrateScore(Entity):## level reward
 		ev='res/crate/'
 		super().__init__(model=ev+'cr_t0.ply',texture=ev+'1.tga',alpha=.4,scale=.18,position=pos,origin_y=.5)
 		s.cc_text=Text(parent=scene,position=(s.x-.2,s.y,s.z),name=s.name,text=None,font=ui._fnt,color=color.rgb32(255,255,100),scale=10,unlit=False)
-		print(f'<info> level {st.level_index} boxes:  {st.crates_in_level}')
 		del pos
 	def update(self):
 		if st.gproc():

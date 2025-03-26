@@ -21,6 +21,7 @@ def place_wumpa(pos,cnt,c_prg=False):
 		if cnt > 1:
 			vpu=pos+(r.uniform(-.1,.1),r.uniform(0,.1),r.uniform(-.1,.1))
 		WumpaFruit(p=vpu,c_prg=c_prg)
+		st.wumpas_in_level+=1
 	del pos,cnt,c_prg,vpu,wpo
 
 class WumpaFruit(Entity):

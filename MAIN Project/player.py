@@ -50,10 +50,11 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(51.7,5,80)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(20.8,5.6,7)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
+		del pos
 	def input(self,key):
 		s=self
 		if not st.p_rst(s):
