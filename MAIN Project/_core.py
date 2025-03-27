@@ -344,8 +344,9 @@ def purge_instance(v):
 	if isinstance(v,N.AkuAkuMask):
 		st.aku_exist=False
 	destroy(v)
+	del v
 def cache_instance(v):
-	if str(v) == 'bee':
+	if v.name == 'bee':
 		destroy(v)
 		return
 	if is_enemie(v):

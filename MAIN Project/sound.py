@@ -251,9 +251,10 @@ class AkuMusic(Audio):
 		if st.aku_inv_time <= 0 or bool(st.death_event or st.bonus_round or LC.ACTOR.freezed):
 			st.aku_hit=2
 			st.is_invincible=False
+			st.aku_inv_time=20
 			pc_audio(ID=6,pit=.8)
 			s.fade_out()
-			cc.purge_instance(s)
+			destroy(s)
 
 class GameOverMusic(Audio):
 	def __init__(self):

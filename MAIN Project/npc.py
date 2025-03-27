@@ -712,7 +712,7 @@ class AkuAkuMask(Entity):
 		s.follow_player()
 		s.change_skin()
 		if st.aku_hit <= 0:
-			destroy(s)
+			cc.purge_instance(s)
 
 class Hippo(Entity):
 	def __init__(self,POS):
