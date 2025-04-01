@@ -61,7 +61,7 @@ def dth_event(c,rsn):
 		st.death_event=True
 		c.freezed=True
 		c.dth_cause=rsn
-	del rsn
+	del rsn,c
 def reset_state(c):
 	ui.BlackScreen()
 	st.crate_count-=st.crate_to_sv
@@ -123,7 +123,7 @@ def c_slide(c):
 	if not c.walking:
 		if c.slide_fwd > 0 and st.p_last_direc:
 			if c.move_speed > 0:
-				c.move_speed-=time.dt
+				c.move_speed=max(c.move_speed-time.dt,0)
 			c.position+=st.p_last_direc*time.dt*c.slide_fwd
 			c.slide_fwd-=time.dt
 			if c.slide_fwd <= 0:
@@ -135,23 +135,23 @@ def c_slide(c):
 	if c.move_speed > 0:
 		c.slide_fwd=c.move_speed
 def c_smash(c):
-	k={dp for dp in scene.entities if (distance(c.position,dp.position) < .4 and dp.collider and (is_crate(dp) or is_enemie(dp)))}
-	for sw in k:
-		if is_crate(sw):
-			if sw.vnum in {3,11}:
-				sw.empty_destroy()
-			if sw.vnum == 14:
-				sw.c_destroy()
-			else:
-				sw.destroy()
-		if is_enemie(sw) and sw.vnum != 13:
-			sw.is_purge=True
+	for sw in scene.entities[:]:
+		if (is_crate(sw) or is_enemie(sw)) and bool(distance(c,sw) < .4 and sw.collider):
+			if is_crate(sw):
+				if sw.vnum in (3,11):
+					sw.empty_destroy()
+				if sw.vnum == 14:
+					sw.c_destroy()
+				else:
+					sw.destroy()
+			if is_enemie(sw) and sw.vnum != 13:
+				sw.is_purge=True
+	del sw
 def p_bounce(m):
 	LC.ACTOR.is_flip=False
 	LC.ACTOR.jump_typ(t=4)
 	m.is_bounc=True
 	sn.crate_audio(ID=5)
-	del m
 def c_attack(c):
 	for qd in scene.entities[:]:
 		if (qd.collider and distance(qd.position,c.position) < .5):
@@ -195,7 +195,7 @@ def cam_indoor(c):
 	cm.z=lerp(cm.z,c.z-3,ftt)
 	cm.x=lerp(cm.x,c.x,ftt)
 	cm.rotation_x=lerp(cm.rotation_x,14,ftt)
-	if (c.landed and c.walking):
+	if c.landed and c.walking:
 		cm.y=lerp(cm.y,c.y+1,ftt)
 def cam_level(c):
 	ftt=time.dt
@@ -206,7 +206,6 @@ def cam_level(c):
 	if (c.jumping or c.falling):
 		if cm.rotation_x > 20:
 			cm.rotation_x=lerp(cm.rotation_x,c.y,ftt/5)
-		del c,cm,ftt
 		return
 	if c.landed and not (c.jumping or c.freezed):
 		cm.rotation_x=lerp(cm.rotation_x,25,ftt)

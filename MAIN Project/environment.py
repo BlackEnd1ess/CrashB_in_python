@@ -5,8 +5,7 @@ st=status
 LC=_loc
 c=color
 def init_amb_light():#called 1 time
-	amv=AmbientLight(color=c.gray)
-	LC.AMBIENT_LIGHT=amv
+	LC.AMBIENT_LIGHT=AmbientLight(color=c.gray)
 
 ##start environment
 def env_switch():
@@ -40,23 +39,18 @@ class WeatherRain(Entity):
 		s.fp=40
 		if st.level_index == 5:
 			s.fp=50
-	def refr_tex(self):
-		s=self
-		s.frm=min(s.frm+time.dt*s.fp,58.999)
-		if s.frm > 58.99:
-			s.frm=0
-		s.texture=rnf+f'{int(s.frm)}.png'
+		del s
 	def update(self):
 		s=self
 		if st.pause:
 			return
-		ft=time.dt*2.3
-		s.refr_tex()
+		s.frm=0 if s.frm > 58.99 else min(s.frm+time.dt*s.fp,58.999)
+		s.texture=rnf+f'{int(s.frm)}.png'
 		if LC.ACTOR.warped and LC.ACTOR.indoor <= 0:
 			s.visible=True
-			s.alpha=lerp(s.alpha,1,ft)
+			s.alpha=lerp(s.alpha,1,time.dt*2.3)
 			return
-		s.alpha=lerp(s.alpha,0,ft)
+		s.alpha=lerp(s.alpha,0,time.dt*2.3)
 
 ##Thunder SFX/SKY
 skp='res/background/ruin'

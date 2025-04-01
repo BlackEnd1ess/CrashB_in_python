@@ -25,7 +25,7 @@ class WoodLog(Entity):
 		s.danger=True
 		s.or_pos=s.y
 		s.stat=0
-		del pos
+		del pos,s
 	def reset_pos(self):
 		s=self
 		s.y=min(s.y+time.dt,s.or_pos+1.31)
@@ -50,8 +50,7 @@ class WoodLog(Entity):
 			return
 		if s.intersects(LC.ACTOR) and s.danger:
 			cc.get_damage(LC.ACTOR,rsn=2)
-		ttr={0:s.reset_pos,1:s.stomp}
-		ttr[s.stat]()
+		{0:s.reset_pos,1:s.stomp}[s.stat]()
 
 rol=omf+'l2/role/role'
 class Role(Entity):
@@ -123,13 +122,7 @@ class EletricWater(Entity):
 		s.splash=0
 		s.frm=0
 		s.tme=8
-		del pos,sca
-	def wtr_anim(self):
-		s=self
-		s.frm=min(s.frm+time.dt*8,31.999)
-		if s.frm > 31.99:
-			s.frm=0
-		s.texture=wtt+f'{int(s.frm)}.png'
+		del pos,sca,s
 	def wtr_danger(self):
 		s=self
 		if not s.electric:
@@ -137,7 +130,7 @@ class EletricWater(Entity):
 			s.color=color.yellow
 			s.unlit=False
 			s.alpha=.9
-			if (LC.ACTOR.warped and not st.bonus_round):
+			if LC.ACTOR.warped and not st.bonus_round:
 				if s.nr:
 					sn.obj_audio(ID=7)
 			invoke(s.wtr_normal,delay=1.5)
@@ -169,13 +162,11 @@ class EletricWater(Entity):
 		s.nr=st.wtr_dist(w=s,p=LC.ACTOR)
 		if s.nr:
 			s.check_p()
-			s.wtr_anim()
+			s.frm=0 if s.frm > 31.99 else min(s.frm+time.dt*8,31.999)
+			s.texture=wtt+f'{int(s.frm)}.png'
 			s.tme=max(s.tme-time.dt,0)
 			if s.tme <= 0:
-				if s.x > 180:
-					s.tme=random.uniform(.1,.2)
-				else:
-					s.tme=8
+				s.tme=random.uniform(.1,.2) if s.x > 180 else 8
 				s.wtr_danger()
 
 swrp=omf+'l4/heat_pipe/heat_pipe'
@@ -208,7 +199,7 @@ class MonkeySculpture(Entity):
 		s.f_cnt=0
 		s.tme=.08
 		s.rot=r
-		del ro_y,pos,r,d
+		del ro_y,pos,r,d,s
 	def f_reset(self):
 		s=self
 		s.f_pause=False
@@ -585,20 +576,22 @@ class LabTaser(Entity):
 class WaterHit(Entity):## collider for water
 	def __init__(self,p,sc):
 		super().__init__(model=wfc,name='wtrh',collider=b,position=p,scale=(sc[0],.2,sc[1]),visible=False)
+		del p,sc
 
 class FallingZone(Entity):## falling
 	def __init__(self,pos,s,v=False):
 		super().__init__(model='cube',name='fllz',collider=b,scale=s,position=pos,color=color.black,visible=v)
+		del pos,s,v
 	def update(self):
-		ac=LC.ACTOR
-		if self.intersects(ac):
-			cc.dth_event(ac,rsn=1)
+		if self.intersects(LC.ACTOR):
+			cc.dth_event(LC.ACTOR,rsn=1)
 
 bldr=omf+'l8/boulder/boulder'
 class Boulder(Entity):
-	def __init__(self,pos,sca):
+	def __init__(self,pos):
 		super().__init__(model=bldr+'.ply',texture=bldr+'.png',position=pos,scale=.01,rotation_x=-90)
 		self.active=False
+		del pos
 	def update(self):
 		if st.gproc():
 			return

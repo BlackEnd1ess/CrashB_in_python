@@ -14,31 +14,29 @@ cc=_core
 LC=_loc
 
 def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True):
-	npc_={
-		0:lambda:Amadillo(pos=POS,drc=DRC,rng=RNG),
-		1:lambda:Turtle(pos=POS,drc=DRC,rng=RNG),
-		2:lambda:SawTurtle(pos=POS,drc=DRC,rng=RNG),
-		3:lambda:Vulture(pos=POS,drc=DRC,rng=RNG),
-		4:lambda:Penguin(pos=POS,drc=DRC,rng=RNG),
-		5:lambda:Hedgehog(pos=POS,drc=DRC,rng=RNG),
-		6:lambda:Seal(pos=POS,drc=DRC,rng=RNG),
-		7:lambda:EatingPlant(pos=POS),
-		8:lambda:Rat(pos=POS,drc=DRC,rng=RNG,cmv=CMV),
-		9:lambda:Lizard(pos=POS,drc=DRC,rng=RNG),
-		10:lambda:Scrubber(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP),
-		11:lambda:Mouse(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP),
-		12:lambda:Eel(pos=POS,drc=DRC,rng=RNG),
-		13:lambda:SewerMine(pos=POS,drc=DRC,rng=RNG),
-		14:lambda:Gorilla(pos=POS,drc=DRC),
-		15:lambda:Bee(pos=POS),
-		16:lambda:Lumberjack(pos=POS),
-		17:lambda:SpiderRobotFlat(pos=POS,drc=DRC,rng=RNG),
-		18:lambda:SpiderRobotUp(pos=POS,drc=DRC,rng=RNG),
-		19:lambda:Robot(pos=POS,drc=DRC,rng=RNG),
-		20:lambda:LabAssistant(pos=POS,drc=DRC)}
-	npc_[ID]()
+	{0:lambda:Amadillo(pos=POS,drc=DRC,rng=RNG),
+	1:lambda:Turtle(pos=POS,drc=DRC,rng=RNG),
+	2:lambda:SawTurtle(pos=POS,drc=DRC,rng=RNG),
+	3:lambda:Vulture(pos=POS,drc=DRC,rng=RNG),
+	4:lambda:Penguin(pos=POS,drc=DRC,rng=RNG),
+	5:lambda:Hedgehog(pos=POS,drc=DRC,rng=RNG),
+	6:lambda:Seal(pos=POS,drc=DRC,rng=RNG),
+	7:lambda:EatingPlant(pos=POS),
+	8:lambda:Rat(pos=POS,drc=DRC,rng=RNG,cmv=CMV),
+	9:lambda:Lizard(pos=POS,drc=DRC,rng=RNG),
+	10:lambda:Scrubber(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP),
+	11:lambda:Mouse(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP),
+	12:lambda:Eel(pos=POS,drc=DRC,rng=RNG),
+	13:lambda:SewerMine(pos=POS,drc=DRC,rng=RNG),
+	14:lambda:Gorilla(pos=POS,drc=DRC),
+	15:lambda:Bee(pos=POS),
+	16:lambda:Lumberjack(pos=POS),
+	17:lambda:SpiderRobotFlat(pos=POS,drc=DRC,rng=RNG),
+	18:lambda:SpiderRobotUp(pos=POS,drc=DRC,rng=RNG),
+	19:lambda:Robot(pos=POS,drc=DRC,rng=RNG),
+	20:lambda:LabAssistant(pos=POS,drc=DRC)}[ID]()
 	st.npc_in_level+=1
-	del ID,POS,DRC,RTYP,RNG,CMV,npc_
+	del ID,POS,DRC,RTYP,RNG,CMV
 
 def follow_p(m):
 	if abs(m.spawn_pos[0]-m.x) < m.mov_range:
@@ -53,8 +51,7 @@ def npc_walk(m):
 	mm=m.mov_direc
 	mt=m.turn
 	kv=getattr(m,di[mm])
-	pmd={0:lambda:setattr(m,di[mm],kv+time.dt*m.move_speed),1:lambda:setattr(m,di[mm],kv-time.dt*m.move_speed)}
-	pmd[mt]()
+	{0:lambda:setattr(m,di[mm],kv+time.dt*m.move_speed),1:lambda:setattr(m,di[mm],kv-time.dt*m.move_speed)}[mt]()
 	if mm == 2:
 		if distance(LC.ACTOR,m) < 2 and LC.ACTOR.y == m.y:
 			follow_p(m)
@@ -69,23 +66,20 @@ def npc_walk(m):
 		m.turn=0
 
 def npc_action(m):
-	if not st.gproc():
-		if m.is_hitten:
-			cc.fly_away(m)
-			return
-		if m.is_purge:
-			effect.JumpDust(m.position)
-			cc.cache_instance(m)
-			return
-		an.npc_walking(m)
-		if m.vnum in {10,11}:
-			rma={0:lambda:npc_walk(m),
-				1:lambda:cc.circle_move_xz(m),
-				2:lambda:cc.circle_move_y(m)}
-			rma[m.ro_mode]()
-			del rma
-			return
-		npc_walk(m)
+	if st.gproc():
+		return
+	if m.is_hitten:
+		cc.fly_away(m)
+		return
+	if m.is_purge:
+		effect.JumpDust(m.position)
+		cc.cache_instance(m)
+		return
+	an.npc_walking(m)
+	if m.vnum in {10,11}:
+		{0:lambda:npc_walk(m),1:lambda:cc.circle_move_xz(m),2:lambda:cc.circle_move_y(m)}[m.ro_mode]()
+		return
+	npc_walk(m)
 
 ## Enemies
 class Amadillo(Entity):
@@ -151,16 +145,17 @@ class Vulture(Entity):
 			else:
 				s.rotation_y=270
 	def update(self):
-		if not st.gproc():
-			s=self
-			if s.is_purge:
-				effect.JumpDust(s.position)
-				cc.purge_instance(s)
-				return
-			if s.is_hitten:
-				cc.fly_away(s)
-				return
-			s.wait_on_player()
+		if st.gproc():
+			return
+		s=self
+		if s.is_purge:
+			effect.JumpDust(s.position)
+			cc.purge_instance(s)
+			return
+		if s.is_hitten:
+			cc.fly_away(s)
+			return
+		s.wait_on_player()
 
 class Penguin(Entity):
 	def __init__(self,pos,drc,rng):
@@ -183,22 +178,29 @@ class Hedgehog(Entity):
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+250),size=Vec3(400,400,400))
 		cc.set_val_npc(s,drc,rng)
 		s.def_mode=False
-		s.scale=.8/1200/1.5
 		s.move_speed=1.1
+		s.scale=.00045
 		s.def_frame=0
+		s.def_time=10
 		s.max_frm=12
+		s.wait=5
 		del pos,drc,rng,s
-	def anim_act(self):
-		an.hedge_defend(self)
 	def update(self):
 		s=self
 		npc_action(s)
+		s.wait=max(s.wait-time.dt,0)
+		if s.wait > 0:
+			return
+		if s.def_mode:
+			s.def_time=max(s.def_time-time.dt,0)
+			an.hedge_defend(s)
+			if s.def_time <= 0:
+				s.def_mode=False
+				s.def_time=10
+				s.wait=5
+			return
 		if distance(s,LC.ACTOR) < 2:
 			s.def_mode=True
-			if not st.gproc():
-				s.anim_act()
-			return
-		s.def_mode=False
 
 class Seal(Entity):
 	def __init__(self,pos,drc,rng):
@@ -220,7 +222,7 @@ class Seal(Entity):
 			if not s.n_snd:
 				s.n_snd=True
 				sn.npc_audio(ID=3,pit=random.uniform(.36,.38))
-				invoke(lambda:setattr(s,'n_snd',False),delay=random.choice([1,1.5,1.2]))
+				invoke(lambda:setattr(s,'n_snd',False),delay=random.uniform(1,2))
 
 class EatingPlant(Entity):
 	def __init__(self,pos):
@@ -238,18 +240,17 @@ class EatingPlant(Entity):
 		s=self
 		ta=LC.ACTOR
 		dc=distance(s,ta)
-		if (dc < 3):
+		if dc < 3:
 			cc.rotate_to_crash(s)
-		if (dc <= 1.25):
-			if (st.death_event or s.atk):
+		if dc <= 1.25:
+			if st.death_event or s.atk:
 				return
 			s.atk=True
 			sn.npc_audio(ID=0)
 			if not (ta.is_attack or ta.jumping):
 				if ta.y <= s.y+.2:
 					cc.get_damage(ta,rsn=5)
-					if st.aku_hit < 1 and not s.eat:
-						s.eat=True
+					s.eat=st.aku_hit < 1 and not s.eat
 	def npc_anim(self):
 		s=self
 		if not s.eat:
@@ -262,16 +263,17 @@ class EatingPlant(Entity):
 			return
 		an.plant_eat(s)
 	def update(self):
-		if not st.gproc():
-			s=self
-			if s.is_hitten:
-				cc.fly_away(s)
-				return
-			if s.is_purge:
-				effect.JumpDust(s.position)
-				cc.purge_instance(s)
-				return
-			s.npc_anim()
+		if st.gproc():
+			return
+		s=self
+		if s.is_hitten:
+			cc.fly_away(s)
+			return
+		if s.is_purge:
+			effect.JumpDust(s.position)
+			cc.purge_instance(s)
+			return
+		s.npc_anim()
 
 class Rat(Entity):
 	def __init__(self,pos,drc,rng,cmv):

@@ -31,12 +31,11 @@ def free_level():
 def load(idx):
 	sys.path.append(os.path.join(os.path.dirname(__file__),lv))
 	st.loading=True
-	st.weather_thunder=(idx == 5)
-	goto={1:level1,2:level2,3:level3,4:level4,5:level5,6:level6,7:level7,8:level8,9:test}
-	goto[idx]()
+	st.weather_thunder=bool(idx == 5)
+	{1:level1,2:level2,3:level3,4:level4,5:level5,6:level6,7:level7,8:level8,9:test}[idx]()
 	environment.env_switch()
 	print(f'<info> init Level {st.level_index} ...')
-	del idx,goto
+	del idx
 
 ## levels to load
 def test():# test level

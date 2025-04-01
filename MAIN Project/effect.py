@@ -64,7 +64,7 @@ class PressureWave(Entity):
 		s=self
 		super().__init__(model=prsv+'0.ply',texture=prsv+'0.png',position=pos,scale=.0008,color=col,rotation_x=90,alpha=.8,unlit=False)
 		s.frm=0
-		del pos,col
+		del pos,col,s
 	def update(self):
 		if st.gproc():
 			return
@@ -88,15 +88,15 @@ class Fireball(Entity):
 		super().__init__(model='quad',texture=frb+'0.png',position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC,scale=.75,unlit=False)
 		PressureWave(pos=s.position,col=nC)
 		s.ex_step=0
-		del cr,nC
+		del cr,nC,s
 	def update(self):
 		if st.gproc():
 			return
 		s=self
 		s.ex_step=min(s.ex_step+time.dt*25,14.999)
 		s.texture=frb+f'{int(s.ex_step)}.png'
-		s.visible=(s.ex_step < 14.99)
-		if (s.ex_step > 14.99):
+		s.visible=bool(s.ex_step < 14.99)
+		if s.ex_step > 14.99:
 			destroy(s)
 
 llfr=ef+'fire/fire_'
@@ -106,13 +106,7 @@ class LightFire(Entity):
 		super().__init__(model='quad',texture=llfr+'0.png',position=pos,scale=.4,unlit=False)
 		s.life_time=lft
 		s.frm=0
-		del pos,lft
-	def refr_anim(self):
-		s=self
-		s.frm=min(s.frm+time.dt*12,31.999)
-		if s.frm > 31.99:
-			s.frm=0
-		s.texture=llfr+f'{int(s.frm)}.png'
+		del pos,lft,s
 	def update(self):
 		if st.gproc():
 			return
@@ -122,7 +116,8 @@ class LightFire(Entity):
 			if s.life_time <= 0:
 				destroy(s)
 				return
-		s.refr_anim()
+		s.frm=0 if s.frm > 31.99 else min(s.frm+time.dt*12,31.999)
+		s.texture=llfr+f'{int(s.frm)}.png'
 
 class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
@@ -133,13 +128,12 @@ class FireThrow(Entity):
 		s.mvs=4
 		if ro_y in {90,-90}:
 			s.z=s.z+random.uniform(-.1,.1)
-		del pos,ro_y
+		del pos,ro_y,s
 	def fly_away(self):
 		s=self
 		mt=time.dt*s.mvs
-		ddi={90:lambda:setattr(s,'x',s.x-mt),-90:lambda:setattr(s,'x',s.x+mt),
-			180:lambda:setattr(s,'z',s.z+mt),0:lambda:setattr(s,'z',s.z-mt)}
-		ddi[s.direc]()
+		{90:lambda:setattr(s,'x',s.x-mt),-90:lambda:setattr(s,'x',s.x+mt),
+		180:lambda:setattr(s,'z',s.z+mt),0:lambda:setattr(s,'z',s.z-mt)}[s.direc]()
 	def update(self):
 		if st.gproc():
 			return

@@ -15,31 +15,30 @@ cr2=pp+'cr_t1.ply'# double texture
 
 ##spawn, destroy event
 def place_crate(p,ID,m=0,l=1,pse=False):
-	CRATES={0:lambda:Iron(pos=p,pse=pse),
-			1:lambda:Normal(pos=p,pse=pse),
-			2:lambda:QuestionMark(pos=p,pse=pse),
-			3:lambda:Bounce(pos=p,pse=pse),
-			4:lambda:ExtraLife(pos=p,pse=pse),
-			5:lambda:AkuAku(pos=p,pse=pse),
-			6:lambda:Checkpoint(pos=p,pse=pse),
-			7:lambda:SpringWood(pos=p,pse=pse),
-			8:lambda:SpringIron(pos=p,pse=pse),
-			9:lambda:SwitchEmpty(pos=p,m=m,pse=pse),
-			10:lambda:SwitchNitro(pos=p,pse=pse),
-			11:lambda:TNT(pos=p,pse=pse),
-			12:lambda:Nitro(pos=p,pse=pse),
-			13:lambda:Air(pos=p,m=m,l=l,pse=pse),
-			14:lambda:Protected(pos=p,pse=pse),
-			15:lambda:cTime(pos=p,pse=pse),
-			16:lambda:LvInfo(pos=p,pse=pse)}
-	CRATES[ID]()
+	{0:lambda:Iron(pos=p,pse=pse),
+	1:lambda:Normal(pos=p,pse=pse),
+	2:lambda:QuestionMark(pos=p,pse=pse),
+	3:lambda:Bounce(pos=p,pse=pse),
+	4:lambda:ExtraLife(pos=p,pse=pse),
+	5:lambda:AkuAku(pos=p,pse=pse),
+	6:lambda:Checkpoint(pos=p,pse=pse),
+	7:lambda:SpringWood(pos=p,pse=pse),
+	8:lambda:SpringIron(pos=p,pse=pse),
+	9:lambda:SwitchEmpty(pos=p,m=m,pse=pse),
+	10:lambda:SwitchNitro(pos=p,pse=pse),
+	11:lambda:TNT(pos=p,pse=pse),
+	12:lambda:Nitro(pos=p,pse=pse),
+	13:lambda:Air(pos=p,m=m,l=l,pse=pse),
+	14:lambda:Protected(pos=p,pse=pse),
+	15:lambda:cTime(pos=p,pse=pse),
+	16:lambda:LvInfo(pos=p,pse=pse)}[ID]()
 	if not ID in {0,8,9,10,15,16} and not pse:
 		st.crates_in_level+=1
 		if p[1] < -20:
 			st.crates_in_bonus+=1
 		if ID == 13 and l in {0,8}:
 			st.crates_in_level-=1
-	del p,ID,m,l,pse,CRATES
+	del p,ID,m,l,pse
 
 def destroy_event(c):
 	cc.crate_stack(c.position)
@@ -50,11 +49,9 @@ def destroy_event(c):
 		st.C_RESET.append(c)
 	if c.visible:
 		sn.crate_audio(ID=2)
-		if c.vnum in LC.cbrc:
-			twc=LC.cbrc[c.vnum]
-		else:
-			twc=color.rgb32(180,80,0)
+		twc=LC.cbrc[c.vnum] if c.vnum in LC.cbrc else color.rgb32(180,80,0)
 		an.CrateBreak(c.position,col=twc)
+		del twc
 	if st.bonus_round:
 		st.crate_bonus+=1
 	else:
@@ -279,6 +276,7 @@ class SwitchEmpty(Entity):
 		s.model=cr2
 		s.texture=s.org_tex
 		s.activ=False
+		del s
 	def destroy(self):
 		s=self
 		block_destroy(s)
@@ -291,12 +289,9 @@ class SwitchEmpty(Entity):
 			for _air in scene.entities[:]:
 				if isinstance(_air,Air) and _air.mark == s.mark:
 					invoke(_air.destroy,delay=ccount/4)
-					if st.level_index == 5 and not st.bonus_round:
-						ccount=0
-					else:
-						ccount+=.8
-			del _air
+					ccount=ccount+0 if st.level_index == 5 and not st.bonus_round else ccount+.8
 			spawn_ico(s)
+			del _air
 
 class SwitchNitro(Entity):
 	def __init__(self,pos,pse):
@@ -346,6 +341,7 @@ class TNT(Entity):
 				s.aud.fade_in()
 				s.aud.play()
 			s.countdown=3.99
+		del s
 	def empty_destroy(self):
 		s=self
 		if s.activ:
@@ -353,6 +349,7 @@ class TNT(Entity):
 			s.aud.fade_out()
 		s.countdown=0
 		destroy_event(s)
+		del s
 	def update(self):
 		s=self
 		if st.gproc():
@@ -443,9 +440,7 @@ class Protected(Entity):
 		item.place_wumpa(self.position,cnt=random.randint(5,10),c_prg=True)
 		destroy_event(self)
 	def update(self):
-		if st.gproc():
-			return
-		if self.hitten:
+		if not st.gproc() and self.hitten:
 			an.prtc_anim(self)
 
 class cTime(Entity):

@@ -36,30 +36,26 @@ def load_interface():
 
 ## Interface 2D Animations
 def wmp_anim(w):
-	w.frm=min(w.frm+time.dt*18,13.999)
-	if w.frm > 13.99:
-		w.frm=0
+	w.frm=0 if w.frm > 13.99 else min(w.frm+time.dt*18,13.999)
 	w.texture=w_pa+f'{int(w.frm)}.png'
 	del w
 
 def text_blink(M,t):
 	if M.blink_time <= 0:
 		M.blink_time=.3
-		if t.color == M.font_color:
-			t.color=color.white
-			return
-		t.color=M.font_color
+		t.color=color.white if t.color == M.font_color else M.font_color
 
 class LiveCollectAnim(Entity):
 	def __init__(self):
 		super().__init__(model=q,texture=_icn+'crash_live.tga',position=(.5,.43,0),scale=(.1,.09),color=color.gold,parent=CU)
 	def update(self):
-		if not st.gproc():
-			s=self
-			if s.x < .65:
-				s.x+=time.dt*2
-				return
-			destroy(s)
+		if st.gproc():
+			return
+		s=self
+		if s.x < .65:
+			s.x+=time.dt*2
+			return
+		destroy(s)
 
 class WumpaCollectAnim(Entity):
 	def __init__(self,pos):
@@ -68,7 +64,7 @@ class WumpaCollectAnim(Entity):
 		s.tdirec=(-.75,.43,0)
 		if st.bonus_round:
 			s.tdirec=(-.25,-.475,0)
-		del pos
+		del pos,s
 	def update(self):
 		if st.gproc():
 			return
@@ -130,6 +126,7 @@ class CrateCounter(Entity):
 		s.req_digit1=Entity(model=q,texture=None,scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
 		s.req_digit2=Entity(model=q,texture=None,scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
 		s.icf=0
+		del s
 	def crate_refr_ico(self):
 		s=self
 		s.icf=min(s.icf+time.dt*30,63.999)
@@ -141,6 +138,7 @@ class CrateCounter(Entity):
 		s.visible,s.seperator.visible=False,False
 		s.col_digit0.visible,s.col_digit1.visible,s.col_digit2.visible=False,False,False
 		s.req_digit0.visible,s.req_digit1.visible,s.req_digit2.visible=False,False,False
+		del s
 	def req_count_refr(self):
 		s=self
 		ccl=str(st.crates_in_level)
@@ -205,14 +203,15 @@ class LiveCounter(Entity):
 		s.live_digit0.visible=False
 		s.live_digit1.visible=False
 	def update(self):
-		if not st.gproc():
-			s=self
-			if st.show_lives > 0:
-				st.show_lives=max(st.show_lives-time.dt,0)
-				if st.show_lives <= 0:
-					s.rmv_ui()
-					return
-				s.lives_refr()
+		if st.gproc():
+			return
+		s=self
+		if st.show_lives > 0:
+			st.show_lives=max(st.show_lives-time.dt,0)
+			if st.show_lives <= 0:
+				s.rmv_ui()
+				return
+			s.lives_refr()
 
 
 ## Bonus Counter ##
@@ -223,6 +222,7 @@ class WumpaBonus(Entity):
 		s.w_text=Text(text=None,font=_fnt,x=s.x+.04,y=s.y+.025,scale=2,color=color.rgb32(175,235,30),parent=CU,visible=False)
 		s.w_time=0
 		s.frm=0
+		del s
 	def check_w(self):
 		if (st.bonus_solved and st.wumpa_bonus > 0):
 			return True
@@ -260,6 +260,7 @@ class CrateBonus(Entity):
 		s.c_text=Text(text=None,font=_fnt,x=s.x+.04,y=s.y+.025,scale=2,color=color.rgb32(90,70,0),visible=False,parent=CU)
 		s.c_time=0
 		s.icf=0
+		del s
 	def crate_refr_ico(self):
 		s=self
 		s.icf=min(s.icf+time.dt*30,63.99)
@@ -298,6 +299,7 @@ class LiveBonus(Entity):
 		super().__init__(parent=CU,model=q,texture=_icn+'crash_live.tga',scale=.06,position=(.225,-.4,0),visible=False)
 		s.l_text=Text(text=None,font=_fnt,x=s.x+.04,y=s.y+.023,scale=2,color=color.rgb32(255,31,31),visible=False,parent=CU)
 		s.l_time=0
+		del s
 	def check_l(self):
 		if (st.bonus_solved and st.lives_bonus > 0):
 			return True
@@ -337,6 +339,7 @@ class GameOverScreen(Entity):
 		s.qt_col={0:color.yellow,1:color.white}
 		s.opt_select=0
 		sn.GameOverMusic()
+		del s
 	def p_restart(self):
 		st.wumpa_fruits=0
 		st.extra_lives=4
@@ -401,6 +404,7 @@ class LoadingScreen(Entity):
 		s.ltext=Text('LOADING...',font=_fnt,scale=3.5,position=(-.15,.1,-1.1),color=color.orange,visible=False,parent=CU,eternal=True)
 		s.lname=Text('',font=_fnt,scale=2,position=(-.25,-.05,-1.1),color=color.azure,visible=False,parent=CU,eternal=True)
 		s.uds={0:(-.21),1:(-.23),2:(-.25),3:(-.25),4:(-.25),5:(-.175),6:(-.23),7:(-.225),8:(-.225)}
+		del s
 	def update(self):
 		s=self
 		si=st.level_index
@@ -567,6 +571,7 @@ class BonusText(Entity):
 
 K=40
 O=180
+vF=0
 ## Pause Menu
 class PauseMenu(Entity):
 	def __init__(self):
@@ -578,7 +583,6 @@ class PauseMenu(Entity):
 		s.font_color=color.rgb32(230,100,0)
 		s.blink_time=0
 		s.choose=0
-		vF=0
 		s.p_name=Text('Crash B.',font=_fnt,scale=3,position=(vF+.4,vF+.475,s.z-1),color=s.font_color,parent=CU,visible=False)
 		s.lvl_name=Text(LC.lv_name[st.level_index],font=_fnt,scale=3,position=(vF-.7,vF-.025,s.z-1),color=color.azure,parent=CU,visible=False)
 		s.select_0=Text(s.selection[0],font=_fnt,scale=3,tag=0,position=(vF-.5,vF-.2,s.z-1),color=s.font_color,parent=CU,visible=False)
@@ -598,8 +602,8 @@ class PauseMenu(Entity):
 		s.col_gem5=Entity(model=q,texture=LC.ge_2+'0.png',name='5',position=(vF+.73,vF+.075,s.z-1),scale=(.15,.19),parent=CU,color=color.rgb32(K,K,K),visible=False)
 		s.cleargem=Entity(model=q,texture=LC.ge_0+'0.png',position=(vF+.55,vF-.03,s.z-1),scale=.16,parent=CU,color=color.rgb32(130,130,190),visible=False)
 		##options
-		s.music_vol=Text('SOUND VOLUME '+str(settings.SFX_VOLUME*10),tag=0,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.2,s.z-1),visible=False)
-		s.sound_vol=Text('MUSIC VOLUME '+str(settings.MUSIC_VOLUME*10),tag=1,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.275,s.z-1),visible=False)
+		s.music_vol=Text(f'SOUND VOLUME {settings.SFX_VOLUME*10}',tag=0,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.2,s.z-1),visible=False)
+		s.sound_vol=Text(f'MUSIC VOLUME {settings.MUSIC_VOLUME*10}',tag=1,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.275,s.z-1),visible=False)
 		s.opt_exit=Text('PRESS ENTER TO EXIT',tag=3,font=_fnt,scale=2.5,color=color.yellow,parent=CU,position=(vF-.75,vF-.4,s.z-1),visible=False)
 		s.check_collected()
 		s.opt_menu=False
@@ -618,7 +622,7 @@ class PauseMenu(Entity):
 					s.choose+=1
 				del key
 				return
-			elif key in ['up arrow','w']:
+			if key in {'up arrow','w'}:
 				sn.ui_audio(ID=0,pit=.125)
 				if s.choose > 0:
 					s.choose-=1
@@ -643,12 +647,9 @@ class PauseMenu(Entity):
 						cc.clear_level(passed=False)
 			del key
 			return
-		if key in ['w','s','down arrow','up arrow']:
-			if s.sel_opt == 0:
-				s.sel_opt=1
-			else:
-				s.sel_opt=0
-		if key in ['+','d','right arrow']:
+		if key in {'w','s','down arrow','up arrow'}:
+			s.sel_opt=1 if s.sel_opt == 0 else 0
+		if key in {'+','d','right arrow'}:
 			if s.sel_opt == 1:
 				if settings.SFX_VOLUME < 1:
 					settings.SFX_VOLUME+=.1
@@ -660,7 +661,7 @@ class PauseMenu(Entity):
 					if settings.MUSIC_VOLUME > 1:
 						settings.MUSIC_VOLUME=1
 			sn.ui_audio(ID=1)
-		if key in ['-','a','left arrow']:
+		if key in {'-','a','left arrow'}:
 			if s.sel_opt == 1:
 				if settings.SFX_VOLUME > .1:
 					settings.SFX_VOLUME-=.1
@@ -669,14 +670,9 @@ class PauseMenu(Entity):
 					settings.MUSIC_VOLUME-=.1
 			sn.ui_audio(ID=1)
 		if key == 'enter':
-			s.opt_menu=False
-			s.music_vol.visible=False
-			s.sound_vol.visible=False
-			s.opt_exit.visible=False
-			s.select_0.visible=True
-			s.select_1.visible=True
-			s.select_2.visible=True
-		del key
+			s.opt_menu,s.music_vol.visible,s.sound_vol.visible,s.opt_exit.visible=False,False,False,False
+			s.select_0.visible,s.select_1.visible,s.select_2.visible=True,True,True
+		del key,s
 	def check_collected(self):
 		s=self
 		gems_total=st.color_gems+st.clear_gems
@@ -687,25 +683,26 @@ class PauseMenu(Entity):
 		for qc in {s.col_gem1,s.col_gem2,s.col_gem3,s.col_gem3,s.col_gem4,s.col_gem5}:
 			if int(qc.name) in st.COLOR_GEM:
 				qc.color=LC.GMC[int(qc.name)]
+		del qc,s
 	def select_menu(self):
 		s=self
-		for mn in [s.select_0,s.select_1,s.select_2]:
+		for mn in (s.select_0,s.select_1,s.select_2):
 			if s.choose == mn.tag:
 				text_blink(M=s,t=mn)
 			else:
 				mn.color=s.font_color
+		del mn,s
 	def select_option(self):
 		s=self
-		for ot in [s.music_vol,s.sound_vol]:
+		for ot in (s.music_vol,s.sound_vol):
 			if s.sel_opt == ot.tag:
 				text_blink(M=s,t=ot)
 			else:
 				ot.color=s.font_color
+		del ot,s
 	def refr_ico(self):
 		s=self
-		s.frm=min(s.frm+time.dt*30,89.999)
-		if s.frm > 89.99:
-			s.frm=0
+		s.frm=0 if s.frm > 89.99 else min(s.frm+time.dt*30,89.999)
 		kw=f'{int(s.frm)}.png'
 		s.cry_anim.texture=cr_i+kw
 		s.cleargem.texture=LC.ge_0+kw
@@ -722,8 +719,7 @@ class PauseMenu(Entity):
 			s.sound_vol.text=f'SOUND VOLUME {int(settings.SFX_VOLUME*100)}%'
 			s.blink_time=max(s.blink_time-time.dt,0)
 			if s.blink_time <= 0:
-				opv={True:lambda:s.select_option(),False:lambda:s.select_menu()}
-				opv[s.opt_menu]()
+				{True:lambda:s.select_option(),False:lambda:s.select_menu()}[s.opt_menu]()
 			return
 		s.opt_menu=False
 
@@ -741,12 +737,10 @@ class CollectedGem(Entity):
 		if idx == 1:
 			s.color_gem.scale_y=.07
 		s.cry_frm=0
-		del idx
+		del idx,s
 	def refr_frm(self):
 		s=self
-		s.cry_frm=min(s.cry_frm+time.dt*40,89.999)
-		if s.cry_frm > 89.99:
-			s.cry_frm=0
+		s.cry_frm=0 if s.cry_frm > 89.99 else min(s.cry_frm+time.dt*40,89.999)
 		fm=f'{int(s.cry_frm)}.png'
 		if s.crystal.visible:
 			s.crystal.texture=cr_i+fm
@@ -760,9 +754,9 @@ class CollectedGem(Entity):
 		s=self
 		if st.show_gems > 0:
 			st.show_gems=max(st.show_gems-time.dt,0)
-			s.crystal.visible=(st.level_crystal)
-			s.clear_gem.visible=(st.level_cle_gem)
-			s.color_gem.visible=(st.level_col_gem)
+			s.crystal.visible=st.level_crystal
+			s.clear_gem.visible=st.level_cle_gem
+			s.color_gem.visible=st.level_col_gem
 			s.refr_frm()
 			return
 		s.color_gem.visible=False
@@ -833,8 +827,7 @@ class TrialTimer(Entity):
 		s.fin=False
 		s.TME=t
 	def trial_fail(self):
-		if st.level_index == 3:
-			st.gem_death=True
+		st.gem_death=st.level_index == 3
 		self.trial_interrupt()
 	def trial_interrupt(self):
 		destroy(self.disp)
@@ -842,12 +835,12 @@ class TrialTimer(Entity):
 	def update(self):
 		if not st.gproc():
 			s=self
-			if (st.level_index == 3 and st.level_col_gem):
+			if st.level_index == 3 and st.level_col_gem:
 				s.trial_interrupt()
 				return
 			s.disp.text=strftime("%M:%S",gmtime(s.TME))
 			s.TME=max(s.TME-time.dt,0)
-			if (s.TME <= 0 or st.bonus_round):
+			if s.TME <= 0 or st.bonus_round:
 				if not s.fin:
 					s.fin=True
 					s.trial_fail()
@@ -859,6 +852,7 @@ class CreditText(Entity):
 		s.ctext=Text(t,font=_fnt,scale=2.5,parent=CU,color=color.orange,position=(-.7,-.6,-.1))
 		s.wait=True
 		invoke(lambda:setattr(s,'wait',False),delay=d/2)
+		del t,s,d
 	def update(self):
 		s=self
 		if not s.wait:

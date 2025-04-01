@@ -47,27 +47,19 @@ def c_animation(c):
 
 ##animations
 def idle(c):
-	c.idfr=min(c.idfr+time.dt*17,10.999)
-	if c.idfr > 10.99:
-		c.idfr=0
-	setattr(c,'model',af+f'idle/{int(c.idfr)}.ply')
+	c.idfr=0 if c.idfr > 10.99 else min(c.idfr+time.dt*17,10.999)
+	c.model=af+f'idle/{int(c.idfr)}.ply'
 
 def run(c):
-	c.rnfr=min(c.rnfr+time.dt*17,10.999)
-	if c.rnfr > 10.99:
-		c.rnfr=0
+	c.rnfr=0 if c.rnfr > 10.99 else min(c.rnfr+time.dt*17,10.999)
 	c.model=af+f'run/{int(c.rnfr)}.ply'
 
 def run_s(d):
-	d.srfr=min(d.srfr+time.dt*16,6.999)
-	if d.srfr > 6.99:
-		d.srfr=0
+	d.srfr=0 if d.srfr > 6.99 else min(d.srfr+time.dt*16,6.999)
 	d.model=af+f'slide_start/{int(d.srfr)}.ply'
 
 def slide_stop(d):
-	d.ssfr=min(d.ssfr+time.dt*18,3.999)
-	if d.ssfr > 3.99:
-		d.ssfr=3
+	d.ssfr=3 if d.ssfr > 3.99 else min(d.ssfr+time.dt*18,3.999)
 	d.model=af+f'slide_stop/{int(d.ssfr)}.ply'
 
 def jump_up(d):
@@ -89,11 +81,10 @@ def land(d):
 		d.is_landing=False
 		d.ldfr=0
 		return
-	d.model=af+'lnd/'+str(int(d.ldfr))+'.ply'
+	d.model=af+f'lnd/{int(d.ldfr)}.ply'
 
 def fall(d):
-	if d.fafr < 7.99:
-		d.fafr=min(d.fafr+time.dt*14,7.99)
+	d.fafr=min(d.fafr+time.dt*14,7.99) if d.fafr < 7.99 else 7
 	d.model=af+'fall/'+str(int(d.fafr))+'.ply'
 
 def flip(d):
@@ -180,12 +171,10 @@ def dth_angelfly(c):
 	c.model=af+f'death/angel/{int(c.dthfr)}.ply'
 
 def dth_wtr_swim(c):
-	c.dthfr=min(c.dthfr+time.dt*t,25.999)
 	if not c.dth_snd:
 		c.dth_snd=True
 		sn.pc_audio(ID=10,pit=.75)
-	if c.dthfr > 25.99:
-		c.dthfr=25
+	c.dthfr=25 if c.dthfr > 25.99 else min(c.dthfr+time.dt*t,25.999)
 	c.model=af+f'death/water/{int(c.dthfr)}.ply'
 
 def dth_fire_ash(c):
@@ -274,12 +263,12 @@ class CollapseFloor(Entity):
 		super().__init__(model=cl+f'{t}/0.ply',texture=cl+f'{t}/0.png',position=pos,scale=(-dc,dc,dc),rotation=(-90,-270,0))
 		s.typ=t
 		s.frm=0
-		del t,pos,dc
+		del t,pos,dc,s
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		s.frm=min(s.frm+(time.dt*18),32.999)
+		s.frm=min(s.frm+time.dt*18,32.999)
 		if s.frm > 32.99:
 			s.frm=0
 			s.disable()
@@ -315,9 +304,7 @@ class WarpRingEffect(Entity): ## spawn animation
 
 ##npc animation
 def npc_walking(m):
-	m.anim_frame=min(m.anim_frame+time.dt*t,m.max_frm+.999)
-	if m.anim_frame > m.max_frm+.99:
-		m.anim_frame=0
+	m.anim_frame=0 if m.anim_frame > m.max_frm+.99 else min(m.anim_frame+time.dt*t,m.max_frm+.999)
 	m.model=nf+f'{m}/{int(m.anim_frame)}.ply'
 
 #plant attack
@@ -339,17 +326,13 @@ def plant_eat(m):
 #hedge def
 hdg=nf+'hedgehog/'
 def hedge_defend(m):
-	m.def_frame=min(m.def_frame+time.dt*t,6.999)
-	if m.def_frame > 6.99:
-		m.def_frame=0
+	m.def_frame=0 if m.def_frame > 6.99 else min(m.def_frame+time.dt*t,6.999)
 	m.model=hdg+'attack/'+str(int(m.def_frame))+'.ply'
 
 #rat idle
 rti=nf+'rat/idle/'
 def rat_idle(m):
-	m.idl_frm=min(m.idl_frm+time.dt*t,10.999)
-	if m.idl_frm > 10.99:
-		m.idl_frm=0
+	m.idl_frm=0 if m.idl_frm > 10.99 else min(m.idl_frm+time.dt*t,10.999)
 	m.model=rti+str(int(m.idl_frm))+'.ply'
 
 #hippo
@@ -421,11 +404,8 @@ def hive_awake(h,sp):
 
 bb='bee/'
 def bee_fly(b,sp):
-	b.frm=min(b.frm+time.dt*sp,9.999)
-	if b.frm > 9.99:
-		b.frm=0
+	b.frm=0 if b.frm > 9.99 else min(b.frm+time.dt*sp,9.999)
 	b.model=nf+bb+str(int(b.frm))+'.ply'
-	del b,sp
 
 tki='res/objects/l6/tikki/'
 def tikki_rotate(t,sp):
@@ -452,11 +432,8 @@ def lmbjack_smash(m,sp):
 
 ldm='res/objects/l6/lmine/'
 def land_mine(m,sp):
-	m.frm=min(m.frm+time.dt*sp,10.999)
-	if m.frm > 10.99:
-		m.frm=0
+	m.frm=0 if m.frm > 10.99 else min(m.frm+time.dt*sp,10.999)
 	m.model=ldm+str(int(m.frm))+'.ply'
-	del m,sp
 
 def mine_destroy(m,sp):
 	m.frm=min(m.frm+time.dt*sp,10.999)
@@ -469,16 +446,12 @@ def mine_destroy(m,sp):
 ## lab pad
 labp='res/objects/l7/e_pad/'
 def pad_refr(lp):
-	lp.frm=min(lp.frm+time.dt*10,3.999)
-	if lp.frm > 3.99:
-		lp.frm=3
+	lp.frm=3 if lp.frm > 3.99 else min(lp.frm+time.dt*10,3.999)
 	lp.model=labp+f'{lp.mode}/{int(lp.frm)}.ply'
 
 labt='res/objects/l7/lab_taser/'
 def taser_rotation(t):
-	t.frm=min(t.frm+time.dt*15,6.999)
-	if t.frm > 6.99:
-		t.frm=0
+	t.frm=0 if t.frm > 6.99 else min(t.frm+time.dt*15,6.999)
 	t.model=labt+f'/{int(t.frm)}.ply'
 ## door animation
 dpw='res/objects/ev/door/'

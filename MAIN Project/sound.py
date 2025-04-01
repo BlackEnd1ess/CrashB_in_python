@@ -217,7 +217,7 @@ class BackgroundMusic(Audio):
 		super().__init__(kt,loop=True,volume=se.MUSIC_VOLUME)
 		s.mode=m
 		s.tm=.5
-		del ix,kt,m
+		del ix,kt,m,s
 	def rmv_music(self):
 		s=self
 		s.stop()

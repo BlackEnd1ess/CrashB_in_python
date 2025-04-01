@@ -33,16 +33,15 @@ class WumpaFruit(Entity):
 		s.c_purge=c_prg
 		s.spawn_pos=p
 		s.frm=0
-		del p,c_prg
+		del p,c_prg,s
 	def destroy(self):
 		s=self
 		if not s.c_purge:
 			st.W_RESET.append(s.spawn_pos)
 		destroy(s)
 	def collect(self):
-		s=self
 		cc.wumpa_count(1)
-		s.destroy()
+		self.destroy()
 	def update(self):
 		if st.gproc():
 			return
@@ -62,7 +61,7 @@ class ExtraLive(Entity):
 		super().__init__(model='quad',texture=lfic,name='exlf',position=pos,scale=(.4,.3),collider=b,unlit=False)
 		s.collider=BoxCollider(s,size=Vec3(1,1,1))
 		s.follow=False
-		del pos
+		del pos,s
 	def collect(self):
 		cc.give_extra_live()
 		destroy(self)
@@ -95,7 +94,7 @@ class GemStone(Entity):
 			LC.C_GEM=s
 			if (c == 5 and st.level_index == 3):
 				ui.TrialTimer(t=90)
-		del ge,pos,c
+		del ge,pos,c,s
 	def gem_visual(self):
 		##color
 		s=self
@@ -154,6 +153,7 @@ class EnergyCrystal(Entity):
 		super().__init__(model=i_path+CRY+'.ply',texture=i_path+CRY+'.tga',name='crys',scale=.0013,rotation_x=-90,position=pos,double_sided=True,color=color.magenta)
 		s.glow=Entity(model='quad',texture=i_path+CRY+'_shine.tga',scale=(.5,.8),position=s.position,color=color.magenta,unlit=False)
 		s.collider=b
+		del pos,s
 	def collect(self):
 		s=self
 		st.level_crystal=True

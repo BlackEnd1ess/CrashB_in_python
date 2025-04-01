@@ -13,6 +13,7 @@ class Memorycard(Entity):
 		super().__init__(model=q,texture=mc,position=(.6,.24),scale=(.07,.1),parent=camera.ui)
 		s.desc_s=Text('Save Game - F2',font=fn,scale=1.5,position=(s.x-.1,s.y-.07,s.z),color=color.green,parent=cu)
 		s.desc_l=Text('Load Game - F3',font=fn,scale=1.5,position=(s.x-.1,s.y-.12,s.z),color=color.azure,parent=cu)
+		del s
 
 class BonusRoomEntry(Entity):
 	def __init__(self):
@@ -23,6 +24,7 @@ class BonusRoomEntry(Entity):
 			mtt='WARP ROOM E1 - F1'
 		s.desc_w=Text(mtt,font=fn,scale=2,position=(-.55,-.45,0),color=color.magenta,parent=cu)
 		s.tme=.3
+		del s
 	def update(self):
 		s=self
 		s.tme=max(s.tme-time.dt,0)
@@ -83,6 +85,7 @@ class Credits(Entity):
 		objects.PseudoCrash()
 		s.index=0
 		s.t0()
+		del s
 	def input(self,key):
 		if key == settings.JMP_KEY:
 			level_select()

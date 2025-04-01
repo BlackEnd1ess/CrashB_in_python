@@ -21,16 +21,13 @@ b='box'
 ##level block platforms ##
 
 block_sca_level={0:.5,1:.5,2:.35,3:.02,4:.03,5:(.5,.8,.5)}
-block_sca_bonus={0:(.5,.5,.2),1:(.5,.5,.2),2:.35,3:.02,4:.03,5:(.5,.8,.5)}
 trhs={0:1,1:.985,2:.85,3:.501,4:.75,5:1}
-def spw_block(ID,p,vx,ro_y=0,typ=0):
+def spw_block(ID,p,vx,ro_y=0,typ=0,sca=None):
+	kg=block_sca_level[ID] if not sca else sca
 	for gbx in range(vx[0]):
 		for gbz in range(vx[1]):
-			if p[1] < -10:
-				ObjType_Block(ID=ID,pos=(p[0]+trhs[ID]*gbx,p[1],p[2]+trhs[ID]*gbz),sca=block_sca_bonus[ID],ro_y=ro_y,typ=typ)
-			else:
-				ObjType_Block(ID=ID,pos=(p[0]+trhs[ID]*gbx,p[1],p[2]+trhs[ID]*gbz),sca=block_sca_level[ID],ro_y=ro_y,typ=typ)
-	del p,vx,ID,gbx,gbz,ro_y,typ
+			ObjType_Block(ID=ID,pos=(p[0]+trhs[ID]*gbx,p[1],p[2]+trhs[ID]*gbz),sca=kg,ro_y=ro_y,typ=typ)
+	del p,vx,ID,gbx,gbz,ro_y,typ,kg
 
 mpk={0:'l1/block/block',
 	1:'l2/block/block',
@@ -356,16 +353,6 @@ class ObjType_Water(Entity):
 			ObjType_Water(ID=3,pos=(s.x,s.y-.49,s.z-.5),sca=(5,1),rot=(90,0,0),frames=15,spd=6,al=1)
 			ObjType_Water(ID=3,pos=(s.x,s.y+.501,s.z+.49),sca=(5,1),rot=(90,180,0),frames=15,spd=6,col=color.rgb32(210,210,210),rev=True,al=1)
 		del ID,sca
-	def flow_reverse(self):
-		s=self
-		s.frm-=time.dt*s.speed
-		if s.frm <= 0:
-			s.frm=s.frames+.999
-	def flow_normal(self):
-		s=self
-		s.frm=min(s.frm+time.dt*s.speed,s.frames+.999)
-		if s.frm > s.frames+.99:
-			s.frm=0
 	def update(self):
 		s=self
 		if st.gproc() or 0 in {s.speed,s.frames} or (s.y < -15 and not st.bonus_round):
@@ -373,9 +360,9 @@ class ObjType_Water(Entity):
 		if st.wtr_dist(s,LC.ACTOR):
 			s.texture=omf+wtr[s.vnum]+f'{int(s.frm)}.png'
 			if s.reverse:
-				s.flow_reverse()
+				s.frm=max(s.frm-time.dt*s.speed,0) if s.frm <= 0 else s.frames
 				return
-			s.flow_normal()
+			s.frm=0 if s.frm > s.frames+.99 else min(s.frm+time.dt*s.speed,s.frames+.999)
 
 #####################
 ## level 1 objects ##
@@ -390,12 +377,9 @@ class MossPlatform(Entity):
 		s.pts=pts
 		s.turn=0
 		s.ptw=0
-		s.is_sfc=(ptm == 1)
-		if ptm > 1:
-			s.drc='x'
-			if ptm == 3:
-				s.drc='z'
-		del p,ptm,pts,ptw
+		s.is_sfc=ptm == 1
+		s.drc='z' if ptm == 3 else 'x'
+		del p,ptm,pts,ptw,s
 	def ptf_move(self,di):
 		s=self
 		pdv={2:s.spawn_pos[0],3:s.spawn_pos[2]}
@@ -443,7 +427,7 @@ def plank_bridge(pos,typ,cnt,ro_y,DST):
 		plNK={90:lambda:Plank(pos=(pos[0]+wP*DST,pos[1],pos[2]),ro_y=ro_y,typ=typ),
 			0:lambda:Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)}
 		plNK[ro_y]()
-	del pos,typ,cnt,ro_y,DST
+	del pos,typ,cnt,ro_y,DST,wP
 
 plob=omf+'l2/plank/plank.png'
 class Plank(Entity):
@@ -456,7 +440,7 @@ class Plank(Entity):
 		if typ == 1:
 			s.is_touched=False
 			s.color=color.brown
-		del pos,typ,ro_y
+		del pos,typ,ro_y,s
 	def obj_reset(self):
 		s=self
 		s.is_touched=False
@@ -482,7 +466,7 @@ class Ropes(Entity):
 		s=self
 		super().__init__(model='cube',scale=(.03,.03,le),name='snrp',texture=rpt,position=pos,texture_scale=(1,le*8),origin_z=-.5)
 		s.dup=Entity(model='cube',scale=s.scale,name=s.name,position=(s.x+.95,s.y,s.z),texture=rpt,texture_scale=(1,le*8),origin_z=s.origin_z)
-		del pos,le
+		del pos,le,s
 
 snPL=omf+'l2/snow_platform/snow_platform'
 class SnowPlatform(Entity):
@@ -662,12 +646,12 @@ class CrateScore(Entity):## level reward
 		ev='res/crate/'
 		super().__init__(model=ev+'cr_t0.ply',texture=ev+'1.tga',alpha=.4,scale=.18,position=pos,origin_y=.5)
 		s.cc_text=Text(parent=scene,position=(s.x-.2,s.y,s.z),name=s.name,text=None,font=ui._fnt,color=color.rgb32(255,255,100),scale=10,unlit=False)
-		del pos
+		del pos,s
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		dv=(LC.C_GEM and distance(s,LC.C_GEM) < .5)
+		dv=LC.C_GEM and distance(s,LC.C_GEM) < .5
 		s.cc_text.visible,s.visible=not(dv),not(dv)
 		if s.visible:
 			s.cc_text.text=f'{st.crate_count}/{st.crates_in_level}'
@@ -702,7 +686,7 @@ class StartRoom(Entity):## game spawn point
 		if st.level_index == 8:
 			s.color=color.rgb32(60,60,60)
 			s.unlit=False
-		del pos
+		del pos,s
 
 eR=omf+'ev/e_room/e_room'
 class EndRoom(Entity):## finish level
