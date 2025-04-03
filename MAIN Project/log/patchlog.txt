@@ -78,3 +78,7 @@
 - Hedgehog NPC: if danger and activ, npc will hold this flag for 5 seconds and do pause for 3 seconds
 - changed some functions in Code
 - spawn_block function can now handle with scale values ("sca" param)
+
+#03.04.2025
+- Switch Crates spawns now 5 Icons, where floats in 5 different Directions
+- changed Code structure, fixxed a few Errors
