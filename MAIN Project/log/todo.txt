@@ -1,9 +1,11 @@
 ## BUGS/ERORRS
+- bonus level 8 height error
 
 #LEVEL EDITOR
-- level editor environment settings
-- level editor side scene
-- level editor bonus maker
+- level editor environment settings with Icon
+- level editor side scene to crate ready 2,5/3D Levels where mostly straight structured.
+- level editor bonus maker, for scene (pos_y < -20)
 
 ##TODO
 - level 8, bonus zone, wumpa, crate, gem zone, boulder
+- boulder animation + pathfinding + respawn/reset

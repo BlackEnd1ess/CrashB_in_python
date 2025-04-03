@@ -8,10 +8,10 @@ nf='res/npc/'
 af='res/pc/'
 mo='model'
 
-LC=_loc
 st=status
 sn=sound
 cc=_core
+LC=_loc
 
 bT=50
 t=18
@@ -36,30 +36,38 @@ def c_animation(c):
 	if (c.landed and c.is_landing) and not any([c.walking,c.jumping,c.is_attack,c.falling]):
 		if c.b_smash:
 			belly_land(c)
-		else:
-			land(c)
+			return
+		land(c)
 		return
-	if st.p_idle(c) or c.freezed:
+	if any([st.p_idle(c),c.freezed]):
 		if c.is_slp:
 			slide_stop(c)
-		else:
-			idle(c)
+			return
+		idle(c)
 
 ##animations
 def idle(c):
-	c.idfr=0 if c.idfr > 10.99 else min(c.idfr+time.dt*17,10.999)
+	c.idfr=min(c.idfr+time.dt*17,10.999)
+	if c.idfr > 10.99:
+		c.idfr=0
 	c.model=af+f'idle/{int(c.idfr)}.ply'
 
 def run(c):
-	c.rnfr=0 if c.rnfr > 10.99 else min(c.rnfr+time.dt*17,10.999)
+	c.rnfr=min(c.rnfr+time.dt*17,10.999)
+	if c.rnfr > 10.99:
+		c.rnfr=0
 	c.model=af+f'run/{int(c.rnfr)}.ply'
 
 def run_s(d):
-	d.srfr=0 if d.srfr > 6.99 else min(d.srfr+time.dt*16,6.999)
+	d.srfr=min(d.srfr+time.dt*16,6.999)
+	if d.srfr > 6.99:
+		d.srfr=0
 	d.model=af+f'slide_start/{int(d.srfr)}.ply'
 
 def slide_stop(d):
-	d.ssfr=3 if d.ssfr > 3.99 else min(d.ssfr+time.dt*18,3.999)
+	d.ssfr=min(d.ssfr+time.dt*18,3.999)
+	if d.ssfr > 3.99:
+		d.ssfr=3
 	d.model=af+f'slide_stop/{int(d.ssfr)}.ply'
 
 def jump_up(d):
@@ -84,8 +92,9 @@ def land(d):
 	d.model=af+f'lnd/{int(d.ldfr)}.ply'
 
 def fall(d):
-	d.fafr=min(d.fafr+time.dt*14,7.99) if d.fafr < 7.99 else 7
-	d.model=af+'fall/'+str(int(d.fafr))+'.ply'
+	if d.fafr < 7.99:
+		d.fafr=min(d.fafr+time.dt*14,7.99)
+	d.model=af+f'fall/{int(d.fafr)}.ply'
 
 def flip(d):
 	d.flfr=min(d.flfr+time.dt*21,16.999)
@@ -93,14 +102,14 @@ def flip(d):
 		d.is_flip=False
 		d.flfr=0
 		return
-	d.model=af+'flp/'+str(int(d.flfr))+'.ply'
+	d.model=af+f'flp/{int(d.flfr)}.ply'
 
 def belly_smash(d):
 	d.smfr=min(d.smfr+time.dt*14,2.999)
 	if d.smfr > 2.99:
 		d.smfr=2
 		return
-	d.model=af+'smash/'+str(int(d.smfr))+'.ply'
+	d.model=af+f'smash/{int(d.smfr)}.ply'
 
 def belly_land(d):
 	d.blfr=min(d.blfr+time.dt*16,3.999)
@@ -109,7 +118,7 @@ def belly_land(d):
 		d.standup=True
 		d.b_smash=False
 		return
-	d.model=af+'smash_land/'+str(int(d.blfr))+'.ply'
+	d.model=af+f'smash_land/{int(d.blfr)}.ply'
 
 def stand_up(d):
 	d.sufr=min(d.sufr+time.dt*17,8.999)
@@ -119,7 +128,7 @@ def stand_up(d):
 		d.is_landing=False
 		d.standup=False
 		return
-	d.model=af+'stand_up/'+str(int(d.sufr))+'.ply'
+	d.model=af+f'stand_up/{int(d.sufr)}.ply'
 
 def diggin_in(d):
 	d.dgifr=min(d.dgifr+time.dt*16,7.999)
@@ -174,7 +183,9 @@ def dth_wtr_swim(c):
 	if not c.dth_snd:
 		c.dth_snd=True
 		sn.pc_audio(ID=10,pit=.75)
-	c.dthfr=25 if c.dthfr > 25.99 else min(c.dthfr+time.dt*t,25.999)
+	c.dthfr=min(c.dthfr+time.dt*t,25.999)
+	if c.dthfr > 25.99:
+		return
 	c.model=af+f'death/water/{int(c.dthfr)}.ply'
 
 def dth_fire_ash(c):
@@ -244,7 +255,7 @@ class CrateBreak(Entity):
 		s=self
 		super().__init__(model=cf+'brk/0.ply',texture=cf+'brk/0.tga',rotation=(-90,0,0),scale=.4/1000,position=(pos[0],pos[1]-.16,pos[2]),color=col,unlit=False)
 		s.frm=0
-		del pos,col
+		del pos,col,s
 	def update(self):
 		if st.gproc():
 			return
@@ -285,7 +296,7 @@ class WarpRingEffect(Entity): ## spawn animation
 		s.activ=False
 		s.rings=0
 		s.times=0
-		del pos
+		del pos,s
 	def update(self):
 		if not st.gproc() and cc.level_ready:
 			s=self
@@ -304,7 +315,9 @@ class WarpRingEffect(Entity): ## spawn animation
 
 ##npc animation
 def npc_walking(m):
-	m.anim_frame=0 if m.anim_frame > m.max_frm+.99 else min(m.anim_frame+time.dt*t,m.max_frm+.999)
+	m.anim_frame=min(m.anim_frame+time.dt*t,m.max_frm+.999)
+	if m.anim_frame > m.max_frm+.99:
+		m.anim_frame=0
 	m.model=nf+f'{m}/{int(m.anim_frame)}.ply'
 
 #plant attack
@@ -326,14 +339,16 @@ def plant_eat(m):
 #hedge def
 hdg=nf+'hedgehog/'
 def hedge_defend(m):
-	m.def_frame=0 if m.def_frame > 6.99 else min(m.def_frame+time.dt*t,6.999)
-	m.model=hdg+'attack/'+str(int(m.def_frame))+'.ply'
+	m.def_frame=min(m.def_frame+time.dt*t,6.999)
+	if m.def_frame > 6.99:
+		m.def_frame=0
+	m.model=hdg+f'attack/{int(m.def_frame)}.ply'
 
 #rat idle
 rti=nf+'rat/idle/'
 def rat_idle(m):
-	m.idl_frm=0 if m.idl_frm > 10.99 else min(m.idl_frm+time.dt*t,10.999)
-	m.model=rti+str(int(m.idl_frm))+'.ply'
+	cc.incr_frm(m,10,t)
+	m.model=rti+f'{int(m.frm)}.ply'
 
 #hippo
 hpo=nf+'hippo/'
@@ -404,7 +419,9 @@ def hive_awake(h,sp):
 
 bb='bee/'
 def bee_fly(b,sp):
-	b.frm=0 if b.frm > 9.99 else min(b.frm+time.dt*sp,9.999)
+	b.frm=min(b.frm+time.dt*sp,9.999)
+	if b.frm > 9.99:
+		b.frm=0
 	b.model=nf+bb+str(int(b.frm))+'.ply'
 
 tki='res/objects/l6/tikki/'
@@ -416,7 +433,7 @@ def tikki_rotate(t,sp):
 			t.an_mode=1
 	else:
 		t.frm=max(t.frm-time.dt*sp,0)
-		if t.frm == 0:
+		if t.frm <= 0:
 			t.an_pause=1
 			t.an_mode=0
 	t.model=tki+f'{int(t.frm)}.ply'
@@ -432,7 +449,7 @@ def lmbjack_smash(m,sp):
 
 ldm='res/objects/l6/lmine/'
 def land_mine(m,sp):
-	m.frm=0 if m.frm > 10.99 else min(m.frm+time.dt*sp,10.999)
+	cc.incr_frm(m,10,sp)
 	m.model=ldm+str(int(m.frm))+'.ply'
 
 def mine_destroy(m,sp):
@@ -446,18 +463,21 @@ def mine_destroy(m,sp):
 ## lab pad
 labp='res/objects/l7/e_pad/'
 def pad_refr(lp):
-	lp.frm=3 if lp.frm > 3.99 else min(lp.frm+time.dt*10,3.999)
+	lp.frm=min(lp.frm+time.dt*10,3.999)
+	if lp.frm > 3.99:
+		lp.frm=3
 	lp.model=labp+f'{lp.mode}/{int(lp.frm)}.ply'
 
 labt='res/objects/l7/lab_taser/'
 def taser_rotation(t):
-	t.frm=0 if t.frm > 6.99 else min(t.frm+time.dt*15,6.999)
+	cc.incr_frm(t,6,15)
 	t.model=labt+f'/{int(t.frm)}.ply'
+
 ## door animation
 dpw='res/objects/ev/door/'
 def door_open(d):
-	d.d_frm=min(d.d_frm+time.dt*15,3.9)
-	if d.d_frm >= 3.9:
+	d.d_frm=min(d.d_frm+time.dt*15,3.999)
+	if d.d_frm > 3.99:
 		d.d_opn=True
 		d.door_part.collider=None
 		d.collider=None
@@ -474,6 +494,6 @@ def door_close(d):
 		d.collider='box'
 		d.d_frm=0
 		sn.obj_audio(ID=1,pit=.85)
-	fk=str(int(d.d_frm))+'.ply'
+	fk=f'{int(d.d_frm)}.ply'
 	d.model=dpw+'u'+fk
 	d.door_part.model=dpw+'d'+fk

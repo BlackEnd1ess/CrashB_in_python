@@ -20,9 +20,9 @@ def map_setting():
 	#LC.LV_DST=(7,12)
 	LC.LV_DST=(70,120)
 	LC.BN_DST=(10,14)
-	LC.RCX=12
-	LC.RCB=8
-	LC.RCZ=25
+	LC.RCX=14
+	LC.RCB=10
+	LC.RCZ=28
 	st.toggle_thunder=False
 	st.toggle_rain=False
 
@@ -69,7 +69,6 @@ def load_object():
 	o.ObjType_Deco(ID=4,pos=(53.85,2,90.3),sca=1,rot=(-90,-90,0),col=color.azure,UL=True)
 	o.ObjType_Deco(ID=4,pos=(58.7,0,124.6),sca=1,rot=(-90,-90,0),col=color.azure,UL=True)
 	o.ObjType_Deco(ID=4,pos=(62.4,0,124.6),sca=1,rot=(-90,-90,0),col=color.azure,UL=True)
-	
 	#dangers
 	dg.Role(pos=(52.5,2.5+.75,84),di=0)
 	dg.Role(pos=(52.5,2.5+.75,86),di=1)
@@ -98,7 +97,10 @@ def load_object():
 	o.SnowPlatform(pos=(60.5,.5,136.5))
 	o.SnowPlatform(pos=(21.6,.8,54.7))
 	#blocks
-	o.spw_block(ID=1,p=(7,-.5,1.5),vx=[5,5],ro_y=180)
+	o.spw_block(ID=1,p=(8.5,-.5,5.3),vx=[1,1],ro_y=180)
+	o.spw_block(ID=1,p=(8,-.5,3.5),vx=[1,1],ro_y=180)
+	o.spw_block(ID=1,p=(8,-.5,3),vx=[1,1],ro_y=180)
+	o.spw_block(ID=1,p=(8,-.5,2.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(7,-.5,7.5),vx=[5,5],ro_y=180)
 	o.spw_block(ID=1,p=(11,0,22),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(11,-.25,21),vx=[1,1],ro_y=180)
@@ -138,18 +140,18 @@ def load_object():
 def load_crate():
 	c.place_crate(ID=10,p=(61.6,.5+.16,146.1))
 	c.place_crate(ID=8,p=(23.1,1.16,57.1))
-	c.place_crate(ID=8,p=(20,2.5+.16,58.1))
+	c.place_crate(ID=8,p=(20.4,2.5+.16,58.1))
 	c.place_crate(ID=4,p=(60.5,2,116))
 	c.place_crate(ID=2,p=(60.5,1.6,118))
 	c.place_crate(ID=1,p=(60.5,1.2,120))
 	c.place_crate(ID=1,p=(60.5,.8,122))
 	#nitro
-	mt.crate_row(ID=12,POS=(7,0.61,12.6),WAY=0,CNT=4)
-	mt.crate_row(ID=12,POS=(9,0.61,15.3),WAY=0,CNT=4)
-	mt.crate_row(ID=12,POS=(7,0.61,17.6),WAY=0,CNT=4)
-	mt.crate_row(ID=12,POS=(20.0,0.66,40.3),WAY=0,CNT=4)
-	mt.crate_row(ID=12,POS=(22.0,0.66,44.2),WAY=0,CNT=4)
-	mt.crate_row(ID=12,POS=(20.1,0.66,48.3),WAY=0,CNT=4)
+	mt.crate_row(ID=12,POS=(7,.61,12.6),WAY=0,CNT=4)
+	mt.crate_row(ID=12,POS=(9,.61,15.3),WAY=0,CNT=4)
+	mt.crate_row(ID=12,POS=(7,.61,17.6),WAY=0,CNT=4)
+	mt.crate_row(ID=12,POS=(20.0,.66,40.3),WAY=0,CNT=4)
+	mt.crate_row(ID=12,POS=(22.0,.66,44.2),WAY=0,CNT=4)
+	mt.crate_row(ID=12,POS=(20.1,.66,48.3),WAY=0,CNT=4)
 	mt.crate_row(ID=12,POS=(20,.66,53),WAY=0,CNT=4)
 	mt.crate_row(ID=12,POS=(22.3,.66,53),WAY=0,CNT=4)
 	c.place_crate(ID=12,p=(12.8,1.16,22.2))
@@ -168,18 +170,18 @@ def load_crate():
 	c.place_crate(ID=12,p=(51.1,2.66,93.7))
 	c.place_crate(ID=12,p=(60.3,.5+.16,142.3))
 	c.place_crate(ID=12,p=(60.7,.5+.16,142.3))
-	c.place_crate(ID=12,p=(58.8,0.66,125.2))
-	c.place_crate(ID=12,p=(62.0,0.66,126.2))
-	c.place_crate(ID=12,p=(60.6,0.66,126.5))
-	c.place_crate(ID=12,p=(62.5,0.66,128.8))
-	c.place_crate(ID=12,p=(61.0,0.66,128.8))
-	c.place_crate(ID=12,p=(59.9,0.66,128.8))
-	c.place_crate(ID=12,p=(58.3,0.66,128.8))
-	c.place_crate(ID=12,p=(59.3,0.66,130.3))
-	c.place_crate(ID=12,p=(62.0,0.66,131.2))
-	c.place_crate(ID=12,p=(59.4,0.66,132.3))
-	c.place_crate(ID=12,p=(61.2,0.66,132.3))
-	c.place_crate(ID=12,p=(59.5,0.66,138.2))
+	c.place_crate(ID=12,p=(58.8,.66,125.2))
+	c.place_crate(ID=12,p=(62,.66,126.2))
+	c.place_crate(ID=12,p=(60.6,.66,126.5))
+	c.place_crate(ID=12,p=(62.5,.66,128.8))
+	c.place_crate(ID=12,p=(61.0,.66,128.8))
+	c.place_crate(ID=12,p=(59.9,.66,128.8))
+	c.place_crate(ID=12,p=(58.3,.66,128.8))
+	c.place_crate(ID=12,p=(59.3,.66,130.3))
+	c.place_crate(ID=12,p=(62,.66,131.2))
+	c.place_crate(ID=12,p=(59.4,.66,132.3))
+	c.place_crate(ID=12,p=(61.2,.66,132.3))
+	c.place_crate(ID=12,p=(59.5,.66,138.2))
 	#checkp
 	c.place_crate(ID=6,p=(22,1.16,34.7))
 	c.place_crate(ID=6,p=(34,4.16,61.7))
@@ -195,7 +197,7 @@ def load_crate():
 	c.place_crate(ID=2,p=(7.9+.32,2.5+.32,11.3))
 	c.place_crate(ID=7,p=(22,2.16,27.8))
 	c.place_crate(ID=3,p=(22,4,27.8))
-	mt.crate_row(ID=0,POS=(53.4,2.66,79.4),WAY=2,CNT=1)
+	mt.crate_row(ID=0,POS=(53.4,2.659,79.4),WAY=2,CNT=1)
 	c.place_crate(ID=2,p=(53.4,2.66+.32,79.4))
 	mt.crate_row(ID=0,POS=(53.4,2.66,80.3),WAY=2,CNT=2)
 	c.place_crate(ID=4,p=(53.4,2.66+.64,80.3))
@@ -203,7 +205,7 @@ def load_crate():
 	c.place_crate(ID=1,p=(53.4,2.66+.96,81))
 	mt.crate_row(ID=14,POS=(53.4,2.66,82.1),WAY=2,CNT=4)
 	c.place_crate(ID=14,p=(53.4,2.66+1.28,82.1))
-	mt.crate_wall(ID=1,POS=(8.7,.66,4.8),CNT=[1,3])
+	mt.crate_wall(ID=1,POS=(8.7,.66,5),CNT=[1,3])
 	mt.crate_plane(ID=14,POS=(7.5,.66,8.9),CNT=[2,2])
 	mt.crate_wall(ID=1,POS=(7.4,.61,16),CNT=[1,2])
 	mt.crate_block(ID=1,POS=(9.3,.61,18.3),CNT=[2,2,1])
@@ -214,7 +216,6 @@ def load_crate():
 	mt.crate_wall(ID=1,POS=(19.1,4.16,59.1),CNT=[3,1])
 	c.place_crate(ID=4,p=(18,2.4,25.9))
 	mt.crate_wall(ID=1,POS=(31,3,59),CNT=[1,4])
-	
 	mt.crate_block(ID=1,POS=(53.7,2.66,89.5),CNT=[2,2,2])
 	mt.crate_wall(ID=1,POS=(61.4,.66,138),CNT=[2,1])
 	c.place_crate(ID=3,p=(58,1.6,111.5))
@@ -289,13 +290,17 @@ def bonus_zone():
 	o.ObjType_Wall(ID=7,pos=(12,-39,2),ro_y=-90,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(-1,-38,4),ro_y=-90,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(11,-38,4),ro_y=-90,sca=.5,col=color.dark_gray)
-	o.spw_block(ID=1,p=(-1,-38,U),vx=[2,1],ro_y=180)
-	o.spw_block(ID=1,p=(1,-37.5,U),vx=[1,1],ro_y=180)
-	o.spw_block(ID=1,p=(2,-37,U),vx=[1,1],ro_y=180)
-	o.spw_block(ID=1,p=(2,-39,U),vx=[6,1],ro_y=180)
-	o.spw_block(ID=1,p=(7,-37,U),vx=[3,1],ro_y=180)
-	o.spw_block(ID=1,p=(11,-37,U),vx=[1,1],ro_y=180)
-	o.spw_block(ID=1,p=(13,-37,U),vx=[4,1],ro_y=180)
+	#blocks
+	scd=(.5,.5,.2)
+	fe=.00125
+	o.spw_block(ID=1,p=(-1,-38-fe,U),vx=[2,1],ro_y=180,sca=scd)
+	o.spw_block(ID=1,p=(1,-37.5-fe,U),vx=[1,1],ro_y=180,sca=scd)
+	o.spw_block(ID=1,p=(2,-37-fe,U),vx=[1,1],ro_y=180,sca=scd)
+	o.spw_block(ID=1,p=(2,-39-fe,U),vx=[6,1],ro_y=180,sca=scd)
+	o.spw_block(ID=1,p=(7,-37-fe,U),vx=[3,1],ro_y=180,sca=scd)
+	o.spw_block(ID=1,p=(11,-37-fe,U),vx=[1,1],ro_y=180,sca=scd)
+	o.spw_block(ID=1,p=(13,-37-fe,U),vx=[4,1],ro_y=180,sca=scd)
+	del scd,fe
 	#crates
 	c.place_crate(ID=9,p=(-1.0,-36.84,U),m=181)
 	mt.crate_row(ID=13,POS=(3.2,-37.84,U),m=181,l=14,CNT=6,WAY=2)

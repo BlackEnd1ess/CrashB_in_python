@@ -181,7 +181,7 @@ class Hedgehog(Entity):
 		s.move_speed=1.1
 		s.scale=.00045
 		s.def_frame=0
-		s.def_time=10
+		s.def_time=5
 		s.max_frm=12
 		s.wait=5
 		del pos,drc,rng,s
@@ -196,7 +196,7 @@ class Hedgehog(Entity):
 			an.hedge_defend(s)
 			if s.def_time <= 0:
 				s.def_mode=False
-				s.def_time=10
+				s.def_time=5
 				s.wait=5
 			return
 		if distance(s,LC.ACTOR) < 2:
@@ -287,7 +287,7 @@ class Rat(Entity):
 		s.can_move=cmv
 		s.snd_time=1
 		s.max_frm=8
-		s.idl_frm=0
+		s.frm=0
 		del pos,drc,rng,cmv,s
 	def npc_snd(self):
 		s=self
@@ -682,7 +682,8 @@ class AkuAkuMask(Entity):
 		s.spt=max(s.spt-time.dt,0)
 		if s.spt <= 0:
 			s.spt=.5
-			s.spkw=s.spkw+1 if s.spkw < 3 else 3
+			if s.spkw < 3:
+				s.spkw+=1
 			if s.spkw > 2:
 				effect.Sparkle((s.x+random.uniform(-.1,.1),s.y+random.uniform(-.1,.1),s.z+random.uniform(-.1,.1)))
 	def follow_player(self):
@@ -788,7 +789,10 @@ class Firefly(Entity):
 		cc.circle_move_xz(s)
 		s.mov_range=.3+abs(sin(time.time()))*.4
 		s.y=s.spawn_pos[1]+sin(time.time()*3)*.2
-		s.lgt.color=color.black if st.bonus_round and s.y > -10 or distance(s,LC.ACTOR) > 16 else color.rgb32(255,200,180)
+		if (st.bonus_round and s.y > -10) or distance(s,LC.ACTOR) > 16:
+			s.lgt.color=color.black
+			return
+		s.lgt.color=color.rgb32(255,200,180)
 	def update(self):
 		if st.gproc():
 			return

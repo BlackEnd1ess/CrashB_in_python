@@ -2,7 +2,6 @@ import item,status,_core,animation,sound,npc,settings,_loc,ui,random,time,effect
 from ursina import Entity,Text,Audio,color,scene,invoke,distance
 from ursina.ursinastuff import destroy
 
-ic=(.15,.2)
 an=animation
 cc=_core
 sn=sound
@@ -51,7 +50,6 @@ def destroy_event(c):
 		sn.crate_audio(ID=2)
 		twc=LC.cbrc[c.vnum] if c.vnum in LC.cbrc else color.rgb32(180,80,0)
 		an.CrateBreak(c.position,col=twc)
-		del twc
 	if st.bonus_round:
 		st.crate_bonus+=1
 	else:
@@ -73,9 +71,9 @@ def block_destroy(c):
 def spawn_ico(c):
 	sn.crate_audio(ID=12)
 	sn.crate_audio(ID=1)
-	ico=Entity(model='quad',texture='res/ui/icon/trigger.png',position=(c.x,c.y,c.z),scale=ic)
-	ico.animate_y(c.y+1,duration=1.2)
-	invoke(lambda:cc.purge_instance(ico),delay=3)
+	for exm in range(5):
+		print(exm)
+		effect.ExclamationMark(pos=c.position,ID=exm)
 
 def explosion(c):
 	if c.visible:
@@ -172,7 +170,7 @@ class Bounce(Entity):
 			return
 		if s.is_bounc:
 			an.bnc_anim(s)
-		if (s.lf_time > 0 and s.b_cnt > 0):
+		if s.lf_time > 0 and s.b_cnt > 0:
 			s.lf_time=max(s.lf_time-time.dt,0)
 
 class ExtraLife(Entity):
@@ -401,7 +399,7 @@ class Nitro(Entity):
 		s=self
 		if st.gproc() or not s.visible:
 			return
-		if distance(LC.ACTOR,s) <= 3:
+		if distance(LC.ACTOR.position,s.position) <= 3:
 			{0:s.refr,1:s.c_jmp,2:s.c_fall}[s.mode]()
 
 class Air(Entity):

@@ -58,7 +58,7 @@ class ObjType_Block(Entity):
 				s.scale_y=1.2
 		if ID in {3,5}:
 			s.matr='metal'
-		del pos,sca,ro_y,typ,ID,bl_c
+		del pos,sca,ro_y,typ,ID,bl_c,s
 
 ###########################
 ##level side wall scenes ##
@@ -89,7 +89,7 @@ class ObjType_Scene(Entity):
 			s.color=color.rgb32(255,50,0)
 			s.unlit=False
 		s.check_obj()
-		del pos,sca,ID,ro_y,col,typ
+		del pos,sca,ID,ro_y,col,typ,s
 	def check_obj(self):
 		s=self
 		if s.vnum in {3,10,11}:
@@ -181,7 +181,7 @@ class ObjType_Corridor(Entity):
 		s.vnum=ID
 		super().__init__(model=omf+cor[ID]+'.ply',texture=omf+cor[ID]+'.png',position=pos,rotation=rot)
 		s.check_model()
-		del ID,pos,rot
+		del ID,pos,rot,s
 	def check_model(self):
 		s=self
 		if s.vnum == 0:
@@ -251,7 +251,7 @@ class ObjType_Floor(Entity):
 			s.texture_scale=(sca[0],sca[2])
 			s.name='befl'
 		s.set_collider()
-		del ID,pos,sca,rot,col,al,txa
+		del ID,pos,sca,rot,col,al,txa,s
 	def set_model(self,txa):
 		s=self
 		if s.vnum in {0,8}:
@@ -301,7 +301,7 @@ class ObjType_Background(Entity):
 			s.unlit=False
 			s.shader=unlit_shader
 			s.texture_scale=txa
-		del ID,pos,sca,col,txa,UL
+		del ID,pos,sca,col,txa,UL,s
 	def update(self):
 		s=self
 		if s.vnum != 3:
@@ -336,7 +336,7 @@ class ObjType_Water(Entity):
 			s.water_fall(ID,sca)
 		if UL:
 			s.unlit=False
-		del ID,pos,frames,spd,sca,rot,al,col,rev,UL
+		del ID,pos,frames,spd,sca,rot,al,col,rev,UL,s
 	def wtr_surface(self,ID,sca):
 		s=self
 		s.model='plane'
@@ -360,9 +360,11 @@ class ObjType_Water(Entity):
 		if st.wtr_dist(s,LC.ACTOR):
 			s.texture=omf+wtr[s.vnum]+f'{int(s.frm)}.png'
 			if s.reverse:
-				s.frm=max(s.frm-time.dt*s.speed,0) if s.frm <= 0 else s.frames
+				s.frm=max(s.frm-time.dt*s.speed,0)
+				if s.frm <= 0:
+					s.frm=s.frames
 				return
-			s.frm=0 if s.frm > s.frames+.99 else min(s.frm+time.dt*s.speed,s.frames+.999)
+			cc.incr_frm(s,s.frames,s.speed)
 
 #####################
 ## level 1 objects ##

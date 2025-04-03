@@ -4,9 +4,12 @@ import status,_core,_loc,time,random
 
 trpv='res/objects/ev/teleport/warp_effect'
 ef='res/effects/'
+q='quad'
+
 st=status
 cc=_core
 LC=_loc
+
 
 class WarpVortex(Entity):
 	def __init__(self,pos,sca,drc,col):
@@ -14,7 +17,7 @@ class WarpVortex(Entity):
 		super().__init__(name='wvpx',position=pos,color=col,scale=sca,rotation_x=90,alpha=.5,unlit=False)
 		s.spd=600
 		s.drc=drc
-		del pos,sca,drc,col
+		del pos,sca,drc,col,s
 	def update(self):
 		if st.gproc():
 			return
@@ -28,9 +31,30 @@ class WarpVortex(Entity):
 				return
 			s.rotation_y-=time.dt*s.spd
 
+class ExclamationMark(Entity):
+	def __init__(self,pos,ID):
+		super().__init__(model=q,texture=ef+'trigger.png',position=pos,scale=(.15,.2),unlit=False)
+		self.vnum=ID
+		self.lft=1
+		del pos,ID
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.lft=max(s.lft-time.dt,0)
+		if s.lft <= 0:
+			destroy(s)
+			return
+		tv=time.dt*3
+		{0:lambda:setattr(s,'x',s.x+tv),
+		1:lambda:setattr(s,'x',s.x-tv),
+		2:lambda:setattr(s,'z',s.z+tv),
+		3:lambda:setattr(s,'z',s.z-tv),
+		4:lambda:setattr(s,'y',s.y+tv/3)}[s.vnum]()
+
 class Sparkle(Entity):
 	def __init__(self,pos):
-		super().__init__(model='quad',texture=ef+'sparkle.tga',position=pos,scale=.04,color=color.gold,unlit=False)
+		super().__init__(model=q,texture=ef+'sparkle.tga',position=pos,scale=.04,color=color.gold,unlit=False)
 		self.mode=0
 		del pos
 	def update(self):
@@ -48,7 +72,7 @@ class Sparkle(Entity):
 
 class JumpDust(Entity):
 	def __init__(self,pos):
-		super().__init__(model='quad',texture=ef+'fire_ball.png',position=pos,scale=.1,color=color.gray)
+		super().__init__(model=q,texture=ef+'fire_ball.png',position=pos,scale=.1,color=color.gray)
 		del pos
 	def update(self):
 		if st.gproc():
@@ -85,7 +109,7 @@ class Fireball(Entity):
 			nC=color.orange
 		if cc.is_crate(cr) and cr.vnum == 12:
 			nC=color.green
-		super().__init__(model='quad',texture=frb+'0.png',position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC,scale=.75,unlit=False)
+		super().__init__(model=q,texture=frb+'0.png',position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC,scale=.75,unlit=False)
 		PressureWave(pos=s.position,col=nC)
 		s.ex_step=0
 		del cr,nC,s
@@ -98,12 +122,13 @@ class Fireball(Entity):
 		s.visible=bool(s.ex_step < 14.99)
 		if s.ex_step > 14.99:
 			destroy(s)
+			del s
 
 llfr=ef+'fire/fire_'
 class LightFire(Entity):
 	def __init__(self,pos,lft=None):
 		s=self
-		super().__init__(model='quad',texture=llfr+'0.png',position=pos,scale=.4,unlit=False)
+		super().__init__(model=q,texture=llfr+'0.png',position=pos,scale=.4,unlit=False)
 		s.life_time=lft
 		s.frm=0
 		del pos,lft,s
@@ -116,13 +141,13 @@ class LightFire(Entity):
 			if s.life_time <= 0:
 				destroy(s)
 				return
-		s.frm=0 if s.frm > 31.99 else min(s.frm+time.dt*12,31.999)
+		cc.incr_frm(s,31,12)
 		s.texture=llfr+f'{int(s.frm)}.png'
 
 class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
 		s=self
-		super().__init__(model='quad',name='fthr',texture=ef+'fire_ball.png',position=(pos[0],pos[1]+.25,pos[2]),scale=.2,collider='box',unlit=False,color=random.choice([color.orange,color.red]))
+		super().__init__(model=q,name='fthr',texture=ef+'fire_ball.png',position=(pos[0],pos[1]+.25,pos[2]),scale=.2,collider='box',unlit=False,color=random.choice([color.orange,color.red]))
 		s.life_time=.4
 		s.direc=ro_y
 		s.mvs=4
@@ -150,7 +175,7 @@ class FireThrow(Entity):
 
 class ElectroBall(Entity):
 	def __init__(self,pos):
-		super().__init__(model='quad',texture=ef+'sparkle.tga',name='eball',position=pos,scale=.9,collider='box',color=color.rgb32(0,60,255),unlit=False,alpha=.75)
+		super().__init__(model=q,texture=ef+'sparkle.tga',name='eball',position=pos,scale=.9,collider='box',color=color.rgb32(0,60,255),unlit=False,alpha=.75)
 		self.spawn_y=self.y
 		del pos
 	def update(self):

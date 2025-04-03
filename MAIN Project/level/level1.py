@@ -193,10 +193,10 @@ def bonus_zone():
 		o.ObjType_Wall(ID=0,pos=(0+w*14,-37,2),ro_y=90,sca=.02,col=color.rgb32(160,190,160))
 	del w
 	bnh=-37
-	o.spw_block(p=(.35,bnh,U),vx=[2,1],ID=0)
-	o.spw_block(p=(3,bnh,U),vx=[2,1],ID=0)
-	o.spw_block(p=(6,bnh,U),vx=[2,1],ID=0)
-	o.spw_block(p=(9,bnh,U),vx=[3,1],ID=0)
+	o.spw_block(p=(.35,bnh,U),vx=[2,1],ID=0,sca=(.5,.5,.2))
+	o.spw_block(p=(3,bnh,U),vx=[2,1],ID=0,sca=(.5,.5,.2))
+	o.spw_block(p=(6,bnh,U),vx=[2,1],ID=0,sca=(.5,.5,.2))
+	o.spw_block(p=(9,bnh,U),vx=[3,1],ID=0,sca=(.5,.5,.2))
 	c.place_crate(ID=8,p=(4,-36.5+.16,U))
 	mt.crate_row(ID=1,POS=(4,-34,U),WAY=2,CNT=4)
 	mt.crate_wall(ID=1,POS=(1,-36.5+.16,U),CNT=[1,3])

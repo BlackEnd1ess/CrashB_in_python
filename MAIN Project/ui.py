@@ -36,14 +36,16 @@ def load_interface():
 
 ## Interface 2D Animations
 def wmp_anim(w):
-	w.frm=0 if w.frm > 13.99 else min(w.frm+time.dt*18,13.999)
+	cc.incr_frm(w,13,18)
 	w.texture=w_pa+f'{int(w.frm)}.png'
-	del w
 
 def text_blink(M,t):
 	if M.blink_time <= 0:
 		M.blink_time=.3
-		t.color=color.white if t.color == M.font_color else M.font_color
+		if t.color == M.font_color:
+			t.color=color.white
+			return
+		t.color=M.font_color
 
 class LiveCollectAnim(Entity):
 	def __init__(self):
@@ -482,9 +484,7 @@ class LevelSelector(Entity):
 		del gcsa,idx,pos,req_col
 	def refr(self):
 		s=self
-		s.frm=min(s.frm+time.dt*30,89.999)
-		if s.frm > 89.99:
-			s.frm=0
+		cc.incr_frm(s,89,30)
 		kg=f'{int(s.frm)}.png'
 		s.lv_crystal.texture=cr_i+kg
 		s.lv_col_gem.texture=LC.fdc[s.lvID]+kg
@@ -702,7 +702,7 @@ class PauseMenu(Entity):
 		del ot,s
 	def refr_ico(self):
 		s=self
-		s.frm=0 if s.frm > 89.99 else min(s.frm+time.dt*30,89.999)
+		cc.incr_frm(s,89,30)
 		kw=f'{int(s.frm)}.png'
 		s.cry_anim.texture=cr_i+kw
 		s.cleargem.texture=LC.ge_0+kw

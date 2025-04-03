@@ -162,7 +162,7 @@ class EletricWater(Entity):
 		s.nr=st.wtr_dist(w=s,p=LC.ACTOR)
 		if s.nr:
 			s.check_p()
-			s.frm=0 if s.frm > 31.99 else min(s.frm+time.dt*8,31.999)
+			cc.incr_frm(s,31,8)
 			s.texture=wtt+f'{int(s.frm)}.png'
 			s.tme=max(s.tme-time.dt,0)
 			if s.tme <= 0:

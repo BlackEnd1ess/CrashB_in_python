@@ -8,8 +8,8 @@ from danger import LandMine
 kmw={7:5,15:7,16:8,17:6}
 level_ready=False
 env=environment
-sn=sound
 st=status
+sn=sound
 LC=_loc
 
 o=objects
@@ -18,7 +18,7 @@ N=npc
 
 ## player
 def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound					inwater
-	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','dthfr','pshfr','stnfr','dth_cause','space_time'}:
+	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','inwt','dthfr','pshfr','stnfr','dth_cause','space_time','crt_wait'}:
 		setattr(c,_a,0)#values
 	for _v in {'aq_bonus','walking','jumping','landed','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','sma_dth','dth_snd','is_slp','pushed','cwall'}:
 		setattr(c,_v,False)#flags
@@ -113,8 +113,9 @@ def reset_state(c):
 	c.stun=False
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def various_val(c):
-	c.inwt=max(c.inwt-time.dt,0)
+	c.crt_wait=max(c.crt_wait-time.dt,0)
 	c.indoor=max(c.indoor-time.dt,0)
+	c.inwt=max(c.inwt-time.dt,0)
 	if not c.is_slp:
 		c.move_speed=LC.dfsp
 	if st.bonus_solved and not st.wait_screen:
@@ -136,9 +137,9 @@ def c_slide(c):
 		c.slide_fwd=c.move_speed
 def c_smash(c):
 	for sw in scene.entities[:]:
-		if (is_crate(sw) or is_enemie(sw)) and bool(distance(c,sw) < .4 and sw.collider):
+		if (is_crate(sw) or is_enemie(sw)) and bool(distance(c.position,sw.position) < .4 and sw.collider):
 			if is_crate(sw):
-				if sw.vnum in (3,11):
+				if sw.vnum in {3,11}:
 					sw.empty_destroy()
 				if sw.vnum == 14:
 					sw.c_destroy()
@@ -146,7 +147,6 @@ def c_smash(c):
 					sw.destroy()
 			if is_enemie(sw) and sw.vnum != 13:
 				sw.is_purge=True
-	del sw
 def p_bounce(m):
 	LC.ACTOR.is_flip=False
 	LC.ACTOR.jump_typ(t=4)
@@ -154,7 +154,7 @@ def p_bounce(m):
 	sn.crate_audio(ID=5)
 def c_attack(c):
 	for qd in scene.entities[:]:
-		if (qd.collider and distance(qd.position,c.position) < .5):
+		if qd.collider and distance(qd.position,c.position) < .5:
 			if is_crate(qd) and qd.vnum != 13:
 				if qd.vnum in {3,11}:
 					qd.empty_destroy()
@@ -203,7 +203,7 @@ def cam_level(c):
 	cm.z=lerp(cm.z,c.z-c.CMS,ftt*3)
 	cm.x=lerp(cm.x,c.x,ftt*2.5)
 	camera.fov=cm.fov=lerp(cm.fov,64,ftt)
-	if (c.jumping or c.falling):
+	if c.jumping or c.falling:
 		if cm.rotation_x > 20:
 			cm.rotation_x=lerp(cm.rotation_x,c.y,ftt/5)
 		return
@@ -221,10 +221,8 @@ def cam_bonus(c):
 def spawn_level_crystal(idx):
 	if idx > 5 or idx == 0:
 		return
-	cry_pos={1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7)}
 	if not idx in st.CRYSTAL:
-		item.EnergyCrystal(pos=cry_pos[idx])
-	del cry_pos
+		item.EnergyCrystal(pos={1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7)}[idx])
 def collect_reset():
 	st.C_RESET.clear()
 	st.W_RESET.clear()
@@ -347,6 +345,7 @@ def purge_instance(v):
 def cache_instance(v):
 	if v.name == 'bee':
 		destroy(v)
+		del v
 		return
 	if is_enemie(v):
 		st.NPC_RESET.append(v)
@@ -358,25 +357,24 @@ def game_pause():
 	st.pause=not st.pause
 	pa=st.pause
 	pm=LC.p_menu
-	pm.crystal_counter.visible=(pa)
-	pm.game_progress.visible=(pa)
-	pm.gem_counter.visible=(pa)
-	pm.lvl_name.visible=(pa)
-	pm.add_text.visible=(pa)
-	pm.cry_anim.visible=(pa)
-	pm.select_0.visible=(pa)
-	pm.select_1.visible=(pa)
-	pm.select_2.visible=(pa)
-	pm.col_gem1.visible=(pa)
-	pm.col_gem2.visible=(pa)
-	pm.col_gem3.visible=(pa)
-	pm.col_gem4.visible=(pa)
-	pm.col_gem5.visible=(pa)
-	pm.cleargem.visible=(pa)
-	pm.p_name.visible=(pa)
-	pm.ppt.visible=(pa)
-	pm.visible=(pa)
-	del pm
+	pm.crystal_counter.visible=pa
+	pm.game_progress.visible=pa
+	pm.gem_counter.visible=pa
+	pm.lvl_name.visible=pa
+	pm.add_text.visible=pa
+	pm.cry_anim.visible=pa
+	pm.select_0.visible=pa
+	pm.select_1.visible=pa
+	pm.select_2.visible=pa
+	pm.col_gem1.visible=pa
+	pm.col_gem2.visible=pa
+	pm.col_gem3.visible=pa
+	pm.col_gem4.visible=pa
+	pm.col_gem5.visible=pa
+	pm.cleargem.visible=pa
+	pm.p_name.visible=pa
+	pm.ppt.visible=pa
+	pm.visible=pa
 def game_over():
 	invoke(lambda:ui.GameOverScreen(),delay=2)
 def is_obj_scene(o):
@@ -394,27 +392,29 @@ def check_ceiling(c):
 	if vc and vc.normal == Vec3(0,-1,0):
 		if not ve.name in LC.item_lst|LC.trigger_lst:
 			if is_crate(ve):
-				ve.destroy()
+				if c.crt_wait <= 0:
+					c.crt_wait=.1
+					ve.destroy()
 			c.y=c.y
 			c.jumping=False
 def check_floor(c):
-	lkh={r for r in scene.entities if (str(r) in LC.item_lst|LC.dangers|LC.trigger_lst) or r in {c,LC.shdw}}
+	lkh={r for r in scene.entities if (str(r) in LC.item_lst|LC.dangers|LC.trigger_lst) or any([(r == c),(r == LC.shdw)])}
 	fwd_drc=Vec3(-sin(radians(c.rotation_y))*.05,0,-cos(radians(c.rotation_y))*.05)
 	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=lkh,debug=False)
-	stm=bool(vj and vj.normal)
+	stm=bool(vj.hit and vj.normal)
 	c.falling=not stm
 	c.landed=stm
-	if not vj:
-		c.y-={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}[c.b_smash]
-		c.fall_time+=time.dt
-		c.anim_fall()
+	if vj:
+		c.y=vj.world_point.y
+		if c.frst_lnd:
+			c.frst_lnd=False
+			land_act(c,vj.entity)
+		spc_floor(vj.entity)
+		c.fall_time=0
 		return
-	c.y=vj.world_point.y
-	if c.frst_lnd:
-		c.frst_lnd=False
-		land_act(c,vj.entity)
-	c.fall_time=0
-	spc_floor(vj.entity)
+	c.y-={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}[c.b_smash]
+	c.fall_time=min(c.fall_time+time.dt,1)
+	c.anim_fall()
 def land_act(c,vp):
 	c.stun=False
 	c.space_time=0
@@ -543,7 +543,6 @@ def check_nitro_stack():
 		for cra in all_crt:
 			if abs(cra.x-ni.x) < .1 and abs(cra.z-ni.z) < .1 and ni.y <= cra.y and not ni is cra:
 				ni.can_jmp=False
-	del nit_crt,all_crt
 def is_crate(e):
 	return hasattr(e,'idf') and e.idf == 'cr'
 
@@ -729,6 +728,12 @@ def load_game():
 	settings.SFX_VOLUME=save_data['S_VOL']
 	settings.MUSIC_VOLUME=save_data['M_VOL']
 	st.crd_seen=save_data['CRD_W']
+
+##entity-frames+ : ENTITY/FRAME_COUNT/SPEED
+def incr_frm(o,cnt,sp):
+	o.frm=min(o.frm+time.dt*sp,cnt+.999)
+	if o.frm > cnt+.99:
+		o.frm=0
 
 ##lv6 func
 def rmv_bees():

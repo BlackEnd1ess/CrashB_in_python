@@ -1,5 +1,5 @@
 from ursina import Sky,Entity,PointLight,AmbientLight,Animation,color,invoke,scene,camera,window
-import status,_loc,sound,time,random
+import status,_loc,sound,time,random,_core
 
 st=status
 LC=_loc
@@ -44,7 +44,7 @@ class WeatherRain(Entity):
 		s=self
 		if st.pause:
 			return
-		s.frm=0 if s.frm > 58.99 else min(s.frm+time.dt*s.fp,58.999)
+		_core.incr_frm(s,58,s.fp)
 		s.texture=rnf+f'{int(s.frm)}.png'
 		if LC.ACTOR.warped and LC.ACTOR.indoor <= 0:
 			s.visible=True

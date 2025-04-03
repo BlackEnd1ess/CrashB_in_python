@@ -50,7 +50,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(35,4.3,61)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(35,5,61)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
@@ -120,26 +120,21 @@ class CrashB(Entity):
 			an.run(s)
 		s.wksn=max(s.wksn-time.dt,0)
 		if s.wksn <= 0:
-			sn.footstep(self)
-			if s.is_slp:
-				s.wksn=.5
-				return
-			s.wksn=.35
+			s.wksn=.5 if s.is_slp else .35
+			sn.footstep(s)
 	def jump_typ(self,t):
 		s=self
-		grv={1:(2.6),2:(2.9),3:(3.1),4:(2.8)}
+		s.gravity={1:(2.6),2:(2.9),3:(3.1),4:(2.8)}[t]#	fall speed
 		jmh={1:s.y+.8,#		normal jump
 			2:s.y+1,#		crate jump
 			3:s.y+1.1,#		bounce jump
 			4:s.y+1.5}#		spring jump
-		s.gravity=grv[t]#	fall speed
 		s.vpos=jmh[t]#		jump heigt limit
 		s.fall_time=0
 		s.frst_lnd=True
 		s.jumping=True
 		if t == 4:
 			s.b_smash=False
-		del jmh,grv
 	def jump(self):
 		s=self
 		s.frst_lnd=True
@@ -152,7 +147,6 @@ class CrashB(Entity):
 		if s.y >= s.vpos+hgt[kt]:
 			s.space_time=0
 			s.jumping=False
-		del kt
 	def check_jump(self):
 		s=self
 		if s.landed and not (s.jumping or s.falling):
