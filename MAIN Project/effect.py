@@ -45,7 +45,7 @@ class ExclamationMark(Entity):
 		if s.lft <= 0:
 			destroy(s)
 			return
-		tv=time.dt*3
+		tv=time.dt*4
 		{0:lambda:setattr(s,'x',s.x+tv),
 		1:lambda:setattr(s,'x',s.x-tv),
 		2:lambda:setattr(s,'z',s.z+tv),

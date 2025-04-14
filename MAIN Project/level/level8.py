@@ -15,11 +15,11 @@ def map_setting():
 	LC.FOG_L_COLOR=color.black
 	LC.FOG_B_COLOR=color.black
 	LC.SKY_BG_COLOR=color.black
-	#LC.AMB_M_COLOR=color.rgb32(0,0,0)
-	LC.AMB_M_COLOR=color.rgb32(250,250,250)
-	#LC.LV_DST=(7,12)
-	LC.LV_DST=(70,120)
-	LC.BN_DST=(10,14)
+	LC.AMB_M_COLOR=color.rgb32(0,0,0)
+	#LC.AMB_M_COLOR=color.rgb32(250,250,250)
+	LC.LV_DST=(6,10)
+	#LC.LV_DST=(70,120)
+	LC.BN_DST=(3,5)
 	LC.RCX=14
 	LC.RCB=10
 	LC.RCZ=28
@@ -42,6 +42,8 @@ def load_object():
 	#skybox
 	o.ObjType_Background(ID=4,pos=(8,10,200),sca=(400,300),txa=(1,1),col=color.rgb32(50,100,100),UL=True)
 	#wall
+	dg.Boulder(pos=(6,.5,20),fldd=[(6,.5,7)])
+	
 	o.ObjType_Wall(ID=7,pos=(6,0,10),ro_y=180,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(10.5,0,6),ro_y=0,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(19,0,44),ro_y=180,sca=.5,col=color.dark_gray)
@@ -97,7 +99,7 @@ def load_object():
 	o.SnowPlatform(pos=(60.5,.5,136.5))
 	o.SnowPlatform(pos=(21.6,.8,54.7))
 	#blocks
-	o.spw_block(ID=1,p=(8.5,-.5,5.3),vx=[1,1],ro_y=180)
+	o.spw_block(ID=1,p=(8.5,-.5,5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(8,-.5,3.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(8,-.5,3),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(8,-.5,2.5),vx=[1,1],ro_y=180)
@@ -206,7 +208,9 @@ def load_crate():
 	mt.crate_row(ID=14,POS=(53.4,2.66,82.1),WAY=2,CNT=4)
 	c.place_crate(ID=14,p=(53.4,2.66+1.28,82.1))
 	mt.crate_wall(ID=1,POS=(8.7,.66,5),CNT=[1,3])
-	mt.crate_plane(ID=14,POS=(7.5,.66,8.9),CNT=[2,2])
+	
+	mt.crate_plane(ID=14,POS=(7.5,.661,8.9),CNT=[2,2])
+	
 	mt.crate_wall(ID=1,POS=(7.4,.61,16),CNT=[1,2])
 	mt.crate_block(ID=1,POS=(9.3,.61,18.3),CNT=[2,2,1])
 	mt.crate_wall(ID=1,POS=(7.6,.61,20.5),CNT=[3,1])
@@ -226,11 +230,12 @@ def load_crate():
 	c.place_crate(ID=1,p=(58.4,0.66,131.1))
 
 def load_npc():
-	n.Firefly(pos=(8,1,4.5),fldd=[(9,1,20),(17,1.75,22),(17,1.75,26),(22,3.4,26),(22,1.5,34)])
-	n.Firefly(pos=(21.7,1,37),fldd=[(21.7,2,56.5),(21.7,5,56.5),(21.7,5,59),(34,5,59)])
-	n.Firefly(pos=(34,4,64),fldd=[(34,3.5,67),(52,3,67),(52,3,78)])
-	n.Firefly(pos=(52.3,3,81),fldd=[(52.5,3,90),(51.6,3,93),(53.1,3,96),(53,2.5,102)])
-	n.Firefly(pos=(53,2,107),fldd=[(53,2,111.5),(60.5,3,111.5),(60.5,1.5,123.5),(60.5,1.5,146)])
+	n.Firefly(pos=(8,1,4.5),fldd=[(9,1,20),(17,1.75,22),(17,1.75,26),(22,3.4,26),(22,1.5,34)],spd=1)
+	n.Firefly(pos=(21.7,1,37),fldd=[(21.7,2,56.5),(21.7,5,56.5),(21.7,5,59),(34,5,59)],spd=1)
+	n.Firefly(pos=(34,4,64),fldd=[(34,3.5,67),(52,3,67),(52,3,78)],spd=1)
+	n.Firefly(pos=(52.3,3,81),fldd=[(52.5,3,90),(51.6,3,93),(53.1,3,96),(53,2.5,102)],spd=1)
+	n.Firefly(pos=(53,2,107),fldd=[(53,2,111.5),(60.5,3,111.5),(60.5,1.5,123.5),(60.5,1.5,146)],spd=1.2)
+	n.Firefly(pos=(-2.5,-36.4,U-.3),fldd=[(1,-36,U),(2,-35.3,U),(5.7,-37.3,U),(6.2,-35.3,U),(16,-35.3,U)],spd=.5)
 	#enemies
 	n.spawn(ID=4,POS=(8.2,.50,9.4),DRC=0,RNG=1)
 	n.spawn(ID=4,POS=(19.5,2,25.9),DRC=0,RNG=1)
@@ -285,31 +290,66 @@ def load_wumpa():
 	mt.wumpa_row(POS=(60.5,.8,135),CNT=4,WAY=1)
 
 def bonus_zone():
+	o.HitBox(pos=(0,-35,U+.2),sca=(80,20,.1))
 	o.ObjType_Water(ID=5,pos=(0,-38.5,0),sca=(128,32),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
 	o.ObjType_Wall(ID=7,pos=(0,-39,2),ro_y=-90,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(12,-39,2),ro_y=-90,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(-1,-38,4),ro_y=-90,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(11,-38,4),ro_y=-90,sca=.5,col=color.dark_gray)
 	#blocks
-	scd=(.5,.5,.2)
-	fe=.00125
-	o.spw_block(ID=1,p=(-1,-38-fe,U),vx=[2,1],ro_y=180,sca=scd)
-	o.spw_block(ID=1,p=(1,-37.5-fe,U),vx=[1,1],ro_y=180,sca=scd)
-	o.spw_block(ID=1,p=(2,-37-fe,U),vx=[1,1],ro_y=180,sca=scd)
-	o.spw_block(ID=1,p=(2,-39-fe,U),vx=[6,1],ro_y=180,sca=scd)
-	o.spw_block(ID=1,p=(7,-37-fe,U),vx=[3,1],ro_y=180,sca=scd)
-	o.spw_block(ID=1,p=(11,-37-fe,U),vx=[1,1],ro_y=180,sca=scd)
-	o.spw_block(ID=1,p=(13,-37-fe,U),vx=[4,1],ro_y=180,sca=scd)
-	del scd,fe
-	#crates
-	c.place_crate(ID=9,p=(-1.0,-36.84,U),m=181)
-	mt.crate_row(ID=13,POS=(3.2,-37.84,U),m=181,l=14,CNT=6,WAY=2)
-	mt.crate_row(ID=13,POS=(3.7,-37.84,U),m=181,l=1,CNT=5,WAY=2)
-	mt.crate_row(ID=13,POS=(4.2,-37.84,U),m=181,l=14,CNT=4,WAY=2)
-	mt.crate_row(ID=13,POS=(4.7,-37.84,U),m=181,l=2,CNT=3,WAY=2)
-	mt.crate_row(ID=13,POS=(5.2,-37.84,U),m=181,l=14,CNT=2,WAY=2)
-	mt.crate_row(ID=13,POS=(5.7,-37.84,U),m=181,l=3,CNT=1,WAY=2)
-	c.place_crate(ID=8,p=(6.2,-37.4,U))
-	mt.crate_row(ID=4,POS=(6.2,-35,U),CNT=2,WAY=2)
+	o.spw_block(ID=1,p=(-2.5,-38,U),vx=[1,1],ro_y=180)
+	o.spw_block(ID=1,p=(-1,-38,U),vx=[2,1],ro_y=180)
+	o.spw_block(ID=1,p=(1,-37.5,U),vx=[1,1],ro_y=180)
+	o.spw_block(ID=1,p=(2,-37,U),vx=[1,1],ro_y=180)
+	o.spw_block(ID=1,p=(2,-39,U),vx=[6,1],ro_y=180)
+	o.spw_block(ID=1,p=(7,-37,U),vx=[3,1],ro_y=180)
+	o.spw_block(ID=1,p=(11,-37,U),vx=[1,1],ro_y=180)
+	o.spw_block(ID=1,p=(13,-37,U),vx=[4,1],ro_y=180)
+	#ice shards
+	o.ObjType_Deco(ID=4,pos=(-.3,-37,U+.4),sca=.5,rot=(-90,-90,0),col=color.azure,UL=True)
+	o.ObjType_Deco(ID=4,pos=(1.5,-36.5,U+.4),sca=.5,rot=(-90,-90,0),col=color.azure,UL=True)
+	o.ObjType_Deco(ID=4,pos=(3.2,-38,U+.4),sca=.5,rot=(-90,-90,0),col=color.azure,UL=True)
+	o.ObjType_Deco(ID=4,pos=(4.4,-38,U+.4),sca=.5,rot=(-90,-90,0),col=color.azure,UL=True)
+	o.ObjType_Deco(ID=4,pos=(5.6,-38,U+.4),sca=.5,rot=(-90,-90,0),col=color.azure,UL=True)
+	o.ObjType_Deco(ID=4,pos=(7.3,-36,U+.4),sca=.5,rot=(-90,-90,0),col=color.azure,UL=True)
+	o.ObjType_Deco(ID=4,pos=(8.6,-36,U+.4),sca=.5,rot=(-90,-90,0),col=color.azure,UL=True)
+	o.ObjType_Deco(ID=4,pos=(11,-36,U+.4),sca=.3,rot=(-90,-90,0),col=color.azure,UL=True)
+	o.ObjType_Deco(ID=4,pos=(13.8,-36,U+.4),sca=.5,rot=(-90,-90,0),col=color.azure,UL=True)
+	o.ObjType_Deco(ID=4,pos=(15.2,-36,U+.4),sca=.5,rot=(-90,-90,0),col=color.azure,UL=True)
+	#wumpa fruits
+	mt.wumpa_row(POS=(-.2,-36.80,-3.2),CNT=2,WAY=0)
+	mt.wumpa_row(POS=(.7,-36.30,-3.2),CNT=2,WAY=0)
+	mt.wumpa_row(POS=(1.7,-35.80,-3.2),CNT=2,WAY=0)
+	mt.wumpa_row(POS=(7.7,-35.80,-3.2),CNT=5,WAY=0)
+	mt.wumpa_row(POS=(3.2,-35.88,-3.2),CNT=3,WAY=2)
+	mt.wumpa_row(POS=(4.2,-36.52,-3.2),CNT=3,WAY=2)
+	mt.wumpa_row(POS=(5.2,-37.16,-3.2),CNT=3,WAY=2)
+	mt.wumpa_row(POS=(6.2,-36.88,-3.2),CNT=3,WAY=2)
+	mt.wumpa_row(POS=(11.0,-35.48,-3.2),CNT=3,WAY=2)
+	mt.wumpa_row(POS=(16.0,-35.80,-3.2),CNT=3,WAY=2)
+	#crate
+	j=.2
+	c.place_crate(ID=9,p=(-1,-36.84,U-j),m=181)
+	mt.crate_row(ID=13,POS=(3.2,-37.84,U-j),m=181,l=1,CNT=6,WAY=2)
+	mt.crate_row(ID=13,POS=(3.7,-37.84,U-j),m=181,l=1,CNT=5,WAY=2)
+	mt.crate_row(ID=13,POS=(4.2,-37.84,U-j),m=181,l=14,CNT=4,WAY=2)
+	mt.crate_row(ID=13,POS=(4.7,-37.84,U-j),m=181,l=2,CNT=3,WAY=2)
+	mt.crate_row(ID=13,POS=(5.2,-37.84,U-j),m=181,l=1,CNT=2,WAY=2)
+	mt.crate_row(ID=13,POS=(5.7,-37.84,U-j),m=181,l=3,CNT=1,WAY=2)
+	c.place_crate(ID=8,p=(6.2,-37.4,U-j))
+	mt.crate_row(ID=4,POS=(6.2,-35,U-j),CNT=2,WAY=2)
+	c.place_crate(ID=3,p=(7.2,-36+.16,U-j))
+	c.place_crate(ID=11,p=(7.2,-34,U-j))
+	c.place_crate(ID=2,p=(7.2,-34+.32,U-j))
+	c.place_crate(ID=14,p=(11,-36+.16,U-j))
+	mt.crate_row(ID=1,POS=(11,-34,U-j),CNT=4,WAY=2)
+	mt.crate_row(ID=1,POS=(10,-36.7,U-j),CNT=2,WAY=2)
+	mt.crate_row(ID=2,POS=(12,-36.7,U-j),CNT=2,WAY=2)
+	c.place_crate(ID=12,p=(13.3,-36+.16,U-j))
+	c.place_crate(ID=12,p=(14.3,-36+.16,U-j))
+	c.place_crate(ID=1,p=(14.3,-34.5,U-j))
+	c.place_crate(ID=12,p=(14.3,-34.5+.32,U-j))
+	c.place_crate(ID=12,p=(15.3,-36+.16,U-j))
 	#
 	o.BonusPlatform(pos=(17.2,-35.8,U))
+	del j

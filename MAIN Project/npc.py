@@ -761,10 +761,12 @@ class Hippo(Entity):
 ffly=npf+'firefly/0'
 tfd=.01
 class Firefly(Entity):
-	def __init__(self,pos,fldd):
+	def __init__(self,pos,fldd,spd):
 		s=self
 		super().__init__(model=ffly+'.ply',texture=ffly+'.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False)
 		s.lgt=PointLight(position=s.position,scale=.2,color=color.rgb32(255,200,180),enabled=False)
+		s.is_bonus=bool(pos[1] < -10)
+		s.follow_speed=spd
 		s.spawn_pos=pos
 		s.ffly_drc=fldd
 		s.active=False
@@ -772,7 +774,7 @@ class Firefly(Entity):
 		s.way_index=0
 		s.mov_range=1
 		s.angle=0
-		del pos,fldd,s
+		del pos,fldd,spd,s
 	def reset(self):
 		s=self
 		s.position=s.spawn_pos
@@ -789,10 +791,16 @@ class Firefly(Entity):
 		cc.circle_move_xz(s)
 		s.mov_range=.3+abs(sin(time.time()))*.4
 		s.y=s.spawn_pos[1]+sin(time.time()*3)*.2
-		if (st.bonus_round and s.y > -10) or distance(s,LC.ACTOR) > 16:
+		if (st.bonus_round and s.y > -10 and not s.is_bonus) or distance(s,LC.ACTOR) > 16:
 			s.lgt.color=color.black
 			return
 		s.lgt.color=color.rgb32(255,200,180)
+	def rotate_to_target(self):
+		s=self
+		tg=Vec3(s.ffly_drc[s.way_index])
+		drc=(tg-s.position).normalized()
+		tgr=math.degrees(math.atan2(-drc.x,-drc.z))
+		s.rotation_y=lerp(s.rotation_y,tgr,time.dt*8)
 	def update(self):
 		if st.gproc():
 			return
@@ -804,6 +812,8 @@ class Firefly(Entity):
 		if distance(s,LC.ACTOR) < 1:
 			s.active=True
 		if s.active:
-			cc.npc_pathfinding(s)
+			if len(s.ffly_drc) > 0:
+				cc.npc_pathfinding(s)
+				s.rotate_to_target()
 			return
 		s.m_idle()

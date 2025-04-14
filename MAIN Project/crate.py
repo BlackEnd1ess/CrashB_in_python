@@ -72,7 +72,6 @@ def spawn_ico(c):
 	sn.crate_audio(ID=12)
 	sn.crate_audio(ID=1)
 	for exm in range(5):
-		print(exm)
 		effect.ExclamationMark(pos=c.position,ID=exm)
 
 def explosion(c):
@@ -153,11 +152,11 @@ class Bounce(Entity):
 		s.is_bounc=True
 		if s.b_cnt > 4 or s.lf_time <= 0:
 			s.empty_destroy()
-			return
 	def destroy(self):
 		s=self
 		if s.lf_time > 0 and s.b_cnt < 5:
-			s.bnc_event()
+			if not LC.ACTOR.b_smash:
+				s.bnc_event()
 			return
 		s.empty_destroy()
 	def update(self):

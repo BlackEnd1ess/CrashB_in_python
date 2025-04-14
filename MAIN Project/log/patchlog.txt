@@ -82,3 +82,8 @@
 #03.04.2025
 - Switch Crates spawns now 5 Icons, where floats in 5 different Directions
 - changed Code structure, fixxed a few Errors
+
+#14.04.2025
+- finished Level 8 main structure, bonus level
+- Firefly rotation follow the target position
+- New Danger: Boulder, where follow your path directions.

@@ -33,6 +33,8 @@ class WumpaFruit(Entity):
 		s.c_purge=c_prg
 		s.spawn_pos=p
 		s.frm=0
+		if st.level_index == 8 and p[1] < -10:
+			s.unlit=False
 		del p,c_prg,s
 	def destroy(self):
 		s=self
@@ -94,6 +96,8 @@ class GemStone(Entity):
 			LC.C_GEM=s
 			if (c == 5 and st.level_index == 3):
 				ui.TrialTimer(t=90)
+		if st.level_index == 8:
+			s.unlit=False
 		del ge,pos,c,s
 	def gem_visual(self):
 		##color

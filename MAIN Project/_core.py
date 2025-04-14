@@ -148,6 +148,8 @@ def c_smash(c):
 			if is_enemie(sw) and sw.vnum != 13:
 				sw.is_purge=True
 def p_bounce(m):
+	if m.vnum == 8:
+		LC.ACTOR.b_smash=False
 	LC.ACTOR.is_flip=False
 	LC.ACTOR.jump_typ(t=4)
 	m.is_bounc=True
@@ -514,9 +516,9 @@ def show_status_ui():
 ## crate actions
 def crate_set_val(cR,Cpos,Cpse):
 	cR.idf='cr'
-	cR.texture='res/crate/'+str(cR.vnum)+'.tga'
+	cR.texture=f'res/crate/{cR.vnum}.tga'
 	if cR.vnum == 15:
-		cR.texture='res/crate/crate_t'+str(cR.time_stop)+'.tga'
+		cR.texture=f'res/crate/crate_t{cR.time_stop}.tga'
 	if cR.vnum in {9,10}:
 		cR.org_tex=cR.texture
 	cR.spawn_pos=Cpos
@@ -688,7 +690,7 @@ def bash_enemie(e,h):
 def npc_pathfinding(m):
 	if m.way_index < len(m.ffly_drc):
 		ddrc=(Vec3(m.ffly_drc[m.way_index])-m.position).normalized()
-		m.position+=ddrc*time.dt*1.2
+		m.position+=ddrc*(time.dt*m.follow_speed)
 		if distance(Vec3(m.position),m.ffly_drc[m.way_index]) < .3:
 			m.way_index+=1
 		return

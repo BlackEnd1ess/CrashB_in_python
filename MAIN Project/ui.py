@@ -847,13 +847,11 @@ class TrialTimer(Entity):
 
 class CreditText(Entity):
 	def __init__(self,t,d):
-		s=self
 		super().__init__()
-		s.ctext=Text(t,font=_fnt,scale=2.5,parent=CU,color=color.orange,position=(-.7,-.6,-.1))
-		s.wait=True
-		invoke(lambda:setattr(s,'wait',False),delay=d/2)
-		del t,s,d
+		self.ctext=Text(t,font=_fnt,scale=2.5,parent=CU,color=color.orange,position=(-.7,-.6,-.1))
+		self.wait=True
+		invoke(lambda:setattr(self,'wait',False),delay=d/2)
+		del t,d
 	def update(self):
-		s=self
-		if not s.wait:
-			s.ctext.y+=time.dt/10
+		if not self.wait:
+			self.ctext.y+=time.dt/10

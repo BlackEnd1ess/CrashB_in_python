@@ -14,9 +14,9 @@ def pos_info(c):
 	sym=f"{c.y:.2f}"#npc
 	sz=f"{c.z:.1f}"
 	#print(f"mt.crate_block(ID={random.randint(1,2)},POS=({sx},{syc},{sz}),CNT=[2,2,2])")
-	print(f"c.place_crate(ID=12,p=({sx},{syc},{sz}))")
+	#print(f"c.place_crate(ID=12,p=({sx},{syc},{sz}))")
 	#print(f"mt.crate_row(ID=2,POS=({sx},{syc},{sz}),WAY=2,CNT=1)")
-	#print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=0)")
+	print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=1)")
 
 #player attr info
 class PlayerDBG(Entity):

@@ -1,5 +1,5 @@
 ## BUGS/ERORRS
-- bonus level 8 height error
+- l5 bonus level: losse platform middle height
 
 #LEVEL EDITOR
 - level editor environment settings with Icon
@@ -7,5 +7,5 @@
 - level editor bonus maker, for scene (pos_y < -20)
 
 ##TODO
-- level 8, bonus zone, wumpa, crate, gem zone, boulder
+- level 8, gem zone, boulder
 - boulder animation + pathfinding + respawn/reset

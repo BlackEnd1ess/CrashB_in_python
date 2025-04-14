@@ -518,7 +518,7 @@ lpp=omf+'l5/loose_ptf/'
 class LoosePlatform(Entity):
 	def __init__(self,pos,t):
 		s=self
-		super().__init__(model=lpp+f'{t}/'+'lpf.obj',texture=lpp+f'{t}/'+'0.png',name='loos',scale=.01/15,position=pos,rotation_y=90,double_sided=True)
+		super().__init__(model=lpp+f'{t}/lpf.obj',texture=lpp+f'{t}/0.png',name='loos',scale=.01/15,position=pos,rotation_y=90,double_sided=True)
 		s.collider=BoxCollider(s,center=Vec3(0,-.5,0),size=(100*10,100,100*10))
 		s.active=False
 		s.typ=t
@@ -537,6 +537,7 @@ class LoosePlatform(Entity):
 		an.CollapseFloor(t=s.typ,pos=s.position)
 		invoke(s.collapse,delay=1)
 	def pl_touch(self):
+		return
 		s=self
 		if not s.active:
 			s.active=True
@@ -860,6 +861,9 @@ class IndoorZone(Entity):## disable rain
 class HitBox(Entity):
 	def __init__(self,pos,sca):
 		super().__init__(model=wfc,position=pos,scale=sca,collider=b,name='htbx',visible=False)
+		##visible for development
+		#self.model='cube'
+		#self.visible=True
 		del pos,sca
 
 class LightArea(SpotLight):

@@ -588,13 +588,19 @@ class FallingZone(Entity):## falling
 
 bldr=omf+'l8/boulder/boulder'
 class Boulder(Entity):
-	def __init__(self,pos):
-		super().__init__(model=bldr+'.ply',texture=bldr+'.png',position=pos,scale=.01,rotation_x=-90)
-		self.active=False
-		del pos
+	def __init__(self,pos,fldd):
+		s=self
+		super().__init__(model=bldr+'.ply',texture=bldr+'.png',position=pos,scale=.002,rotation_x=-90,unlit=False)
+		s.follow_speed=4
+		s.ffly_drc=fldd
+		s.spawn_pos=pos
+		s.active=True
+		s.way_index=0
+		del s,pos,fldd
 	def update(self):
 		if st.gproc():
 			return
 		s=self
 		if s.active:
-			s.rotation_x+=time.dt
+			s.rotation_x+=time.dt*60
+			cc.npc_pathfinding(s)
