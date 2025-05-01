@@ -1,4 +1,4 @@
-import objects,map_tools,crate,npc,item,sys,os,_loc,status,danger
+import objects,map_tools,crate,npc,item,sys,os,_loc,status,danger,settings
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 from ursina import *
 
@@ -15,10 +15,10 @@ def map_setting():
 	LC.FOG_L_COLOR=color.black
 	LC.FOG_B_COLOR=color.black
 	LC.SKY_BG_COLOR=color.black
-	LC.AMB_M_COLOR=color.rgb32(0,0,0)
-	#LC.AMB_M_COLOR=color.rgb32(250,250,250)
-	LC.LV_DST=(6,10)
-	#LC.LV_DST=(70,120)
+	#LC.AMB_M_COLOR=color.rgb32(0,0,0)
+	LC.AMB_M_COLOR=color.rgb32(250,250,250)
+	#LC.LV_DST=(6,10)
+	LC.LV_DST=(70,120)
 	LC.BN_DST=(3,5)
 	LC.RCX=14
 	LC.RCB=10
@@ -28,6 +28,8 @@ def map_setting():
 
 def start_load():
 	bonus_zone()
+	if 3 in st.COLOR_GEM or settings.debg:
+		gem_zone()
 	load_crate()
 	load_object()
 	load_wumpa()
@@ -42,8 +44,6 @@ def load_object():
 	#skybox
 	o.ObjType_Background(ID=4,pos=(8,10,200),sca=(400,300),txa=(1,1),col=color.rgb32(50,100,100),UL=True)
 	#wall
-	dg.Boulder(pos=(6,.5,20),fldd=[(6,.5,7)])
-	
 	o.ObjType_Wall(ID=7,pos=(6,0,10),ro_y=180,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(10.5,0,6),ro_y=0,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(19,0,44),ro_y=180,sca=.5,col=color.dark_gray)
@@ -353,3 +353,19 @@ def bonus_zone():
 	#
 	o.BonusPlatform(pos=(17.2,-35.8,U))
 	del j
+
+def gem_zone():
+	dg.Boulder(pos=(200,-1.5,20),fldd=[(200,-1.5,7)])
+	o.spw_block(ID=1,p=(200,-3,-3),vx=[1,1],ro_y=180,sca=(2,.5,8))
+	
+	o.spw_block(ID=1,p=(199,-3.4,-11.5),vx=[1,1],ro_y=180)
+	o.spw_block(ID=1,p=(199.4,-3.6,-12.5),vx=[1,1],ro_y=180)
+	o.spw_block(ID=1,p=(199.8,-4,-13.5),vx=[1,1],ro_y=180)
+	o.spw_block(ID=1,p=(199.8,-4,-16),vx=[1,3],ro_y=180)
+	
+	o.spw_block(ID=1,p=(200,-4,-26),vx=[1,1],ro_y=180,sca=(2,.5,8))
+	o.spw_block(ID=1,p=(200.5,-4,-37),vx=[1,3],ro_y=180)
+	#corridors -> trigger boulder
+	o.ObjType_Corridor(ID=0,pos=(200,-2,-8))
+	#ice shards
+	o.ObjType_Deco(ID=4,pos=(8,0,22.2),sca=1,rot=(-90,-90,0),col=color.azure,UL=True)

@@ -814,6 +814,7 @@ class Firefly(Entity):
 		if s.active:
 			if len(s.ffly_drc) > 0:
 				cc.npc_pathfinding(s)
-				s.rotate_to_target()
+				if s.way_index < len(s.ffly_drc):
+					s.rotate_to_target()
 			return
 		s.m_idle()

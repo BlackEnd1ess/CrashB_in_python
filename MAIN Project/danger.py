@@ -597,10 +597,27 @@ class Boulder(Entity):
 		s.active=True
 		s.way_index=0
 		del s,pos,fldd
+	def reset_state(self):
+		s=self
+		s.position=s.spawn_pos
+		s.way_index=0
 	def update(self):
 		if st.gproc():
 			return
 		s=self
 		if s.active:
-			s.rotation_x+=time.dt*60
+			s.rotation_x-=time.dt*60
 			cc.npc_pathfinding(s)
+			lk=s.intersects()
+			if lk.entity == LC.ACTOR:
+				s.active=False
+				s.reset_state()
+				cc.dth_event(LC.ACTOR,rsn=0)
+				return
+			if cc.is_crate(lk.entity):
+				if lk.entity.vnum in {3,11}:
+					lk.entity.empty_destroy()
+				else:
+					lk.entity.destroy()
+			if cc.is_enemie(lk.entity):
+				lk.entity.is_purge=True

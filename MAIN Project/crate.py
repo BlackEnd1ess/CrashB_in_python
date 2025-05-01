@@ -346,7 +346,6 @@ class TNT(Entity):
 			s.aud.fade_out()
 		s.countdown=0
 		destroy_event(s)
-		del s
 	def update(self):
 		s=self
 		if st.gproc():

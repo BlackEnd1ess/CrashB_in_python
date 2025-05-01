@@ -190,6 +190,9 @@ class ObjType_Corridor(Entity):
 			HitBox(sca=(3,3,2.2),pos=(s.x-2.3,s.y,s.z))
 			HitBox(sca=(3,3,2.2),pos=(s.x,s.y+3,s.z))
 			IndoorZone(pos=(s.x,s.y+1.6,s.z),sca=3)
+			if st.level_index == 8:
+				s.color=color.rgb32(0,100,160)
+				s.unlit=False
 			return
 		if s.vnum == 1:
 			s.model=wfc
@@ -537,7 +540,6 @@ class LoosePlatform(Entity):
 		an.CollapseFloor(t=s.typ,pos=s.position)
 		invoke(s.collapse,delay=1)
 	def pl_touch(self):
-		return
 		s=self
 		if not s.active:
 			s.active=True

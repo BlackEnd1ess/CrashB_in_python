@@ -1,5 +1,5 @@
 ## BUGS/ERORRS
-- l5 bonus level: losse platform middle height
+- nitro switch should destroy crates nearby, even there disabled.
 
 #LEVEL EDITOR
 - level editor environment settings with Icon
@@ -8,4 +8,4 @@
 
 ##TODO
 - level 8, gem zone, boulder
-- boulder animation + pathfinding + respawn/reset
+- boulder

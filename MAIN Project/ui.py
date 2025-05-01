@@ -694,12 +694,11 @@ class PauseMenu(Entity):
 		del mn,s
 	def select_option(self):
 		s=self
-		for ot in (s.music_vol,s.sound_vol):
+		for ot in {s.music_vol,s.sound_vol}:
 			if s.sel_opt == ot.tag:
 				text_blink(M=s,t=ot)
 			else:
 				ot.color=s.font_color
-		del ot,s
 	def refr_ico(self):
 		s=self
 		cc.incr_frm(s,89,30)
@@ -721,7 +720,13 @@ class PauseMenu(Entity):
 			if s.blink_time <= 0:
 				{True:lambda:s.select_option(),False:lambda:s.select_menu()}[s.opt_menu]()
 			return
-		s.opt_menu=False
+		s.music_vol.visible=st.pause
+		s.sound_vol.visible=st.pause
+		s.opt_exit.visible=st.pause
+		s.select_0.visible=st.pause
+		s.select_1.visible=st.pause
+		s.select_2.visible=st.pause
+		s.opt_menu=st.pause
 
 ## Gem/Crytal
 class CollectedGem(Entity):

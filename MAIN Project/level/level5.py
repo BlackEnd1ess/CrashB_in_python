@@ -315,7 +315,7 @@ def bonus_zone():
 	o.spw_block(ID=4,ro_y=-90,p=(4.5,-36,U),vx=[3,1])
 	o.spw_block(ID=4,ro_y=-90,p=(6.75,-35.5,U),vx=[4,1])
 	o.LoosePlatform(pos=(10,-35.5,U),t=1)
-	o.LoosePlatform(pos=(11.5,-35.8,U),t=1)
+	o.LoosePlatform(pos=(11.5,-35.81,U),t=1)
 	o.LoosePlatform(pos=(13,-36.1,U),t=1)
 	o.spw_block(ID=4,ro_y=-90,p=(14,-36.2,U),vx=[8,1])
 	o.spw_block(ID=4,ro_y=-90,p=(21,-36.2,U),vx=[1,1])
