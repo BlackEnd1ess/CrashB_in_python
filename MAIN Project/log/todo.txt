@@ -7,5 +7,6 @@
 - level editor bonus maker, for scene (pos_y < -20)
 
 ##TODO
+- Pause UI, gem animation (small/big switch like orginal)
 - level 8, gem zone, boulder
 - boulder

@@ -60,6 +60,82 @@ class ObjType_Block(Entity):
 			s.matr='metal'
 		del pos,sca,ro_y,typ,ID,bl_c,s
 
+
+##platforms with dyncamic move func
+mpt={0:'l1/p_moss/moss',
+	1:'l2/snow_platform/snow_platform',
+	2:'l7/space_ptf/space_ptf'}
+class ObjType_Movable(Entity):
+	def __init__(self,pos,ptm,ID,pts=.5,ptw=3,rng=1,tu=0):
+		s=self
+		s.vnum=ID
+		super().__init__(model=wfc,collider=b,position=pos,scale=(.75,1,.75),name='mptf',visible=False)
+		s.opt_model=Entity(model=omf+mpt[ID]+'.ply',texture=omf+mpt[ID]+'.png',position=(pos[0],pos[1]+(.46 if ID == 0 else +.5),pos[2]),rotation_x=-90,scale=(.0075 if ID == 1 else .001))
+		s.spawn_pos=pos
+		s.ptf_speed=pts
+		s.ptf_range=rng
+		s.ptf_wait=ptw if pts != 1 else 0
+		s.is_sfc=False
+		s.ptf_slp=ptw
+		s.ptf_mv=ptm
+		s.turn=tu
+		s.mv_drc='z' if ptm == 3 else 'x'
+		if ID == 2:
+			scale=.1/120
+			s.matr='metal'
+		del pos,ptm,ID,pts,ptw,rng,tu,s
+	def ptf_move(self):
+		s=self
+		pdv={2:s.spawn_pos[0],3:s.spawn_pos[2]}
+		kv=getattr(s,s.mv_drc)
+		{0:lambda:setattr(s,s.mv_drc,kv+time.dt*s.ptf_speed),1:lambda:setattr(s,s.mv_drc,kv-time.dt*s.ptf_speed)}[s.turn]()
+		if (s.turn == 0 and kv >= pdv[s.ptf_mv]+s.ptf_range):
+			s.ptf_wait=s.ptf_slp
+			s.turn=1
+		if (s.turn == 1 and kv <= pdv[s.ptf_mv]-s.ptf_range):
+			s.ptf_wait=s.ptf_slp
+			s.turn=0
+		del kv,pdv
+	def mv_player(self):
+		if self.ptf_mv < 2:
+			return
+		LC.ACTOR.position=(self.x,LC.ACTOR.y,self.z)
+	def dive(self):
+		s=self
+		if s.is_sfc:
+			s.y-=time.dt*4
+			if s.y <= s.spawn_pos[1]-.5:
+				s.y=s.spawn_pos[1]-.5
+				s.is_sfc=False
+				s.ptf_wait=s.ptf_slp
+				if distance(s,LC.ACTOR) < 6 and s.vnum == 0:
+					sn.obj_audio(ID=6)
+			return
+		s.y+=time.dt*4
+		if s.y >= s.spawn_pos[1]:
+			s.y=s.spawn_pos[1]
+			s.is_sfc=True
+			s.ptf_wait=s.ptf_slp
+			if distance(s,LC.ACTOR) < 6 and s.vnum == 0:
+				sn.pc_audio(ID=10)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if s.ptf_mv == 1:
+			s.opt_model.y=s.y+.46 if s.vnum == 0 else s.y+.5
+			s.ptf_wait=max(s.ptf_wait-time.dt,0)
+			if s.ptf_wait <= 0:
+				s.dive()
+			return
+		if s.ptf_mv > 1:
+			s.opt_model.x=s.x
+			s.opt_model.z=s.z
+			s.ptf_wait=max(s.ptf_wait-time.dt,0)
+			if s.ptf_wait <= 0:
+				s.ptf_move()
+
+
 ###########################
 ##level side wall scenes ##
 def spawn_ice_wall(pos,cnt,d):
@@ -98,6 +174,7 @@ class ObjType_Scene(Entity):
 		s.model=omf+sds[s.vnum]+'.ply'
 		s.rotation_x=-90
 
+
 ######################
 ##level front walls ##
 smd={0:'l1/turtle_wall/turtle_wall',
@@ -122,6 +199,7 @@ class ObjType_Wall(Entity):
 			if ro_y in {180,0}:
 				s.collider=BoxCollider(s,center=Vec3(-1,-4,5),size=Vec3(2,24,20))
 		del ID,pos,sca,ro_y,col
+
 
 ######################
 ##level decorations ##
@@ -171,6 +249,7 @@ class ObjType_Deco(Entity):
 			return
 		s.model=omf+dms[s.vnum]+'.ply'
 
+
 ####################
 ##level corridors ##
 cor={0:'l1/turtle_corridor/turtle_corridor',
@@ -206,6 +285,7 @@ class ObjType_Corridor(Entity):
 				HitBox(pos=pvb,sca=(.5,2,3))
 			del pvb
 			IndoorZone(pos=(s.x,s.y+2.55,s.z),sca=3)
+
 
 #################
 ##level Grounds##
@@ -281,6 +361,7 @@ class ObjType_Floor(Entity):
 			cdl[s.vnum]()
 		del cdl
 
+
 #####################
 ##level background ##
 bpb={0:'warp_room.png',
@@ -314,6 +395,7 @@ class ObjType_Background(Entity):
 			return
 		if s.y != s.spawn_y:
 			s.y=s.spawn_y
+
 
 ################
 ##level water ##
@@ -369,61 +451,6 @@ class ObjType_Water(Entity):
 				return
 			cc.incr_frm(s,s.frames,s.speed)
 
-#####################
-## level 1 objects ##
-MVP=omf+'l1/p_moss/moss'
-class MossPlatform(Entity):
-	def __init__(self,p,ptm,pts=.5,ptw=3):
-		s=self
-		super().__init__(model=MVP+'.obj',name='mptf',texture=MVP+'.png',scale=.0085,position=(p[0],p[1]+.475,p[2]),double_sided=True,collider=b)
-		s.spawn_pos=p
-		s.slp=ptw
-		s.ptm=ptm
-		s.pts=pts
-		s.turn=0
-		s.ptw=0
-		s.is_sfc=ptm == 1
-		s.drc='z' if ptm == 3 else 'x'
-		del p,ptm,pts,ptw,s
-	def ptf_move(self,di):
-		s=self
-		pdv={2:s.spawn_pos[0],3:s.spawn_pos[2]}
-		kv=getattr(s,di)
-		pmd={0:lambda:setattr(s,di,kv+time.dt*s.pts),1:lambda:setattr(s,di,kv-time.dt*s.pts)}
-		pmd[s.turn]()
-		if (s.turn == 0 and kv >= pdv[s.ptm]+1):
-			s.turn=1
-		if (s.turn == 1 and kv <= pdv[s.ptm]-1):
-			s.turn=0
-		del pmd,kv,pdv
-	def mv_player(self):
-		s=self
-		if s.ptm < 2:
-			return
-		LC.ACTOR.x=s.x
-		LC.ACTOR.z=s.z
-	def dive(self):
-		s=self
-		if s.is_sfc:
-			s.is_sfc=False
-			s.animate_y(s.y-1,duration=.3)
-			if distance(s,LC.ACTOR) < 6:
-				sn.obj_audio(ID=6)
-			return
-		s.is_sfc=True
-		s.animate_y(s.spawn_pos[1],duration=.3)
-	def update(self):
-		if st.gproc():
-			return
-		s=self
-		if s.ptm == 1:
-			s.ptw=max(s.ptw-time.dt,0)
-			if s.ptw <= 0:
-				s.ptw=s.slp
-				s.dive()
-			return
-		if s.ptm > 1:
-			s.ptf_move(di=s.drc)
 
 #####################
 ## level 2 objects ##
@@ -473,16 +500,6 @@ class Ropes(Entity):
 		s.dup=Entity(model='cube',scale=s.scale,name=s.name,position=(s.x+.95,s.y,s.z),texture=rpt,texture_scale=(1,le*8),origin_z=s.origin_z)
 		del pos,le,s
 
-snPL=omf+'l2/snow_platform/snow_platform'
-class SnowPlatform(Entity):
-	def __init__(self,pos):
-		s=self
-		super().__init__(model=snPL+'.ply',texture=snPL+'.png',name='sngg',position=pos,scale=.0075,rotation_x=-90)
-		s.co=Entity(model=wfc,scale=(.85,1,.85),name=s.name,position=(s.x,s.y-.5,s.z),collider=b,visible=False)
-		if st.level_index == 8:
-			s.color=color.dark_gray
-			s.unlit=False
-		del pos,s
 
 #####################
 ## level 4 objects ##
@@ -515,6 +532,7 @@ class SwimPlatform(Entity):##box collider
 				if s.f_time >= .5:
 					s.sink()
 
+
 #####################
 ## level 5 objects ##
 lpp=omf+'l5/loose_ptf/'
@@ -544,6 +562,7 @@ class LoosePlatform(Entity):
 		if not s.active:
 			s.active=True
 			s.action()
+
 
 #####################
 ## level 7 objects ##
@@ -589,59 +608,6 @@ class PistonPlatform(Entity):
 				return
 			s.mv_up()
 
-llpt=omf+'l7/space_ptf/space_ptf'
-class LabPlatform(Entity):
-	def __init__(self,pos,drc,spd,rng):
-		s=self
-		super().__init__(model=llpt+'.ply',texture=llpt+'.png',name='lbbt',position=pos,scale=.1/120,rotation_x=-90,unlit=False,collider=b)
-		s.spawn_pos=pos
-		s.matr='metal'
-		s.mv_rng=rng
-		s.mv_spd=spd
-		s.direc=drc
-		s.mode=0
-		del pos,spd,drc,rng
-	def ptf_fwd(self):
-		s=self
-		kfv={0:lambda:setattr(s,'z',s.z+time.dt*s.mv_spd),1:lambda:setattr(s,'z',s.z-time.dt*s.mv_spd)}
-		kfv[s.mode]()
-		del kfv
-		if (s.mode == 0 and s.z >= s.spawn_pos[2]+s.mv_rng) or (s.mode == 1 and s.z <= s.spawn_pos[2]-s.mv_rng):
-			if s.mode == 0:
-				s.mode=1
-				return
-			s.mode=0
-	def ptf_up(self):
-		s=self
-		kfv={0:lambda:setattr(s,'y',s.y+time.dt*s.mv_spd),1:lambda:setattr(s,'y',s.y-time.dt*s.mv_spd)}
-		kfv[s.mode]()
-		del kfv
-		if (s.mode == 0 and s.y >= s.spawn_pos[1]+s.mv_rng) or (s.mode == 1 and s.y <= s.spawn_pos[1]-s.mv_rng):
-			if s.mode == 0:
-				s.mode=1
-				return
-			s.mode=0
-	def ptf_sd(self):
-		s=self
-		kfv={0:lambda:setattr(s,'x',s.x+time.dt*s.mv_spd),1:lambda:setattr(s,'x',s.x-time.dt*s.mv_spd)}
-		kfv[s.mode]()
-		del kfv
-		if (s.mode == 0 and s.x >= s.spawn_pos[0]+s.mv_rng) or (s.mode == 1 and s.x <= s.spawn_pos[0]-s.mv_rng):
-			if s.mode == 0:
-				s.mode=1
-				return
-			s.mode=0
-	def mv_player(self):
-		s=self
-		LC.ACTOR.x=s.x
-		LC.ACTOR.z=s.z
-	def update(self):
-		if st.gproc():
-			return
-		s=self
-		svd={0:lambda:s.ptf_sd(),1:lambda:s.ptf_fwd(),2:lambda:s.ptf_up()}
-		svd[s.direc]()
-		del svd
 
 ###################
 ## logic objects ##
@@ -887,7 +853,7 @@ class PseudoCrash(Entity):
 	def __init__(self):
 		s=self
 		super().__init__(model=LC.ctx+'.ply',texture=LC.ctx+'.png',scale=.1/20,rotation=(-90,30,0),position=(9,-4,0),unlit=False)
-		Entity(model=MVP+'.obj',texture=MVP+'.png',scale=.75/30,position=(s.x,s.y,s.z),double_sided=True,color=color.rgb32(170,190,180))
+		Entity(model=mpt[0]+'.ply',texture=mpt[0]+'.png',scale=.00275,position=(s.x,s.y,s.z),double_sided=True,color=color.rgb32(170,190,180),rotation_x=-90,unlit=False)
 		s.idfr=0
 	def update(self):
 		animation.idle(self)

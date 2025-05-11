@@ -87,3 +87,10 @@
 - finished Level 8 main structure, bonus level
 - Firefly rotation follow the target position
 - New Danger: Boulder, where follow your path directions.
+
+#09.05.2025
+- Updated Level 8 Gem Route
+- Added new Class for Movable Platforms (Moss/ice Platform)
+
+#11.05.2025
+- Mossplatform, SnowPlatform and Lab Platform are replaced by ObjType_Movable. this class can use ID 0-2 and are customziable with move speed, wait time, move range or no move.

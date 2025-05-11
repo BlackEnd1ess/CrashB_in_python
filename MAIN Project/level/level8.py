@@ -355,17 +355,25 @@ def bonus_zone():
 	del j
 
 def gem_zone():
+	dg.FallingZone(pos=(200,-8,0),s=(32,1,128))
 	dg.Boulder(pos=(200,-1.5,20),fldd=[(200,-1.5,7)])
+	#blocks
 	o.spw_block(ID=1,p=(200,-3,-3),vx=[1,1],ro_y=180,sca=(2,.5,8))
-	
 	o.spw_block(ID=1,p=(199,-3.4,-11.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(199.4,-3.6,-12.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(199.8,-4,-13.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(199.8,-4,-16),vx=[1,3],ro_y=180)
-	
 	o.spw_block(ID=1,p=(200,-4,-26),vx=[1,1],ro_y=180,sca=(2,.5,8))
 	o.spw_block(ID=1,p=(200.5,-4,-37),vx=[1,3],ro_y=180)
+	o.spw_block(ID=1,p=(200,-4,-46),vx=[1,1],ro_y=180,sca=(2,.5,8))
+	o.spw_block(ID=1,p=(200,-5,-56),vx=[1,1],ro_y=180,sca=(2,.5,6))
+	o.spw_block(ID=1,p=(200,-5,-78.5),vx=[1,1],ro_y=180,sca=(2,.5,6))
+	#ice floors
+	o.multi_ice_floor(pos=(200.6,-5,-71.5),cnt=[1,10])
+	
+	
 	#corridors -> trigger boulder
 	o.ObjType_Corridor(ID=0,pos=(200,-2,-8))
+	o.ObjType_Corridor(ID=0,pos=(200,-3,-49.5))
 	#ice shards
 	o.ObjType_Deco(ID=4,pos=(8,0,22.2),sca=1,rot=(-90,-90,0),col=color.azure,UL=True)

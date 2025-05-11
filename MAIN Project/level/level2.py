@@ -160,7 +160,7 @@ def load_object():
 	#ptf object
 	for ptf1 in range(4):
 		for ptf2 in range(3):
-			o.SnowPlatform(pos=(34+ptf1*1.5,5.8,27+ptf2*1.5))
+			o.ObjType_Movable(ID=1,pos=(34+ptf1*1.5,5.3,27+ptf2*1.5),ptm=0)
 	del ptf1,ptf2
 	#walls
 	snz=3
@@ -174,7 +174,7 @@ def load_object():
 	for sna in range(2):
 		o.ObjType_Wall(ID=1,pos=(20+sna*5.4,5,28),sca=.02,ro_y=90)
 		o.ObjType_Wall(ID=1,pos=(20+sna*5.4,8.2,28),sca=.02,ro_y=90)
-	del sna
+	del sna,snz
 	o.EndRoom(pos=(43,8,44),c=color.rgb32(160,160,180))
 def load_crate():
 	h1=.75+.16

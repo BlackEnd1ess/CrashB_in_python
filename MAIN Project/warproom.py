@@ -24,7 +24,6 @@ class BonusRoomEntry(Entity):
 			mtt='WARP ROOM E1 - F1'
 		s.desc_w=Text(mtt,font=fn,scale=2,position=(-.55,-.45,0),color=color.magenta,parent=cu)
 		s.tme=.3
-		del s
 	def update(self):
 		s=self
 		s.tme=max(s.tme-time.dt,0)

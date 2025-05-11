@@ -102,8 +102,8 @@ def load_object():
 	o.ObjType_Wall(ID=6,pos=(86,3.2,3.3),sca=.015,ro_y=90)
 	o.ObjType_Wall(ID=6,pos=(92,4,3.3),sca=.015,ro_y=90)
 	#floating platform
-	o.LabPlatform(pos=(71,2.4,-9),spd=.5,drc=0,rng=1)
-	o.LabPlatform(pos=(75,2.4,-9),spd=.5,drc=0,rng=1)
+	o.ObjType_Movable(ID=2,pos=(71,2,-9),ptm=2,ptw=1.5)
+	o.ObjType_Movable(ID=2,pos=(75,2,-9),ptm=2,ptw=1.5)
 	#pistons
 	o.ObjType_Block(ID=5,pos=(20.5,2,-36),sca=(.5,.8,.5),typ=1,ro_y=90)
 	dg.Piston(pos=(20.5,2.05+4.2,-36),typ=0,spd=2)
@@ -120,6 +120,7 @@ def load_object():
 	o.ObjType_Block(ID=5,pos=(96,4.5,1),sca=(.5,1.2,.5),typ=1,ro_y=90)
 	dg.Piston(pos=(96,4.65+4.2,1),typ=0,spd=4)
 	#e pads
+	
 	dg.LabPad(pos=(74,3.4,1),ID=142)
 	dg.LabPad(pos=(75,3.4,1),ID=143)
 	dg.LabPad(pos=(77,3.4,1),ID=144)

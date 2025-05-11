@@ -56,16 +56,16 @@ def load_object():
 	o.ObjType_Floor(ID=1,pos=(0,.2,-10),sca=.03,rot=(-90,90,0),col=color.rgb32(100,100,0))
 	o.ObjType_Floor(ID=1,pos=(0,2,60),sca=.03,rot=(-90,90,0),col=color.rgb32(100,100,0))
 	#platforms
-	o.MossPlatform(p=(0,-.3,-24.8),ptm=2)
-	o.MossPlatform(p=(0,.1,-23.25),ptm=1)
-	o.MossPlatform(p=(0,-.1,-1.3),ptm=0)
-	o.MossPlatform(p=(0,.5,0),ptm=0)
-	o.MossPlatform(p=(0,-.3,-7),ptm=0)
-	o.MossPlatform(p=(-.3,.7,11.5),ptm=2)
-	o.MossPlatform(p=(-.85,.5,52.5),ptm=3)
-	o.MossPlatform(p=(.85,.5,52.5),ptm=0)
-	o.MossPlatform(p=(0,1,56.5),ptm=0)
-	o.MossPlatform(p=(0,1.55,77.3),ptm=3)
+	o.ObjType_Movable(ID=0,pos=(0,-.5,-24.8),ptm=2,ptw=1.5)
+	o.ObjType_Movable(ID=0,pos=(0,-.5,-23.25),ptm=1,ptw=1.5,pts=3)
+	o.ObjType_Movable(ID=0,pos=(0,-.1,-1.3),ptm=0)
+	o.ObjType_Movable(ID=0,pos=(0,-.5,-7),ptm=0)
+	o.ObjType_Movable(ID=0,pos=(0,.5,0),ptm=0)
+	o.ObjType_Movable(ID=0,pos=(-.3,.5,11.5),ptm=2,ptw=1.5)
+	o.ObjType_Movable(ID=0,pos=(-.85,.5,52.5),ptm=3,ptw=1.5)
+	o.ObjType_Movable(ID=0,pos=(.85,.5,52.5),ptm=0)
+	o.ObjType_Movable(ID=0,pos=(0,.75,56.5),ptm=0)
+	o.ObjType_Movable(ID=0,pos=(0,1.5,77.3),ptm=3,ptw=1.5)
 	#blocks
 	tH=-.2
 	#e0
