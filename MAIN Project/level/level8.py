@@ -91,13 +91,15 @@ def load_object():
 	o.multi_ice_floor(pos=(60.5,-.5,140),cnt=[1,8])
 	o.multi_ice_floor(pos=(61.5,-.5,146),cnt=[1,1])
 	#snow ptf
-	o.SnowPlatform(pos=(53,1.5,107))
-	o.SnowPlatform(pos=(53.4,1.5,108.5))
-	o.SnowPlatform(pos=(53,1.5,110))
-	o.SnowPlatform(pos=(60.5,.5,133.5))
-	o.SnowPlatform(pos=(60.5,.5,135))
-	o.SnowPlatform(pos=(60.5,.5,136.5))
-	o.SnowPlatform(pos=(21.6,.8,54.7))
+	dgg=color.rgb32(30,30,30)
+	o.ObjType_Movable(ID=1,pos=(53,1.5,107),ptm=0,col=dgg,UL=True)
+	o.ObjType_Movable(ID=1,pos=(53.4,1.5,108.5),ptm=0,col=dgg,UL=True)
+	o.ObjType_Movable(ID=1,pos=(53,1.5,110),ptm=0,col=dgg,UL=True)
+	o.ObjType_Movable(ID=1,pos=(60.5,.5,133.5),ptm=0,col=dgg,UL=True)
+	o.ObjType_Movable(ID=1,pos=(60.5,.5,135),ptm=0,col=dgg,UL=True)
+	o.ObjType_Movable(ID=1,pos=(60.5,.5,136.5),ptm=0,col=dgg,UL=True)
+	o.ObjType_Movable(ID=1,pos=(21.6,.3,54.7),ptm=0,col=dgg,UL=True)
+	del dgg
 	#blocks
 	o.spw_block(ID=1,p=(8.5,-.5,5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(8,-.5,3.5),vx=[1,1],ro_y=180)

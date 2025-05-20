@@ -23,8 +23,8 @@ DEV_ECAM='e'#		edior camera
 
 
 ## global volume
-MUSIC_VOLUME=0
-SFX_VOLUME=0
+MUSIC_VOLUME=.5
+SFX_VOLUME=.5
 
 ## window
 def load():

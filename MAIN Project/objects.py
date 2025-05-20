@@ -66,11 +66,11 @@ mpt={0:'l1/p_moss/moss',
 	1:'l2/snow_platform/snow_platform',
 	2:'l7/space_ptf/space_ptf'}
 class ObjType_Movable(Entity):
-	def __init__(self,pos,ptm,ID,pts=.5,ptw=3,rng=1,tu=0):
+	def __init__(self,pos,ptm,ID,pts=.5,ptw=3,rng=1,tu=0,col=color.light_gray,UL=False):
 		s=self
 		s.vnum=ID
 		super().__init__(model=wfc,collider=b,position=pos,scale=(.75,1,.75),name='mptf',visible=False)
-		s.opt_model=Entity(model=omf+mpt[ID]+'.ply',texture=omf+mpt[ID]+'.png',position=(pos[0],pos[1]+(.46 if ID == 0 else +.5),pos[2]),rotation_x=-90,scale=(.0075 if ID == 1 else .001))
+		s.opt_model=Entity(model=omf+mpt[ID]+'.ply',texture=omf+mpt[ID]+'.png',color=col,position=(pos[0],pos[1]+(.46 if ID == 0 else +.5),pos[2]),rotation_x=-90,scale=(.0075 if ID == 1 else .001))
 		s.spawn_pos=pos
 		s.ptf_speed=pts
 		s.ptf_range=rng
@@ -80,10 +80,12 @@ class ObjType_Movable(Entity):
 		s.ptf_mv=ptm
 		s.turn=tu
 		s.mv_drc='z' if ptm == 3 else 'x'
+		if UL:
+			s.opt_model.unlit=False
 		if ID == 2:
 			scale=.1/120
 			s.matr='metal'
-		del pos,ptm,ID,pts,ptw,rng,tu,s
+		del pos,ptm,ID,pts,ptw,rng,tu,col,UL,s
 	def ptf_move(self):
 		s=self
 		pdv={2:s.spawn_pos[0],3:s.spawn_pos[2]}

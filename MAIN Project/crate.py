@@ -365,6 +365,7 @@ class Nitro(Entity):
 		super().__init__(model=cr2,color=color.white,unlit=False)
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		s.can_jmp=True
+		s.is_jmp=False
 		s.snd_time=1
 		s.jmp_y=s.y
 		s.mode=0
@@ -382,6 +383,7 @@ class Nitro(Entity):
 		s=self
 		s.y-=time.dt*3
 		if s.y <= s.spawn_pos[1]:
+			s.is_jmp=False
 			s.y=s.spawn_pos[1]
 			s.mode=0
 	def refr(self):
@@ -398,6 +400,8 @@ class Nitro(Entity):
 		if st.gproc() or not s.visible:
 			return
 		if distance(LC.ACTOR.position,s.position) <= 3:
+			s.is_jmp=True
+		if s.is_jmp:
 			{0:s.refr,1:s.c_jmp,2:s.c_fall}[s.mode]()
 
 class Air(Entity):
