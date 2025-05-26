@@ -315,7 +315,6 @@ class ObjType_Floor(Entity):
 		super().__init__(position=pos,scale=sca,rotation=rot,color=col)
 		s.set_model(txa)
 		if ID == 0:
-			s.name='iceg'
 			s.alpha=al
 			s.texture_scale=txa
 		if ID == 1:

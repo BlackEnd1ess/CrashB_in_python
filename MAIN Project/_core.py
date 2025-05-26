@@ -443,7 +443,7 @@ def floor_act(vp):
 		LC.ACTOR.jump_typ(t=2)
 def spc_floor(e):
 	u=str(e)
-	LC.ACTOR.is_slp=u == 'iceg'
+	LC.ACTOR.is_slp=u == 'obj_type__floor' and e.vnum == 0
 	if u in {'bnpt','gmpt'}:
 		ptf_up(e,LC.ACTOR)
 		return

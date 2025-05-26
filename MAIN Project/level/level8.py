@@ -91,7 +91,7 @@ def load_object():
 	o.multi_ice_floor(pos=(60.5,-.5,140),cnt=[1,8])
 	o.multi_ice_floor(pos=(61.5,-.5,146),cnt=[1,1])
 	#snow ptf
-	dgg=color.rgb32(30,30,30)
+	dgg=color.rgb32(60,60,60)
 	o.ObjType_Movable(ID=1,pos=(53,1.5,107),ptm=0,col=dgg,UL=True)
 	o.ObjType_Movable(ID=1,pos=(53.4,1.5,108.5),ptm=0,col=dgg,UL=True)
 	o.ObjType_Movable(ID=1,pos=(53,1.5,110),ptm=0,col=dgg,UL=True)
@@ -357,25 +357,42 @@ def bonus_zone():
 	del j
 
 def gem_zone():
-	dg.FallingZone(pos=(200,-8,0),s=(32,1,128))
-	dg.Boulder(pos=(200,-1.5,20),fldd=[(200,-1.5,7)])
+	q=200
+	dg.FallingZone(pos=(q,-6,0),s=(32,1,128))
+	dg.Boulder(pos=(q,-1.5,20),fldd=[(q,-1.5,7)])
 	#blocks
-	o.spw_block(ID=1,p=(200,-3,-3),vx=[1,1],ro_y=180,sca=(2,.5,8))
+	o.spw_block(ID=1,p=(q,-3,-3),vx=[1,1],ro_y=180,sca=(2,.5,8))
 	o.spw_block(ID=1,p=(199,-3.4,-11.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(199.4,-3.6,-12.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(199.8,-4,-13.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(199.8,-4,-16),vx=[1,3],ro_y=180)
-	o.spw_block(ID=1,p=(200,-4,-26),vx=[1,1],ro_y=180,sca=(2,.5,8))
-	o.spw_block(ID=1,p=(200.5,-4,-37),vx=[1,3],ro_y=180)
-	o.spw_block(ID=1,p=(200,-4,-46),vx=[1,1],ro_y=180,sca=(2,.5,8))
-	o.spw_block(ID=1,p=(200,-5,-56),vx=[1,1],ro_y=180,sca=(2,.5,6))
-	o.spw_block(ID=1,p=(200,-5,-78.5),vx=[1,1],ro_y=180,sca=(2,.5,6))
+	o.spw_block(ID=1,p=(q,-4,-26),vx=[1,1],ro_y=180,sca=(2,.5,8))
+	o.spw_block(ID=1,p=(200.5,-4,-36.5),vx=[1,2],ro_y=180)
+	o.spw_block(ID=1,p=(q,-4,-46),vx=[1,1],ro_y=180,sca=(2,.5,8))
+	o.spw_block(ID=1,p=(q,-5,-56),vx=[1,1],ro_y=180,sca=(2,.5,6))
+	o.spw_block(ID=1,p=(q,-5,-77.97),vx=[1,1],ro_y=180,sca=(2,.5,6))
+	o.spw_block(ID=1,p=(q,-6,-94),vx=[1,1],ro_y=180,sca=(2,.5,6))
 	#ice floors
 	o.multi_ice_floor(pos=(200.6,-5,-71.5),cnt=[1,10])
-	
-	
 	#corridors -> trigger boulder
-	o.ObjType_Corridor(ID=0,pos=(200,-2,-8))
-	o.ObjType_Corridor(ID=0,pos=(200,-3,-49.5))
+	o.ObjType_Corridor(ID=0,pos=(q,-2,-8))
+	o.ObjType_Corridor(ID=0,pos=(q,-3,-49.5))
+	o.ObjType_Corridor(ID=0,pos=(q,-5,-95))
 	#ice shards
 	o.ObjType_Deco(ID=4,pos=(8,0,22.2),sca=1,rot=(-90,-90,0),col=color.azure,UL=True)
+	#mv platforms
+	o.ObjType_Movable(ID=1,pos=(q,-4.5,-84.8),ptm=2,tu=0,rng=.8,pts=2,ptw=.6,col=color.gray,UL=True)
+	o.ObjType_Movable(ID=1,pos=(q,-5,-85.8),ptm=2,tu=1,rng=.8,pts=2,ptw=.6,col=color.gray,UL=True)
+	o.ObjType_Movable(ID=1,pos=(q,-5.5,-86.8),ptm=2,tu=0,rng=.8,pts=2,ptw=.6,col=color.gray,UL=True)
+	#walls
+	o.ObjType_Wall(ID=7,pos=(197.5,-2.7,4),ro_y=180,sca=.5,col=color.dark_gray)
+	o.ObjType_Wall(ID=7,pos=(202.5,-2.7,0),ro_y=0,sca=.5,col=color.dark_gray)
+	for wbk in range(8):
+		o.ObjType_Wall(ID=7,pos=(197.5,-3.7-wbk/5,4-wbk*12),ro_y=180,sca=.5,col=color.dark_gray)
+		o.ObjType_Wall(ID=7,pos=(202.5,-3.7-wbk/5,0-wbk*12),ro_y=0,sca=.5,col=color.dark_gray)
+	#water
+	o.ObjType_Water(ID=5,pos=(q,-3.3,-15),sca=(6,8),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
+	o.ObjType_Water(ID=5,pos=(q,-3.3,-36),sca=(6,6),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
+	o.ObjType_Water(ID=5,pos=(q,-4.3,-67),sca=(6,12),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
+	o.ObjType_Water(ID=5,pos=(q,-5.5,-86),sca=(6,10),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
+	del q,wbk

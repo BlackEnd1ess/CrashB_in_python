@@ -99,3 +99,6 @@
 - Nitro Crate: fixxed jump freeze by to far player distance
 - ObjType_Movable can optional colorized by "col" parameter
 - Mossplatform Model ".obj" was replaced by ".ply" 3D Model to keep all vertex colors.
+
+#26.05.2025
+- placed walls and water on gem zone in level 8.
