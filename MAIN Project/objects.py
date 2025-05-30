@@ -224,9 +224,8 @@ dms={0:'l1/bush/bush',
 	11:'l7/lab_pipe/lab_pipe',
 	12:'l7/boiler/boiler',
 	13:'l8/polar_sky/polar_sky'}
-#dm_sca={0:,1:,2:,3:,4:,5}
-class ObjType_Deco(Entity):
-	def __init__(self,ID,pos,sca,rot,col=color.white,UL=False):
+class ObjType_Deco(Entity):#UL=unlit Flag, htb=HitBox
+	def __init__(self,ID,pos,sca,rot,col=color.white,UL=False,htb=False):
 		s=self
 		s.vnum=ID
 		super().__init__(model=None,texture=omf+dms[ID]+'.png',position=pos,scale=sca,rotation=rot,color=col)
@@ -237,19 +236,20 @@ class ObjType_Deco(Entity):
 			ObjType_Deco(ID=3,pos=(s.x,s.y+1.1,s.z+.075),sca=(.025,.02,.03),rot=(-90,45,0),col=col)
 		if ID in {8,9}:
 			vvf=random.randint(0,1)
-			#if vvf == 0:
-			ObjType_Water(ID=4,pos=(s.x,s.y-{8:1,9:.2}[ID],s.z-{8:.25,9:.5}[ID]),sca=(.9,.4),rot=(0,0,90),frames=7,spd=10,al=1)
+			if vvf == 0:
+				ObjType_Water(ID=4,pos=(s.x,s.y-{8:1,9:.2}[ID],s.z-{8:.25,9:.5}[ID]),sca=(.9,.4),rot=(0,0,90),frames=7,spd=10,al=1)
 		if ID == 13:
 			s.shader=unlit_shader
 		if UL:
 			s.unlit=False
-		del ID,pos,sca,rot,col
+		if htb:
+			s.collider=b
+		del ID,pos,sca,rot,col,htb
 	def check_model(self):
-		s=self
-		if s.vnum == 0:
-			s.model='quad'
+		if self.vnum == 0:
+			self.model='quad'
 			return
-		s.model=omf+dms[s.vnum]+'.ply'
+		self.model=omf+dms[self.vnum]+'.ply'
 
 
 ####################
