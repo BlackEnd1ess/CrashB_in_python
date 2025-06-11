@@ -1,5 +1,5 @@
 from ursina import Animation,Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,curve
-import status,_core,_loc,sound,settings,warproom,level,time
+import status,_core,_loc,sound,settings,warproom,level,time,random
 from objects import ObjType_Background,ObjType_Deco
 from ursina.ursinastuff import destroy
 from time import strftime,gmtime
@@ -609,6 +609,9 @@ class PauseMenu(Entity):
 		s.opt_menu=False
 		s.sel_opt=0
 		s.frm=0
+		##gem anim
+		s.gm_timer=1
+		s.gm_org_sz=[.075,.19]
 		LC.p_menu=self
 	def input(self,key):
 		s=self
@@ -710,6 +713,13 @@ class PauseMenu(Entity):
 		s.col_gem3.texture=LC.ge_2+kw
 		s.col_gem4.texture=LC.ge_0+kw
 		s.col_gem5.texture=LC.ge_0+kw
+	def gem_sz_anim(self):
+		s=self
+		uf=random.choice([s.col_gem1,s.col_gem2,s.col_gem3,s.col_gem4,s.col_gem5])
+		uf.scale_x=.01
+		if uf[3] or uf[4]:
+			uf.scale_y=s.gm_org_sz[uf]
+		invoke(lambda:setattr(uf,'scale_x',.15),delay=random.uniform(.2,.4))
 	def update(self):
 		s=self
 		if st.pause:
@@ -717,6 +727,10 @@ class PauseMenu(Entity):
 			s.music_vol.text=f'MUSIC VOLUME {int(settings.MUSIC_VOLUME*100)}%'
 			s.sound_vol.text=f'SOUND VOLUME {int(settings.SFX_VOLUME*100)}%'
 			s.blink_time=max(s.blink_time-time.dt,0)
+			s.gm_timer=max(s.gm_timer-time.dt,0)
+			if s.gm_timer <= 0:
+				s.gm_timer=1
+				s.gem_sz_anim()
 			if s.blink_time <= 0:
 				{True:lambda:s.select_option(),False:lambda:s.select_menu()}[s.opt_menu]()
 			return

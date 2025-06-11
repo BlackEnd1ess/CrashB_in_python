@@ -453,6 +453,9 @@ def spc_floor(e):
 	if (u == 'plnk' and e.typ == 1) or u == 'loos':
 		e.pl_touch()
 		return
+	if (u == 'obj_type__deco' and  e.vnum == 4):
+		get_damage(LC.ACTOR,rsn=2)
+		return
 	if (u == 'swpi' and e.typ == 3) or (u == 'labt' and e.danger):
 		get_damage(LC.ACTOR,rsn=4)
 		return

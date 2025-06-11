@@ -1,6 +1,5 @@
 ## BUGS/ERORRS
 - nitro switch should destroy crates nearby, even there disabled.
-- nitro icons switch >TOP< keeps <= .3 height + 4x blink
 
 #LEVEL EDITOR
 - level editor environment settings with Icon

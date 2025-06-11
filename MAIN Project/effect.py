@@ -50,7 +50,7 @@ class ExclamationMark(Entity):
 		1:lambda:setattr(s,'x',s.x-tv),
 		2:lambda:setattr(s,'z',s.z+tv),
 		3:lambda:setattr(s,'z',s.z-tv),
-		4:lambda:setattr(s,'y',s.y+tv/3)}[s.vnum]()
+		4:lambda:setattr(s,'y',s.y+tv/4)}[s.vnum]()
 
 class Sparkle(Entity):
 	def __init__(self,pos):

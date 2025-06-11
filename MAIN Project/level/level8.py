@@ -95,9 +95,9 @@ def load_object():
 	o.ObjType_Movable(ID=1,pos=(53,1.5,107),ptm=0,col=dgg,UL=True)
 	o.ObjType_Movable(ID=1,pos=(53.4,1.5,108.5),ptm=0,col=dgg,UL=True)
 	o.ObjType_Movable(ID=1,pos=(53,1.5,110),ptm=0,col=dgg,UL=True)
-	o.ObjType_Movable(ID=1,pos=(60.5,.5,133.5),ptm=0,col=dgg,UL=True)
-	o.ObjType_Movable(ID=1,pos=(60.5,.5,135),ptm=0,col=dgg,UL=True)
-	o.ObjType_Movable(ID=1,pos=(60.5,.5,136.5),ptm=0,col=dgg,UL=True)
+	o.ObjType_Movable(ID=1,pos=(60.5,0,133.5),ptm=0,col=dgg,UL=True)
+	o.ObjType_Movable(ID=1,pos=(60.5,0,135),ptm=0,col=dgg,UL=True)
+	o.ObjType_Movable(ID=1,pos=(60.5,0,136.5),ptm=0,col=dgg,UL=True)
 	o.ObjType_Movable(ID=1,pos=(21.6,.3,54.7),ptm=0,col=dgg,UL=True)
 	del dgg
 	#blocks
@@ -379,8 +379,6 @@ def gem_zone():
 	o.ObjType_Corridor(ID=0,pos=(q,-2,-8))
 	o.ObjType_Corridor(ID=0,pos=(q,-3,-49.5))
 	o.ObjType_Corridor(ID=0,pos=(q,-5,-95))
-	#ice shards
-	o.ObjType_Deco(ID=4,pos=(8,0,22.2),sca=1,rot=(-90,-90,0),col=color.azure,UL=True)
 	#mv platforms
 	o.ObjType_Movable(ID=1,pos=(q,-4.5,-84.8),ptm=0,col=color.gray,UL=True)
 	o.ObjType_Movable(ID=1,pos=(q,-5,-85.8),ptm=2,tu=1,rng=.8,pts=1.5,ptw=1,col=color.gray,UL=True)
@@ -398,6 +396,7 @@ def gem_zone():
 	o.ObjType_Wall(ID=7,pos=(197.5,-6,-76-24),ro_y=180,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(202.5,-6,-80-24),ro_y=0,sca=.5,col=color.dark_gray)
 	#ice shards
+	o.ObjType_Deco(ID=4,pos=(8,0,22.2),sca=1,rot=(-90,-90,0),col=color.azure,UL=True)
 	o.ObjType_Deco(ID=4,pos=(199,-3.1,-20.8),sca=.6,rot=(-90,-90,0),col=color.azure,UL=True,htb=True)
 	o.ObjType_Deco(ID=4,pos=(199.8,-3.1,-20.8),sca=.6,rot=(-90,-90,0),col=color.azure,UL=True,htb=True)
 	o.ObjType_Deco(ID=4,pos=(200.1,-3.1,-23),sca=.6,rot=(-90,-90,0),col=color.azure,UL=True,htb=True)
@@ -432,8 +431,27 @@ def gem_zone():
 	n.spawn(ID=5,POS=(200.2,-3,-42.3),DRC=0,RNG=1.6)
 	n.spawn(ID=4,POS=(200.2,-3,-40.6),DRC=0,RNG=1.6)
 	#crates
-	c.place_crate(ID=6,p=(200,-1.84,-8.5))
-	c.place_crate(ID=6,p=(200,-2.84,-50.2))
+	c.place_crate(ID=6,p=(200,-1.84,-9.8))
+	c.place_crate(ID=6,p=(200,-2.84,-50.3))
 	
+	mt.crate_plane(ID=1,POS=(200.5,-1.84,-4.6),CNT=[2,2])
+	mt.crate_plane(ID=1,POS=(199,-1.84,-10.1),CNT=[2,1])
+	mt.crate_plane(ID=2,POS=(199.0,-2.84,-21.3),CNT=[3,1])
+	mt.crate_plane(ID=2,POS=(200.0,-2.84,-23.4),CNT=[2,1])
+	mt.crate_plane(ID=1,POS=(200.0,-2.84,-28.2),CNT=[2,1])
+	mt.crate_plane(ID=2,POS=(200.4,-2.84,-40.0),CNT=[3,1])
+	mt.crate_plane(ID=1,POS=(200.4,-2.84,-43.6),CNT=[2,1])
+	mt.crate_plane(ID=1,POS=(198.8,-2.84,-51.9),CNT=[3,1])
+	mt.crate_plane(ID=1,POS=(199.3,-3.84,-54.2),CNT=[4,1])
+	mt.crate_plane(ID=2,POS=(200.1,-3.84,-57.6),CNT=[2,1])
+	mt.crate_plane(ID=2,POS=(200.9,-3.84,-67.7),CNT=[1,4])
+	mt.crate_plane(ID=1,POS=(200.5,-3.84,-74.5),CNT=[2,1])
+	mt.crate_plane(ID=2,POS=(198.9,-3.84,-76.2),CNT=[2,1])
+	mt.crate_plane(ID=2,POS=(200.5,-3.84,-77.5),CNT=[2,1])
+	mt.crate_plane(ID=2,POS=(198.8,-3.84,-82.1),CNT=[2,1])
+	mt.crate_plane(ID=2,POS=(199.0,-4.84,-90.1),CNT=[3,1])
+	mt.crate_wall(ID=4,POS=(198.9,-4.84,-97.2),CNT=[2,2])
+	mt.crate_block(ID=2,POS=(200.3,-4.84,-97.2),CNT=[3,3,3])
+	mt.crate_plane(ID=2,POS=(199.0,-4.84,-99.5),CNT=[2,2])
 	o.GemPlatform(pos=(200,-4.7,-99),t=3)
 	del q,wbk

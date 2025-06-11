@@ -77,7 +77,7 @@ class ExtraLive(Entity):
 			destroy(s)
 			return
 		if s.follow:
-			s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.2,LC.ACTOR.z),time.dt*16)
+			s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.2,LC.ACTOR.z),time.dt*20)
 			return
 		s.p_follow()
 

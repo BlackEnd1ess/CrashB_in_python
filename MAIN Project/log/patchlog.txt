@@ -102,3 +102,7 @@
 
 #26.05.2025
 - placed walls and water on gem zone in level 8.
+
+#11.06.2025
+- added crates in level 8 gem zone
+- added npc in level 8 gem zone
