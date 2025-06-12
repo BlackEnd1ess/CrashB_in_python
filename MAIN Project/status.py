@@ -4,7 +4,7 @@ from ursina import *
 checkpoint=None
 
 ## game progress items
-COLOR_GEM=[1,2,3,4,5]
+COLOR_GEM=[]
 CLEAR_GEM=[]
 CRYSTAL=[]
 

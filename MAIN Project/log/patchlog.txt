@@ -106,3 +106,6 @@
 #11.06.2025
 - added crates in level 8 gem zone
 - added npc in level 8 gem zone
+
+#12.06.2025
+- Pause Menu: not collected gems, shows a pulse animation instead of gray color as reminder to collect them.

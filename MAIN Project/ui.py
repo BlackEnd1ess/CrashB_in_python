@@ -569,8 +569,8 @@ class BonusText(Entity):
 					return
 				s.text_ch()
 
-K=40
-O=180
+K=50
+O=200
 vF=0
 ## Pause Menu
 class PauseMenu(Entity):
@@ -595,23 +595,23 @@ class PauseMenu(Entity):
 		##animation
 		ric='res/ui/icon/'
 		s.cry_anim=Entity(model=q,texture=cr_i+'0.png',position=(vF+.6,vF+.26,s.z-1),scale=.15,parent=CU,color=color.magenta,visible=False)
-		s.col_gem1=Entity(model=q,texture=LC.ge_0+'0.png',name='1',position=(vF+.25,vF+.075,s.z-1),scale=.15,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		s.col_gem2=Entity(model=q,texture=LC.ge_0+'0.png',name='2',position=(vF+.37,vF+.075,s.z-1),scale=.15,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		s.col_gem3=Entity(model=q,texture=LC.ge_0+'0.png',name='3',position=(vF+.49,vF+.075,s.z-1),scale=.15,parent=CU,color=color.rgb32(K,K,K),visible=False)
-		s.col_gem4=Entity(model=q,texture=LC.ge_1+'0.png',name='4',position=(vF+.61,vF+.075,s.z-1),scale=(.15,.075),parent=CU,color=color.rgb32(K,K,K),visible=False)
-		s.col_gem5=Entity(model=q,texture=LC.ge_2+'0.png',name='5',position=(vF+.73,vF+.075,s.z-1),scale=(.15,.19),parent=CU,color=color.rgb32(K,K,K),visible=False)
+		s.col_gem1=Entity(model=q,texture=LC.ge_0+'0.png',name='1',position=(vF+.25,vF+.075,s.z-1),scale=.01,parent=CU,color=LC.GMC[1],visible=False)
+		s.col_gem2=Entity(model=q,texture=LC.ge_0+'0.png',name='2',position=(vF+.37,vF+.075,s.z-1),scale=.01,parent=CU,color=LC.GMC[2],visible=False)
+		s.col_gem3=Entity(model=q,texture=LC.ge_0+'0.png',name='3',position=(vF+.49,vF+.075,s.z-1),scale=.01,parent=CU,color=LC.GMC[3],visible=False)
+		s.col_gem4=Entity(model=q,texture=LC.ge_1+'0.png',name='4',position=(vF+.61,vF+.075,s.z-1),scale=.01,parent=CU,color=LC.GMC[4],visible=False)
+		s.col_gem5=Entity(model=q,texture=LC.ge_2+'0.png',name='5',position=(vF+.73,vF+.075,s.z-1),scale=.01,parent=CU,color=LC.GMC[5],visible=False)
 		s.cleargem=Entity(model=q,texture=LC.ge_0+'0.png',position=(vF+.55,vF-.03,s.z-1),scale=.16,parent=CU,color=color.rgb32(130,130,190),visible=False)
 		##options
 		s.music_vol=Text(f'SOUND VOLUME {settings.SFX_VOLUME*10}',tag=0,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.2,s.z-1),visible=False)
 		s.sound_vol=Text(f'MUSIC VOLUME {settings.MUSIC_VOLUME*10}',tag=1,font=_fnt,scale=3,color=s.font_color,parent=CU,position=(vF-.7,vF-.275,s.z-1),visible=False)
 		s.opt_exit=Text('PRESS ENTER TO EXIT',tag=3,font=_fnt,scale=2.5,color=color.yellow,parent=CU,position=(vF-.75,vF-.4,s.z-1),visible=False)
+		s.gm_org_sz={'4':.075,'5':.19}
 		s.check_collected()
 		s.opt_menu=False
 		s.sel_opt=0
 		s.frm=0
 		##gem anim
 		s.gm_timer=1
-		s.gm_org_sz=[.075,.19]
 		LC.p_menu=self
 	def input(self,key):
 		s=self
@@ -685,7 +685,11 @@ class PauseMenu(Entity):
 		s.add_text.text='+ '+str(st.clear_gems)
 		for qc in {s.col_gem1,s.col_gem2,s.col_gem3,s.col_gem3,s.col_gem4,s.col_gem5}:
 			if int(qc.name) in st.COLOR_GEM:
-				qc.color=LC.GMC[int(qc.name)]
+				qc.scale_x=.15
+				if qc.name in s.gm_org_sz:
+					qc.scale_y=s.gm_org_sz[qc.name]
+				else:
+					qc.scale_y=.15
 		del qc,s
 	def select_menu(self):
 		s=self
@@ -716,10 +720,15 @@ class PauseMenu(Entity):
 	def gem_sz_anim(self):
 		s=self
 		uf=random.choice([s.col_gem1,s.col_gem2,s.col_gem3,s.col_gem4,s.col_gem5])
-		uf.scale_x=.01
-		if uf[3] or uf[4]:
-			uf.scale_y=s.gm_org_sz[uf]
-		invoke(lambda:setattr(uf,'scale_x',.15),delay=random.uniform(.2,.4))
+		if not int(uf.name) in st.COLOR_GEM:
+			uf.scale_x=.15
+			uf.scale_y=s.gm_org_sz[uf.name] if uf.name in s.gm_org_sz else .15
+			fz=random.uniform(.05,.1)
+			invoke(lambda:setattr(uf,'scale_x',.01),delay=fz)
+			if uf.name in s.gm_org_sz:
+				invoke(lambda:setattr(uf,'scale_y',.01),delay=fz)
+				return
+			invoke(lambda:setattr(uf,'scale_y',.01),delay=fz)
 	def update(self):
 		s=self
 		if st.pause:
