@@ -35,7 +35,7 @@ def landing_sound(o):
 	if hasattr(o,'matr') and o.matr == 'metal':
 		pc_audio(ID=13)
 		return
-	if (cc.is_crate(o) and not o.vnum in {0,3}) or cc.is_enemie(o):
+	if (cc.is_crate(o) and not ((o.vnum in {0,3}) or (o.vnum in {9,10} and o.activ))) or cc.is_enemie(o):
 		pc_audio(ID=5)
 		return
 	ldnp=.6 if LC.ACTOR.b_smash else 1
