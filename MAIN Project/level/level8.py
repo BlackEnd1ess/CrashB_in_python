@@ -15,10 +15,10 @@ def map_setting():
 	LC.FOG_L_COLOR=color.black
 	LC.FOG_B_COLOR=color.black
 	LC.SKY_BG_COLOR=color.black
-	#LC.AMB_M_COLOR=color.rgb32(0,0,0)
-	LC.AMB_M_COLOR=color.rgb32(250,250,250)
-	#LC.LV_DST=(6,10)
-	LC.LV_DST=(70,120)
+	LC.AMB_M_COLOR=color.rgb32(0,0,0)
+	#LC.AMB_M_COLOR=color.rgb32(250,250,250)
+	LC.LV_DST=(6,10)
+	#LC.LV_DST=(70,120)
 	LC.BN_DST=(3,5)
 	LC.RCX=14
 	LC.RCB=10
@@ -433,7 +433,6 @@ def gem_zone():
 	#crates
 	c.place_crate(ID=6,p=(200,-1.84,-9.8))
 	c.place_crate(ID=6,p=(200,-2.84,-50.3))
-	
 	mt.crate_plane(ID=1,POS=(200.5,-1.84,-4.6),CNT=[2,2])
 	mt.crate_plane(ID=1,POS=(199,-1.84,-10.1),CNT=[2,1])
 	mt.crate_plane(ID=2,POS=(199.0,-2.84,-21.3),CNT=[3,1])
@@ -453,5 +452,40 @@ def gem_zone():
 	mt.crate_wall(ID=4,POS=(198.9,-4.84,-97.2),CNT=[2,2])
 	mt.crate_block(ID=2,POS=(200.3,-4.84,-97.2),CNT=[3,3,3])
 	mt.crate_plane(ID=2,POS=(199.0,-4.84,-99.5),CNT=[2,2])
+	#wumpa fruits
+	mt.wumpa_row(POS=(200.0,-1.80,-8.6),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(199.8,-2.80,-16.1),CNT=8,WAY=1)
+	mt.wumpa_row(POS=(200.9,-2.80,-21.5),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(198.8,-2.80,-22.2),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(200.0,-2.80,-25.8),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(200.1,-2.80,-31.1),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(200.5,-2.80,-37.4),CNT=8,WAY=1)
+	mt.wumpa_row(POS=(199.2,-2.80,-39.0),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(201.0,-2.80,-41.1),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(199.0,-2.80,-42.3),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(200.7,-2.80,-45.5),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(200.1,-2.80,-47.7),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(200.0,-2.80,-49.8),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(200.0,-2.80,-53.4),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(200.5,-3.80,-65.8),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(200.5,-3.80,-71.4),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(199.1,-4.80,-91.8),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(201.0,-4.80,-90.6),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(200.6,-3.80,-82.6),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(198.8,-3.80,-80.9),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(199.0,-2.80,-40.8),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(199.1,-2.80,-44.3),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(199.1,-3.80,-75.1),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(199.2,-3.80,-76.5),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(199.1,-3.80,-78.3),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(199.1,-3.80,-79.7),CNT=4,WAY=0)
+	mt.wumpa_row(POS=(199.2,-3.80,-81.0),CNT=4,WAY=0)
+	#firefly
+	n.Firefly(pos=(200,-1.4,-2),fldd=[(200,-1.4,-9)],spd=1.4)
+	n.Firefly(pos=(200,-1.4,-10),fldd=[(199.8,-2.2,-19)],spd=1.4)
+	n.Firefly(pos=(199.8,-2.4,-20),fldd=[(199.8,-2.2,-50)],spd=1.4)
+	
+	n.Firefly(pos=(200,-2.4,-52.6),fldd=[(200,-3,-57)],spd=1.4)
+	n.Firefly(pos=(200.4,-3.4,-59),fldd=[(200,-3,-70)],spd=1.4)
 	o.GemPlatform(pos=(200,-4.7,-99),t=3)
 	del q,wbk

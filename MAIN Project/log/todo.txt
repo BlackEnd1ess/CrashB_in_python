@@ -7,5 +7,5 @@
 - level editor bonus maker, for scene (pos_y < -20)
 
 ##TODO
-- level 8, gem zone, boulder
-- boulder
+- level 8, gem zone, boulder, fireflies
+- boulder logic + sound

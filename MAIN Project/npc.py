@@ -816,5 +816,5 @@ class Firefly(Entity):
 				cc.npc_pathfinding(s)
 				if s.way_index < len(s.ffly_drc):
 					s.rotate_to_target()
-			return
+				return
 		s.m_idle()
