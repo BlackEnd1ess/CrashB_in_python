@@ -1,4 +1,4 @@
-from ursina import BoxCollider,Vec3,Entity,Audio,distance,lerp,invoke,PointLight,color
+from ursina import BoxCollider,Vec3,Entity,Audio,distance,distance_xz,lerp,invoke,PointLight,color
 import settings,_core,math,animation,status,sound,_loc,effect,time,random
 from ursina.ursinastuff import destroy
 from math import radians,cos,sin,pi
@@ -766,6 +766,7 @@ class Firefly(Entity):
 		super().__init__(model=ffly+'.ply',texture=ffly+'.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False)
 		s.lgt=PointLight(position=s.position,scale=.2,color=color.rgb32(255,200,180),enabled=False)
 		s.is_bonus=bool(pos[1] < -10)
+		s.is_fadeout=False
 		s.follow_speed=spd
 		s.spawn_pos=pos
 		s.ffly_drc=fldd
@@ -778,11 +779,14 @@ class Firefly(Entity):
 	def reset(self):
 		s=self
 		s.position=s.spawn_pos
+		s.lgt.position=s.position
+		s.is_fadeout=False
 		s.active=False
 		s.way_index=0
 		s.lgt.color=color.rgb32(255,200,180)
 	def lgt_fadeout(self):
 		s=self
+		s.is_fadeout=True
 		s.lgt.color-=(tfd*1.25,tfd,tfd,0)
 		if s.lgt.color[0] <= 0:
 			s.reset()
@@ -791,7 +795,9 @@ class Firefly(Entity):
 		cc.circle_move_xz(s)
 		s.mov_range=.3+abs(sin(time.time()))*.4
 		s.y=s.spawn_pos[1]+sin(time.time()*3)*.2
-		if (st.bonus_round and s.y > -10 and not s.is_bonus) or distance(s,LC.ACTOR) > 16:
+	def refr_light(self):
+		s=self
+		if (st.bonus_round and s.y > -10 and not s.is_bonus) or distance_xz(s,LC.ACTOR) > 16:
 			s.lgt.color=color.black
 			return
 		s.lgt.color=color.rgb32(255,200,180)
@@ -806,11 +812,15 @@ class Firefly(Entity):
 			return
 		s=self
 		s.lgt.position=s.position
+		if not s.is_fadeout:
+			s.refr_light()
 		if st.death_event:
 			s.reset()
 			return
 		if distance(s,LC.ACTOR) < 1:
 			s.active=True
+			s.lgt.enabled=True
+			s.lgt.color=color.rgb32(255,200,180)
 		if s.active:
 			if len(s.ffly_drc) > 0:
 				cc.npc_pathfinding(s)

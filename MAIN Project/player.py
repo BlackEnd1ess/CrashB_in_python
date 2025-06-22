@@ -10,6 +10,8 @@ sn=sound
 cc=_core
 LC=_loc
 
+jmh={1:.8,2:1,3:1.1,4:1.5}
+
 hgt={True:.3,False:.1}
 fgt={True:2.2,False:2}
 
@@ -124,12 +126,8 @@ class CrashB(Entity):
 			sn.footstep(s)
 	def jump_typ(self,t):
 		s=self
-		s.gravity={1:(2.6),2:(2.9),3:(3.1),4:(2.8)}[t]#	fall speed
-		jmh={1:s.y+.8,#		normal jump
-			2:s.y+1,#		crate jump
-			3:s.y+1.1,#		bounce jump
-			4:s.y+1.5}#		spring jump
-		s.vpos=jmh[t]#		jump heigt limit
+		s.gravity={1:(2.6),2:(2.9),3:(3.1),4:(2.8)}[t]#fall speed
+		s.vpos=s.y+jmh[t]#jump height limit
 		s.fall_time=0
 		s.frst_lnd=True
 		s.jumping=True

@@ -18,7 +18,7 @@ p_last_direc=None
 selected_level=1
 aku_inv_time=20
 level_index=0
-aku_hit=2
+aku_hit=0
 fails=0
 
 ##npc count
