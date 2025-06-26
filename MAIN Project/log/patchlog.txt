@@ -111,4 +111,9 @@
 - Pause Menu: not collected gems, shows a pulse animation instead of gray color as reminder to collect them.
 
 #22.06.2025
-fixxed firefly function: loosing light by distance
+- fixxed firefly function: loosing lights by distance
+
+#26.06.2025
+- changed firefly func: npc follow player and change brightness like a pulse because game engine cant handle with multible lightsources without loosing the light or shadows.
+
+- level 8 gem route: big blocks was replaced by small blocks to keep constant light quality and range.

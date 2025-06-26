@@ -172,6 +172,7 @@ def load_crate():
 	c.place_crate(ID=12,p=(42.2,2.66,67.3))
 	c.place_crate(ID=12,p=(53.3,2.66,93.7))
 	c.place_crate(ID=12,p=(51.1,2.66,93.7))
+	mt.crate_row(ID=13,POS=(60.5,2.16,112.3),m=127,l=6,CNT=1,WAY=0)
 	c.place_crate(ID=12,p=(60.3,.5+.16,142.3))
 	c.place_crate(ID=12,p=(60.7,.5+.16,142.3))
 	c.place_crate(ID=12,p=(58.8,.66,125.2))
@@ -210,9 +211,7 @@ def load_crate():
 	mt.crate_row(ID=14,POS=(53.4,2.66,82.1),WAY=2,CNT=4)
 	c.place_crate(ID=14,p=(53.4,2.66+1.28,82.1))
 	mt.crate_wall(ID=1,POS=(8.7,.66,5),CNT=[1,3])
-	
 	mt.crate_plane(ID=14,POS=(7.5,.661,8.9),CNT=[2,2])
-	
 	mt.crate_wall(ID=1,POS=(7.4,.61,16),CNT=[1,2])
 	mt.crate_block(ID=1,POS=(9.3,.61,18.3),CNT=[2,2,1])
 	mt.crate_wall(ID=1,POS=(7.6,.61,20.5),CNT=[3,1])
@@ -232,12 +231,7 @@ def load_crate():
 	c.place_crate(ID=1,p=(58.4,0.66,131.1))
 
 def load_npc():
-	n.Firefly(pos=(8,1,4.5),fldd=[(9,1,20),(17,1.75,22),(17,1.75,26),(22,3.4,26),(22,1.5,34)],spd=1)
-	n.Firefly(pos=(21.7,1,37),fldd=[(21.7,2,56.5),(21.7,5,56.5),(21.7,5,59),(34,5,59)],spd=1)
-	n.Firefly(pos=(34,4,64),fldd=[(34,3.5,67),(52,3,67),(52,3,78)],spd=1)
-	n.Firefly(pos=(51.7,3,81),fldd=[(52.5,3,90),(51.6,3,93),(53.1,3,96),(53,2.5,102)],spd=1)
-	n.Firefly(pos=(53,2,107),fldd=[(53,2,111.5),(60.5,3,111.5),(60.5,1.5,123.5),(60.5,1.5,146)],spd=1.2)
-	n.Firefly(pos=(-2.5,-36.4,U-.3),fldd=[(1,-36,U),(2,-35.3,U),(5.7,-37.3,U),(6.2,-35.3,U),(16,-35.3,U)],spd=.5)
+	n.Firefly(pos=(8,1,4.5))
 	#enemies
 	n.spawn(ID=4,POS=(8.2,.50,9.4),DRC=0,RNG=1)
 	n.spawn(ID=4,POS=(19.5,2,25.9),DRC=0,RNG=1)
@@ -331,6 +325,7 @@ def bonus_zone():
 	mt.wumpa_row(POS=(16.0,-35.80,-3.2),CNT=3,WAY=2)
 	#crate
 	j=.2
+	mt.crate_row(ID=2,POS=(-2.5,-37+.16,U-j),CNT=2,WAY=2)
 	c.place_crate(ID=9,p=(-1,-36.84,U-j),m=181)
 	mt.crate_row(ID=13,POS=(3.2,-37.84,U-j),m=181,l=1,CNT=6,WAY=2)
 	mt.crate_row(ID=13,POS=(3.7,-37.84,U-j),m=181,l=1,CNT=5,WAY=2)
@@ -362,17 +357,17 @@ def gem_zone():
 	dg.Boulder(pos=(q,-1.5,20),fldd=[(q,-1.5,7)])
 	o.HitBox(pos=(200,-6,-100),sca=(10,10,.5))
 	#blocks
-	o.spw_block(ID=1,p=(q,-3,-3),vx=[1,1],ro_y=180,sca=(2,.5,8))
+	o.spw_block(ID=1,p=(198,-3,-10.5),vx=[5,12],ro_y=180)
 	o.spw_block(ID=1,p=(199,-3.4,-11.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(199.4,-3.6,-12.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(199.8,-4,-13.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(199.8,-4,-16),vx=[1,3],ro_y=180)
-	o.spw_block(ID=1,p=(q,-4,-26),vx=[1,1],ro_y=180,sca=(2,.5,8))
+	o.spw_block(ID=1,p=(198,-4,-33.5),vx=[5,16],ro_y=180)
 	o.spw_block(ID=1,p=(200.5,-4,-36.5),vx=[1,2],ro_y=180)
-	o.spw_block(ID=1,p=(q,-4,-46),vx=[1,1],ro_y=180,sca=(2,.5,8))
-	o.spw_block(ID=1,p=(q,-5,-56),vx=[1,1],ro_y=180,sca=(2,.5,6))
-	o.spw_block(ID=1,p=(q,-5,-77.97),vx=[1,1],ro_y=180,sca=(2,.5,6))
-	o.spw_block(ID=1,p=(q,-6,-94),vx=[1,1],ro_y=180,sca=(2,.5,6))
+	o.spw_block(ID=1,p=(198.5,-4,-53.5),vx=[5,16],ro_y=180)
+	o.spw_block(ID=1,p=(198.5,-5,-61.5),vx=[5,8],ro_y=180)
+	o.spw_block(ID=1,p=(198.5,-5,-83.3),vx=[5,12],ro_y=180)
+	o.spw_block(ID=1,p=(198.5,-6,-99.5),vx=[5,12],ro_y=180)
 	#ice floors
 	o.multi_ice_floor(pos=(200.6,-5,-71.5),cnt=[1,10])
 	#corridors -> trigger boulder
@@ -432,7 +427,7 @@ def gem_zone():
 	n.spawn(ID=4,POS=(200.2,-3,-40.6),DRC=0,RNG=1.6)
 	#crates
 	c.place_crate(ID=6,p=(200,-1.84,-9.8))
-	c.place_crate(ID=6,p=(200,-2.84,-50.3))
+	c.place_crate(ID=6,p=(200,-2.84,-51.5))
 	mt.crate_plane(ID=1,POS=(200.5,-1.84,-4.6),CNT=[2,2])
 	mt.crate_plane(ID=1,POS=(199,-1.84,-10.1),CNT=[2,1])
 	mt.crate_plane(ID=2,POS=(199.0,-2.84,-21.3),CNT=[3,1])
@@ -451,7 +446,8 @@ def gem_zone():
 	mt.crate_plane(ID=2,POS=(199.0,-4.84,-90.1),CNT=[3,1])
 	mt.crate_wall(ID=4,POS=(198.9,-4.84,-97.2),CNT=[2,2])
 	mt.crate_block(ID=2,POS=(200.3,-4.84,-97.2),CNT=[3,3,3])
-	mt.crate_plane(ID=2,POS=(199.0,-4.84,-99.5),CNT=[2,2])
+	mt.crate_plane(ID=2,POS=(199,-4.84,-99.5),CNT=[2,2])
+	c.place_crate(ID=9,p=(199.7,-4.84,-95),m=127)
 	#wumpa fruits
 	mt.wumpa_row(POS=(200.0,-1.80,-8.6),CNT=3,WAY=1)
 	mt.wumpa_row(POS=(199.8,-2.80,-16.1),CNT=8,WAY=1)
@@ -481,11 +477,5 @@ def gem_zone():
 	mt.wumpa_row(POS=(199.1,-3.80,-79.7),CNT=4,WAY=0)
 	mt.wumpa_row(POS=(199.2,-3.80,-81.0),CNT=4,WAY=0)
 	#firefly
-	n.Firefly(pos=(200,-1.4,-2),fldd=[(200,-1.4,-9)],spd=1.4)
-	n.Firefly(pos=(200,-1.4,-10),fldd=[(199.8,-2.2,-19)],spd=1.4)
-	n.Firefly(pos=(199.8,-2.4,-20),fldd=[(199.8,-2.2,-50)],spd=1.4)
-	
-	n.Firefly(pos=(200,-2.4,-52.6),fldd=[(200,-3,-57)],spd=1.4)
-	n.Firefly(pos=(200.4,-3.4,-59),fldd=[(200,-3,-70)],spd=1.4)
 	o.GemPlatform(pos=(200,-4.7,-99),t=3)
 	del q,wbk

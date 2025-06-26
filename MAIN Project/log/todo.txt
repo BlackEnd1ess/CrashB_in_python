@@ -1,5 +1,4 @@
 ## BUGS/ERORRS
-- nitro switch should destroy crates nearby, even there disabled.
 
 #LEVEL EDITOR
 - level editor environment settings with Icon
@@ -7,5 +6,5 @@
 - level editor bonus maker, for scene (pos_y < -20)
 
 ##TODO
-- level 8, gem zone, boulder, fireflies
+- level 8, gem zone, boulder
 - boulder logic + sound

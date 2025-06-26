@@ -1,4 +1,4 @@
-from ursina import BoxCollider,Vec3,Entity,Audio,distance,distance_xz,lerp,invoke,PointLight,color
+from ursina import BoxCollider,Vec3,Entity,Audio,distance,lerp,invoke,PointLight,color,scene
 import settings,_core,math,animation,status,sound,_loc,effect,time,random
 from ursina.ursinastuff import destroy
 from math import radians,cos,sin,pi
@@ -761,70 +761,61 @@ class Hippo(Entity):
 ffly=npf+'firefly/0'
 tfd=.01
 class Firefly(Entity):
-	def __init__(self,pos,fldd,spd):
+	def __init__(self,pos):
 		s=self
 		super().__init__(model=ffly+'.ply',texture=ffly+'.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False)
-		s.lgt=PointLight(position=s.position,scale=.2,color=color.rgb32(255,200,180),enabled=False)
-		s.is_bonus=bool(pos[1] < -10)
-		s.is_fadeout=False
-		s.follow_speed=spd
+		s.lgt=PointLight(position=s.position,scale=.2,color=color.rgb32(255,200,180))
+		s.start_checkp=st.checkpoint
 		s.spawn_pos=pos
-		s.ffly_drc=fldd
 		s.active=False
 		s.move_speed=8
-		s.way_index=0
+		s.glow_mode=0
 		s.mov_range=1
 		s.angle=0
-		del pos,fldd,spd,s
-	def reset(self):
+		del pos
+	def glow_light(self):
 		s=self
-		s.position=s.spawn_pos
-		s.lgt.position=s.position
-		s.is_fadeout=False
-		s.active=False
-		s.way_index=0
-		s.lgt.color=color.rgb32(255,200,180)
-	def lgt_fadeout(self):
+		ttm=.0015
+		if s.glow_mode == 0:
+			if s.lgt.color[0] <= .7:
+				s.glow_mode=1
+				return
+			s.lgt.color=color.rgb(s.lgt.color[0]-ttm,s.lgt.color[1]-ttm,s.lgt.color[2]-ttm)
+			return
+		if s.lgt.color[0] >= 1:
+			s.glow_mode=0
+			return
+		s.lgt.color=color.rgb(s.lgt.color[0]+ttm,s.lgt.color[1]+ttm,s.lgt.color[2]+ttm)
+	def respawn(self):
 		s=self
-		s.is_fadeout=True
-		s.lgt.color-=(tfd*1.25,tfd,tfd,0)
-		if s.lgt.color[0] <= 0:
-			s.reset()
+		if st.checkpoint == s.start_checkp:
+			s.active=False
+			s.position=s.spawn_pos
+			return
+		s.position=st.checkpoint
 	def m_idle(self):
 		s=self
 		cc.circle_move_xz(s)
 		s.mov_range=.3+abs(sin(time.time()))*.4
 		s.y=s.spawn_pos[1]+sin(time.time()*3)*.2
-	def refr_light(self):
-		s=self
-		if (st.bonus_round and s.y > -10 and not s.is_bonus) or distance_xz(s,LC.ACTOR) > 16:
-			s.lgt.color=color.black
-			return
-		s.lgt.color=color.rgb32(255,200,180)
-	def rotate_to_target(self):
-		s=self
-		tg=Vec3(s.ffly_drc[s.way_index])
-		drc=(tg-s.position).normalized()
-		tgr=math.degrees(math.atan2(-drc.x,-drc.z))
-		s.rotation_y=lerp(s.rotation_y,tgr,time.dt*8)
 	def update(self):
 		if st.gproc():
 			return
 		s=self
 		s.lgt.position=s.position
-		if not s.is_fadeout:
-			s.refr_light()
+		s.glow_light()
+		if distance(s,LC.ACTOR) < .8:
+			s.active=not st.death_event
 		if st.death_event:
-			s.reset()
+			s.respawn()
 			return
-		if distance(s,LC.ACTOR) < 1:
-			s.active=True
-			s.lgt.enabled=True
-			s.lgt.color=color.rgb32(255,200,180)
 		if s.active:
-			if len(s.ffly_drc) > 0:
-				cc.npc_pathfinding(s)
-				if s.way_index < len(s.ffly_drc):
-					s.rotate_to_target()
-				return
+			cc.rotate_to_crash(s)
+			if st.bonus_round:
+				s.position=lerp(s.position,(LC.ACTOR.x+.2,LC.ACTOR.y+.5,LC.ACTOR.z),time.dt*2)
+			if st.death_route:
+				s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.5,LC.ACTOR.z-.5),time.dt*2)
+			else:
+				s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.5,LC.ACTOR.z+.8),time.dt*2)
+			return
 		s.m_idle()

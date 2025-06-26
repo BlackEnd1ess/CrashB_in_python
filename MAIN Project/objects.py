@@ -616,7 +616,7 @@ class CrateScore(Entity):## level reward
 	def __init__(self,pos):
 		s=self
 		ev='res/crate/'
-		super().__init__(model=ev+'cr_t0.ply',texture=ev+'1.tga',alpha=.4,scale=.18,position=pos,origin_y=.5)
+		super().__init__(model=ev+'cr_t0.ply',texture=ev+'1.tga',scale=.18,position=pos,origin_y=.5,unlit=False,color=color.light_gray,alpha=.4)
 		s.cc_text=Text(parent=scene,position=(s.x-.2,s.y,s.z),name=s.name,text=None,font=ui._fnt,color=color.rgb32(255,255,100),scale=10,unlit=False)
 		del pos,s
 	def update(self):

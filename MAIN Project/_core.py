@@ -65,7 +65,7 @@ def dth_event(c,rsn):
 def reset_state(c):
 	ui.BlackScreen()
 	st.crate_count-=st.crate_to_sv
-	if st.death_route:
+	if st.death_route and st.checkpoint[0] < 198.5:
 		st.death_route=False
 		sn.BackgroundMusic(m=0)
 	if st.bonus_round:
@@ -582,7 +582,7 @@ def clear_bonus():
 	del brd
 def back_to_level(c):
 	ui.BlackScreen()
-	c.position=st.checkpoint
+	c.position=(60.5,3.3,111.5) if (st.level_index == 8 and st.checkpoint[0] > 198.5) else st.checkpoint
 	if st.death_route:
 		st.death_route=False
 		st.gem_path_solved=True
@@ -617,7 +617,7 @@ def load_droute(c):
 def clear_gem_route():
 	for grd in scene.entities[:]:
 		if grd.parent == scene and grd.x > 180:
-			if not (is_crate(grd) or grd in {LC.shdw,LC.ACTOR} or isinstance(grd,N.AkuAkuMask)):
+			if not (is_crate(grd) or grd in {LC.shdw,LC.ACTOR} or isinstance(grd,N.AkuAkuMask) or grd.name == 'firefly' or grd.name == 'point_light'):
 				destroy(grd)
 	del grd
 
@@ -696,9 +696,7 @@ def npc_pathfinding(m):
 		m.position+=ddrc*(time.dt*m.follow_speed)
 		if distance(Vec3(m.position),m.ffly_drc[m.way_index]) < .3:
 			m.way_index+=1
-		return
-	if isinstance(m,N.Firefly):
-		m.lgt_fadeout()
+			return
 
 ## game progress
 save_file='savegame.json'
