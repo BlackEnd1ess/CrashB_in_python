@@ -100,11 +100,12 @@ class CrashB(Entity):
 		if mvD.length() > 0:
 			if any([s.stun,s.b_smash,s.pushed,st.p_rst(s)]):
 				return
-			mc=raycast(s.world_position+(0,.2,0),mvD,distance=.25,ignore=uq,debug=False)
+			mc=raycast(s.world_position+(0,.2,0),mvD,distance=.25,ignore=uq,debug=True)
 			s.rotation_y=atan2(-mvD.x,-mvD.z)*180/math.pi
 			st.p_last_direc=mvD
 			s.walk_event()
 			if not mc or str(mc.entity) in LC.item_lst|LC.trigger_lst:
+				print(mc.normal)
 				s.position+=mvD*(time.dt*s.move_speed)
 			return
 		s.wksn=0

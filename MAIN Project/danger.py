@@ -590,34 +590,49 @@ bldr=omf+'l8/boulder/boulder'
 class Boulder(Entity):
 	def __init__(self,pos,fldd):
 		s=self
-		super().__init__(model=bldr+'.ply',texture=bldr+'.png',position=pos,scale=.002,rotation_x=-90,unlit=False)
+		super().__init__(model=bldr+'.ply',texture=bldr+'.png',position=pos,scale=.0016,rotation_x=-90,unlit=False)
 		s.follow_speed=4
 		s.ffly_drc=fldd
+		s.is_reset=False
+		s.is_done=False
+		s.active=False
 		s.spawn_pos=pos
-		s.active=True
 		s.way_index=0
 		del s,pos,fldd
 	def reset_state(self):
 		s=self
+		s.is_reset=False
 		s.position=s.spawn_pos
 		s.way_index=0
+	def refr(self):
+		for blh in scene.entities[:]:
+			if distance(self,blh) < 1.8:
+				if blh == LC.ACTOR and not st.death_event:
+					cc.dth_event(LC.ACTOR,rsn=2)
+					return
+				if cc.is_crate(blh) and blh.collider:
+					if blh.vnum in {3,11}:
+						blh.empty_destroy()
+					else:
+						blh.destroy()
+				if cc.is_enemie(blh) and blh.collider:
+					if not (blh.is_purge or blh.is_hitten):
+						cc.bash_enemie(blh,LC.ACTOR)
 	def update(self):
 		if st.gproc():
 			return
 		s=self
+		if st.death_event and not s.is_done:
+			s.active=False
+			if not s.is_reset:
+				s.is_reset=True
+				invoke(s.reset_state,delay=2)
+			return
+		if LC.ACTOR.z <= s.z-8 and abs(LC.ACTOR.x-s.x) < 8:
+			s.active=True
 		if s.active:
-			s.rotation_x-=time.dt*60
-			cc.npc_pathfinding(s)
-			lk=s.intersects()
-			if lk.entity == LC.ACTOR:
-				s.active=False
-				s.reset_state()
-				cc.dth_event(LC.ACTOR,rsn=0)
-				return
-			if cc.is_crate(lk.entity):
-				if lk.entity.vnum in {3,11}:
-					lk.entity.empty_destroy()
-				else:
-					lk.entity.destroy()
-			if cc.is_enemie(lk.entity):
-				lk.entity.is_purge=True
+			s.refr()
+			s.rotation_x-=time.dt*70
+			s.z-=time.dt*1.5
+			s.position=(s.x,LC.ACTOR.y+.4)
+			#cc.npc_pathfinding(s)

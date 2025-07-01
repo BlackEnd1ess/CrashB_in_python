@@ -1,4 +1,6 @@
 ## BUGS/ERORRS
+- level 6: npc bee -> buzz sound doesnt stop
+
 
 #LEVEL EDITOR
 - level editor environment settings with Icon
@@ -6,5 +8,4 @@
 - level editor bonus maker, for scene (pos_y < -20)
 
 ##TODO
-- level 8, gem zone, boulder
 - boulder logic + sound

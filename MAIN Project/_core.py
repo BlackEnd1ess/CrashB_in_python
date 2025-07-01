@@ -280,6 +280,11 @@ def jmp_lv_fin():
 		clear_level(passed=True)
 def clear_level(passed):
 	st.LV_CLEAR_PROCESS=True
+	if st.level_index == 8:#removes the light glitch after solving this level
+		for klk in scene.entities[:]:
+			if klk.name == 'point_light':
+				klk.color=color.black
+		del klk
 	scene.clear()
 	if passed:
 		window.color=color.gray

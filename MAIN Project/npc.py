@@ -776,6 +776,10 @@ class Firefly(Entity):
 	def glow_light(self):
 		s=self
 		ttm=.0015
+		if st.LV_CLEAR_PROCESS:
+			s.lgt.color=color.black
+			s.lgt.enabled=False
+			return
 		if s.glow_mode == 0:
 			if s.lgt.color[0] <= .7:
 				s.glow_mode=1

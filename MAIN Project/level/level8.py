@@ -354,10 +354,16 @@ def bonus_zone():
 def gem_zone():
 	q=200
 	dg.FallingZone(pos=(q,-6,0),s=(32,1,128))
-	dg.Boulder(pos=(q,-1.5,20),fldd=[(q,-1.5,7)])
+	
+	
+	dg.Boulder(pos=(q,.5,-8),fldd=[(q,-1.5,-20)])
+	
+	
+	
+	o.HitBox(pos=(200,-3,0),sca=(10,10,1))
 	o.HitBox(pos=(200,-6,-100),sca=(10,10,.5))
 	#blocks
-	o.spw_block(ID=1,p=(198,-3,-10.5),vx=[5,12],ro_y=180)
+	o.spw_block(ID=1,p=(198,-3,-10.5),vx=[5,13],ro_y=180)
 	o.spw_block(ID=1,p=(199,-3.4,-11.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(199.4,-3.6,-12.5),vx=[1,1],ro_y=180)
 	o.spw_block(ID=1,p=(199.8,-4,-13.5),vx=[1,1],ro_y=180)
@@ -379,6 +385,8 @@ def gem_zone():
 	o.ObjType_Movable(ID=1,pos=(q,-5,-85.8),ptm=2,tu=1,rng=.8,pts=1.5,ptw=1,col=color.gray,UL=True)
 	o.ObjType_Movable(ID=1,pos=(q,-5.5,-86.8),ptm=0,col=color.gray,UL=True)
 	#walls
+	o.ObjType_Wall(ID=7,pos=(200,-2.7,1),ro_y=-90,sca=.5,col=color.dark_gray)
+	
 	o.ObjType_Wall(ID=7,pos=(197.5,-2.7,4),ro_y=180,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(202.5,-2.7,0),ro_y=0,sca=.5,col=color.dark_gray)
 	for wbk in range(7):
