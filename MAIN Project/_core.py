@@ -35,7 +35,7 @@ def set_val(c):#run  jump  idle spin land  fall  flip slidestop standup sliderun
 	_loc.ACTOR=c
 	if st.level_index == 8:
 		c.color=color.dark_gray
-	del _a,_v,c
+	del _a,_v
 def get_damage(c,rsn):
 	if st.aku_hit > 2:
 		return
@@ -701,7 +701,11 @@ def npc_pathfinding(m):
 		m.position+=ddrc*(time.dt*m.follow_speed)
 		if distance(Vec3(m.position),m.ffly_drc[m.way_index]) < .3:
 			m.way_index+=1
-			return
+		return
+	if m.name == 'boulder':
+		if not m.is_done:
+			m.is_done=True
+			m.path_fin()
 
 ## game progress
 save_file='savegame.json'

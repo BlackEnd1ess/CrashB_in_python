@@ -1,4 +1,4 @@
-from ursina import Entity,color,time,distance,invoke,BoxCollider,Vec3,scene,Vec3,lerp
+from ursina import Audio,Entity,color,time,distance,invoke,BoxCollider,Vec3,scene,Vec3,lerp
 import _core,status,item,sound,animation,player,_loc,settings,effect,npc,random
 from ursina.ursinastuff import destroy
 
@@ -591,48 +591,63 @@ class Boulder(Entity):
 	def __init__(self,pos,fldd):
 		s=self
 		super().__init__(model=bldr+'.ply',texture=bldr+'.png',position=pos,scale=.0016,rotation_x=-90,unlit=False)
-		s.follow_speed=4
+		s.imp_snd=Audio('res/snd/misc/impact.wav',loop=True,autoplay=False,volume=settings.SFX_VOLUME)
+		s.follow_speed=2
 		s.ffly_drc=fldd
 		s.is_reset=False
 		s.is_done=False
 		s.active=False
+		s.p_snd=False
 		s.spawn_pos=pos
 		s.way_index=0
 		del s,pos,fldd
+	def path_fin(self):
+		s=self
+		s.active=False
+		sn.obj_audio(ID=20)
+		s.imp_snd.stop()
+		s.imp_snd.fade_out()
 	def reset_state(self):
 		s=self
 		s.is_reset=False
 		s.position=s.spawn_pos
 		s.way_index=0
+		s.p_snd=False
+		s.imp_snd.stop()
+		s.imp_snd.fade_out()
 	def refr(self):
+		self.rotation_x-=time.dt*70
 		for blh in scene.entities[:]:
-			if distance(self,blh) < 1.8:
+			if distance(self,blh) < 1.8 and blh.collider:
 				if blh == LC.ACTOR and not st.death_event:
 					cc.dth_event(LC.ACTOR,rsn=2)
 					return
-				if cc.is_crate(blh) and blh.collider:
+				if cc.is_crate(blh):
 					if blh.vnum in {3,11}:
 						blh.empty_destroy()
 					else:
 						blh.destroy()
-				if cc.is_enemie(blh) and blh.collider:
+				if cc.is_enemie(blh):
 					if not (blh.is_purge or blh.is_hitten):
 						cc.bash_enemie(blh,LC.ACTOR)
 	def update(self):
-		if st.gproc():
+		if st.gproc() or self.is_done:
 			return
 		s=self
-		if st.death_event and not s.is_done:
+		if st.death_event:
 			s.active=False
 			if not s.is_reset:
 				s.is_reset=True
 				invoke(s.reset_state,delay=2)
 			return
-		if LC.ACTOR.z <= s.z-8 and abs(LC.ACTOR.x-s.x) < 8:
+		if LC.ACTOR.z <= s.z-8 and abs(LC.ACTOR.x-s.x) < 4:
 			s.active=True
 		if s.active:
+			if not s.p_snd:
+				s.p_snd=True
+				sn.obj_audio(ID=19)
+				s.imp_snd.fade_in()
+				s.imp_snd.play()
+				return
+			cc.npc_pathfinding(s)
 			s.refr()
-			s.rotation_x-=time.dt*70
-			s.z-=time.dt*1.5
-			s.position=(s.x,LC.ACTOR.y+.4)
-			#cc.npc_pathfinding(s)

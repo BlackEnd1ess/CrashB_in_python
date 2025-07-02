@@ -356,7 +356,7 @@ def gem_zone():
 	dg.FallingZone(pos=(q,-6,0),s=(32,1,128))
 	
 	
-	dg.Boulder(pos=(q,.5,-8),fldd=[(q,-1.5,-20)])
+	dg.Boulder(pos=(q,.5,-8),fldd=[(q,-1.5,-20),(q,-1.5,-30)])
 	
 	
 	

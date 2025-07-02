@@ -8,4 +8,4 @@
 - level editor bonus maker, for scene (pos_y < -20)
 
 ##TODO
-- boulder logic + sound
+- boulder path-positions

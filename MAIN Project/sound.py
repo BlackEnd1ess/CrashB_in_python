@@ -150,7 +150,10 @@ SND_OBJ={0:'spawn',
 		14:'pad_0',
 		15:'pad_1',
 		16:'steam',
-		17:'volt'}
+		17:'volt',
+		18:'boulder_start',
+		19:'impact',
+		20:'boulder_stop'}
 def obj_audio(ID,pit=1):
 	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 	invoke(lambda:destroy(ob),delay=ob.length*2)

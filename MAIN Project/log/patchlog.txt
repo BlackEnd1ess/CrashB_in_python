@@ -117,3 +117,7 @@
 - changed firefly func: npc follow player and change brightness like a pulse because game engine cant handle with multible lightsources without loosing the light or shadows.
 
 - level 8 gem route: big blocks was replaced by small blocks to keep constant light quality and range.
+
+#02.07.2025
+- level 8: boulder logic implemented + sound effect
+- finish level 8 gem route
