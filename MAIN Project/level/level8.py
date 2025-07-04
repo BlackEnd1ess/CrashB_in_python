@@ -16,10 +16,14 @@ def map_setting():
 	LC.FOG_B_COLOR=color.black
 	LC.SKY_BG_COLOR=color.black
 	LC.AMB_M_COLOR=color.rgb32(0,0,0)
-	#LC.AMB_M_COLOR=color.rgb32(250,250,250)
 	LC.LV_DST=(8,12)
-	#LC.LV_DST=(70,120)
 	LC.BN_DST=(3,5)
+	#if settings.debg:
+	#	LC.AMB_M_COLOR=color.rgb32(250,250,250)
+	#	LC.LV_DST=(70,120)
+	#	LC.BN_DST=(10,15)
+	#	LC.FOG_L_COLOR=color.gray
+	#	LC.FOG_B_COLOR=color.gray
 	LC.RCX=14
 	LC.RCB=10
 	LC.RCZ=28
@@ -354,12 +358,8 @@ def bonus_zone():
 def gem_zone():
 	q=200
 	dg.FallingZone(pos=(q,-6,0),s=(32,1,128))
-	
-	
-	dg.Boulder(pos=(q,.5,-8),fldd=[(q,-1.5,-20),(q,-1.5,-30)])
-	
-	
-	
+	dg.Boulder(pos=(q,.5,-8),fldd=[(q,-1.5,-20),(q,-1.5,-30),(q,-1.5,-47.7)])
+	dg.Boulder(pos=(q,-.5,-49.5),fldd=[(q,-1.5,-53),(q,-2.5,-57),(q,-2.5,-75),(q,-3,-83),(q,-3.5,-93)])
 	o.HitBox(pos=(200,-3,0),sca=(10,10,1))
 	o.HitBox(pos=(200,-6,-100),sca=(10,10,.5))
 	#blocks
@@ -386,7 +386,6 @@ def gem_zone():
 	o.ObjType_Movable(ID=1,pos=(q,-5.5,-86.8),ptm=0,col=color.gray,UL=True)
 	#walls
 	o.ObjType_Wall(ID=7,pos=(200,-2.7,1),ro_y=-90,sca=.5,col=color.dark_gray)
-	
 	o.ObjType_Wall(ID=7,pos=(197.5,-2.7,4),ro_y=180,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(202.5,-2.7,0),ro_y=0,sca=.5,col=color.dark_gray)
 	for wbk in range(7):

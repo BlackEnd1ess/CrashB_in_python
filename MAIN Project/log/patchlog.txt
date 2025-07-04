@@ -121,3 +121,6 @@
 #02.07.2025
 - level 8: boulder logic implemented + sound effect
 - finish level 8 gem route
+
+#04.07.2025
+- fixxed Boulder reset state, trigger positions and path follow.

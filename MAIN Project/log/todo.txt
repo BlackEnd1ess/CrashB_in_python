@@ -1,5 +1,6 @@
 ## BUGS/ERORRS
 - level 6: npc bee -> buzz sound doesnt stop
+- wall collisions.. again-_-
 
 
 #LEVEL EDITOR
@@ -8,4 +9,4 @@
 - level editor bonus maker, for scene (pos_y < -20)
 
 ##TODO
-- boulder path-positions
+- testing l1,l2,l3,l4,l5,l6,l7,l8 for 100%

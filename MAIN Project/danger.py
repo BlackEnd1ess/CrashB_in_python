@@ -592,7 +592,8 @@ class Boulder(Entity):
 		s=self
 		super().__init__(model=bldr+'.ply',texture=bldr+'.png',position=pos,scale=.0016,rotation_x=-90,unlit=False)
 		s.imp_snd=Audio('res/snd/misc/impact.wav',loop=True,autoplay=False,volume=settings.SFX_VOLUME)
-		s.follow_speed=2
+		s.follow_speed=1.8
+		s.rs_delay=3.5
 		s.ffly_drc=fldd
 		s.is_reset=False
 		s.is_done=False
@@ -604,6 +605,8 @@ class Boulder(Entity):
 	def path_fin(self):
 		s=self
 		s.active=False
+		s.rotation_x=0
+		s.collider=b
 		sn.obj_audio(ID=20)
 		s.imp_snd.stop()
 		s.imp_snd.fade_out()
@@ -612,6 +615,7 @@ class Boulder(Entity):
 		s.is_reset=False
 		s.position=s.spawn_pos
 		s.way_index=0
+		s.collider=None
 		s.p_snd=False
 		s.imp_snd.stop()
 		s.imp_snd.fade_out()
@@ -630,18 +634,29 @@ class Boulder(Entity):
 				if cc.is_enemie(blh):
 					if not (blh.is_purge or blh.is_hitten):
 						cc.bash_enemie(blh,LC.ACTOR)
+	def check_dst(self):
+		s=self
+		z_dist=s.z-LC.ACTOR.z
+		x_dist=abs(s.x-LC.ACTOR.x)
+		if z_dist > 5 and z_dist < 12 and x_dist < 4:
+			s.active=True
 	def update(self):
-		if st.gproc() or self.is_done:
+		if st.gproc():
 			return
 		s=self
+		if s.is_done:
+			if st.death_event and st.checkpoint[2] > s.z:
+				s.is_done=False
+				if not s.is_reset:
+					s.is_reset=True
+					invoke(s.reset_state,delay=s.rs_delay)
+			return
 		if st.death_event:
 			s.active=False
 			if not s.is_reset:
 				s.is_reset=True
-				invoke(s.reset_state,delay=2)
+				invoke(s.reset_state,delay=s.rs_delay)
 			return
-		if LC.ACTOR.z <= s.z-8 and abs(LC.ACTOR.x-s.x) < 4:
-			s.active=True
 		if s.active:
 			if not s.p_snd:
 				s.p_snd=True
@@ -651,3 +666,5 @@ class Boulder(Entity):
 				return
 			cc.npc_pathfinding(s)
 			s.refr()
+			return
+		s.check_dst()
