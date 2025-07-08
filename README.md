@@ -22,6 +22,7 @@ Information: This Project is a Cube based Crash Bandicoot inspired Game written 
   </tr>
   <tr>
     <td><img src="screenshot/cb_13.jpg" width="300" /></td>
+    <td><img src="screenshot/cb_14.jpg" width="300" /></td>
   </tr>
 </table>
 
