@@ -25,11 +25,12 @@ Information: This Project is a Cube based Crash Bandicoot inspired Game written 
   </tr>
 </table>
 
-# temporary no Assets and Ressources aviable, need to renamed and encrypted! please keep patience :/ #
+# temporary no Assets and Ressources aviable, will shortly aviable restricted! (some pcv files will put all Data together), a installations key will required to read the Game Data #
 # HOW TO USE CRASH EDIT / CB-EXPORT: https://www.youtube.com/watch?v=ct_G9GAoAZU #
 
 # Functional Status: Modern PC's will run this Game with 200-300 (full loaded Game with 300-400) MB RAM per Level and 59-60 FPS
-# LEVEL CREATOR beta implemented (25.01.2025) for easy making 2D/3D Levels 
+# LEVEL CREATOR beta implemented (25.01.2025) for easy making 2D/3D Levels
+# Game final Progress: Tested 5/8 Levels for 100% Completion and no gamebreaking Glitches or Issues found.
 
 required Modules:
 - ursina
