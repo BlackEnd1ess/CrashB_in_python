@@ -20,9 +20,9 @@ def map_setting():
 	LC.AMB_M_COLOR=color.rgb32(190,190,190)
 	LC.LV_DST=(15,20)
 	LC.BN_DST=(7,15)
-	LC.RCX=10
-	LC.RCZ=32
-	LC.RCB=6
+	LC.RCX=12
+	LC.RCZ=26
+	LC.RCB=8
 	st.toggle_thunder=False
 	st.toggle_rain=False
 

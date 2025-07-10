@@ -35,7 +35,8 @@ class ManageObjects(Entity):
 				else:
 					v.visible=j < s.box_dst
 			if cc.is_enemie(v):
-				v.enabled=j < s.npc_dst and v.vnum != 15
+				if v.vnum != 15:
+					v.enabled=j < s.npc_dst
 			if v.name == WM:
 				v.enabled=j < s.frt_dst
 			if v.name == SCENE:

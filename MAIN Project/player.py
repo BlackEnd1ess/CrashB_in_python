@@ -30,7 +30,7 @@ class pShadow(Entity):## shadow point
 		s.visible=not(LC.ACTOR.freezed)
 		s.x,s.z=LC.ACTOR.x,LC.ACTOR.z
 		if krf.hit:
-			if not str(krf.entity) in LC.item_lst|LC.trigger_lst:
+			if not str(krf.entity) in LC.item_lst|LC.trigger_lst:# or LC.ACTOR.landed:
 				s.y=krf.world_point.y+.1/10
 
 class CrashB(Entity):
@@ -52,7 +52,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(61,3.3,111.5)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(5.2,3,11)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}

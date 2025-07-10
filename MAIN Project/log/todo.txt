@@ -1,12 +1,13 @@
 ## BUGS/ERORRS
-- level 6: npc bee -> buzz sound doesnt stop
 - wall collisions.. again-_-
 
 
-#LEVEL EDITOR
+#LEVEL EDITOR -> work paused
 - level editor environment settings with Icon
 - level editor side scene to crate ready 2,5/3D Levels where mostly straight structured.
 - level editor bonus maker, for scene (pos_y < -20)
 
 ##TODO
-- testing l1,l2,l3,l4,l5,l6,l7,l8 for 100%
+
+- testing l8 for 100%
+- show feedback text after save/load

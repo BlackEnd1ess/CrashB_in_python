@@ -85,10 +85,10 @@ def load_object():
 	Entity(model='cube',scale=(4,.5,5),position=(14.5,3.5,52.25),texture_scale=(4,5),collider=b,texture=mtx)
 	Entity(model='cube',scale=(16,1,64),position=(14.5,2.9,83),collider=b,color=color.black)
 	#walls
-	Entity(model='quad',texture=sw_tile,scale=(10,20),texture_scale=(10,20),position=(-2,1,9),color=color.rgb32(160,150,150))
-	Entity(model='quad',texture=sw_tile,scale=(20,20),texture_scale=(20,20),position=(3,1,49.7),color=color.rgb32(160,150,150))
-	Entity(model='cube',texture=sw_tile,scale=(1,20,23),texture_scale=(10,20),position=(2,1,40),color=color.rgb32(160,150,150))
-	Entity(model='cube',texture=sw_tile,scale=(1,20,16),texture_scale=(10,20),position=(8,1,37),color=color.rgb32(160,150,150))
+	Entity(model='quad',texture=sw_tile,scale=(10,20),texture_scale=(10,20),position=(-2,1,9),color=color.rgb32(160,150,150),collider=b)
+	Entity(model='quad',texture=sw_tile,scale=(20,20),texture_scale=(20,20),position=(3,1,49.7),color=color.rgb32(160,150,150),collider=b)
+	Entity(model='cube',texture=sw_tile,scale=(1,20,23),texture_scale=(10,20),position=(2,1,40),color=color.rgb32(160,150,150),collider=b)
+	Entity(model='cube',texture=sw_tile,scale=(1,20,16),texture_scale=(10,20),position=(8,1,37),color=color.rgb32(160,150,150),collider=b)
 	o.ObjType_Wall(ID=2,pos=(5.5,-3.5,9.2),ro_y=90,sca=.0175,col=color.rgb32(180,160,140))
 	o.ObjType_Wall(ID=2,pos=(9.5,0,9.2),ro_y=90,sca=.0175,col=color.rgb32(180,160,140))
 	o.ObjType_Wall(ID=2,pos=(15,-1,49.3),ro_y=90,sca=.0175,col=color.rgb32(180,160,140))
@@ -249,11 +249,11 @@ def bonus_zone():
 	#pipes
 	dg.HeatPipe(pos=(8.3,-36.4,U))
 	for swp in range(3):
-		o.ObjType_Deco(ID=9,pos=(2+swp*13,-34,.6),sca=.75,rot=(-90,90,0))
-		o.ObjType_Deco(ID=9,pos=(4.5+swp*13,-34,.6),sca=.75,rot=(-90,90,0))
-		o.ObjType_Deco(ID=9,pos=(7+swp*13,-34,.6),sca=.75,rot=(-90,90,0))
-	o.ObjType_Deco(ID=8,pos=(3+swp*13,-36,.6),sca=.75,rot=(-90,-90,0))
-	o.ObjType_Deco(ID=8,pos=(6+swp*13,-36,.6),sca=.75,rot=(-90,-90,0))
+		o.ObjType_Deco(ID=9,pos=(2+swp*13,-34,.6),sca=.75,rot=(-90,90,0),col=color.orange)
+		o.ObjType_Deco(ID=9,pos=(4.5+swp*13,-34,.6),sca=.75,rot=(-90,90,0),col=color.orange)
+		o.ObjType_Deco(ID=9,pos=(7+swp*13,-34,.6),sca=.75,rot=(-90,90,0),col=color.orange)
+		o.ObjType_Deco(ID=8,pos=(3+swp*13,-36,.6),sca=.75,rot=(-90,-90,0),col=color.orange)
+		o.ObjType_Deco(ID=8,pos=(6+swp*13,-36,.6),sca=.75,rot=(-90,-90,0),col=color.orange)
 	for swl in range(3):
 		o.ObjType_Wall(ID=2,pos=(-2+swl*13,-38,-.5),ro_y=90,sca=.0175,col=bvb)
 		o.ObjType_Wall(ID=2,pos=(-2+swl*13,-30.8,-.5),ro_y=90,sca=.0175,col=bvb)

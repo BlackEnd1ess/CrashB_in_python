@@ -350,6 +350,7 @@ class TikkiSculpture(Entity):
 		s.spawn_pos=pos
 		s.an_pause=0
 		s.an_mode=0
+		s.danger=True
 		s.tme=1
 		s.frm=0
 		s.rng=rng
@@ -386,6 +387,7 @@ class LandMine(Entity):
 		s=self
 		super().__init__(model=lm+'0.ply',name='ldmn',texture=lm+'0.tga',position=pos,rotation_x=-90,scale=.00065)
 		s.explode=False
+		s.danger=True
 		s.p_snd=False
 		s.frm=0
 		s.tme=1

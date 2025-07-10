@@ -449,8 +449,8 @@ class Bee(Entity):
 		super().__init__(rotation_x=-90,position=pos,collider='box')
 		s.buzz_snd=Audio(sn.BE,pitch=random.uniform(1,2),loop=True,volume=settings.SFX_VOLUME)
 		cc.set_val_npc(s)
-		s.bID=bID
 		s.max_frm=0
+		s.bID=bID
 		s.frm=0
 		s.tme=0
 		del pos,s
@@ -468,7 +468,7 @@ class Bee(Entity):
 		s=self
 		s.buzz_snd.stop()
 		s.buzz_snd.fade_out()
-		s.enabled=False
+		destroy(s.buzz_snd)
 		destroy(s)
 	def hunt_p(self):
 		s=self
@@ -510,7 +510,6 @@ class Bee(Entity):
 			s.purge()
 			return
 		s.fly_event()
-		return
 
 class Lumberjack(Entity):
 	def __init__(self,pos):

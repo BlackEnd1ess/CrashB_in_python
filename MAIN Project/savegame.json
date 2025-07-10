@@ -1,1 +1,1 @@
-{"SV_WU": 0, "SV_LF": 4, "SV_CR": 0, "SV_CG": 0, "SV_CL": 0, "SV_AK": 0, "LS_CR": [], "LS_CL": [], "LS_CG": [], "M_VOL": 0.5, "S_VOL": 0.5, "CRD_W": false}
+{"SV_WU": 55, "SV_LF": 61, "SV_CR": 5, "SV_CG": 7, "SV_CL": 7, "SV_AK": 1, "LS_CR": [1, 2, 3, 4, 5], "LS_CL": [1, 2, 3, 4, 5, 6, 7], "LS_CG": [4, 1, 5, 2, 3, 6, 7], "M_VOL": 1.0, "S_VOL": 0.40000000000000013, "CRD_W": true}

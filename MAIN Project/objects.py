@@ -194,7 +194,7 @@ class ObjType_Wall(Entity):
 		super().__init__(model=omf+smd[ID]+'.ply',texture=omf+smd[ID]+'.png',position=pos,scale=sca,rotation=(-90,ro_y,0),color=col,double_sided=True)
 		if ID == 0 and pos[0] > 190:
 			s.color=color.rgb32(0,140,160)
-		if ID == 2:
+		if ID in {2,4}:
 			s.collider=b
 		if ID == 7:
 			s.unlit=False
@@ -234,6 +234,7 @@ class ObjType_Deco(Entity):#UL=unlit Flag, htb=HitBox
 			HitBox(pos=pos,sca=(1,5,1))
 		if ID == 2:
 			ObjType_Deco(ID=3,pos=(s.x,s.y+1.1,s.z+.075),sca=(.025,.02,.03),rot=(-90,45,0),col=col)
+			HitBox(pos=(pos[0],pos[1]+4.9,pos[2]),sca=(.5,10,.5))
 		if ID in {8,9}:
 			vvf=random.randint(0,1)
 			if vvf == 0:
@@ -333,7 +334,7 @@ class ObjType_Floor(Entity):
 				HitBox(pos=(s.x-.9,s.y+.4,s.z),sca=(.3,.5,1.7))
 		if ID == 8:
 			s.texture_scale=(sca[0],sca[2])
-			s.name='befl'
+			#s.name='befl'
 		s.set_collider()
 		del ID,pos,sca,rot,col,al,txa,s
 	def set_model(self,txa):
