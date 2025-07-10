@@ -6,5 +6,4 @@
 - level editor side scene to crate ready 2,5/3D Levels where mostly straight structured.
 - level editor bonus maker, for scene (pos_y < -20)
 
-##TODO
-- testing again 100% for all
+##TODO - currently implemented anything (temporary)

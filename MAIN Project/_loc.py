@@ -40,7 +40,7 @@ RCB=0#back dst
 ge_0='res/ui/icon/gem_0/gem'
 ge_1='res/ui/icon/gem_1/gem'
 ge_2='res/ui/icon/gem_2/gem'
-fdc={1:ge_0,2:ge_0,3:ge_0,4:ge_1,5:ge_2,6:ge_0,7:ge_0,8:ge_0}
+fdc={1:ge_0,2:ge_0,3:ge_0,4:ge_1,5:ge_2,6:ge_0,7:ge_0,8:ge_0,9:ge_0}
 
 #gem ui color
 O=180
@@ -51,8 +51,9 @@ GMU={1:c.rgb32(0,0,O),#blue
 	4:c.rgb32(0,O,0),#green
 	5:c.rgb32(O,0,O),#yellow
 	6:cglr,#clear
-	7:cglr,
-	8:cglr}#clear
+	7:cglr,#clear
+	8:cglr,#clear
+	9:cglr}#clear
 
 #gem color
 GMC={0:cglr,
@@ -63,7 +64,8 @@ GMC={0:cglr,
 	5:c.rgb32(O,O,0),
 	6:cglr,
 	7:cglr,
-	8:cglr}
+	8:cglr,
+	9:cglr}
 
 #crate break animation color
 cbrc={3:c.rgb32(140,70,0),
@@ -78,6 +80,9 @@ FOG_L_COLOR=None
 FOG_B_COLOR=None
 LV_DST=None
 BN_DST=None
+
+#level fin
+lv_fin_pos=(0,0,0)
 
 #lab taser height
 ltth=1.7

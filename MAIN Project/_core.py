@@ -336,16 +336,17 @@ def collect_rewards():
 			st.clear_gems+=1
 		else:
 			st.color_gems+=1
-		wcg={1:4,#lv1#blue
-			2:1,#lv2#red
-			3:5,#lv3#yellow
-			4:2,#lv4#green
-			5:3,#lv5#purple
-			6:6,#lv6#clear
-			7:7,#lv7#clear
-			8:8}#lv8#clear
-		st.COLOR_GEM.append(wcg[cdx])
-		del wcg
+		if st.level_index != 9:
+			wcg={1:4,#lv1#blue
+				2:1,#lv2#red
+				3:5,#lv3#yellow
+				4:2,#lv4#green
+				5:3,#lv5#purple
+				6:6,#lv6#clear
+				7:7,#lv7#clear
+				8:8}#lv8#clear
+			st.COLOR_GEM.append(wcg[cdx])
+			del wcg
 	delete_states()
 	invoke(lambda:warproom.level_select(),delay=2)
 def purge_instance(v):
@@ -645,6 +646,7 @@ def set_val_npc(m,drc=None,rng=None):
 	vnn=m.name
 	m.model=npf+f'{vnn}/0.ply'
 	m.texture=npf+f'{vnn}/0.tga'
+	m.collider.visible=settings.debg
 	if st.level_index == 8:
 		m.color=color.dark_gray
 		m.unlit=False

@@ -54,7 +54,7 @@ class CrashB(Entity):
 			s.dev_act={
 					sg.DEV_WARP:lambda:setattr(s,'position',(5.2,3,11)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
-					sg.DEV_COLL:_debug_.collect_all,
+					sg.DEV_COLL:_debug_.complete_level,
 					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
 		del pos
@@ -106,7 +106,6 @@ class CrashB(Entity):
 			st.p_last_direc=mvD
 			s.walk_event()
 			if not mc or str(mc.entity) in LC.item_lst|LC.trigger_lst:
-				#print(mc.normal)
 				s.position+=mvD*(time.dt*s.move_speed)
 			return
 		s.wksn=0

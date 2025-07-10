@@ -799,6 +799,7 @@ class LevelFinish(Entity):## finish level
 		ef.WarpVortex(pos=(s.x,s.y+.5,s.z),col=color.yellow,sca=.8,drc=1)
 		ef.WarpVortex(pos=(s.x,s.y+.7,s.z),col=color.orange,sca=.7,drc=0)
 		s.w_audio=Audio('res/snd/misc/portal.wav',volume=0,loop=True)
+		LC.lv_fin_pos=(p[0],p[1]+.3,p[2])
 		s.refr=.3
 		del p
 	def update(self):

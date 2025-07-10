@@ -3,8 +3,8 @@ from collections import defaultdict
 from collections import Counter
 from ursina import *
 CV=camera.ui
-LC=_loc
 st=status
+LC=_loc
 
 #pos info
 def pos_info(c):
@@ -19,13 +19,15 @@ def pos_info(c):
 	print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=0)")
 	#print(f'n.spawn(ID={random.randint(4,6)},POS=({sx},{sym},{sz}),DRC=2,RNG=3)')
 
-#collect all gems in level to check
-def collect_all():
-	if st.level_index < 6:
-		st.level_crystal=True
+#collect all gems in level and finish them
+def complete_level():
+	print(f'COMPLETE ALL GEMS IN LEVEL: {st.level_index}')
+	st.level_crystal=st.level_index < 6
 	st.level_cle_gem=True
 	st.level_col_gem=True
+	st.show_gems=1
 	sound.ui_audio(ID=4)
+	invoke(lambda:setattr(LC.ACTOR,'position',LC.lv_fin_pos),delay=1)
 
 #player attr info
 class PlayerDBG(Entity):

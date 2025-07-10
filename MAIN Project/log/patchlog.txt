@@ -3,3 +3,5 @@
 - level 3: changed color for objects in bonus level
 - added developer button to collect all gems and crystal in level (key=n)
 - fixxed game progress: 5 crystals, 5 color gems and 11 clear gems equals 104%
+- fixxed lumberjack collider
+- after save game, a text will appear to give player a success info

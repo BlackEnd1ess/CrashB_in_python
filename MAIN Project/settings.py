@@ -4,7 +4,7 @@ import environment
 
 ## debug options
 debg_color=color.rgb32(180,180,180)
-debg=True
+debg=False
 
 ## keyboard bindings
 MNU_KEY='p'#		pause
@@ -17,7 +17,7 @@ BCK_KEY='s'#		backward
 RGT_KEY='d'#		right
 LFT_KEY='a'#		left
 
-DEV_COLL='n'#		collect all
+DEV_COLL='n'#		complete level
 DEV_WARP='u'#		dev warp
 DEV_INFO='b'#		map tools info
 DEV_ECAM='e'#		edior camera

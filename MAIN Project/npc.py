@@ -100,7 +100,7 @@ class Turtle(Entity):
 		s=self
 		s.vnum=1
 		super().__init__(position=pos)
-		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(300,600,300))
+		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,600,300))
 		cc.set_val_npc(s,drc,rng)
 		s.move_speed=.7
 		s.max_frm=12
@@ -175,7 +175,7 @@ class Hedgehog(Entity):
 		s=self
 		s.vnum=5
 		super().__init__(position=pos)
-		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+250),size=Vec3(400,400,400))
+		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+250),size=Vec3(450,450,450))
 		cc.set_val_npc(s,drc,rng)
 		s.def_mode=False
 		s.move_speed=1.1
@@ -515,7 +515,8 @@ class Lumberjack(Entity):
 	def __init__(self,pos):
 		s=self
 		s.vnum=16
-		super().__init__(rotation_x=-90,position=pos,collider='box')
+		super().__init__(rotation_x=-90,position=pos)
+		s.collider=BoxCollider(s,center=Vec3(s.x,s.y,s.z+600),size=Vec3(400,400,800))
 		cc.set_val_npc(s)
 		s.move_speed=1
 		s.max_frm=10
