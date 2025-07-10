@@ -681,7 +681,7 @@ class PauseMenu(Entity):
 		gems_total=st.color_gems+st.clear_gems
 		s.gem_counter.text=str(gems_total)+'/16 GEMS'
 		s.crystal_counter.text=str(st.collected_crystals)+'/5'
-		s.game_progress.text='Progress '+str(st.color_gems*6+st.clear_gems*5+st.collected_crystals*6)+'%'
+		s.game_progress.text='Progress '+str(st.color_gems*6+st.clear_gems*4+st.collected_crystals*6)+'%'
 		s.add_text.text='+ '+str(st.clear_gems)
 		for qc in {s.col_gem1,s.col_gem2,s.col_gem3,s.col_gem3,s.col_gem4,s.col_gem5}:
 			if int(qc.name) in st.COLOR_GEM:

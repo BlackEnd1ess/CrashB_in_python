@@ -405,25 +405,29 @@ class LandMine(Entity):
 	def explosion(self):
 		s=self
 		s.frm=0
-		LC.ACTOR.stun,s.explode=True,True
+		if st.aku_hit < 3:
+			LC.ACTOR.stun=True
+		s.explode=True
 		if not s.p_snd:
 			s.p_snd=True
 			ef.Fireball(s)
 			sn.crate_audio(ID=10)
 	def update(self):
-		if not st.gproc():
-			s=self
-			if s.explode:
+		if st.gproc():
+			return
+		s=self
+		if s.explode:
+			if st.aku_hit < 3:
 				LC.ACTOR.y=lerp(LC.ACTOR.y,s.y+1,time.dt*12)
-				an.mine_destroy(s,sp=12)
-				return
-			lmd=distance(s,LC.ACTOR)
-			an.land_mine(s,sp=12)
-			if lmd < .3:
-				s.explosion()
-				return
-			if lmd < 2:
-				s.m_audio()
+			an.mine_destroy(s,sp=12)
+			return
+		lmd=distance(s,LC.ACTOR)
+		an.land_mine(s,sp=12)
+		if lmd < .3:
+			s.explosion()
+			return
+		if lmd < 2:
+			s.m_audio()
 
 def multi_heat_tile(p,typ,ro_y,sca,CNT):
 	for mhx in range(CNT[0]):

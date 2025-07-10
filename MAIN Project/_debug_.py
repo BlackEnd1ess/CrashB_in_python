@@ -1,4 +1,4 @@
-import gc,os,ui,settings,psutil,_loc,status,sys
+import gc,os,ui,settings,psutil,_loc,status,sys,sound
 from collections import defaultdict
 from collections import Counter
 from ursina import *
@@ -18,6 +18,14 @@ def pos_info(c):
 	#print(f"mt.crate_row(ID=2,POS=({sx},{syc},{sz}),WAY=2,CNT=1)")
 	print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=0)")
 	#print(f'n.spawn(ID={random.randint(4,6)},POS=({sx},{sym},{sz}),DRC=2,RNG=3)')
+
+#collect all gems in level to check
+def collect_all():
+	if st.level_index < 6:
+		st.level_crystal=True
+	st.level_cle_gem=True
+	st.level_col_gem=True
+	sound.ui_audio(ID=4)
 
 #player attr info
 class PlayerDBG(Entity):

@@ -17,6 +17,7 @@ BCK_KEY='s'#		backward
 RGT_KEY='d'#		right
 LFT_KEY='a'#		left
 
+DEV_COLL='n'#		collect all
 DEV_WARP='u'#		dev warp
 DEV_INFO='b'#		map tools info
 DEV_ECAM='e'#		edior camera

@@ -1,5 +1,6 @@
 from ursina import Audio,Text,Entity,camera,scene,color,invoke
 import status,_loc,level,sound,settings,ui,_core,objects,time
+from ursina.ursinastuff import destroy
 cu=camera.ui
 st=status
 sn=sound
@@ -14,6 +15,11 @@ class Memorycard(Entity):
 		s.desc_s=Text('Save Game - F2',font=fn,scale=1.5,position=(s.x-.1,s.y-.07,s.z),color=color.green,parent=cu)
 		s.desc_l=Text('Load Game - F3',font=fn,scale=1.5,position=(s.x-.1,s.y-.12,s.z),color=color.azure,parent=cu)
 		del s
+
+class SvSuccessInfo(Text):
+	def __init__(self):
+		super().__init__('game saved successfully',font=fn,scale=1.5,position=(.45,.05),color=color.orange,parent=cu)
+		invoke(lambda:destroy(self),delay=3)
 
 class BonusRoomEntry(Entity):
 	def __init__(self):
@@ -53,6 +59,7 @@ class LvSelect(Entity):
 		if key == 'f2':
 			sn.ui_audio(ID=1)
 			_core.save_game()
+			SvSuccessInfo()
 			return
 		if key == 'f3':
 			sn.ui_audio(ID=1)
@@ -64,7 +71,7 @@ class LvSelect(Entity):
 		if key == 'f1' and st.collected_crystals >= 5:
 			sn.ui_audio(ID=1)
 			st.bonus_warp_room=not st.bonus_warp_room
-			st.selected_level=6 if st.bonus_warp_room else 0
+			st.selected_level=6 if st.bonus_warp_room else 1
 			scene.clear()
 			level_select()
 			return

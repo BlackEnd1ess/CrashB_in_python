@@ -304,6 +304,7 @@ def delete_states():
 	st.crate_count=0
 	st.crate_to_sv=0
 	st.fails=0
+	st.aku_inv_time=20
 	if st.aku_hit > 2:
 		st.aku_hit=2
 	st.NPC_RESET.clear()
@@ -331,17 +332,20 @@ def collect_rewards():
 		st.CLEAR_GEM.append(cdx)
 		st.clear_gems+=1
 	if st.level_col_gem:
-		st.color_gems+=1
 		if cdx > 5:
-			st.COLOR_GEM.append(cdx)
+			st.clear_gems+=1
 		else:
-			wcg={1:4,#lv1#blue
-				2:1,#lv2#red
-				3:5,#lv3#yellow
-				4:2,#lv4#green
-				5:3}#lv5#purple
-			st.COLOR_GEM.append(wcg[cdx])
-			del wcg
+			st.color_gems+=1
+		wcg={1:4,#lv1#blue
+			2:1,#lv2#red
+			3:5,#lv3#yellow
+			4:2,#lv4#green
+			5:3,#lv5#purple
+			6:6,#lv6#clear
+			7:7,#lv7#clear
+			8:8}#lv8#clear
+		st.COLOR_GEM.append(wcg[cdx])
+		del wcg
 	delete_states()
 	invoke(lambda:warproom.level_select(),delay=2)
 def purge_instance(v):

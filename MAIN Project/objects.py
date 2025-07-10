@@ -786,6 +786,7 @@ class PseudoGemPlatform(Entity):
 			return
 		s.alpha=.5
 
+
 ##############
 ## Switches ##
 class LevelFinish(Entity):## finish level
