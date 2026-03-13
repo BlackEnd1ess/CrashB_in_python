@@ -52,7 +52,7 @@ class CrashB(Entity):
 		if sg.debg:
 			debg.PlayerDBG()
 			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(5.2,3,11)),
+					sg.DEV_WARP:lambda:setattr(s,'position',(61.8,2.5,111.5)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					sg.DEV_COLL:_debug_.complete_level,
 					#sg.DEV_INFO:lambda:_debug_.chck_mem(),
@@ -107,6 +107,8 @@ class CrashB(Entity):
 			s.walk_event()
 			if not mc or str(mc.entity) in LC.item_lst|LC.trigger_lst:
 				s.position+=mvD*(time.dt*s.move_speed)
+			if (cc.is_crate(mc.entity) and mc.entity.vnum == 12):
+				mc.entity.destroy()
 			return
 		s.wksn=0
 		s.walking=False
@@ -124,7 +126,8 @@ class CrashB(Entity):
 		s.wksn=max(s.wksn-time.dt,0)
 		if s.wksn <= 0:
 			s.wksn=.5 if s.is_slp else .35
-			sn.footstep(s)
+			if not s.jumping:
+				sn.footstep(s)
 	def jump_typ(self,t):
 		s=self
 		s.gravity={1:(2.6),2:(2.9),3:(3.1),4:(2.8)}[t]#fall speed

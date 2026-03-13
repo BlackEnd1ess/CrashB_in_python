@@ -14,7 +14,7 @@ def pos_info(c):
 	sym=f"{c.y:.2f}"#npc
 	sz=f"{c.z:.1f}"
 	#print(f"mt.crate_plane(ID={random.randint(1,2)},POS=({sx},{syc},{sz}),CNT=[2,2])")
-	#print(f"c.place_crate(ID=6,p=({sx},{syc},{sz}))")
+	#print(f"c.spawn(ID=6,p=({sx},{syc},{sz}))")
 	#print(f"mt.crate_row(ID=2,POS=({sx},{syc},{sz}),WAY=2,CNT=1)")
 	print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=0)")
 	#print(f'n.spawn(ID={random.randint(4,6)},POS=({sx},{sym},{sz}),DRC=2,RNG=3)')
@@ -85,7 +85,7 @@ class PlayerDBG(Entity):
 			s.ppo_state.text=f'x{rv.x:.1f}  y{rv.y:.1f}  z{rv.z:.1f}'
 			s.aku_state.text=f'AKU-AKU HIT : {st.aku_hit}'
 			s.ind_state.text=f'INDOOR ZONE : {(rv.indoor > 0)}'
-			s.inw_state.text=f'WATER ZONE  : {(rv.inwt > 0)}'
+			s.inw_state.text=f'WATER ZONE  : {bool(rv.in_water)}'
 			s.slp_state.text=f'IS SLIPPERY : {rv.is_slp > 0}'
 			s.bns_state.text=f'BONUS ROUND : {st.bonus_round}'
 			s.idl_state.text=f'IDLE STATUS : {st.p_idle(LC.ACTOR)}'

@@ -122,7 +122,6 @@ class Fireball(Entity):
 		s.visible=bool(s.ex_step < 14.99)
 		if s.ex_step > 14.99:
 			destroy(s)
-			del s
 
 llfr=ef+'fire/fire_'
 class LightFire(Entity):

@@ -11,6 +11,7 @@ CRYSTAL=[]
 ## reset instances
 NPC_RESET=[]
 W_RESET=[]
+C_RESET_NS=[]
 C_RESET=[]
 
 ## player rule
@@ -52,9 +53,9 @@ show_lives=0
 show_gems=0
 
 ## crate audio limit
-br_sn=False
-ex_sn=False
-ni_sn=False
+br_sn=0
+ex_sn=0
+ni_sn=0
 
 ## level processing
 LV_CLEAR_PROCESS=False

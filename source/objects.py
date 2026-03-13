@@ -551,7 +551,7 @@ class LoosePlatform(Entity):
 		s.collision,s.visible,s.active=True,True,False
 	def collapse(self):
 		s=self
-		sn.obj_audio(ID=9,pit=1)
+		sn.obj_audio(ID=8)
 		s.collision=False
 		invoke(s.reset,delay=8)
 	def action(self):
@@ -589,7 +589,7 @@ class PistonPlatform(Entity):
 		s.wait=s.wt
 		s.stat=1
 		if distance(s,LC.ACTOR) < 8:
-			sn.obj_audio(ID=13,pit=.5)
+			sn.obj_audio(ID=12,pit=.5)
 	def mv_up(self):
 		s=self
 		if s.y < s.spw_y:
@@ -598,7 +598,7 @@ class PistonPlatform(Entity):
 		s.wait=s.wt*2
 		s.stat=0
 		if distance(s,LC.ACTOR) < 8:
-			sn.obj_audio(ID=13,pit=.8)
+			sn.obj_audio(ID=12,pit=.8)
 	def update(self):
 		if st.gproc():
 			return
@@ -798,7 +798,7 @@ class LevelFinish(Entity):## finish level
 		ef.WarpVortex(pos=(s.x,s.y+.3,s.z),col=color.orange,sca=.7,drc=0)
 		ef.WarpVortex(pos=(s.x,s.y+.5,s.z),col=color.yellow,sca=.8,drc=1)
 		ef.WarpVortex(pos=(s.x,s.y+.7,s.z),col=color.orange,sca=.7,drc=0)
-		s.w_audio=Audio('res/snd/misc/portal.wav',volume=0,loop=True)
+		s.w_audio=Audio('res/snd/obj_portal.wav',volume=0,loop=True)
 		LC.lv_fin_pos=(p[0],p[1]+.3,p[2])
 		s.refr=.3
 		del p

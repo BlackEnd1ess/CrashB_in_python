@@ -1,4 +1,4 @@
-import item,status,_core,animation,sound,npc,settings,_loc,ui,random,time,effect
+import item,status,_core,animation,sound,npc,settings,_loc,ui,random,time
 from ursina import Entity,Text,Audio,color,scene,invoke,distance
 from ursina.ursinastuff import destroy
 
@@ -12,8 +12,8 @@ pp='res/crate/'
 cr1=pp+'cr_t0.ply'# single texture
 cr2=pp+'cr_t1.ply'# double texture
 
-##spawn, destroy event
-def place_crate(p,ID,m=0,l=1,pse=False):
+## spawn func
+def spawn(p,ID,m=0,l=1,pse=False):
 	{0:lambda:Iron(pos=p,pse=pse),
 	1:lambda:Normal(pos=p,pse=pse),
 	2:lambda:QuestionMark(pos=p,pse=pse),
@@ -39,60 +39,6 @@ def place_crate(p,ID,m=0,l=1,pse=False):
 			st.crates_in_level-=1
 	del p,ID,m,l,pse
 
-def destroy_event(c):
-	cc.crate_stack(c.position)
-	c.collider=None
-	if c.vnum in {11,12}:
-		explosion(c)
-	if not c.poly:
-		st.C_RESET.append(c)
-	if c.visible:
-		sn.crate_audio(ID=2)
-		twc=LC.cbrc[c.vnum] if c.vnum in LC.cbrc else color.rgb32(180,80,0)
-		an.CrateBreak(c.position,col=twc)
-	if st.bonus_round:
-		st.crate_bonus+=1
-	else:
-		if c.vnum != 16:
-			st.crate_to_sv+=1
-			st.crate_count+=1
-			st.show_crates=5
-	cc.cache_instance(c)
-
-def block_destroy(c):
-	if not c.p_snd:
-		c.p_snd=True
-		dpt=1
-		if c.vnum == 14:
-			dpt=.675
-		sn.crate_audio(ID=0,pit=dpt)
-		invoke(lambda:setattr(c,'p_snd',False),delay=.5)
-
-def spawn_ico(c):
-	sn.crate_audio(ID=12)
-	sn.crate_audio(ID=1)
-	for exm in range(5):
-		effect.ExclamationMark(pos=c.position,ID=exm)
-
-def explosion(c):
-	if c.visible:
-		effect.Fireball(c)
-	sn.crate_audio(ID=10)
-	if c.vnum == 12:
-		invoke(lambda:sn.crate_audio(ID=11,pit=1.4),delay=.1)
-	for nbc in scene.entities[:]:
-		if distance(c,nbc) < 1 and nbc.collider:
-			if cc.is_crate(nbc):
-				if nbc.vnum in {3,11}:
-					nbc.empty_destroy()
-				else:
-					nbc.destroy()
-			if cc.is_enemie(nbc) and not nbc.is_hitten:
-				cc.bash_enemie(nbc,c)
-			if nbc == LC.ACTOR:
-				cc.get_damage(LC.ACTOR,rsn=4)
-	del c,nbc
-
 ##Crate Logics
 class Iron(Entity):
 	def __init__(self,pos,pse):
@@ -102,7 +48,7 @@ class Iron(Entity):
 		self.p_snd=False
 		del pos,pse
 	def destroy(self):
-		block_destroy(self)
+		cc.block_destroy(self)
 
 class Normal(Entity):
 	def __init__(self,pos,pse):
@@ -113,7 +59,7 @@ class Normal(Entity):
 	def destroy(self):
 		s=self
 		item.place_wumpa(s.position,cnt=1,c_prg=True)
-		destroy_event(s)
+		cc.destroy_event(s)
 
 class QuestionMark(Entity):
 	def __init__(self,pos,pse):
@@ -124,7 +70,7 @@ class QuestionMark(Entity):
 	def destroy(self):
 		s=self
 		item.place_wumpa(s.position,cnt=5,c_prg=True)
-		destroy_event(s)
+		cc.destroy_event(s)
 
 class Bounce(Entity):
 	def __init__(self,pos,pse):
@@ -140,13 +86,13 @@ class Bounce(Entity):
 	def empty_destroy(self):
 		if st.aku_hit > 2:
 			cc.wumpa_count(10)
-		destroy_event(self)
+		cc.destroy_event(self)
 	def bnc_event(self):
 		s=self
 		if st.aku_hit < 3:
 			LC.ACTOR.jump_typ(t=3)
 		cc.wumpa_count(2)
-		sn.crate_audio(ID=4,pit=1+s.b_cnt/10)
+		sn.pc_audio(ID=5,pit=1+s.b_cnt/10)
 		s.b_cnt+=1
 		s.lf_time=5
 		s.is_bounc=True
@@ -181,7 +127,7 @@ class ExtraLife(Entity):
 	def destroy(self):
 		s=self
 		item.ExtraLive(pos=(s.x,s.y+.1,s.z))
-		destroy_event(s)
+		cc.destroy_event(s)
 
 class AkuAku(Entity):
 	def __init__(self,pos,pse):
@@ -192,7 +138,7 @@ class AkuAku(Entity):
 		del pos,pse,s
 	def destroy(self):
 		s=self
-		sn.crate_audio(ID=14,pit=1.2)
+		sn.crate_audio(ID=12,pit=1.2)
 		if st.aku_hit < 4:
 			st.aku_hit+=1
 			if st.aku_hit > 2:
@@ -203,7 +149,7 @@ class AkuAku(Entity):
 					st.aku_inv_time=20
 		if not st.aku_exist:
 			npc.AkuAkuMask(s.position)
-		destroy_event(s)
+		cc.destroy_event(s)
 
 class Checkpoint(Entity):
 	def __init__(self,pos,pse):
@@ -217,7 +163,7 @@ class Checkpoint(Entity):
 		st.checkpoint=(s.x,s.y+1.5,s.z)
 		sn.crate_audio(ID=6)
 		ui.CheckpointLetter(s.position)
-		destroy_event(s)
+		cc.destroy_event(s)
 		cc.collect_reset()
 
 class SpringWood(Entity):
@@ -231,7 +177,7 @@ class SpringWood(Entity):
 		del pos,pse,s
 	def destroy(self):
 		item.place_wumpa(self.position,cnt=1,c_prg=True)
-		destroy_event(self)
+		cc.destroy_event(self)
 	def update(self):
 		if st.gproc():
 			return
@@ -250,7 +196,7 @@ class SpringIron(Entity):
 		s.frm=0
 		del pos,pse,s
 	def destroy(self):
-		block_destroy(self)
+		cc.block_destroy(self)
 	def update(self):
 		if st.gproc():
 			return
@@ -276,7 +222,7 @@ class SwitchEmpty(Entity):
 		del s
 	def destroy(self):
 		s=self
-		block_destroy(s)
+		cc.block_destroy(s)
 		if not s.activ:
 			s.activ=True
 			s.model=cr1
@@ -287,7 +233,7 @@ class SwitchEmpty(Entity):
 				if isinstance(_air,Air) and _air.mark == s.mark:
 					invoke(_air.destroy,delay=ccount/4)
 					ccount=ccount+0 if st.level_index == 5 and not st.bonus_round else ccount+.8
-			spawn_ico(s)
+			cc.spawn_ico(s)
 			del _air
 
 class SwitchNitro(Entity):
@@ -306,12 +252,12 @@ class SwitchNitro(Entity):
 		s.activ=False
 	def destroy(self):
 		s=self
-		block_destroy(s)
+		cc.block_destroy(s)
 		if not s.activ:
 			s.activ=True
 			s.model=cr1
 			s.texture=pp+'0.tga'
-			spawn_ico(s)
+			cc.spawn_ico(s)
 			st.C_RESET.append(s)
 			for nt in scene.entities[:]:
 				if isinstance(nt,Nitro) and nt.collider:
@@ -345,7 +291,7 @@ class TNT(Entity):
 			s.activ=False
 			s.aud.fade_out()
 		s.countdown=0
-		destroy_event(s)
+		cc.destroy_event(s)
 	def update(self):
 		s=self
 		if st.gproc():
@@ -373,7 +319,7 @@ class Nitro(Entity):
 	def c_freeze(self):
 		self.can_jmp=False
 	def destroy(self):
-		destroy_event(self)
+		cc.destroy_event(self)
 	def c_jmp(self):
 		s=self
 		s.y+=time.dt*3
@@ -391,7 +337,7 @@ class Nitro(Entity):
 		s.snd_time=max(s.snd_time-time.dt,0)
 		if s.snd_time <= 0:
 			s.snd_time=random.randint(2,3)
-			sn.crate_audio(ID=9,pit=random.uniform(.8,1.1))
+			sn.crate_audio(ID=8,pit=random.uniform(.8,1.1))
 			s.jmp_y=s.y+random.uniform(.3,.5)
 			if s.can_jmp:
 				s.mode=1
@@ -401,6 +347,9 @@ class Nitro(Entity):
 			return
 		if distance(LC.ACTOR.position,s.position) <= 3:
 			s.is_jmp=True
+		if s.intersects(LC.ACTOR).hit:
+			s.destroy()
+			return
 		if s.is_jmp:
 			{0:s.refr,1:s.c_jmp,2:s.c_fall}[s.mode]()
 
@@ -416,7 +365,7 @@ class Air(Entity):
 		del pos,pse,s
 	def destroy(self):
 		s=self
-		place_crate(p=s.position,ID=s.c_ID,pse=True)
+		spawn(p=s.position,ID=s.c_ID,pse=True)
 		sn.crate_audio(ID=13)
 		st.C_RESET.append(s)
 		cc.cache_instance(s)
@@ -434,11 +383,11 @@ class Protected(Entity):
 	def destroy(self):
 		s=self
 		s.hitten=True
-		block_destroy(s)
+		cc.block_destroy(s)
 	def c_destroy(self):
 		sn.crate_audio(ID=4,pit=.35)
 		item.place_wumpa(self.position,cnt=random.randint(5,10),c_prg=True)
-		destroy_event(self)
+		cc.destroy_event(self)
 	def update(self):
 		if not st.gproc() and self.hitten:
 			an.prtc_anim(self)
@@ -452,7 +401,7 @@ class cTime(Entity):
 		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
 		del pos,pse,s
 	def destroy(self):
-		destroy_event(self)
+		cc.destroy_event(self)
 
 class LvInfo(Entity):
 	def __init__(self,pos,pse):
@@ -469,4 +418,4 @@ class LvInfo(Entity):
 			item.GemStone(pos=(-.05,2.75,88),c=5)
 		if distance(s,LC.ACTOR) < 3:
 			ui.GemHint()
-		destroy_event(s)
+		cc.destroy_event(s)

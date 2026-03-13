@@ -5,8 +5,7 @@ c=color
 bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(9,5,20),(26,5,-36),(34,6,60.5)]
 
 #display the name in pause menu and loading screen
-lv_name=[
-	'CENTRAL - WARP ROOM',
+lv_name=['CENTRAL - WARP ROOM',
 	'LEVEL 1 - RAINY WOODS',
 	'LEVEL 2 - WAY TO NOWHERE',
 	'LEVEL 3 - RIVER STREAM',
@@ -30,6 +29,9 @@ wrbg='res/background/warp_room.png'
 
 #crash default texture
 ctx='res/pc/crash'
+
+#splash water entity
+splash_entity='splash_wtr'
 
 #render culling distance
 RCX=0#x pos

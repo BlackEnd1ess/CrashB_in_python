@@ -1,10 +1,21 @@
-#10.07.2025
-- fixxed/added missing collider
-- level 3: changed color for objects in bonus level
-- added developer button to collect all gems and crystal in level (key=n)
-- fixxed game progress: 5 crystals, 5 color gems and 11 clear gems equals 104%
-- fixxed lumberjack collider
-- after save game, a text will appear to give player a success info
+# 10.03.2026 #
+- soundbank added + all wav files in one folder and renamed by type like "npc_" or "obj_".
+- warp ring effect count to 7 and animation runs faster
+- removed duplicate sounds, added missing sounds
+- implemented: crash_slide sound on ice_materials
+- lumberjack fixxed: movespeed, attack range, hammer smash
+- fixxed tnt, switch_empty+switch_nitro (active) landing sound
+- improved loop sounds for NPC's: universal function for soundvolume by player distance
+- fixxed water footstep
 
-#11.07.2025
-- changed crash wall hitbox, to avoid stucking at edges.
+#11.03.2026
+- transformed SpiderRobotFlat and SpiderRobotUp to one Entity as SpiderRobot with customizable mode
+- improved water_landing sound + water footstep sound functions.
+
+
+#13.03.2026
+- fixxed walking sound while player in air
+- implemented sound limit for breaking boxes and exploding mines
+- implemented footstep_snow into level 2 and level 8
+- fixxed gorilla respawn in level 5
+- improved box respawn function

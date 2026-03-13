@@ -16,7 +16,7 @@ LC=_loc
 
 ## classes for dangerous objects ingame where causes player damage or death event ###
 inp=omf+'l2/wood_log/wood_log'
-class WoodLog(Entity):
+class WoodLog(Entity):#level 2
 	def __init__(self,pos):
 		s=self
 		super().__init__(model=inp+'.ply',texture=inp+'.png',name='wdlg',position=pos,scale=(.001,.001,.0015),rotation=(-90,0,0),collider=b)
@@ -118,8 +118,8 @@ class EletricWater(Entity):
 		super().__init__(model='cube',texture=wtt+'0.png',name='elwt',position=pos,scale=(sca[0],.1,sca[1]),texture_scale=(sca[0],sca[1]),color=color.rgb32(0,180,180),alpha=.9,collider=b)
 		s.tx=(sca[0],sca[1])
 		s.electric=False
+		s.matr='wtr'
 		s.nr=False
-		s.splash=0
 		s.frm=0
 		s.tme=8
 		del pos,sca,s
@@ -145,16 +145,10 @@ class EletricWater(Entity):
 		s.alpha=.9
 	def check_p(self):
 		s=self
-		ta=LC.ACTOR
-		if ta.inwt <= 0:
-			s.splash=max(s.splash-time.dt,0)
-		if s.intersects(ta):
-			ta.inwt=.3
-			if s.electric:
-				cc.get_damage(ta,rsn=6)
-			if s.splash <= 0:
-				s.splash=.3
-				sn.pc_audio(ID=10)
+		fq=s.intersects(LC.ACTOR)
+		LC.ACTOR.in_water=fq
+		if fq and s.electric:
+			cc.get_damage(LC.ACTOR,rsn=6)
 	def update(self):
 		if st.gproc():
 			return
@@ -216,7 +210,7 @@ class MonkeySculpture(Entity):
 			s.f_cnt+=1
 			if not s.s_audio:
 				s.s_audio=True
-				sn.obj_audio(ID=10,pit=1)
+				sn.obj_audio(ID=9,pit=1)
 				invoke(lambda:setattr(s,'s_audio',False),delay=3)
 	def rot_to_crash(self):
 		s=self
@@ -253,24 +247,22 @@ class LogDanger(Entity):
 		s.start_delay=.3
 		s.life_time=3
 		s.direc_y=0
+		s.fsp=2.75
+		s.rtf=175
 		del pos,ro_y
 	def fly(self):
 		s=self
-		fsp=3.2
-		fdi={0:lambda:setattr(s,'z',s.z-time.dt*fsp),
-			90:lambda:setattr(s,'x',s.x-time.dt*fsp),
-			180:lambda:setattr(s,'z',s.z+time.dt*fsp),
-			-90:lambda:setattr(s,'x',s.x+time.dt*fsp)}
-		fdi[s.rotation_y]()
-		s.rotation_x-=time.dt*100
-		del fsp,fdi
+		{0:lambda:setattr(s,'z',s.z-time.dt*s.fsp),
+		90:lambda:setattr(s,'x',s.x-time.dt*s.fsp),
+		180:lambda:setattr(s,'z',s.z+time.dt*s.fsp),
+		-90:lambda:setattr(s,'x',s.x+time.dt*s.fsp)}[s.rotation_y]()
+		s.rotation_x-=time.dt*s.rtf
 	def fly_away(self,di):
 		s=self
 		s.position+=di*time.dt*40
 		s.fly_time+=time.dt
 		if s.fly_time > .5:
 			cc.purge_instance(s)
-			return
 	def hit_ground(self):
 		s=self
 		if s.direc_y == 0:
@@ -278,7 +270,7 @@ class LogDanger(Entity):
 			if s.y <= s.spawn_pos[1]-.4:
 				s.direc_y=1
 				if distance(s,LC.ACTOR) < 5:
-					sn.obj_audio(ID=11)
+					sn.obj_audio(ID=10)
 			return
 		s.y+=time.dt*3
 		if s.y >= s.spawn_pos[1]+.3:
@@ -300,7 +292,7 @@ class LogDanger(Entity):
 				s.hit_ground()
 				if s.intersects(ac):
 					if LC.ACTOR.is_attack:
-						sn.obj_audio(ID=8)
+						sn.pc_audio(ID=17)
 						s.stop_throw=True
 						return
 					cc.get_damage(LC.ACTOR,rsn=2)
@@ -401,7 +393,7 @@ class LandMine(Entity):
 		s.tme=max(s.tme-time.dt,0)
 		if s.tme <= 0:
 			s.tme=random.randint(1,2)
-			sn.obj_audio(ID=12,pit=random.uniform(.8,1))
+			sn.obj_audio(ID=11,pit=random.uniform(.8,1))
 	def explosion(self):
 		s=self
 		s.frm=0
@@ -411,7 +403,7 @@ class LandMine(Entity):
 		if not s.p_snd:
 			s.p_snd=True
 			ef.Fireball(s)
-			sn.crate_audio(ID=10)
+			sn.crate_audio(ID=9)
 	def update(self):
 		if st.gproc():
 			return
@@ -492,7 +484,7 @@ class Piston(Entity):
 					cc.get_damage(LC.ACTOR,rsn=2)
 			s.danger=False
 			if distance(s,LC.ACTOR) < 8:
-				sn.obj_audio(ID=13,pit=.8)
+				sn.obj_audio(ID=12,pit=.8)
 			s.mode=1
 			s.tme=.5
 	def reset(self):
@@ -501,7 +493,7 @@ class Piston(Entity):
 		if s.y >= s.spawn_y:
 			s.danger=True
 			if distance(s,LC.ACTOR) < 8 and st.aku_hit < 3:
-				sn.obj_audio(ID=13,pit=.5)
+				sn.obj_audio(ID=12,pit=.5)
 			s.mode=0
 			s.tme=1-(1/s.mvspd)
 	def update(self):
@@ -545,7 +537,7 @@ class LabPad(Entity):
 		s=self
 		s.tme=.5
 		if not s.locked:
-			sn.obj_audio(ID=15,pit=.5)
+			sn.obj_audio(ID=14,pit=.5)
 			s.locked=True
 			s.trigger_taser()
 		s.mode=1
@@ -573,7 +565,7 @@ class LabTaser(Entity):
 		s.ID=ID
 		del pos,ID
 	def shoot_laser(self):
-		sn.obj_audio(ID=14)
+		sn.obj_audio(ID=13)
 		ef.ElectroBall(pos=self.position)
 	def update(self):
 		if not st.gproc():
@@ -597,7 +589,7 @@ class Boulder(Entity):
 	def __init__(self,pos,fldd):
 		s=self
 		super().__init__(model=bldr+'.ply',texture=bldr+'.png',position=pos,scale=.0016,rotation_x=-90,unlit=False)
-		s.imp_snd=Audio('res/snd/misc/impact.wav',loop=True,autoplay=False,volume=settings.SFX_VOLUME)
+		s.imp_snd=Audio(sn.BLD_ROLL,loop=True,autoplay=False,volume=settings.SFX_VOLUME)
 		s.follow_speed=1.8
 		s.rs_delay=3.5
 		s.ffly_drc=fldd
@@ -613,7 +605,7 @@ class Boulder(Entity):
 		s.active=False
 		s.rotation_x=0
 		s.collider=b
-		sn.obj_audio(ID=20)
+		sn.obj_audio(ID=19)
 		s.imp_snd.stop()
 		s.imp_snd.fade_out()
 	def reset_state(self):
@@ -666,7 +658,7 @@ class Boulder(Entity):
 		if s.active:
 			if not s.p_snd:
 				s.p_snd=True
-				sn.obj_audio(ID=19)
+				sn.obj_audio(ID=17)
 				s.imp_snd.fade_in()
 				s.imp_snd.play()
 				return

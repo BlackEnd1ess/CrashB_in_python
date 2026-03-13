@@ -1,19 +1,20 @@
+from ursina import Entity,Audio,invoke,distance
 import status,settings,_core,_loc,random,time
-from ursina import Entity,Audio,invoke
 from ursina.ursinastuff import destroy
+import _SFX_DATABASE as sfx_db
+
 se=settings
 cc=_core
 st=status
 LC=_loc
 
-SNF='res/snd/'
+MC='res/music/'
+SF='res/snd/'
 
-TC=SNF+'misc/tnt.wav'
-BE=SNF+'npc/bee.wav'
-VS=SNF+'ambience/'
-SP=SNF+'player/'
-SN=SNF+'misc/'
-SA=SNF+'npc/'
+loop_snd_info={6:3,8:4,9:4,10:1,11:2,15:5,17:6}
+
+BLD_ROLL=f'{SF}/{sfx_db.OBJECT[18]}.wav'#boulder roll
+TC=f'{SF}{sfx_db.CRATE[7]}.wav'#tnt box
 dd=1.2
 
 ##footstep
@@ -21,12 +22,15 @@ def footstep(c):
 	if c.is_slp:
 		pc_audio(ID=8,pit=1.5)
 		return
-	if c.inwt > 0:
+	if c.in_water:
 		pc_audio(ID=11,pit=random.uniform(.9,1))
 		return
 	else:
-		if st.level_index == 4 or (st.level_index == 7 and c.indoor <= 0):
+		if st.level_index in (4,7):#(st.level_index == 7 and c.indoor <= 0):
 			pc_audio(ID=12)
+			return
+		if st.level_index in (2,8):
+			pc_audio(ID=18)
 			return
 		pc_audio(ID=0)
 
@@ -35,189 +39,110 @@ def landing_sound(o):
 	if hasattr(o,'matr') and o.matr == 'metal':
 		pc_audio(ID=13)
 		return
-	if (cc.is_crate(o) and not ((o.vnum in {0,3}) or (o.vnum in {9,10} and o.activ))) or cc.is_enemie(o):
+	if LC.ACTOR.in_water:
+		pc_audio(ID=10)
+		return
+	if cc.is_crate(o) and ((o.vnum in {7,8}) or (o.vnum in {9,10,11} and not o.activ)) or cc.is_enemie(o):
 		pc_audio(ID=5)
 		return
 	ldnp=.6 if LC.ACTOR.b_smash else 1
 	pc_audio(ID=2,pit=ldnp)
 	del ldnp
 
-## ambience sound
-snd_rain=VS+'rain.wav'
-SND_THU={0:'thunder_start',
-		1:'thunder0',
-		2:'thunder1'}
+##ambience sound
 def thu_audio(ID,pit=1):
-	pth=Audio(VS+SND_THU[ID]+'.wav',pitch=random.uniform(.1,.5),volume=se.SFX_VOLUME,add_to_scene_entities=False)
+	pth=Audio(SF+sfx_db.AMBIENCE[ID]+'.wav',pitch=random.uniform(.1,.5),volume=se.SFX_VOLUME,add_to_scene_entities=False)
 	invoke(lambda:destroy(pth),delay=pth.length*4)
 
 ## INTERFACE SFX
-SND_UI={0:'select',
-		1:'enter',
-		2:'collect',
-		3:'lives',
-		4:'reward',
-		5:'gem'}
 def ui_audio(ID,pit=1):
 	if ID == 1:
-		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME/2,add_to_scene_entities=False)
+		ua=Audio(SF+sfx_db.INTERFACE[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME/2,add_to_scene_entities=False)
 	else:
-		ua=Audio(SN+SND_UI[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
+		ua=Audio(SF+sfx_db.INTERFACE[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 	invoke(lambda:destroy(ua),delay=ua.length*8)
 
 ## PLAYER SFX
-SND_PC={0:'walk',
-		1:'jump',
-		2:'land_sand',
-		3:'attack',
-		4:'atk_wait',
-		5:'jump_hit',
-		6:'damage',
-		7:'woah',
-		8:'ice_slide',
-		9:'ice_slide_stop',
-		10:'splash',
-		11:'water_step',
-		12:'metal_step',
-		13:'land_metal',
-		14:'fall_death',
-		15:'angel',
-		16:'wings'}
 def pc_audio(ID,pit=1):
-	pc=Audio(SP+SND_PC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
+	pc=Audio(SF+sfx_db.PLAYER[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 	invoke(lambda:destroy(pc),delay=pc.length*4)
 
 ## CRATE SFX
-SND_CRT={0:'steel',
-		1:'block',
-		2:'break1',
-		3:'break2',
-		4:'bnc',
-		5:'spring',
-		6:'checkp',
-		7:'check_d',
-		8:'tnt',
-		9:'nitro_idle',
-		10:'explode',
-		11:'glass',
-		12:'switch',
-		13:'air',
-		14:'aku'}
 def crate_audio(ID,pit=1):
-	if (ID == 2 and st.br_sn) or (ID == 10 and st.ex_sn) or (ID == 11 and st.ni_sn):
+	if any([(ID == 2 and st.br_sn > 4),(ID == 9 and st.ex_sn > 2),(ID == 10 and st.ni_sn > 2)]):
 		return
-	if ID == 2 and not st.br_sn:
-		st.br_sn=True
-		invoke(lambda:setattr(st,'br_sn',False),delay=.1)
-	if ID == 10 and not st.ex_sn:
-		st.ex_sn=True
-		invoke(lambda:setattr(st,'ex_sn',False),delay=.1)
-	if ID == 11 and not st.ni_sn:
-		st.ni_sn=True
-		invoke(lambda:setattr(st,'ni_sn',False),delay=.1)
-	ca=Audio(SN+SND_CRT[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME*2,add_to_scene_entities=False)
-	invoke(lambda:destroy(ca),delay=dd)
+	if ID == 2 and st.br_sn < 5:
+		st.br_sn+=1
+	if ID == 9 and st.ex_sn < 3:
+		st.ex_sn+=1
+	if ID == 10 and st.ni_sn < 6:
+		st.ni_sn+=1
+	ca=Audio(SF+sfx_db.CRATE[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME*2,add_to_scene_entities=False)
+	invoke(lambda:destroy(ca),delay=ca.length*2)
+	del ID,pit
 
 ## NPC SFX
-SND_NPC={0:'plant_bite',
-		1:'scrubber',
-		2:'mouse',
-		3:'seal',
-		4:'rat_idle',
-		5:'buzzing',
-		6:'spider_robot',
-		7:'lab_assistant_push',
-		8:'lab_assistant_fall'}
-def npc_audio(ID,pit=1):
-	np=Audio(SA+SND_NPC[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
-	invoke(lambda:destroy(np),delay=np.length*2)
+def npc_audio(ID,pit=1,vol=None):
+	if not vol:
+		vol=se.SFX_VOLUME
+	np=Audio(SF+sfx_db.NPC[ID]+'.wav',pitch=pit,volume=vol,add_to_scene_entities=False)
+	invoke(lambda:destroy(np),delay=np.length*3)
+	del vol,pit,ID
+
+def npc_loop_audio(n,PIT,tme_r):
+	if n.vnum in loop_snd_info:
+		if distance(n,LC.ACTOR) < 10:
+			n.tme=max(n.tme-time.dt,0)
+			if n.tme <= 0:
+				n.tme=tme_r
+				cds=distance(n,LC.ACTOR)
+				nvv=max(0,1-(cds/10))
+				npc_audio(ID=loop_snd_info[n.vnum],vol=nvv,pit=PIT)
+				del n,PIT,tme_r,cds
 
 ## OBJECTS/ITEM SFX
-SND_OBJ={0:'spawn',
-		1:'door_open',
-		2:'portal',
-		3:'wlog',
-		4:'role',
-		5:'waterf',
-		6:'bubble',
-		7:'electric',
-		8:'npc_beat',
-		9:'collapse_floor',
-		10:'fire_throw',
-		11:'log_hit',
-		12:'land_mine',
-		13:'piston',
-		14:'pad_0',
-		15:'pad_1',
-		16:'steam',
-		17:'volt',
-		18:'boulder_start',
-		19:'impact',
-		20:'boulder_stop'}
 def obj_audio(ID,pit=1):
-	ob=Audio(SN+SND_OBJ[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
+	ob=Audio(SF+sfx_db.OBJECT[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 	invoke(lambda:destroy(ob),delay=ob.length*2)
 
 ## Background Sounds
 class WaterRiver(Audio):
 	def __init__(self):
-		super().__init__(VS+'waterf.wav',volume=0,loop=True)
+		super().__init__(f'{SF}/{sfx_db.OBJECT[5]}.wav',volume=0,loop=True)
 		self.tme=.5
 	def update(self):
 		s=self
 		s.tme=max(s.tme-time.dt,0)
 		if s.tme <= 0:
-			if st.gproc() or st.bonus_round:
-				s.volume=0
-				return
-			s.volume=settings.SFX_VOLUME
+			s.volume=0 if st.gproc() or st.bonus_round else se.SFX_VOLUME
 
 class AmbienceSound(Audio):
 	def __init__(self):
-		super().__init__(VS+'jungle.wav',loop=True,volume=0)
+		super().__init__(f'{SF}/{sfx_db.AMBIENCE[4]}.wav',loop=True,volume=0)
 	def update(self):
-		s=self
-		if st.gproc():
-			s.volume=0
-			return
-		s.volume=settings.SFX_VOLUME
+		self.volume=0 if st.gproc() else se.SFX_VOLUME
 
 class Rainfall(Audio):
 	def __init__(self):
-		super().__init__(snd_rain,loop=True,volume=0)
+		super().__init__(f'{SF}/{sfx_db.AMBIENCE[0]}.wav',loop=True,volume=0)
 		self.tme=0
 	def update(self):
 		s=self
 		s.tme=max(s.tme-time.dt,0)
 		if s.tme <= 0:
 			s.tme=.5
-			if (LC.ACTOR.indoor <= 0 and LC.ACTOR.warped) and not st.gproc():
-				s.volume=settings.SFX_VOLUME
-				return
-			s.volume=0
+			s.volume=settings.SFX_VOLUME if (LC.ACTOR.indoor <= 0 and LC.ACTOR.warped) and not st.gproc() else 0
 
 ## Background Music
-MC='res/snd/music/'
-mdb={0:'wroom',
-	1:'woods',
-	2:'snow',
-	3:'plant',
-	4:'sewer',
-	5:'ruin',
-	6:'digin',
-	7:'piston',
-	8:'dash',
-	9:'woods'}
-
 class BackgroundMusic(Audio):
 	def __init__(self,m):
 		s=self
 		ix=st.level_index
-		kt=MC+'level/'+mdb[ix]+'.mp3'
+		kt=MC+'level/'+sfx_db.MUSIC[ix]+'.mp3'
 		if m == 1:
-			kt=MC+'bonus/'+mdb[ix]+'.mp3'
+			kt=MC+'bonus/'+sfx_db.MUSIC[ix]+'.mp3'
 		if m == 2:
-			kt=MC+'special/'+mdb[ix]+'.mp3'
+			kt=MC+'special/'+sfx_db.MUSIC[ix]+'.mp3'
 		super().__init__(kt,loop=True,volume=se.MUSIC_VOLUME)
 		s.mode=m
 		s.tm=.5
@@ -236,11 +161,8 @@ class BackgroundMusic(Audio):
 		s.tm=max(s.tm-time.dt,0)
 		if s.tm <= 0:
 			s.tm=.5
+			s.volume=0 if st.aku_hit > 2 else se.MUSIC_VOLUME
 			s.check_scene()
-			if st.aku_hit > 2:
-				s.volume=0
-				return
-			s.volume=se.MUSIC_VOLUME
 
 class AkuMusic(Audio):
 	def __init__(self):

@@ -8,6 +8,7 @@ sn=sound
 mc='res/ui/icon/memcard.png'
 fn='res/ui/font.ttf'
 q='quad'
+
 class Memorycard(Entity):
 	def __init__(self):
 		s=self
@@ -40,7 +41,7 @@ class BonusRoomEntry(Entity):
 class LvSelect(Entity):
 	def __init__(self):
 		super().__init__()
-		self.bgm=Audio('res/snd/music/level/wroom.mp3',volume=settings.MUSIC_VOLUME,loop=True)
+		self.bgm=Audio(f'res/music/level/wroom.mp3',volume=settings.MUSIC_VOLUME,loop=True)
 	def input(self,key):
 		if key in settings.BCK_KEY:
 			sn.ui_audio(ID=0,pit=.125)
@@ -87,7 +88,7 @@ class Credits(Entity):
 		s=self
 		st.loading=False
 		super().__init__(model='quad',texture=_loc.wrbg,scale=(32,20),z=4,color=color.rgb32(100,150,100))
-		s.bgm=Audio('res/snd/music/credits.mp3',loop=True,volume=settings.MUSIC_VOLUME)
+		s.bgm=Audio('res/music/credits.mp3',loop=True,volume=settings.MUSIC_VOLUME)
 		objects.PseudoCrash()
 		s.index=0
 		s.t0()

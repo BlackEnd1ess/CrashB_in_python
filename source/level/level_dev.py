@@ -1,11 +1,11 @@
-import sys,os,_loc,item,status
+import sys,os,_loc,item,status,objects,map_tools,crate,npc,item,gc,danger
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import objects,map_tools,crate,npc,item,gc
 from ursina import *
 
 mt=map_tools
 st=status
 o=objects
+dg=danger
 LC=_loc
 c=crate
 n=npc
@@ -46,6 +46,7 @@ def load_object():
 	o.GemPlatform(pos=(4,.3,-22),t=5)
 	o.StartRoom(pos=(0,0,-32.2))
 	o.EndRoom(pos=(.5,2,0),c=color.rgb32(180,200,200))
+	#dg.Hive(pos=(2,0,-23),bID=1,bMAX=5)
 def load_crate():
 	mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,1,1])
 	mt.crate_block(ID=0,POS=(-7.5,.16,-18+.32),CNT=[3,2,2])
@@ -60,15 +61,15 @@ def load_crate():
 	mt.crate_block(ID=8,POS=(.5,.16,-18),CNT=[3,3,1])
 	mt.crate_block(ID=9,POS=(1.5+.32,.16,-18),CNT=[1,1,1])
 	mt.crate_block(ID=10,POS=(2.5+.32,.16,-18),CNT=[1,1,1])
-	mt.crate_block(ID=11,POS=(3.5+.32,.16,-18),CNT=[1,1,2])
-	mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,4])
+	mt.crate_block(ID=11,POS=(3.5+.32,.16,-18),CNT=[1,1,8])
+	mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,8])
 	mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,3])
 	mt.crate_block(ID=14,POS=(6.5,.16,-18),CNT=[3,3,3])
 def load_wumpa():
 	mt.wumpa_plane(POS=(0,.3,-14),CNT=[5,5])
 def load_npc():
-	return
-	#n.spawn(ID=4,POS=(0,0,-25),RNG=1,DRC=2)
+	#return
+	n.spawn(ID=14,POS=(4,0,-25),RNG=1,DRC=1)
 
 ## bonus level / gem path
 def bonus_zone():

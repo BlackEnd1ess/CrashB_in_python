@@ -71,8 +71,8 @@ class Thunderbolt(Entity):
 			window.color=color.white
 		s.flash.position=(AC.x,AC.y+3,AC.z)
 		s.flash.color=color.white
-		sound.thu_audio(ID=0,pit=random.uniform(.1,.5))
-		invoke(lambda:sound.thu_audio(ID=random.randint(1,2),pit=random.uniform(.1,.5)),delay=.5)
+		sound.thu_audio(ID=1,pit=random.uniform(.1,.5))
+		invoke(lambda:sound.thu_audio(ID=random.randint(2,3),pit=random.uniform(.1,.5)),delay=.5)
 		invoke(s.reset_sky,delay=random.uniform(.1,.4))
 		del AC
 	def reset_sky(self):

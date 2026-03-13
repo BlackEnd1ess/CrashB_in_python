@@ -81,6 +81,7 @@ def spin(d):
 	if d.spfr > 11.99:
 		d.spfr=0
 		d.is_attack=False
+		st.br_sn=0
 	d.model=af+'spn/'+str(int(d.spfr))+'.ply'
 
 def land(d):
@@ -191,7 +192,7 @@ def dth_wtr_swim(c):
 def dth_fire_ash(c):
 	if not c.dth_snd:
 		c.dth_snd=True
-		sn.obj_audio(ID=16,pit=1.1)
+		sn.pc_audio(ID=19,pit=1.2)
 	c.dthfr=min(c.dthfr+time.dt*t,24.999)
 	if c.dthfr > 24.99:
 		c.dthfr=24
@@ -200,7 +201,7 @@ def dth_fire_ash(c):
 def dth_el_shock(c):
 	if not c.dth_snd:
 		c.dth_snd=True
-		sn.obj_audio(ID=17)
+		sn.obj_audio(ID=16)
 	c.dthfr=min(c.dthfr+time.dt*t,1.999)
 	if c.dthfr > 1.99:
 		c.dthfr=0
@@ -303,13 +304,13 @@ class WarpRingEffect(Entity): ## spawn animation
 			if not s.activ:
 				s.activ=True
 				sn.obj_audio(ID=0)
-			s.rings=min(s.rings+time.dt*35,8.999)
+			s.rings=min(s.rings+time.dt*46,8.999)
 			if s.rings > 8.99:
 				s.rings=0
 				s.times+=1
 				sn.pc_audio(ID=1,pit=.35)
 			s.model=wrv+f'warp_rings/{int(s.rings)}.ply'
-			if s.times > 8:
+			if s.times > 7:
 				LC.ACTOR.warped=True
 				destroy(s)
 
@@ -318,7 +319,7 @@ def npc_walking(m):
 	m.anim_frame=min(m.anim_frame+time.dt*t,m.max_frm+.999)
 	if m.anim_frame > m.max_frm+.99:
 		m.anim_frame=0
-	m.model=nf+f'{m}/{int(m.anim_frame)}.ply'
+	m.model=nf+f'{m}/{int(m.anim_frame)}.ply' if m.vnum != 17 else nf+f'{m}/{m.ro_mode}/{int(m.anim_frame)}.ply'
 
 #plant attack
 plt=nf+'eating_plant/'
@@ -387,7 +388,7 @@ def gorilla_fall(m):
 	m.f_frame=min(m.f_frame+time.dt*gp,10.999)
 	if m.f_frame > 10.99:
 		m.f_frame=0
-		cc.purge_instance(m)
+		cc.cache_instance(m)
 		return
 	m.model=go+'/fall/'+str(int(m.f_frame))+'.ply'
 
@@ -416,13 +417,6 @@ def hive_awake(h,sp):
 		h.spawn_bee()
 	h.model=hpf+str(int(h.frm))+'.ply'
 	del h,sp
-
-bb='bee/'
-def bee_fly(b,sp):
-	b.frm=min(b.frm+time.dt*sp,9.999)
-	if b.frm > 9.99:
-		b.frm=0
-	b.model=nf+bb+str(int(b.frm))+'.ply'
 
 tki='res/objects/l6/tikki/'
 def tikki_rotate(t,sp):
