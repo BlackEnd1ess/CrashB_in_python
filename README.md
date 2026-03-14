@@ -1,4 +1,4 @@
-Information: This Project is a Cube based Crash Bandicoot inspired Game written in Python3 (Ursina 7.0.0)
+Information: This Project is a lowpoly based Crash Bandicoot inspired game written in Python3 (Ursina 7.0.0)
 <table>
   <tr>
     <td><img src="screenshot/cb_01.jpg" width="300" /></td>
@@ -29,9 +29,9 @@ Information: This Project is a Cube based Crash Bandicoot inspired Game written 
 # temporary no Assets and Ressources aviable, will shortly aviable restricted! (some pcv files will put all Data together), a installations key will required to read the Game Data __ pack SFX and BGM Files in progress... #
 # HOW TO USE CRASH EDIT / CB-EXPORT: https://www.youtube.com/watch?v=ct_G9GAoAZU #
 
-# Functional Status: Modern PC's will run this Game with 190-280 (full loaded Game with 200-350) MB RAM per Level and 59-60 FPS
+# Functional Status: Modern PC's will run this Game with 190-280 (full loaded game with 200-350) MB RAM per level and 59-60 FPS
 # LEVEL CREATOR: Work on the editor has been temporarily suspended because the assets for this game don't match the dimensions and positions. Unfortunately, this means that hitboxes and visual elements aren't correctly placed.
-# Game final Progress: All levels have been tested. The game can be completed with 100% progress. Saving/loading works without loss
+# game final progress: All levels have been tested. The game can be completed with 100% progress. Saving/loading works without loss -> (v1.3)
 
 required Modules:
 - ursina
