@@ -1,5 +1,5 @@
 import ui,_core,status,environment,sound,LODsystem,sys,os,gc
-from ursina import camera,invoke
+from ursina import camera,invoke,Entity,time,scene
 
 lv='level'
 st=status
@@ -22,6 +22,7 @@ def free_level():
 	ui.load_interface()
 	cc.level_ready=True
 	gc.collect()
+	BoxPositionInfo()
 	print(f'<info> level {st.level_index} boxes: {st.crates_in_level}')
 	print(f'<info> level {st.level_index} wumpa: {st.wumpas_in_level}')
 	print(f'<info> level {st.level_index} npc: {st.npc_in_level}')
@@ -79,7 +80,43 @@ def level7():# piston push
 	level7.start_load()
 	invoke(free_level,delay=flt)
 
-def level8():# ???
+def level8():# polar lights
 	import level8
 	level8.start_load()
 	invoke(free_level,delay=flt)
+
+class BoxPositionInfo(Entity):
+	def __init__(self):
+		s=self
+		super().__init__()
+		s.pos_info=[]
+		s.pos_new=[]
+		s.refr=.1
+	def check_phys_box(self):
+		s=self
+		ltt=[v for v in scene.entities if (hasattr(v,'phys') and v.phys)]
+		for kd in ltt[:]:
+			s.pos_info.append(kd)
+			s.pos_new.append(kd.y-.32)
+			setattr(kd,'landed',False)
+			kd.phys=False
+	def refr_box_pos(self):
+		s=self
+		for sg,dg in list(zip(s.pos_info,s.pos_new)):
+			if not sg.landed:
+				sg.y-=time.dt*1.8
+				if sg.y <= dg:
+					sg.y=dg
+					sg.landed=True
+			else:
+				s.pos_new.remove(dg)
+				s.pos_info.remove(sg)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.refr=max(s.refr-time.dt,0)
+		s.refr_box_pos()
+		if s.refr <= 0:
+			s.refr=.1
+			s.check_phys_box()

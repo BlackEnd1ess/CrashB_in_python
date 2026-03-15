@@ -19,7 +19,7 @@ N=npc
 
 ## player
 def set_val(c):#run jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound inwater slide_wait
-	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','dthfr','pshfr','stnfr','dth_cause','space_time','crt_wait','sld_wait'}:
+	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','dthfr','pshfr','stnfr','dth_cause','space_time','crt_wait','sld_wait','c_stack_limit'}:
 		setattr(c,_a,0)#values
 	for _v in {'aq_bonus','walking','jumping','landed','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','sma_dth','dth_snd','is_slp','pushed','cwall','in_water'}:
 		setattr(c,_v,False)#flags
@@ -114,6 +114,7 @@ def reset_state(c):
 	c.stun=False
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def various_val(c):
+	c.c_stack_limit=max(c.c_stack_limit-time.dt,0)
 	c.crt_wait=max(c.crt_wait-time.dt,0)
 	c.indoor=max(c.indoor-time.dt,0)
 	c.sld_wait=max(c.sld_wait-time.dt,0)
@@ -568,7 +569,7 @@ def crate_stack(c_pos):
 	for wm in scene.entities[:]:
 		if (is_crate(wm) and wm.vnum != 3) and (wm.x == c_pos[0] and wm.z == c_pos[2]):
 			if (wm.y > c_pos[1]) and abs(wm.y-c_pos[1]) <= sdi*.32:
-				wm.animate_y(wm.y-.32,duration=.18)
+				setattr(wm,'phys',True)
 		sdi+=1
 	del c_pos,sdi,wm
 def check_nitro_stack():
@@ -588,6 +589,8 @@ def block_destroy(c):
 				sn.crate_audio(ID=0)
 		invoke(lambda:setattr(c,'p_snd',False),delay=.5)
 def destroy_event(c):
+	if hasattr(c,'landed') and not c.landed:
+		return
 	crate_stack(c.position)
 	c.collider=None
 	setattr(c,'collider',None)
