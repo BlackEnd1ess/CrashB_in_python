@@ -20,6 +20,8 @@ def place_wumpa(pos,cnt,c_prg=False):
 		vpu=pos
 		if cnt > 1:
 			vpu=pos+(r.uniform(-.1,.1),r.uniform(0,.1),r.uniform(-.1,.1))
+		else:
+			vpu=pos+(0,0,r.uniform(-.01,.01))
 		WumpaFruit(p=vpu,c_prg=c_prg)
 		st.wumpas_in_level+=1
 	del pos,cnt,c_prg,vpu,wpo

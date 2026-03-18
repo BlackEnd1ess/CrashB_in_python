@@ -52,7 +52,8 @@ show_crates=0
 show_lives=0
 show_gems=0
 
-## crate audio limit
+## multible audio limit
+wu_sn=0
 br_sn=0
 ex_sn=0
 ni_sn=0

@@ -190,15 +190,13 @@ class CrashB(Entity):
 		if dtc in {1,5}:
 			s.visible=False
 			return
-		cbda={2:lambda:an.dth_angelfly(s),
-			3:lambda:an.dth_wtr_swim(s),
-			4:lambda:an.dth_fire_ash(s),
-			6:lambda:an.dth_el_shock(s),
-			7:lambda:an.dth_beesting(s),
-			8:lambda:an.dth_c_buried(s),
-			9:lambda:an.dth_shrink(s)}
-		cbda[dtc]()
-		del cbda
+		{2:lambda:an.dth_angelfly(s),
+		3:lambda:an.dth_wtr_swim(s),
+		4:lambda:an.dth_fire_ash(s),
+		6:lambda:an.dth_el_shock(s),
+		7:lambda:an.dth_beesting(s),
+		8:lambda:an.dth_c_buried(s),
+		9:lambda:an.dth_shrink(s)}[dtc]()
 	def refr_tex(self):
 		s=self
 		if s.is_attack:
@@ -210,6 +208,7 @@ class CrashB(Entity):
 	def hurt_visual(self):
 		for vkh in range(7):
 			invoke(lambda:cc.hurt_blink(self),delay=vkh/3)
+		del vkh
 	def c_physic(self):
 		s=self
 		cc.various_val(s)
@@ -226,12 +225,13 @@ class CrashB(Entity):
 		if held_keys[settings.JMP_KEY]:s.space_time+=time.dt/2
 		if st.aku_hit >= 3:cc.c_shield()
 	def update(self):
-		if not st.gproc():
-			s=self
-			if st.death_event:
-				s.death_action()
-				return
-			s.c_physic()
-			if not st.p_rst(s):
-				s.c_interact()
-			s.refr_tex(),an.c_animation(s)
+		if st.gproc():
+			return
+		s=self
+		if st.death_event:
+			s.death_action()
+			return
+		s.c_physic()
+		if not st.p_rst(s):
+			s.c_interact()
+		s.refr_tex(),an.c_animation(s)

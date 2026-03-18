@@ -60,7 +60,7 @@ def ui_audio(ID,pit=1):
 		ua=Audio(SF+sfx_db.INTERFACE[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME/2,add_to_scene_entities=False)
 	else:
 		ua=Audio(SF+sfx_db.INTERFACE[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
-	invoke(lambda:destroy(ua),delay=ua.length*8)
+	invoke(lambda:destroy(ua),delay=ua.length*6)
 
 ## PLAYER SFX
 def pc_audio(ID,pit=1):

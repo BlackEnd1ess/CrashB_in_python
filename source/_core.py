@@ -6,6 +6,7 @@ from ursina.ursinastuff import destroy
 from danger import LandMine
 
 kmw={7:5,15:7,16:8,17:6}
+kpp=.3
 level_ready=False
 env=environment
 an=animation
@@ -118,16 +119,17 @@ def various_val(c):
 	c.crt_wait=max(c.crt_wait-time.dt,0)
 	c.indoor=max(c.indoor-time.dt,0)
 	c.sld_wait=max(c.sld_wait-time.dt,0)
+	st.wu_sn=max(st.wu_sn-time.dt,0)
 	if not c.is_slp:
 		c.move_speed=LC.dfsp
 	if st.bonus_solved and not st.wait_screen:
 		c.aq_bonus=bool(st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0)
 	if st.br_sn > 4:
-		invoke(reset_break_sound,delay=.1)
+		invoke(lambda:setattr(st,'br_sn',0),delay=kpp)
 	if st.ex_sn > 2:
-		invoke(reset_explode_sound,delay=.1)
-	if st.ni_sn > 5:
-		invoke(reset_nitro_sound,delay=.1)
+		invoke(lambda:setattr(st,'ex_sn',0),delay=kpp)
+	if st.ni_sn > 2:
+		invoke(lambda:setattr(st,'ni_sn',0),delay=kpp)
 def c_slide(c):
 	if not c.walking:
 		if c.slide_fwd > 0 and st.p_last_direc:
@@ -256,10 +258,11 @@ def reset_crates():
 			sr.enabled=False
 			sr.parent=None
 			scene.entities.remove(sr)
-	del sr
 	for cns in st.C_RESET_NS[:]:
 		c_subtract(cY=cns[1][1])
 		C.spawn(ID=cns[0],p=cns[1],pse=cns[2])
+	if len(cns) > 0:
+		del cns
 	del cns
 	for cv in st.C_RESET[:]:
 		if cv.vnum in {9,10}:
@@ -275,6 +278,8 @@ def reset_crates():
 			if not cv.vnum == 16:
 				c_subtract(cY=cv.y)
 			C.spawn(p=cv.spawn_pos,ID=cv.vnum)
+	if len(cv) > 0:
+		del cv
 	del cv
 	st.C_RESET_NS.clear()
 	st.C_RESET.clear()
@@ -435,9 +440,9 @@ def check_floor(c):
 	fwd_drc=Vec3(-sin(radians(c.rotation_y))*.05,0,-cos(radians(c.rotation_y))*.05)
 	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=lkh,debug=settings.debg)
 	stm=bool(vj.hit and vj.normal)
-	c.falling=not stm
+	c.falling=bool(not stm)
 	c.landed=stm
-	if vj:
+	if stm:
 		c.y=vj.world_point.y
 		if c.frst_lnd:
 			c.frst_lnd=False
@@ -520,8 +525,10 @@ def wall_hit(o):
 
 ## interface,collectables
 def wumpa_count(n):
-	sn.ui_audio(ID=2)
-	invoke(lambda:sn.ui_audio(ID=1),delay=.5)
+	if st.wu_sn <= 0:
+		st.wu_sn=.1
+		sn.ui_audio(ID=2)
+		invoke(lambda:sn.ui_audio(ID=1),delay=.5)
 	if st.bonus_round:
 		st.wumpa_bonus+=n
 	else:
@@ -640,14 +647,6 @@ def spawn_ico(c):
 	invoke(lambda:sn.crate_audio(ID=13),delay=.15)
 	for exm in range(5):
 		ExclamationMark(pos=c.position,ID=exm)
-
-##reset sound limit
-def reset_break_sound():
-	st.br_sn=0
-def reset_explode_sound():
-	st.ex_sn=0
-def reset_nitro_sound():
-	st.ni_sn=0
 
 ## bonus level
 def load_b_ui():
