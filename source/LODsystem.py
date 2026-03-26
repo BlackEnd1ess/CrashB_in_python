@@ -29,7 +29,7 @@ class ManageObjects(Entity):
 		for v in scene.entities[:]:
 			k=s.check_dst(v,LC.ACTOR)
 			j=distance(v,LC.ACTOR)
-			if cc.is_crate(v):
+			if cc.is_box(v):
 				if not v.vnum in {3,12,15}:
 					v.enabled=j < s.box_dst
 				else:

@@ -262,7 +262,7 @@ class LogDanger(Entity):
 		s.position+=di*time.dt*40
 		s.fly_time+=time.dt
 		if s.fly_time > .5:
-			cc.purge_instance(s)
+			cc.destroy_entity(s)
 	def hit_ground(self):
 		s=self
 		if s.direc_y == 0:
@@ -281,7 +281,7 @@ class LogDanger(Entity):
 			s=self
 			s.life_time=max(s.life_time-time.dt,0)
 			if s.life_time <= 0:
-				cc.purge_instance(s)
+				cc.destroy_entity(s)
 				return
 			if s.stop_throw:
 				s.fly_away(di=Vec3(s.x-ac.x,0,s.z-ac.z))
@@ -624,7 +624,7 @@ class Boulder(Entity):
 				if blh == LC.ACTOR and not st.death_event:
 					cc.dth_event(LC.ACTOR,rsn=2)
 					return
-				if cc.is_crate(blh):
+				if cc.is_box(blh):
 					if blh.vnum in {3,11}:
 						blh.empty_destroy()
 					else:

@@ -737,7 +737,7 @@ class BonusPlatform(Entity):## switch -> bonus round
 		del pos
 	def update(self):
 		if st.bonus_solved:
-			cc.purge_instance(self)
+			cc.destroy_entity(self)
 
 class GemPlatform(Entity):## gem platform
 	def __init__(self,pos,t):
@@ -762,8 +762,8 @@ class GemPlatform(Entity):## gem platform
 		if not st.gproc():
 			s=self
 			if st.gem_path_solved:
-				cc.purge_instance(s.opt_model)
-				cc.purge_instance(s)
+				cc.destroy_entity(s.opt_model)
+				cc.destroy_entity(s)
 				return
 			s.opt_model.position=(s.x,s.y+.15,s.z)
 			if s.is_enabled and not LC.ACTOR.freezed:

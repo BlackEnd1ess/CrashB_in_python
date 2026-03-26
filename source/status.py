@@ -9,10 +9,10 @@ CLEAR_GEM=[]
 CRYSTAL=[]
 
 ## reset instances
+BOX_RESET=[]
+WMP_RESET=[]
 NPC_RESET=[]
-W_RESET=[]
-C_RESET_NS=[]
-C_RESET=[]
+SWI_RESET=[]
 
 ## player rule
 p_last_direc=None

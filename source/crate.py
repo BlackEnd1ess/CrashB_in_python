@@ -9,28 +9,28 @@ st=status
 LC=_loc
 
 pp='res/crate/'
-cr1=pp+'cr_t0.ply'# single texture
-cr2=pp+'cr_t1.ply'# double texture
+cr1=pp+'cr_t0.obj'# single texture
+cr2=pp+'cr_t1.obj'# double texture
 
 ## spawn func
 def spawn(p,ID,m=0,l=1,pse=False):
-	{0:lambda:Iron(pos=p,pse=pse),
-	1:lambda:Normal(pos=p,pse=pse),
-	2:lambda:QuestionMark(pos=p,pse=pse),
-	3:lambda:Bounce(pos=p,pse=pse),
-	4:lambda:ExtraLife(pos=p,pse=pse),
-	5:lambda:AkuAku(pos=p,pse=pse),
-	6:lambda:Checkpoint(pos=p,pse=pse),
-	7:lambda:SpringWood(pos=p,pse=pse),
-	8:lambda:SpringIron(pos=p,pse=pse),
-	9:lambda:SwitchEmpty(pos=p,m=m,pse=pse),
-	10:lambda:SwitchNitro(pos=p,pse=pse),
-	11:lambda:TNT(pos=p,pse=pse),
-	12:lambda:Nitro(pos=p,pse=pse),
+	{0:lambda:Iron(pos=p,m=m,l=l,pse=pse),
+	1:lambda:Normal(pos=p,m=m,l=l,pse=pse),
+	2:lambda:QuestionMark(pos=p,m=m,l=l,pse=pse),
+	3:lambda:Bounce(pos=p,m=m,l=l,pse=pse),
+	4:lambda:ExtraLife(pos=p,m=m,l=l,pse=pse),
+	5:lambda:AkuAku(pos=p,m=m,l=l,pse=pse),
+	6:lambda:Checkpoint(pos=p,m=m,l=l,pse=pse),
+	7:lambda:SpringWood(pos=p,m=m,l=l,pse=pse),
+	8:lambda:SpringIron(pos=p,m=m,l=l,pse=pse),
+	9:lambda:SwitchEmpty(pos=p,m=m,l=l,pse=pse),
+	10:lambda:SwitchNitro(pos=p,m=m,l=l,pse=pse),
+	11:lambda:TNT(pos=p,m=m,l=l,pse=pse),
+	12:lambda:Nitro(pos=p,m=m,l=l,pse=pse),
 	13:lambda:Air(pos=p,m=m,l=l,pse=pse),
-	14:lambda:Protected(pos=p,pse=pse),
-	15:lambda:cTime(pos=p,pse=pse),
-	16:lambda:LvInfo(pos=p,pse=pse)}[ID]()
+	14:lambda:Protected(pos=p,m=m,l=l,pse=pse),
+	15:lambda:cTime(pos=p,m=m,l=l,pse=pse),
+	16:lambda:LvInfo(pos=p,m=m,l=l,pse=pse)}[ID]()
 	if not ID in {0,8,9,10,15,16} and not pse:
 		st.crates_in_level+=1
 		if p[1] < -20:
@@ -41,52 +41,52 @@ def spawn(p,ID,m=0,l=1,pse=False):
 
 ##Crate Logics
 class Iron(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		self.vnum=0
 		super().__init__(model=cr1)
-		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		cc.box_set_val(cR=self,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		self.p_snd=False
-		del pos,pse
+		del pos,pse,m,l
 	def destroy(self):
 		cc.block_destroy(self)
 
 class Normal(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		self.vnum=1
 		super().__init__(model=cr1)
-		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
-		del pos,pse
+		cc.box_set_val(cR=self,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
+		del pos,pse,m,l
 	def destroy(self):
 		s=self
-		item.place_wumpa(s.position,cnt=1,c_prg=True)
-		cc.destroy_event(s)
+		item.spawn_wumpa(s.position,cnt=1,c_prg=True)
+		cc.box_destroy_event(s)
 
 class QuestionMark(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		self.vnum=2
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
-		del pos,pse
+		cc.box_set_val(cR=self,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
+		del pos,pse,m,l
 	def destroy(self):
 		s=self
-		item.place_wumpa(s.position,cnt=5,c_prg=True)
-		cc.destroy_event(s)
+		item.spawn_wumpa(s.position,cnt=5,c_prg=True)
+		cc.box_destroy_event(s)
 
 class Bounce(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		s=self
 		s.vnum=3
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
+		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		s.is_bounc=False
 		s.lf_time=5
 		s.b_cnt=0
 		s.frm=0
-		del pos,pse,s
+		del pos,pse,m,l,s
 	def empty_destroy(self):
 		if st.aku_hit > 2:
 			cc.wumpa_count(10)
-		cc.destroy_event(self)
+		cc.box_destroy_event(self)
 	def bnc_event(self):
 		s=self
 		if st.aku_hit < 3:
@@ -119,23 +119,23 @@ class Bounce(Entity):
 			s.lf_time=max(s.lf_time-time.dt,0)
 
 class ExtraLife(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		self.vnum=4
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
-		del pos,pse
+		cc.box_set_val(cR=self,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
+		del pos,pse,m,l
 	def destroy(self):
 		s=self
 		item.ExtraLive(pos=(s.x,s.y+.1,s.z))
-		cc.destroy_event(s)
+		cc.box_destroy_event(s)
 
 class AkuAku(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		s=self
 		s.vnum=5
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
-		del pos,pse,s
+		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
+		del pos,pse,m,l,s
 	def destroy(self):
 		s=self
 		sn.crate_audio(ID=12,pit=1.2)
@@ -149,35 +149,35 @@ class AkuAku(Entity):
 					st.aku_inv_time=20
 		if not st.aku_exist:
 			npc.AkuAkuMask(s.position)
-		cc.destroy_event(s)
+		cc.box_destroy_event(s)
 
 class Checkpoint(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		s=self
 		s.vnum=6
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
-		del pos,pse,s
+		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
+		del pos,pse,m,l,s
 	def destroy(self):
 		s=self
 		st.checkpoint=(s.x,s.y+1.5,s.z)
 		sn.crate_audio(ID=6)
 		ui.CheckpointLetter(s.position)
-		cc.destroy_event(s)
+		cc.box_destroy_event(s)
 		cc.collect_reset()
 
 class SpringWood(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		s=self
 		s.vnum=7
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
+		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		s.is_bounc=False
 		s.frm=0
-		del pos,pse,s
+		del pos,pse,m,l,s
 	def destroy(self):
-		item.place_wumpa(self.position,cnt=1,c_prg=True)
-		cc.destroy_event(self)
+		item.spawn_wumpa(self.position,cnt=1,c_prg=True)
+		cc.box_destroy_event(self)
 	def update(self):
 		if st.gproc():
 			return
@@ -186,15 +186,15 @@ class SpringWood(Entity):
 			an.bnc_anim(s)
 
 class SpringIron(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		s=self
 		s.vnum=8
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
+		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		s.is_bounc=False
 		s.p_snd=False
 		s.frm=0
-		del pos,pse,s
+		del pos,pse,m,l,s
 	def destroy(self):
 		cc.block_destroy(self)
 	def update(self):
@@ -205,21 +205,19 @@ class SpringIron(Entity):
 			an.bnc_anim(s)
 
 class SwitchEmpty(Entity):
-	def __init__(self,pos,m,pse):
+	def __init__(self,pos,m,l,pse):
 		s=self
 		s.vnum=9
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
+		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		s.p_snd=False
 		s.activ=False
-		s.mark=m
-		del pos,pse,s
+		del pos,pse,m,l,s
 	def c_reset(self):
 		s=self
 		s.model=cr2
 		s.texture=s.org_tex
 		s.activ=False
-		del s
 	def destroy(self):
 		s=self
 		cc.block_destroy(s)
@@ -228,23 +226,24 @@ class SwitchEmpty(Entity):
 			s.model=cr1
 			s.texture=pp+'0.tga'
 			ccount=0
-			st.C_RESET.append(s)
 			for _air in scene.entities[:]:
 				if isinstance(_air,Air) and _air.mark == s.mark:
 					invoke(_air.destroy,delay=ccount/4)
 					ccount=ccount+0 if st.level_index == 5 and not st.bonus_round else ccount+.8
-			cc.spawn_ico(s)
+			cc.spawn_ico(s.position)
+			invoke(lambda:sn.crate_audio(ID=13),delay=.15)
+			st.SWI_RESET.append(s)
 			del _air
 
 class SwitchNitro(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		s=self
 		s.vnum=10
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
+		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		s.p_snd=False
 		s.activ=False
-		del pos,pse,s
+		del pos,pse,m,l,s
 	def c_reset(self):
 		s=self
 		s.model=cr2
@@ -257,24 +256,24 @@ class SwitchNitro(Entity):
 			s.activ=True
 			s.model=cr1
 			s.texture=pp+'0.tga'
-			cc.spawn_ico(s)
-			st.C_RESET.append(s)
+			cc.spawn_ico(s.position)
 			for nt in scene.entities[:]:
 				if isinstance(nt,Nitro) and nt.collider:
 					nt.destroy()
+			st.SWI_RESET.append(s)
 			del nt
 
 tx=pp+'crate_tnt_'
 class TNT(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		s=self
 		s.vnum=11
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=self,Cpos=pos,Cpse=pse)
+		cc.box_set_val(cR=self,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		s.aud=Audio(sn.TC,name='ctn',volume=0,autoplay=False,auto_destroy=True,add_to_scene_entities=False)
 		s.activ=False
 		s.countdown=0
-		del pos,pse,s
+		del pos,pse,m,l,s
 	def destroy(self):
 		s=self
 		if not s.activ:
@@ -284,14 +283,13 @@ class TNT(Entity):
 				s.aud.fade_in()
 				s.aud.play()
 			s.countdown=3.99
-		del s
 	def empty_destroy(self):
 		s=self
 		if s.activ:
 			s.activ=False
 			s.aud.fade_out()
 		s.countdown=0
-		cc.destroy_event(s)
+		cc.box_destroy_event(s)
 	def update(self):
 		s=self
 		if st.gproc():
@@ -305,27 +303,27 @@ class TNT(Entity):
 				s.empty_destroy()
 
 class Nitro(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		s=self
 		s.vnum=12
 		super().__init__(model=cr2,color=color.white,unlit=False)
-		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
-		s.can_jmp=True
+		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
+		s.can_jmp=False
 		s.is_jmp=False
 		s.snd_time=1
 		s.jmp_y=s.y
 		s.mode=0
-		del pos,pse,s
+		del pos,pse,m,l,s
 	def c_freeze(self):
 		self.can_jmp=False
 	def destroy(self):
-		cc.destroy_event(self)
+		cc.box_destroy_event(self)
 	def c_jmp(self):
 		s=self
 		s.y+=time.dt*3
 		if s.y >= s.jmp_y:
 			s.mode=2
-	def c_fall(self):
+	def c_fall_act(self):
 		s=self
 		s.y-=time.dt*3
 		if s.y <= s.spawn_pos[1]:
@@ -351,43 +349,39 @@ class Nitro(Entity):
 			s.destroy()
 			return
 		if s.is_jmp:
-			{0:s.refr,1:s.c_jmp,2:s.c_fall}[s.mode]()
+			{0:s.refr,1:s.c_jmp,2:s.c_fall_act}[s.mode]()
 
 class Air(Entity):
 	def __init__(self,pos,m,l,pse):
 		s=self
 		s.vnum=13
 		super().__init__(model=cr1)
-		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
+		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		s.collider=None
-		s.mark=m
-		s.c_ID=l
-		del pos,pse,s
+		del pos,pse,m,l,s
 	def destroy(self):
-		s=self
-		spawn(p=s.position,ID=s.c_ID,pse=True)
+		spawn(p=self.position,ID=self.c_ID,pse=True)
 		sn.crate_audio(ID=13)
-		st.C_RESET.append(s)
-		cc.cache_instance(s)
+		cc.box_destroy_event(self)
 
 class Protected(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		s=self
 		s.vnum=14
 		super().__init__(model=cr1)
-		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
+		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		s.hitten=False
 		s.p_snd=False
 		s.frm=0
-		del pos,pse,s
+		del pos,pse,m,l,s
 	def destroy(self):
 		s=self
 		s.hitten=True
 		cc.block_destroy(s)
 	def c_destroy(self):
 		sn.crate_audio(ID=4,pit=.35)
-		item.place_wumpa(self.position,cnt=random.randint(5,10),c_prg=True)
-		cc.destroy_event(self)
+		item.spawn_wumpa(self.position,cnt=random.randint(5,10),c_prg=True)
+		cc.box_destroy_event(self)
 	def update(self):
 		if not st.gproc() and self.hitten:
 			an.prtc_anim(self)
@@ -398,24 +392,24 @@ class cTime(Entity):
 		s.vnum=15
 		super().__init__(model=cr2)
 		s.time_stop=tm
-		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
-		del pos,pse,s
+		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
+		del pos,pse,m,l,s
 	def destroy(self):
-		cc.destroy_event(self)
+		cc.box_destroy_event(self)
 
 class LvInfo(Entity):
-	def __init__(self,pos,pse):
+	def __init__(self,pos,pse,m,l):
 		s=self
 		s.vnum=16
 		super().__init__(model=cr2)
-		cc.crate_set_val(cR=s,Cpos=pos,Cpse=pse)
+		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		if st.level_col_gem:
 			destroy(s)
-		del pos,pse,s
+		del pos,pse,m,l,s
 	def destroy(self):
 		s=self
 		if st.level_index == 3:
 			item.GemStone(pos=(-.05,2.75,88),c=5)
 		if distance(s,LC.ACTOR) < 3:
 			ui.GemHint()
-		cc.destroy_event(s)
+		cc.box_destroy_event(s)

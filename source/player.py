@@ -106,8 +106,8 @@ class CrashB(Entity):
 			st.p_last_direc=mvD
 			s.walk_event()
 			if not mc or str(mc.entity) in LC.item_lst|LC.trigger_lst:
-				s.position+=mvD*(time.dt*s.move_speed)
-			if (cc.is_crate(mc.entity) and mc.entity.vnum == 12):
+				s.position+=mvD*(time.dt*3)
+			if (cc.is_box(mc.entity) and mc.entity.vnum == 12):
 				mc.entity.destroy()
 			return
 		s.wksn=0

@@ -1,5 +1,6 @@
 import sys,os,_loc,item,status,objects,map_tools,crate,npc,item,gc,danger
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from ursina.ursinastuff import destroy
 from ursina import *
 
 mt=map_tools
@@ -33,43 +34,63 @@ def start_load():
 
 def load_object():
 	Entity(model='cube',scale=(16,1,64),y=-.5,texture_scale=(32,64),collider='box',texture='grass',alpha=1)
-	item.GemStone(pos=(4,.4,-20),c=1)
-	o.PseudoGemPlatform(pos=(0,.3,-21),t=1)
-	o.PseudoGemPlatform(pos=(1,.3,-21),t=2)
-	o.PseudoGemPlatform(pos=(2,.3,-21),t=3)
-	o.PseudoGemPlatform(pos=(3,.3,-21),t=4)
-	o.PseudoGemPlatform(pos=(4,.3,-21),t=5)
-	o.GemPlatform(pos=(0,.3,-22),t=1)
-	o.GemPlatform(pos=(1,.3,-22),t=2)
-	o.GemPlatform(pos=(2,.3,-22),t=3)
-	o.GemPlatform(pos=(3,.3,-22),t=4)
-	o.GemPlatform(pos=(4,.3,-22),t=5)
+	for gm in range(6):
+		item.GemStone(pos=(-3+gm,.4,-20),c=gm)
+	item.TimeTrialClock(pos=(0,.4,-25))
+	o.PseudoGemPlatform(pos=(0,.3,-25),t=1)
+	o.PseudoGemPlatform(pos=(1,.3,-25),t=2)
+	o.PseudoGemPlatform(pos=(2,.3,-25),t=3)
+	o.PseudoGemPlatform(pos=(3,.3,-25),t=4)
+	o.PseudoGemPlatform(pos=(4,.3,-25),t=5)
+	o.GemPlatform(pos=(0,.3,-26),t=1)
+	o.GemPlatform(pos=(1,.3,-26),t=2)
+	o.GemPlatform(pos=(2,.3,-26),t=3)
+	o.GemPlatform(pos=(3,.3,-26),t=4)
+	o.GemPlatform(pos=(4,.3,-26),t=5)
 	o.StartRoom(pos=(0,0,-32.2))
 	o.EndRoom(pos=(.5,2,0),c=color.rgb32(180,200,200))
 	#dg.Hive(pos=(2,0,-23),bID=1,bMAX=5)
 def load_crate():
-	mt.crate_block(ID=0,POS=(-7.5,.16,-18),CNT=[3,1,1])
-	mt.crate_block(ID=0,POS=(-7.5,.16,-18+.32),CNT=[3,2,2])
-	mt.crate_block(ID=0,POS=(-7.5,.16,-18+.64),CNT=[3,1,3])
-	mt.crate_block(ID=1,POS=(-6.5,.16,-18),CNT=[3,3,3])
-	mt.crate_block(ID=2,POS=(-5.5,.16,-18),CNT=[3,3,2])
-	mt.crate_block(ID=3,POS=(-4.5,.16,-18),CNT=[3,3,1])
-	mt.crate_block(ID=4,POS=(-3.5,.16,-18),CNT=[3,3,1])
-	mt.crate_block(ID=5,POS=(-2.5,.16,-18),CNT=[3,1,1])
-	mt.crate_block(ID=6,POS=(-1.5+.32,.16,-18),CNT=[1,1,1])
-	mt.crate_block(ID=7,POS=(-.5,.16,-18),CNT=[3,3,1])
-	mt.crate_block(ID=8,POS=(.5,.16,-18),CNT=[3,3,1])
-	mt.crate_block(ID=9,POS=(1.5+.32,.16,-18),CNT=[1,1,1])
-	mt.crate_block(ID=10,POS=(2.5+.32,.16,-18),CNT=[1,1,1])
-	mt.crate_block(ID=11,POS=(3.5+.32,.16,-18),CNT=[1,1,8])
-	mt.crate_block(ID=12,POS=(4.5+.32,.16,-18),CNT=[1,1,8])
-	mt.crate_block(ID=13,POS=(5.5,.16,-18),CNT=[3,3,3])
-	mt.crate_block(ID=14,POS=(6.5,.16,-18),CNT=[3,3,3])
+	CZ=-21
+	mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,1,1])
+	mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.32),CNT=[3,2,2])
+	mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.64),CNT=[3,1,3])
+	mt.crate_block(ID=1,POS=(-6.5,.16,CZ),CNT=[1,2,5])
+	mt.crate_block(ID=2,POS=(-5.5,.16,CZ),CNT=[3,3,1])
+	mt.crate_block(ID=3,POS=(-4.5,.16,CZ),CNT=[3,3,1])
+	mt.crate_block(ID=4,POS=(-3.5,.16,CZ),CNT=[3,3,1])
+	mt.crate_block(ID=5,POS=(-2.5,.16,CZ),CNT=[3,1,1])
+	mt.crate_block(ID=6,POS=(-1.5+.32,.16,CZ),CNT=[1,1,1])
+	mt.crate_block(ID=7,POS=(-.5,.16,CZ),CNT=[3,3,1])
+	mt.crate_block(ID=8,POS=(.5,.16,CZ),CNT=[3,3,1])
+	mt.crate_block(ID=9,POS=(1.5+.32,.16,CZ),CNT=[1,1,1])
+	mt.crate_block(ID=10,POS=(2.5+.32,.16,CZ),CNT=[1,1,1])
+	mt.crate_block(ID=11,POS=(3.5+.32,.16,CZ),CNT=[1,1,8])
+	mt.crate_block(ID=12,POS=(4.5+.32,.16,CZ),CNT=[1,1,3])
+	mt.crate_block(ID=13,POS=(5.5,.16,CZ),CNT=[3,3,3])
+	mt.crate_block(ID=14,POS=(6.5,.16,CZ),CNT=[3,3,3])
 def load_wumpa():
-	mt.wumpa_plane(POS=(0,.3,-14),CNT=[5,5])
+	mt.wumpa_plane(POS=(0,.3,-22),CNT=[3,3])
 def load_npc():
-	#return
-	n.spawn(ID=14,POS=(4,0,-25),RNG=1,DRC=1)
+	n.spawn(ID=0,POS=(-3,0,-14),RNG=.5,DRC=2,RTYP=1)
+	n.spawn(ID=1,POS=(-2,0,-14),RNG=.5,DRC=2,RTYP=1)
+	n.spawn(ID=2,POS=(-1,0,-14),RNG=1,DRC=2)
+	n.spawn(ID=3,POS=(-0,0,-14),RNG=0,DRC=1)
+	n.spawn(ID=4,POS=(1,0,-14),RNG=0,DRC=1)
+	n.spawn(ID=5,POS=(2,0,-14),RNG=0,DRC=1)
+	n.spawn(ID=6,POS=(3,0,-14),RNG=0,DRC=1)
+	#######################################
+	n.spawn(ID=7,POS=(-3,0,-16),RNG=0,DRC=1)
+	n.spawn(ID=8,POS=(-2,0,-16),RNG=1,DRC=0,CMV=True)
+	n.spawn(ID=10,POS=(-1,0,-16),RNG=0,DRC=1)
+	n.spawn(ID=11,POS=(0,0,-16),RNG=0,DRC=1)
+	n.spawn(ID=12,POS=(1,0,-16),RNG=0,DRC=1)
+	n.spawn(ID=13,POS=(2,0,-16),RNG=0,DRC=1)
+	n.spawn(ID=14,POS=(3,0,-16),RNG=0,DRC=1)
+	#######################################
+	n.spawn(ID=16,POS=(-3,0,-18),RNG=0,DRC=1)
+	n.spawn(ID=17,POS=(-2,0,-18),RNG=0,DRC=1)
+	n.spawn(ID=19,POS=(-1,0,-18),RNG=1,DRC=0)
 
 ## bonus level / gem path
 def bonus_zone():

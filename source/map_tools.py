@@ -69,34 +69,34 @@ def crate_plane(ID,POS,CNT):#[x,z]
 def wumpa_row(POS,CNT,WAY):#WAY: 0=right,1=front,2=up
 	for wr in range(CNT):
 		if WAY == 0:
-			I.place_wumpa((POS[0]+wr/3,POS[1],POS[2]),cnt=1)
+			I.spawn_wumpa((POS[0]+wr/3,POS[1],POS[2]),cnt=1)
 		elif WAY == 1:
-			I.place_wumpa((POS[0],POS[1],POS[2]+wr/3),cnt=1)
+			I.spawn_wumpa((POS[0],POS[1],POS[2]+wr/3),cnt=1)
 		else:
-			I.place_wumpa((POS[0],POS[1]+wr/3,POS[2]),cnt=1)
+			I.spawn_wumpa((POS[0],POS[1]+wr/3,POS[2]),cnt=1)
 	del wr,POS,CNT,WAY
 
 def wumpa_double_row(POS,CNT):
 	for wr in range(CNT):
-		I.place_wumpa((POS[0]+wr/3,POS[1],POS[2]),cnt=1)
-		I.place_wumpa((POS[0]+wr/3,POS[1]+.3,POS[2]),cnt=1)
+		I.spawn_wumpa((POS[0]+wr/3,POS[1],POS[2]),cnt=1)
+		I.spawn_wumpa((POS[0]+wr/3,POS[1]+.3,POS[2]),cnt=1)
 	del POS,CNT,wr
 
 def wumpa_wall(POS,CNT):#[x,y]
 	for wx in range(CNT[0]):
 		for wy in range(CNT[1]):
-			I.place_wumpa((POS[0]+wx/3,POS[1]+wy/3,POS[2]),cnt=1)
+			I.spawn_wumpa((POS[0]+wx/3,POS[1]+wy/3,POS[2]),cnt=1)
 	del POS,CNT,wx,wy
 
 def wumpa_plane(POS,CNT):#[x,z]
 	for wx in range(CNT[0]):
 		for wz in range(CNT[1]):
-			I.place_wumpa((POS[0]+wx/3,POS[1],POS[2]+wz/3),cnt=1)
+			I.spawn_wumpa((POS[0]+wx/3,POS[1],POS[2]+wz/3),cnt=1)
 	del POS,CNT,wx,wz
 
 def wumpa_block(POS,CNT):#[x,y,z]
 	for wx in range(CNT[0]):
 		for wy in range(CNT[1]):
 			for wz in range(CNT[2]):
-				I.place_wumpa((POS[0]+wx/3,POS[1]+wy/3,POS[2]+wz/3),cnt=1)
+				I.spawn_wumpa((POS[0]+wx/3,POS[1]+wy/3,POS[2]+wz/3),cnt=1)
 	del POS,CNT,wx,wy

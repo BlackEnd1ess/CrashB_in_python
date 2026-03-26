@@ -1,3 +1,4 @@
 - level 8 no lights when playing other levels before
-- improve crate fall function
 - better 3d models: tree, mushrooms
+- time trial + ui + time boxes
+- air box destroyer = stop by death event

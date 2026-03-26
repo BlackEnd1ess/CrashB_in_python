@@ -19,3 +19,25 @@
 - implemented footstep_snow into level 2 and level 8
 - fixxed gorilla respawn in level 5
 - improved box respawn function
+
+#14.03.2026
+- improved box fall physic
+
+#18.03.2026
+- fixxed nitro,nitro sound limit
+
+#23.03.2026
+- crates 3d model exported to .obj for better collision
+- improved box destroy & box respawn event
+- single wumpa on same position will change z_pos
+
+#25.03.2026
+- changed box parameters for incomming time trials
+
+#26.03.2026
+- improved npc destroy & respawn event
+- changed nitro stack function for idle boxes
+- fixxed vulture and hedgehog update function while these NPC's purged or hitten
+- all npcs can execute rotation move or NOMOVE
+- seperate animator for Gorilla and LabAssistant death_event
+- implemented TimeTrialClock

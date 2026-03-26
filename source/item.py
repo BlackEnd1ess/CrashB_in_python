@@ -5,6 +5,7 @@ from ursina.ursinastuff import destroy
 lfic='res/ui/icon/crash_live.tga'
 w_pa='res/ui/icon/wumpa/'
 CRY='crystal/crystal'
+CLK='clock/clock'
 i_path='res/item/'
 b='box'
 
@@ -15,7 +16,7 @@ LC=_loc
 r=random
 
 ##place wumpa fruits
-def place_wumpa(pos,cnt,c_prg=False):
+def spawn_wumpa(pos,cnt,c_prg=False):
 	for wpo in range(cnt):
 		vpu=pos
 		if cnt > 1:
@@ -39,10 +40,9 @@ class WumpaFruit(Entity):
 			s.unlit=False
 		del p,c_prg,s
 	def destroy(self):
-		s=self
-		if not s.c_purge:
-			st.W_RESET.append(s.spawn_pos)
-		destroy(s)
+		if not self.c_purge:
+			st.WMP_RESET.append(self.spawn_pos)
+		destroy(self)
 	def collect(self):
 		cc.wumpa_count(1)
 		self.destroy()
@@ -174,3 +174,15 @@ class EnergyCrystal(Entity):
 			s.glow.visible=kr
 			s.visible=kr
 			s.rotation_y-=time.dt*70
+
+class TimeTrialClock(Entity):
+	def __init__(self,pos):
+		super().__init__(model=CLK+'.ply',texture=CLK+'.tga',position=pos,scale=.003,color=color.rgb32(200,190,0),double_sided=True,rotation_x=-90,name='clock',collider=b)
+		self.rsp=90
+	def collect(self):
+		print(self)
+		destroy(self)
+	def update(self):
+		if st.gproc():
+			return
+		self.rotation_y+=time.dt*self.rsp

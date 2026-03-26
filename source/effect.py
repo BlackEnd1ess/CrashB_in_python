@@ -107,7 +107,7 @@ class Fireball(Entity):
 		nC=color.red
 		if cr.name == 'ldmn':
 			nC=color.orange
-		if cc.is_crate(cr) and cr.vnum == 12:
+		if cc.is_box(cr) and cr.vnum == 12:
 			nC=color.green
 		super().__init__(model=q,texture=frb+'0.png',position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC,scale=.75,unlit=False)
 		PressureWave(pos=s.position,col=nC)

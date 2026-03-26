@@ -26,7 +26,7 @@ def footstep(c):
 		pc_audio(ID=11,pit=random.uniform(.9,1))
 		return
 	else:
-		if st.level_index in (4,7):#(st.level_index == 7 and c.indoor <= 0):
+		if st.level_index in (4,7):
 			pc_audio(ID=12)
 			return
 		if st.level_index in (2,8):
@@ -42,7 +42,7 @@ def landing_sound(o):
 	if LC.ACTOR.in_water:
 		pc_audio(ID=10)
 		return
-	if cc.is_crate(o) and ((o.vnum in {7,8}) or (o.vnum in {9,10,11} and not o.activ)) or cc.is_enemie(o):
+	if cc.is_box(o) and ((o.vnum in {7,8}) or (o.vnum in {9,10,11} and not o.activ)) or cc.is_enemie(o):
 		pc_audio(ID=5)
 		return
 	ldnp=.6 if LC.ACTOR.b_smash else 1
@@ -79,7 +79,6 @@ def crate_audio(ID,pit=1):
 		st.ni_sn+=1
 	ca=Audio(SF+sfx_db.CRATE[ID]+'.wav',pitch=pit,volume=se.SFX_VOLUME*2,add_to_scene_entities=False)
 	invoke(lambda:destroy(ca),delay=ca.length*2)
-	del ID,pit
 
 ## NPC SFX
 def npc_audio(ID,pit=1,vol=None):
@@ -87,9 +86,11 @@ def npc_audio(ID,pit=1,vol=None):
 		vol=se.SFX_VOLUME
 	np=Audio(SF+sfx_db.NPC[ID]+'.wav',pitch=pit,volume=vol,add_to_scene_entities=False)
 	invoke(lambda:destroy(np),delay=np.length*3)
-	del vol,pit,ID
 
 def npc_loop_audio(n,PIT,tme_r):
+	if (n.is_hitten or n.is_purge):
+		del n,PIT,tme_r
+		return
 	if n.vnum in loop_snd_info:
 		if distance(n,LC.ACTOR) < 10:
 			n.tme=max(n.tme-time.dt,0)
@@ -98,7 +99,6 @@ def npc_loop_audio(n,PIT,tme_r):
 				cds=distance(n,LC.ACTOR)
 				nvv=max(0,1-(cds/10))
 				npc_audio(ID=loop_snd_info[n.vnum],vol=nvv,pit=PIT)
-				del n,PIT,tme_r,cds
 
 ## OBJECTS/ITEM SFX
 def obj_audio(ID,pit=1):
@@ -188,4 +188,4 @@ class GameOverMusic(Audio):
 	def update(self):
 		if not self.playing:
 			self.fade_out()
-			cc.purge_instance(self)
+			cc.destroy_entity(self)

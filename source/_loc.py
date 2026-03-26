@@ -96,7 +96,7 @@ LDM_POS=[]
 trigger_lst={'indz','lvfi','elwt','fthr','eball'}
 
 #item/obj name list
-item_lst={'wmpf','exlf','gems','crys'}
+item_lst={'wmpf','exlf','gems','crys','clock'}
 
 #danger zone
 dangers={'wood_log','role','fllz','piston'}

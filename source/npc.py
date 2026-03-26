@@ -12,86 +12,86 @@ cc=_core
 LC=_loc
 
 def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True):
-	{0:lambda:Amadillo(pos=POS,drc=DRC,rng=RNG),
-	1:lambda:Turtle(pos=POS,drc=DRC,rng=RNG),
-	2:lambda:SawTurtle(pos=POS,drc=DRC,rng=RNG),
-	3:lambda:Vulture(pos=POS,drc=DRC,rng=RNG),
-	4:lambda:Penguin(pos=POS,drc=DRC,rng=RNG),
-	5:lambda:Hedgehog(pos=POS,drc=DRC,rng=RNG),
-	6:lambda:Seal(pos=POS,drc=DRC,rng=RNG),
-	7:lambda:EatingPlant(pos=POS),
-	8:lambda:Rat(pos=POS,drc=DRC,rng=RNG,cmv=CMV),
-	9:lambda:Lizard(pos=POS,drc=DRC,rng=RNG),
-	10:lambda:Scrubber(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP),
-	11:lambda:Mouse(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP),
-	12:lambda:Eel(pos=POS,drc=DRC,rng=RNG),
-	13:lambda:SewerMine(pos=POS,drc=DRC,rng=RNG),
-	14:lambda:Gorilla(pos=POS,drc=DRC),
-	15:lambda:Bee(pos=POS),
-	16:lambda:Lumberjack(pos=POS),
-	17:lambda:SpiderRobot(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP),
-	18:lambda:Robot(pos=POS,drc=DRC,rng=RNG),
-	19:lambda:LabAssistant(pos=POS,drc=DRC)}[ID]()
+	{0:lambda:Amadillo(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	1:lambda:Turtle(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	2:lambda:SawTurtle(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	3:lambda:Vulture(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	4:lambda:Penguin(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	5:lambda:Hedgehog(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	6:lambda:Seal(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	7:lambda:EatingPlant(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	8:lambda:Rat(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	9:lambda:Lizard(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	10:lambda:Scrubber(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	11:lambda:Mouse(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	12:lambda:Eel(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	13:lambda:SewerMine(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	14:lambda:Gorilla(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	15:lambda:Bee(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	16:lambda:Lumberjack(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	17:lambda:SpiderRobot(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	18:lambda:WalkerRobot(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	19:lambda:LabAssistant(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV)}[ID]()
 	st.npc_in_level+=1
 	del ID,POS,DRC,RTYP,RNG,CMV
 
 ## Enemies
 class Amadillo(Entity):
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=0
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1
 		s.max_frm=7
-		del pos,rng,drc,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
 		cc.npc_action(self)
 
 class Turtle(Entity):
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=1
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,600,300))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=.7
 		s.max_frm=12
-		del pos,rng,drc,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
 		cc.npc_action(self)
 
 class SawTurtle(Entity):
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=2
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(300,600,300))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1
 		s.max_frm=12
-		del pos,rng,drc,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
 		cc.npc_action(self)
 
 class Vulture(Entity):##fixx process
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=3
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(300,600,300))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1.2
 		s.max_frm=13
-		del pos,drc,rng,s
-	def wait_on_player(self):
+		del s,pos,drc,rng,rtyp,cmv
+	def follow_player(self):
 		s=self
 		target=LC.ACTOR
 		an.npc_walking(s)
@@ -109,30 +109,31 @@ class Vulture(Entity):##fixx process
 			return
 		s=self
 		cc.npc_action(s)
-		s.wait_on_player()
+		if not (s.is_hitten or s.is_purge):
+			s.follow_player()
 
 class Penguin(Entity):
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=4
 		super().__init__(scale=.8/1100,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(300,300,600))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1.1
 		s.max_frm=15
-		del pos,drc,rng,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
 		cc.npc_action(self)
 
 class Hedgehog(Entity):
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=5
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+250),size=Vec3(450,450,450))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.def_mode=False
 		s.move_speed=1.1
 		s.scale=.00045
@@ -140,7 +141,7 @@ class Hedgehog(Entity):
 		s.def_time=5
 		s.max_frm=12
 		s.wait=5
-		del pos,drc,rng,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
@@ -149,29 +150,30 @@ class Hedgehog(Entity):
 		s.wait=max(s.wait-time.dt,0)
 		if s.wait > 0:
 			return
-		if s.def_mode:
-			s.def_time=max(s.def_time-time.dt,0)
-			an.hedge_defend(s)
-			if s.def_time <= 0:
-				s.def_mode=False
-				s.def_time=5
-				s.wait=5
-			return
-		if distance(s,LC.ACTOR) < 2:
-			s.def_mode=True
+		if not (s.is_hitten or s.is_purge):
+			if s.def_mode:
+				s.def_time=max(s.def_time-time.dt,0)
+				an.hedge_defend(s)
+				if s.def_time <= 0:
+					s.def_mode=False
+					s.def_time=5
+					s.wait=5
+				return
+			if distance(s,LC.ACTOR) < 2:
+				s.def_mode=True
 
 class Seal(Entity):
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=6
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(300,800,300))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1.1
 		s.max_frm=14
 		s.tme=1
 		s.n_snd=False
-		del pos,drc,rng,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
@@ -179,7 +181,7 @@ class Seal(Entity):
 		sn.npc_loop_audio(n=self,PIT=random.uniform(.36,.38),tme_r=random.uniform(1,2))
 
 class EatingPlant(Entity):
-	def __init__(self,pos):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=7
 		super().__init__(position=pos)
@@ -189,7 +191,7 @@ class EatingPlant(Entity):
 		s.atk,s.eat=False,False
 		s.scale=.8/900
 		s.max_frm=13
-		del pos,s
+		del s,pos,drc,rng,rtyp,cmv
 	def action(self):
 		s=self
 		ta=LC.ACTOR
@@ -225,26 +227,27 @@ class EatingPlant(Entity):
 			return
 		if s.is_purge:
 			effect.JumpDust(s.position)
-			cc.purge_instance(s)
+			cc.destroy_entity(s)
 			return
 		s.npc_anim()
 
 class Rat(Entity):
-	def __init__(self,pos,drc,rng,cmv):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=8
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=(s.x,s.y,s.z+200),size=Vec3(500,600,300))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.scale=.8/1000
 		s.move_speed=1
-		s.can_move=cmv
 		s.max_frm=8
 		s.tme=1
 		s.frm=0
-		del pos,drc,rng,cmv,s
+		del s,pos,drc,rng,rtyp,cmv
 	def idle_action(self):
 		s=self
+		if (s.is_hitten or s.is_purge):
+			return
 		an.rat_idle(s)
 		if distance(s,LC.ACTOR) < 2.5:
 			cc.rotate_to_crash(s)
@@ -258,33 +261,32 @@ class Rat(Entity):
 			s.idle_action()
 
 class Lizard(Entity):
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=9
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(500,500,700))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1.2
 		s.max_frm=11
 		s.tme=1
-		del pos,drc,rng,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		cc.npc_action(self)
 		sn.npc_loop_audio(n=self,PIT=random.uniform(.8,1.1),tme_r=random.uniform(.9,1.1))
 
 class Scrubber(Entity):
-	def __init__(self,pos,drc,rng,rtyp):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=10
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+350),size=Vec3(400,600,500))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1.2
-		s.ro_mode=rtyp
 		s.max_frm=3
 		s.angle=0
 		s.tme=1.5
-		del pos,drc,rng,rtyp,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
@@ -293,18 +295,17 @@ class Scrubber(Entity):
 		sn.npc_loop_audio(n=self,PIT=1,tme_r=1.5)
 
 class Mouse(Entity):
-	def __init__(self,pos,drc,rng,rtyp):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=11
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=(s.x,s.y,s.z+150),size=Vec3(500,700,200))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1.2
-		s.ro_mode=rtyp
 		s.max_frm=8
 		s.angle=0
 		s.tme=1
-		del pos,drc,rng,rtyp,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
@@ -313,48 +314,48 @@ class Mouse(Entity):
 		sn.npc_loop_audio(n=self,PIT=1,tme_r=1)
 
 class Eel(Entity):
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=12
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=(s.x,s.y,s.z+100),size=Vec3(500,700,200))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1
 		s.max_frm=12
-		del pos,drc,rng,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		cc.npc_action(self)
 
 class SewerMine(Entity):
-	def __init__(self,pos,drc,rng):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=13
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,size=Vec3(500,700,500))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=.75
 		s.max_frm=16
-		del pos,drc,rng,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
 		cc.npc_action(self)
 
 class Gorilla(Entity):
-	def __init__(self,pos,drc):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=14
 		rmo={0:0,1:90,2:180,3:-90}
 		super().__init__(rotation=(-90,rmo[drc],0),position=pos,scale=.8/1200)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y,s.z+450),size=Vec3(400,400,800))
 		s.throw_act={0:lambda:an.gorilla_take(self),1:lambda:an.gorilla_throw(self)}
-		cc.set_val_npc(s,drc)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
+		s.max_frm=10#for death animtor
 		s.t_sleep=.5
 		s.t_mode=0
 		s.f_frame=0
 		s.t_frame=0
-		s.max_frm=0
-		del pos,drc,s
+		del s,pos,drc,rng,rtyp,cmv,rmo
 	def throw_log(self):
 		s=self
 		invoke(lambda:LogDanger(pos=(s.x,s.y+.6,s.z),ro_y=s.rotation_y),delay=.1)
@@ -362,15 +363,15 @@ class Gorilla(Entity):
 		if st.gproc():
 			return
 		s=self
-		if s.is_hitten or s.is_purge:
-			an.gorilla_fall(s)
+		if (s.is_hitten or s.is_purge):
+			cc.npc_destroy_event(s)
 			return
 		s.t_sleep=max(s.t_sleep-time.dt,0)
 		if s.t_sleep <= 0:
 			s.throw_act[s.t_mode]()
 
 class Bee(Entity):
-	def __init__(self,pos,bID=0):
+	def __init__(self,pos,drc,rng,rtyp,cmv,bID=0):
 		s=self
 		s.vnum=15
 		super().__init__(rotation_x=-90,position=pos,collider='box')
@@ -383,7 +384,7 @@ class Bee(Entity):
 		s.bID=bID
 		s.pgt=0
 		s.tme=0
-		del pos,s,bID
+		del s,pos,drc,rng,rtyp,cmv,bID
 	def fly_event(self):
 		s=self
 		if (LC.ACTOR.z < s.spawn_pos[2]+8 and LC.ACTOR.z > s.spawn_pos[2]-2):
@@ -429,7 +430,7 @@ class Bee(Entity):
 		s.fly_event()
 
 class Lumberjack(Entity):
-	def __init__(self,pos):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=16
 		super().__init__(rotation_x=-90,position=pos)
@@ -441,7 +442,7 @@ class Lumberjack(Entity):
 		s.sma_dst=.4
 		s.max_frm=10
 		s.sma_frm=0
-		del pos,s
+		del s,pos,drc,rng,rtyp,cmv
 	def follow_player(self):
 		s=self
 		drc=(Vec3(LC.ACTOR.x,s.y,LC.ACTOR.z)-s.position).normalized()
@@ -463,13 +464,10 @@ class Lumberjack(Entity):
 			s.p_snd=True
 			sn.npc_audio(ID=9)
 			invoke(lambda:setattr(s,'p_snd',False),delay=2)
-	def update(self):
-		if st.gproc():
-			return
+	def refr(self):
 		s=self
 		dsp=distance(s.spawn_pos,LC.ACTOR.position)
 		psp=distance_xz(s,LC.ACTOR)
-		cc.npc_action(s)
 		if s.is_atk:
 			s.npc_attack()
 			if psp < s.sma_dst:
@@ -477,6 +475,8 @@ class Lumberjack(Entity):
 					if s.is_purge or s.is_hitten:
 						return
 					cc.get_damage(LC.ACTOR,rsn=8)
+			return
+		if s.is_purge or s.is_hitten:
 			return
 		if dsp < 8:
 			cc.rotate_to_crash(s)
@@ -489,19 +489,25 @@ class Lumberjack(Entity):
 			s.follow_player()
 			return
 		s.back_to_spawn()
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		cc.npc_action(s)
+		if not (s.is_hitten or s.is_purge):
+			s.refr()
 
 class SpiderRobot(Entity):
-	def __init__(self,pos,drc,rng,rtyp):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=17
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
-		s.ro_mode=rtyp
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1
 		s.max_frm=13
 		s.tme=1
-		del pos,rng,drc,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
@@ -509,67 +515,67 @@ class SpiderRobot(Entity):
 		cc.npc_action(s)
 		sn.npc_loop_audio(n=self,PIT=1,tme_r=.26)
 
-class Robot(Entity):
-	def __init__(self,pos,drc,rng):
+class WalkerRobot(Entity):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
-		s.vnum=19
+		s.vnum=18
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
-		cc.set_val_npc(s,drc,rng)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1.8
 		s.max_frm=29
 		s.tma=.6
-		del pos,rng,drc,s
-	def update(self):
-		if st.gproc():
-			return
+		del s,pos,drc,rng,rtyp,cmv
+	def snd_action(self):
 		s=self
-		cc.npc_action(s)
 		if distance(s,LC.ACTOR) < 5:
 			s.tma=max(s.tma-time.dt,0)
 			if s.tma <= 0:
 				s.tma=.6
 				sn.pc_audio(ID=12)
 				invoke(lambda:sn.pc_audio(ID=12,pit=.8),delay=.4)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		cc.npc_action(s)
+		if not (s.is_hitten or s.is_purge):
+			s.snd_action()
 
 class LabAssistant(Entity):
-	def __init__(self,pos,drc):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
-		s.vnum=20
+		s.vnum=19
 		super().__init__(position=pos,rotation_y={0:90,1:180,2:270,3:0}[drc])
 		s.collider=BoxCollider(s,size=Vec3(600,600,1200),center=Vec3(0,150,600))
 		cc.set_val_npc(s,drc)
 		s.do_push=False
 		s.p_snd=False
 		s.move_speed=1
-		s.max_frm=0
+		s.max_frm=5#for death animator
 		s.tme=1
-		del pos,drc,s
+		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		s.tme=max(s.tme-time.dt,0)
-		dv=distance(s,LC.ACTOR)
-		if dv < .6 and s.do_push:
-			LC.ACTOR.pushed=True
 		if s.is_hitten or s.is_purge:
 			if not s.p_snd:
 				s.p_snd=True
-				setattr(s,'collider',None)
 				s.rotation_y+=90
 				sn.npc_audio(ID=8)
-			an.lba_fall(s)
+			cc.npc_destroy_event(s)
 			return
+		s.tme-=time.dt
+		dv=distance(s,LC.ACTOR)
+		LC.ACTOR.pushed=bool(dv < .6 and s.do_push)
 		if s.do_push:
 			an.lba_push(s)
-			return
 		if s.tme <= 0:
 			if dv < 6:
 				sn.npc_audio(ID=7)
 			s.tme=random.randint(1,3)
 			s.do_push=True
-
 
 ## passive NPC
 tpa='res/npc/akuaku/'
@@ -629,7 +635,7 @@ class AkuAkuMask(Entity):
 		s.follow_player()
 		s.change_skin()
 		if st.aku_hit <= 0:
-			cc.purge_instance(s)
+			cc.destroy_entity(s)
 
 class Hippo(Entity):
 	def __init__(self,POS):
