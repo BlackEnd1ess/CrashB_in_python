@@ -1,4 +1,3 @@
 - level 8 no lights when playing other levels before
 - better 3d models: tree, mushrooms
 - time trial + ui + time boxes
-- air box destroyer = stop by death event

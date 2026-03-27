@@ -41,3 +41,6 @@
 - all npcs can execute rotation move or NOMOVE
 - seperate animator for Gorilla and LabAssistant death_event
 - implemented TimeTrialClock
+
+#27.03.2026
+- fixxed AirSwitch continuing transform while death event by new AirBoxReplacer class

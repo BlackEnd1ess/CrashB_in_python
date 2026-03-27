@@ -218,22 +218,20 @@ class SwitchEmpty(Entity):
 		s.model=cr2
 		s.texture=s.org_tex
 		s.activ=False
+	def c_transform(self):
+		s=self
+		s.activ=True
+		s.model=cr1
+		s.texture=pp+'0.tga'
 	def destroy(self):
 		s=self
 		cc.block_destroy(s)
 		if not s.activ:
-			s.activ=True
-			s.model=cr1
-			s.texture=pp+'0.tga'
-			ccount=0
-			for _air in scene.entities[:]:
-				if isinstance(_air,Air) and _air.mark == s.mark:
-					invoke(_air.destroy,delay=ccount/4)
-					ccount=ccount+0 if st.level_index == 5 and not st.bonus_round else ccount+.8
+			s.c_transform()
+			cc.AirBoxReplacer(mark=s.mark)
 			cc.spawn_ico(s.position)
 			invoke(lambda:sn.crate_audio(ID=13),delay=.15)
 			st.SWI_RESET.append(s)
-			del _air
 
 class SwitchNitro(Entity):
 	def __init__(self,pos,pse,m,l):
@@ -249,13 +247,16 @@ class SwitchNitro(Entity):
 		s.model=cr2
 		s.texture=s.org_tex
 		s.activ=False
+	def c_transform(self):
+		s=self
+		s.activ=True
+		s.model=cr1
+		s.texture=pp+'0.tga'
 	def destroy(self):
 		s=self
 		cc.block_destroy(s)
 		if not s.activ:
-			s.activ=True
-			s.model=cr1
-			s.texture=pp+'0.tga'
+			s.c_transform()
 			cc.spawn_ico(s.position)
 			for nt in scene.entities[:]:
 				if isinstance(nt,Nitro) and nt.collider:

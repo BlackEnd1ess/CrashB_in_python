@@ -1,6 +1,6 @@
 import ui,_core,status,environment,sound,LODsystem,sys,os,gc
-from ursina import camera,invoke,Entity,time,scene
 from ursina.ursinastuff import destroy
+from ursina import camera,invoke
 
 lv='level'
 st=status
@@ -84,3 +84,4 @@ def level8():# polar lights
 	import level8
 	level8.start_load()
 	invoke(free_level,delay=flt)
+
