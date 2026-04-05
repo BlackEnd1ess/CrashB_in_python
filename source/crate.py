@@ -388,6 +388,7 @@ class LvInfo(Entity):
 		s=self
 		if st.level_index == 3:
 			item.GemStone(pos=(-.05,2.75,88),c=5)
+			ui.GemTimeTrial(t=90)
 		if distance(s,LC.ACTOR) < 3:
 			ui.GemHint()
 		cc.box_destroy_event(s)

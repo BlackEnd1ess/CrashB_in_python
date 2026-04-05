@@ -202,7 +202,7 @@ def c_shield():
 			if distance(rf,LC.ACTOR) < 1.5:
 				if rf.name in LC.item_lst:
 					rf.collect()
-				if is_enemie(rf) and rf.vnum != 13:
+				if is_enemie(rf):
 					bash_enemie(rf,LC.ACTOR)
 				if is_box(rf) and not rf.vnum in (0,8,13):
 					if rf.vnum == 14:
@@ -406,6 +406,14 @@ def purge_wumpa():
 		if wf:
 			if (isinstance(wf,item.WumpaFruit) and wf.c_purge):
 				wf.destroy()
+def gem_challange_fail(gemID):
+	if gemID == 4 and (st.level_index == 1 and st.crate_count > 0):#blue gem
+		return True
+	if gemID == 1 and (st.level_index == 2 and st.gem_death):#red gem
+		return True
+	if gemID == 5 and (st.level_index == 3 and st.gem_death):#yellow gem
+		return True
+	return False
 
 ## collisions
 def check_ceiling(c):

@@ -1,4 +1,4 @@
-from ursina import BoxCollider,Vec3,Entity,Audio,distance,distance_xz,lerp,invoke,PointLight,color,scene
+from ursina import BoxCollider,Vec3,Entity,distance,distance_xz,lerp,invoke,PointLight,color,scene
 import settings,_core,math,animation,status,sound,_loc,effect,time,random
 from ursina.ursinastuff import destroy
 from math import radians,cos,sin,pi
@@ -81,26 +81,26 @@ class SawTurtle(Entity):
 			return
 		cc.npc_action(self)
 
-class Vulture(Entity):##fixx process
+class Vulture(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=3
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(300,600,300))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
+		s.follow_speed=2
 		s.move_speed=1.2
 		s.max_frm=13
 		del s,pos,drc,rng,rtyp,cmv
 	def follow_player(self):
 		s=self
-		target=LC.ACTOR
 		an.npc_walking(s)
-		if distance_xz(target,s) < 2:
+		if distance_xz(LC.ACTOR,s) < 2:
 			if s.mov_direc == 0:
-				s.x=lerp(s.x,target.x,time.dt*3)
+				s.x=lerp(s.x,LC.ACTOR.x,time.dt*s.follow_speed)
 				return
-			s.z=lerp(s.z,target.z,time.dt*3)
-			if target.x < s.x:
+			s.z=lerp(s.z,LC.ACTOR.z,time.dt*s.follow_speed)
+			if LC.ACTOR.x < s.x:
 				s.rotation_y=90
 			else:
 				s.rotation_y=270
@@ -194,8 +194,7 @@ class EatingPlant(Entity):
 		del s,pos,drc,rng,rtyp,cmv
 	def action(self):
 		s=self
-		ta=LC.ACTOR
-		dc=distance(s,ta)
+		dc=distance(s,LC.ACTOR)
 		if dc < 3:
 			cc.rotate_to_crash(s)
 		if dc <= 1.25:
@@ -203,9 +202,9 @@ class EatingPlant(Entity):
 				return
 			s.atk=True
 			sn.npc_audio(ID=0)
-			if not (ta.is_attack or ta.jumping):
-				if ta.y <= s.y+.2:
-					cc.get_damage(ta,rsn=5)
+			if not (LC.ACTOR.is_attack or LC.ACTOR.jumping):
+				if LC.ACTOR.y <= s.y+.2:
+					cc.get_damage(LC.ACTOR,rsn=5)
 					s.eat=st.aku_hit < 1 and not s.eat
 	def npc_anim(self):
 		s=self
@@ -222,12 +221,8 @@ class EatingPlant(Entity):
 		if st.gproc():
 			return
 		s=self
-		if s.is_hitten:
-			cc.fly_away(s)
-			return
-		if s.is_purge:
-			effect.JumpDust(s.position)
-			cc.destroy_entity(s)
+		if s.is_hitten or s.is_purge:
+			cc.npc_action(s)
 			return
 		s.npc_anim()
 
@@ -292,9 +287,8 @@ class Scrubber(Entity):
 	def update(self):
 		if st.gproc():
 			return
-		s=self
-		cc.npc_action(s)
-		sn.npc_loop_audio(n=self,PIT=1,tme_r=1.5)
+		cc.npc_action(self)
+		sn.npc_loop_audio(self,PIT=1,tme_r=1.5)
 
 class Mouse(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -311,9 +305,8 @@ class Mouse(Entity):
 	def update(self):
 		if st.gproc():
 			return
-		s=self
-		cc.npc_action(s)
-		sn.npc_loop_audio(n=self,PIT=1,tme_r=1)
+		cc.npc_action(self)
+		sn.npc_loop_audio(self,PIT=1,tme_r=1)
 
 class Eel(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -580,64 +573,64 @@ class LabAssistant(Entity):
 			s.do_push=True
 
 ## passive NPC
-tpa='res/npc/akuaku/'
+tpa1='res/npc/akuaku/aku'
+tpa2='res/npc/akuaku/aku2'
 class AkuAkuMask(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=None,texture=None,scale=.00075,rotation_x=-90,position=pos)
+		super().__init__(position=pos,scale=.75/1000,rotation_x=-90)
+		s.status_changed=0
 		st.aku_exist=True
-		s.cur_skin=123
-		s.spt=.5
-		s.mode=0
-		s.spkw=0
+		s.sparking=False
+		s.spark_delay=0
+		s.cur_akin=None
+		s.rot_speed=12
+		s.mov_speed=8
+		s.mvw=0
 		del pos,s
-	def change_skin(self):
-		s=self
-		if st.aku_hit > 1:
-			s.spark()
-		if st.aku_hit != s.cur_skin:
-			s.cur_skin=st.aku_hit
-			s.model=tpa+'aku.ply' if st.aku_hit < 2 else tpa+'aku2.ply'
-			s.texture=tpa+'aku.png' if st.aku_hit < 2 else tpa+'aku2.png'
 	def spark(self):
 		s=self
-		s.spt=max(s.spt-time.dt,0)
-		if s.spt <= 0:
-			s.spt=.5
-			if s.spkw < 3:
-				s.spkw+=1
-			if s.spkw > 2:
-				effect.Sparkle((s.x+random.uniform(-.1,.1),s.y+random.uniform(-.1,.1),s.z+random.uniform(-.1,.1)))
+		s.spark_delay+=time.dt
+		if s.spark_delay > .5:
+			s.spark_delay=0
+			effect.Sparkle((s.x+random.uniform(-.1,.1),s.y+random.uniform(-.1,.1),s.z+random.uniform(-.1,.1)))
+	def refr_skin(self,skin):
+		s=self
+		s.status_changed=skin
+		s.unlit=bool(skin < 2)
+		s.scale=.00075 if (skin < 3) else .0012
+		s.sparking=bool(skin == 2)
+		s.cur_skin=tpa1 if (skin < 2) else tpa2
+		s.model=f'{s.cur_skin}.ply'
+		s.texture=f'{s.cur_skin}.png'
+	def cover_player(self):
+		mk_pos=LC.ACTOR.position+Vec3(-sin(radians(LC.ACTOR.rotation_y)),0,-cos(radians(LC.ACTOR.rotation_y)))*.25
+		self.position=(mk_pos.x,mk_pos.y+.5,mk_pos.z)
 	def follow_player(self):
 		s=self
-		ta=LC.ACTOR
-		s.rotation_y=lerp(s.rotation_y,ta.rotation_y,time.dt*10)
-		s.scale=.00075 if st.aku_hit < 3 else .0012
-		if st.aku_hit < 3:
-			if ta.is_slp or not st.p_idle(LC.ACTOR):
-				s.position=lerp(s.position,(ta.x-.2,ta.y+.5,ta.z-.35),time.dt*8)
-				return
-			tfn=time.dt/6
-			{0:lambda:setattr(s,'y',s.y-tfn),1:lambda:setattr(s,'y',s.y+tfn)}[s.mode]()
-			if abs(s.y-(ta.y+.6)) > .2:
-				s.mode=0 if s.mode == 1 else 1
-			return
-		mask_pos=ta.position+Vec3(-sin(radians(ta.rotation_y)),0,-cos(radians(ta.rotation_y)))*.25
-		s.position=(mask_pos.x,ta.y+.5,mask_pos.z)
-	def check_dist_player(self):
-		s=self
-		if distance(s.position,LC.ACTOR.position) > 2:
-			s.position=LC.ACTOR.position
+		s.mvw+=.02
+		if s.mvw > 99:
+			s.mvw=0
+		s.y=(LC.ACTOR.y+.5)+math.sin(s.mvw)*.2
+		s.position=lerp(s.position,(LC.ACTOR.x-.2,s.y,LC.ACTOR.z-.35),time.dt*s.mov_speed)
 	def update(self):
-		if not LC.ACTOR or st.gproc():
+		if st.gproc():
 			return
 		s=self
-		s.unlit=st.aku_hit < 2
-		s.check_dist_player()
-		s.follow_player()
-		s.change_skin()
-		if st.aku_hit <= 0:
+		if st.aku_hit <= 0 or not LC.ACTOR:
 			cc.destroy_entity(s)
+			return
+		if s.sparking:
+			s.spark()
+		if s.status_changed != st.aku_hit:
+			s.refr_skin(st.aku_hit)
+		if distance(LC.ACTOR,s) > 5:
+			s.position=(LC.ACTOR.x,LC.ACTOR.y+.5,LC.ACTOR.z)
+		s.rotation_y=lerp(s.rotation_y,LC.ACTOR.rotation_y,time.dt*s.rot_speed)
+		if st.aku_hit < 3:
+			s.follow_player()
+			return
+		s.cover_player()
 
 class Hippo(Entity):
 	def __init__(self,POS):

@@ -38,10 +38,10 @@ class WeatherRain(Entity):
 		s.max_frm=len(s.rain_particle)-1
 		LC.ACTOR.indoor=.5
 		sound.Rainfall()
+		s.spd=55
 		s.frm=0
-		s.spd=40
 		if st.level_index == 5:
-			s.spd=50
+			s.spd=65
 		del s
 	def update(self):
 		s=self

@@ -1,4 +1,4 @@
-from ursina import Entity,Vec2,Vec3,color,Shader,Func,load_texture
+from ursina import Entity,Vec3,color,load_texture
 from ursina.ursinastuff import destroy
 import status,_loc,time,random,_core
 
@@ -6,7 +6,6 @@ trpv='res/objects/ev/teleport/warp_effect'
 ef='res/effects/'
 q='quad'
 
-cc=_core
 st=status
 cc=_core
 LC=_loc
@@ -43,7 +42,8 @@ class WaterDrips(Entity):
 			return
 		s=self
 		cc.incr_frm(s,s.spd)
-		s.texture=LC.drp_texture[int(s.frm)]
+		if s.texture != LC.drp_texture[int(s.frm)]:
+			s.texture=LC.drp_texture[int(s.frm)]
 
 class ExclamationMark(Entity):
 	def __init__(self,pos,ID):
@@ -68,7 +68,7 @@ class ExclamationMark(Entity):
 
 class Sparkle(Entity):
 	def __init__(self,pos):
-		super().__init__(model=q,texture=ef+'sparkle.tga',position=pos,scale=.04,color=color.gold,unlit=False)
+		super().__init__(model=q,texture=f'{ef}sparkle.png',position=pos,scale=.04,color=color.gold,unlit=False)
 		self.mode=0
 		del pos
 	def update(self):
@@ -86,7 +86,7 @@ class Sparkle(Entity):
 
 class JumpDust(Entity):
 	def __init__(self,pos):
-		super().__init__(model=q,texture=ef+'fire_ball.png',position=pos,scale=.1,color=color.gray)
+		super().__init__(model=q,texture=f'{ef}fire_ball.png',position=pos,scale=.1,color=color.gray)
 		del pos
 	def update(self):
 		if st.gproc():
@@ -100,7 +100,7 @@ prsv='res/crate/anim/exp_wave/'
 class PressureWave(Entity):
 	def __init__(self,pos,col):
 		s=self
-		super().__init__(model=prsv+'0.ply',texture=prsv+'0.png',position=pos,scale=.0008,color=col,rotation_x=90,alpha=.8,unlit=False)
+		super().__init__(model=f'{prsv}0.ply',texture=f'{prsv}0.png',position=pos,scale=.0008,color=col,rotation_x=90,alpha=.8,unlit=False)
 		s.frm=0
 		del pos,col,s
 	def update(self):
@@ -123,7 +123,7 @@ class Fireball(Entity):
 			nC=color.orange
 		if cc.is_box(cr) and cr.vnum == 12:
 			nC=color.green
-		super().__init__(model=q,texture=frb+'0.png',position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC,scale=.75,unlit=False)
+		super().__init__(model=q,texture=f'{frb}0.png',position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC,scale=.75,unlit=False)
 		PressureWave(pos=s.position,col=nC)
 		s.ex_step=0
 		del cr,nC,s
@@ -164,7 +164,7 @@ class LightFire(Entity):
 class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
 		s=self
-		super().__init__(model=q,name='fthr',texture=ef+'fire_ball.png',position=(pos[0],pos[1]+.25,pos[2]),scale=.2,collider='box',unlit=False,color=random.choice([color.orange,color.red]))
+		super().__init__(model=q,name='fthr',texture=f'{ef}fire_ball.png',position=(pos[0],pos[1]+.25,pos[2]),scale=.2,collider='box',unlit=False,color=random.choice([color.orange,color.red]))
 		s.life_time=.4
 		s.direc=ro_y
 		s.mvs=4
@@ -192,7 +192,7 @@ class FireThrow(Entity):
 
 class ElectroBall(Entity):
 	def __init__(self,pos):
-		super().__init__(model=q,texture=ef+'sparkle.tga',name='eball',position=pos,scale=.9,collider='box',color=color.rgb32(0,60,255),unlit=False,alpha=.75)
+		super().__init__(model=q,texture=f'{ef}sparkle.png',name='eball',position=pos,scale=.9,collider='box',color=color.rgb32(0,60,255),unlit=False,alpha=.75)
 		self.spawn_y=self.y
 		del pos
 	def update(self):

@@ -65,3 +65,8 @@
 - player attack fixxed attack range + cooldown
 - fixxed gamebreaking glitch, while player stuck on bonus platform
 - nitro box update jump positions after fall_down
+
+#05.04.2026
+- updated akuakumask function
+- gemstone glow
+- fixxed odd value in SOUND and MUSIC options in pause menu, updated functions

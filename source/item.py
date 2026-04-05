@@ -84,47 +84,42 @@ class ExtraLive(Entity):
 			return
 		s.p_follow()
 
+sh=f'{i_path}gemstone/gem_shine.png'
 class GemStone(Entity):
 	def __init__(self,pos,c):
 		s=self
+		s.gemID=c
 		ge=f'{i_path}gemstone/gem'
 		if c == 2:
 			ge=f'{i_path}gemstone/gem1'
 		elif c == 3:
 			ge=f'{i_path}gemstone/gem2'
-		super().__init__(model=f'{ge}.ply',texture=f'{ge}.png',name='gems',scale=.0011,position=pos,rotation_x=-90,collider=b)
-		s.gemID=c
+		super().__init__(model=f'{ge}.ply',texture=f'{ge}.png',name='gem',scale=.0011,position=pos,rotation_x=-90,collider=b)
+		s.glow=Entity(model='quad',texture=sh,scale=.6,position=(pos[0],pos[1],pos[2]+.075),unlit=False,alpha=.6)
 		s.gem_visual()
-		if c != 0:
-			LC.C_GEM=s
-			if (c == 5 and st.level_index == 3):
-				ui.TrialTimer(t=90)
+		s.set_glow()
 		if st.level_index == 8:
 			s.unlit=False
+		LC.C_GEM=s if (c > 0) else None
 		del ge,pos,c,s
+	def set_glow(self):
+		s=self
+		s.glow.color=s.color
+		s.glow.scale={0:(.625,.6),1:(.625,.6),2:(.8,.5),3:(.75,.55),4:(.7,.4),5:(.625,.8)}[s.gemID]
+		s.glow.y+={0:.01,1:.01,2:.05,3:.03,4:.01,5:.01}[s.gemID]
 	def gem_visual(self):
-		##color
 		s=self
 		s.color=LC.GMC[s.gemID]
-		##scale - info: blue gem and yellow gem are Y scaled
 		if s.gemID in (4,5):
 			s.scale_z={4:s.scale_z/2,5:s.scale_z*1.5}[s.gemID]
-		##fake light reflection
-		s.shine=SpotLight(position=(s.x-0,s.y+.32,s.z-.18),color=color.gray)
-	def gem_fail(self):
-		gi=self.gemID
-		if gi == 4 and (st.level_index == 1 and st.crate_count > 0):#blue gem
-			return True
-		if gi == 1 and (st.level_index == 2 and st.gem_death):#red gem
-			return True
-		if gi == 5 and (st.level_index == 3 and st.gem_death):#yellow gem
-			return True
-		return False
+		gm_pos=(s.x-0,s.y+.32,s.z-.18) if s.gemID != 2 else (s.x-0,s.y+.32,s.z-.2)
+		s.shine=SpotLight(position=gm_pos,color=color.gray)
 	def purge(self):
 		s=self
 		s.collider=None
 		LC.C_GEM=None
 		s.shine.color=color.black
+		destroy(s.glow)
 		destroy(s.shine)
 		destroy(s)
 	def collect(self):
@@ -137,22 +132,24 @@ class GemStone(Entity):
 		self.purge()
 	def push_gem(self):
 		s=self
-		if not LC.C_GEM:
-			return
-		if abs(s.x-LC.C_GEM.x) < .5:
-			if (s.y < LC.C_GEM.y+.25):
-				s.y+=time.dt
+		if LC.C_GEM:
+			if abs(s.x-LC.C_GEM.x) < .5:
+				if (s.y < LC.C_GEM.y+.25):
+					s.y+=time.dt
+	def refr_func(self):
+		s=self
+		s.shine.color=color.black if (st.bonus_round) else color.gray
+		s.rotation_y-=time.dt*60
 	def update(self):
-		if not st.gproc():
-			s=self
-			s.rotation_y-=time.dt*60
-			if st.level_index == 6 and st.bonus_round:
-				s.shine.color=color.black
-			if s.gem_fail():
-				s.purge()
-				return
-			if s.gemID == 0:
-				s.push_gem()
+		if st.gproc():
+			return
+		s=self
+		s.refr_func()
+		if cc.gem_challange_fail(s.gemID):
+			s.purge()
+			return
+		if s.gemID == 0:
+			s.push_gem()
 
 class EnergyCrystal(Entity):
 	def __init__(self,pos):
@@ -178,7 +175,7 @@ class EnergyCrystal(Entity):
 
 class TimeTrialClock(Entity):
 	def __init__(self,pos):
-		super().__init__(model=f'{CLK}.ply',texture=f'{CLK}.png',position=pos,scale=.0035,color=color.rgb32(200,190,0),double_sided=True,rotation_x=-90,name='clock',collider=b)
+		super().__init__(model=f'{CLK}.ply',texture=f'{CLK}.png',position=pos,scale=.0035,color=color.rgb32(240,230,0),double_sided=True,rotation_x=-90,name='clock',collider=b)
 		self.mark=-1# -1 for time trial boxes
 		self.rsp=90
 	def collect(self):

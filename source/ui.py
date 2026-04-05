@@ -583,24 +583,22 @@ vF=0
 class PauseMenu(Entity):
 	def __init__(self):
 		s=self
-		super().__init__(parent=CU,model=q,texture=e+'c_pause1.png',scale=(1.05,.5),position=(-.375,-.25,.1),color=color.rgb32(130,140,130),visible=False)
-		s.ppt=Entity(parent=CU,model=q,texture=e+'c_pause2.png',scale=(.75,1),position=(.515,0,.1),color=color.rgb32(130,140,130),visible=False)
+		super().__init__(parent=CU,model=q,texture=f'{e}c_pause1.png',scale=(1.05,.5),position=(-.375,-.25,.1),color=color.rgb32(130,140,130),visible=False)
+		s.ppt=Entity(parent=CU,model=q,texture=f'{e}c_pause2.png',scale=(.75,1),position=(.515,0,.1),color=color.rgb32(130,140,130),visible=False)
 		##text
-		s.selection=['RESUME','OPTIONS','QUIT']
 		s.font_color=color.rgb32(230,100,0)
 		s.blink_time=0
 		s.choose=0
 		s.p_name=Text('Crash B.',font=_fnt,scale=3,position=(vF+.4,vF+.475,s.z-1),color=s.font_color,parent=CU,visible=False)
 		s.lvl_name=Text(LC.lv_name[st.level_index],font=_fnt,scale=3,position=(vF-.7,vF-.025,s.z-1),color=color.azure,parent=CU,visible=False)
-		s.select_0=Text(s.selection[0],font=_fnt,scale=3,tag=0,position=(vF-.5,vF-.2,s.z-1),color=s.font_color,parent=CU,visible=False)
-		s.select_1=Text(s.selection[1],font=_fnt,scale=3,tag=1,position=(vF-.5,vF-.275,s.z-1),color=s.font_color,parent=CU,visible=False)
-		s.select_2=Text(s.selection[2],font=_fnt,scale=3,tag=2,position=(vF-.5,vF-.35,s.z-1),color=s.font_color,parent=CU,visible=False)
+		s.select_0=Text('RESUME',font=_fnt,scale=3,tag=0,position=(vF-.5,vF-.2,s.z-1),color=s.font_color,parent=CU,visible=False)
+		s.select_1=Text('OPTIONS',font=_fnt,scale=3,tag=1,position=(vF-.5,vF-.275,s.z-1),color=s.font_color,parent=CU,visible=False)
+		s.select_2=Text('QUIT',font=_fnt,scale=3,tag=2,position=(vF-.5,vF-.35,s.z-1),color=s.font_color,parent=CU,visible=False)
 		s.crystal_counter=Text('0/5',font=_fnt,scale=6,position=(vF+.325,vF+.325,s.z-1),color=color.rgb32(160,0,160),parent=CU,visible=False)
 		s.gem_counter=Text('0/16 GEMS',font=_fnt,scale=5,position=(vF+.3,vF-.1,s.z-1),color=color.rgb32(170,170,190),parent=CU,visible=False)
 		s.add_text=Text('+ 0',font=_fnt,scale=4,position=(vF+.325,vF+.025,vF-1),color=s.font_color,parent=CU,visible=False)
 		s.game_progress=Text('Progress 0%',font=_fnt,scale=3,position=(vF+.325,vF-.35,s.z-1),color=color.gold,parent=CU,visible=False)
 		##animation
-		ric='res/ui/icon/'
 		s.cry_anim=Entity(model=q,texture=cr_i+'0.png',position=(vF+.6,vF+.26,s.z-1),scale=.15,parent=CU,color=color.magenta,visible=False)
 		s.col_gem1=Entity(model=q,texture=LC.ge_0+'0.png',name='1',position=(vF+.25,vF+.075,s.z-1),scale=.01,parent=CU,color=LC.GMC[1],visible=False)
 		s.col_gem2=Entity(model=q,texture=LC.ge_0+'0.png',name='2',position=(vF+.37,vF+.075,s.z-1),scale=.01,parent=CU,color=LC.GMC[2],visible=False)
@@ -622,69 +620,72 @@ class PauseMenu(Entity):
 		##gem anim
 		s.gm_timer=1
 		LC.p_menu=self
+	def select_btn(self,action):
+		s=self
+		sn.ui_audio(ID=0,pit=.125)
+		if s.opt_menu:
+			s.sel_opt=0 if action == 0 else 1
+			return
+		if action == 0:
+			s.choose=s.choose-1 if s.choose > 0 else 0
+			return
+		s.choose=s.choose+1 if s.choose < 2 else 2
+	def select_action(self):
+		s=self
+		sn.ui_audio(ID=1)
+		if s.opt_menu:
+			s.opt_menu=False
+			for inv_opt in [s.music_vol,s.sound_vol,s.opt_exit]:
+				setattr(inv_opt,'visible',False)
+			for vis_opt in [s.select_0,s.select_1,s.select_2]:
+				setattr(vis_opt,'visible',True)
+			return
+		if s.choose == 0:
+			cc.game_pause()
+			return
+		if s.choose == 1:
+			for vis_text in [s.music_vol,s.sound_vol,s.opt_exit]:
+				setattr(vis_text,'visible',True)
+			for inv_text in [s.select_0,s.select_1,s.select_2]:
+				setattr(inv_text,'visible',False)
+			s.opt_menu=True
+		if s.choose == 2:
+			if not st.LEVEL_CLEAN:
+				cc.clear_level(passed=False)
+	def change_volume(self,a):
+		s=self
+		if s.opt_menu:
+			sn.ui_audio(ID=1)
+			if s.sel_opt == 1:
+				if a == 1:
+					if settings.SFX_VOLUME < 1:
+						settings.SFX_VOLUME=min(settings.SFX_VOLUME+.1,1)
+					return
+				if settings.SFX_VOLUME > 0:
+					settings.SFX_VOLUME=max(settings.SFX_VOLUME-.1,0)
+				return
+			if a == 1:
+				if settings.MUSIC_VOLUME < 1:
+					settings.MUSIC_VOLUME=min(settings.MUSIC_VOLUME+.1,1)
+				return
+			if settings.MUSIC_VOLUME > 0:
+				settings.MUSIC_VOLUME=max(settings.MUSIC_VOLUME-.1,0)
 	def input(self,key):
 		s=self
-		if not st.pause:
-			del key
-			return
-		if not s.opt_menu:
-			if key in ('down arrow','s'):
-				sn.ui_audio(ID=0,pit=.125)
-				if s.choose < 2:
-					s.choose+=1
-				del key
-				return
-			if key in ('up arrow','w'):
-				sn.ui_audio(ID=0,pit=.125)
-				if s.choose > 0:
-					s.choose-=1
-					del key
-				return
-			if key == 'enter':
-				sn.ui_audio(ID=1)
-				if s.choose == 0:
-					cc.game_pause()
-					del key
-					return
-				if s.choose == 1:
-					s.music_vol.visible=True
-					s.sound_vol.visible=True
-					s.opt_exit.visible=True
-					s.select_0.visible=False
-					s.select_1.visible=False
-					s.select_2.visible=False
-					s.opt_menu=True
-				if s.choose == 2:
-					if not st.LEVEL_CLEAN:
-						cc.clear_level(passed=False)
-			del key
-			return
-		if key in ('w','s','down arrow','up arrow'):
-			s.sel_opt=1 if s.sel_opt == 0 else 0
-		if key in ('+','d','right arrow'):
-			if s.sel_opt == 1:
-				if settings.SFX_VOLUME < 1:
-					settings.SFX_VOLUME+=.1
-					if settings.SFX_VOLUME > 1:
-						settings.SFX_VOLUME=1
-			elif s.sel_opt == 0:
-				if settings.MUSIC_VOLUME < 1:
-					settings.MUSIC_VOLUME+=.1
-					if settings.MUSIC_VOLUME > 1:
-						settings.MUSIC_VOLUME=1
-			sn.ui_audio(ID=1)
-		if key in ('-','a','left arrow'):
-			if s.sel_opt == 1:
-				if settings.SFX_VOLUME > .1:
-					settings.SFX_VOLUME-=.1
-			elif s.sel_opt == 0:
-				if settings.MUSIC_VOLUME > .1:
-					settings.MUSIC_VOLUME-=.1
-			sn.ui_audio(ID=1)
-		if key == 'enter':
-			s.opt_menu,s.music_vol.visible,s.sound_vol.visible,s.opt_exit.visible=False,False,False,False
-			s.select_0.visible,s.select_1.visible,s.select_2.visible=True,True,True
-		del key,s
+		sk={'down arrow'	:lambda:s.select_btn(1),
+			's'				:lambda:s.select_btn(1),
+			'up arrow'		:lambda:s.select_btn(0),
+			'w'				:lambda:s.select_btn(0),
+			'+'				:lambda:s.change_volume(1),
+			'd'				:lambda:s.change_volume(1),
+			'right arrow'	:lambda:s.change_volume(1),
+			'-'				:lambda:s.change_volume(0),
+			'a'				:lambda:s.change_volume(0),
+			'left arrow'	:lambda:s.change_volume(0),
+			'enter'		:lambda:s.select_action()}
+		if key in sk:
+			sk[key]()
+		del key
 	def check_collected(self):
 		s=self
 		gems_total=st.color_gems+st.clear_gems
@@ -742,8 +743,9 @@ class PauseMenu(Entity):
 		s=self
 		if st.pause:
 			s.refr_ico()
-			s.music_vol.text=f'MUSIC VOLUME {int(settings.MUSIC_VOLUME*100)}%'
-			s.sound_vol.text=f'SOUND VOLUME {int(settings.SFX_VOLUME*100)}%'
+			if s.opt_menu:
+				s.music_vol.text=f'MUSIC VOLUME {int(round(settings.MUSIC_VOLUME*100))}%'
+				s.sound_vol.text=f'SOUND VOLUME {int(round(settings.SFX_VOLUME*100))}%'
 			s.blink_time=max(s.blink_time-time.dt,0)
 			s.gm_timer=max(s.gm_timer-time.dt,0)
 			if s.gm_timer <= 0:
@@ -854,33 +856,34 @@ class CheckpointLetter(Entity):
 				return
 			s.idx+=1
 
-## Time Trial
-class TrialTimer(Entity):
+##gem challange
+class GemTimeTrial(Entity):
 	def __init__(self,t):
 		s=self
 		tm_str=strftime('%M:%S',gmtime(t))
 		super().__init__()
 		s.disp=Text(tm_str,font=_fnt,scale=3,position=(.7,-.4),parent=CU,color=color.rgb32(200,200,100))
 		s.fin=False
-		s.TME=t
+		s.tme=t
 	def trial_fail(self):
-		st.gem_death=st.level_index == 3
+		st.gem_death=True
 		self.trial_interrupt()
 	def trial_interrupt(self):
 		destroy(self.disp)
 		destroy(self)
 	def update(self):
-		if not st.gproc():
-			s=self
-			if st.level_index == 3 and st.level_col_gem:
-				s.trial_interrupt()
-				return
-			s.disp.text=strftime("%M:%S",gmtime(s.TME))
-			s.TME=max(s.TME-time.dt,0)
-			if s.TME <= 0 or st.bonus_round:
-				if not s.fin:
-					s.fin=True
-					s.trial_fail()
+		if st.gproc():
+			return
+		s=self
+		if st.level_index == 3 and st.level_col_gem:
+			s.trial_interrupt()
+			return
+		s.disp.text=strftime("%M:%S",gmtime(s.TME))
+		s.tme=max(s.TME-time.dt,0)
+		if s.tme <= 0 or st.bonus_round:
+			if not s.fin:
+				s.fin=True
+				s.trial_fail()
 
 class CreditText(Entity):
 	def __init__(self,t,d):

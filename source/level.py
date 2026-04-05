@@ -1,4 +1,4 @@
-import ui,_core,status,environment,sound,LODsystem,sys,os,sound,settings,_loc
+import ui,_core,status,environment,sound,LODsystem,sys,os,settings,_loc
 from ursina import camera,invoke,load_texture
 from ursina.ursinastuff import destroy
 

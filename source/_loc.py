@@ -60,7 +60,7 @@ GMU={1:c.rgb32(0,0,O),#blue
 
 #gem color
 GMC={0:cglr,
-	1:c.rgb32(O,0,0),
+	1:c.rgb32(O+40,0,0),
 	2:c.rgb32(0,O,0),
 	3:c.rgb32(O,0,O),
 	4:c.rgb32(0,0,O),
@@ -97,7 +97,7 @@ LDM_POS=[]
 trigger_lst={'indz','lvfi','elwt','fthr','eball'}
 
 #item/obj name list
-item_lst={'wmpf','exlf','gems','crys','clock'}
+item_lst={'wmpf','exlf','gem','crys','clock'}
 
 #danger zone
 dangers={'wood_log','role','fllz','piston'}
