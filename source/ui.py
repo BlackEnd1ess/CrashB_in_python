@@ -1,4 +1,4 @@
-from ursina import Animation,Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,curve
+from ursina import Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,curve
 import status,_core,_loc,sound,settings,warproom,level,time,random
 from objects import ObjType_Background,ObjType_Deco
 from ursina.ursinastuff import destroy
@@ -30,14 +30,15 @@ LC=_loc
 def load_interface():
 	PauseMenu()
 	WumpaCounter()
-	CrateCounter()
+	BoxCounter()
 	LiveCounter()
 	CollectedGem()
 
 ## Interface 2D Animations
 def wmp_anim(w):
-	cc.incr_frm(w,13,18)
-	w.texture=w_pa+f'{int(w.frm)}.png'
+	cc.incr_frm(w,w.spd)
+	if w.texture != LC.wmp_texture[int(w.frm)]:
+		w.texture=LC.wmp_texture[int(w.frm)]
 
 def text_blink(M,t):
 	if M.blink_time <= 0:
@@ -84,6 +85,8 @@ class WumpaCounter(Entity):
 		super().__init__(model=q,parent=CU,position=(-.75,.43,0),scale=(.07,.08,0),visible=False)
 		s.digit_0=Entity(model=q,parent=CU,position=(s.x+.075,s.y),scale=.06,visible=False)
 		s.digit_1=Entity(model=q,parent=CU,position=(s.digit_0.x+.06,s.digit_0.y),scale=.06,visible=False)
+		s.max_frm=len(LC.wmp_texture)-1+.99
+		s.spd=18
 		s.frm=0
 	def digits(self):
 		s=self
@@ -115,7 +118,7 @@ class WumpaCounter(Entity):
 				s.digit_1.visible=False
 				s.visible=False
 
-class CrateCounter(Entity):
+class BoxCounter(Entity):
 	def __init__(self):
 		s=self
 		s.tpd=crtf
@@ -127,14 +130,14 @@ class CrateCounter(Entity):
 		s.req_digit0=Entity(model=q,texture=None,scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
 		s.req_digit1=Entity(model=q,texture=None,scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
 		s.req_digit2=Entity(model=q,texture=None,scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
-		s.icf=0
+		s.max_frm=len(LC.box_texture)-1+.99
+		s.spd=30
+		s.frm=0
 		del s
 	def crate_refr_ico(self):
 		s=self
-		s.icf=min(s.icf+time.dt*30,63.999)
-		if s.icf > 63.99:
-			s.icf=0
-		s.texture=crti+f'anim_crt_{int(s.icf)}.png'
+		cc.incr_frm(s,s.spd)
+		s.texture=LC.box_texture[int(s.frm)]
 	def remv_ui(self):
 		s=self
 		s.visible,s.seperator.visible=False,False
@@ -222,7 +225,9 @@ class WumpaBonus(Entity):
 		s=self
 		super().__init__(model=q,texture=w_pa+'0.png',parent=CU,position=(-.2,-.4,0),scale=(.05,.06,0),visible=False)
 		s.w_text=Text(text=None,font=_fnt,x=s.x+.04,y=s.y+.025,scale=2,color=color.rgb32(175,235,30),parent=CU,visible=False)
+		s.max_frm=len(LC.wmp_texture)-1+.99
 		s.w_time=0
+		s.spd=18
 		s.frm=0
 		del s
 	def check_w(self):
@@ -255,20 +260,20 @@ class WumpaBonus(Entity):
 			destroy(s.w_text)
 			destroy(s)
 
-class CrateBonus(Entity):
+class BoxBonus(Entity):
 	def __init__(self):
 		s=self
 		super().__init__(model=q,texture=None,parent=CU,scale=.07,position=(0,-.4,0),visible=False)
 		s.c_text=Text(text=None,font=_fnt,x=s.x+.04,y=s.y+.025,scale=2,color=color.rgb32(90,70,0),visible=False,parent=CU)
+		s.max_frm=len(LC.box_texture)-1+.99
 		s.c_time=0
-		s.icf=0
+		s.spd=30
+		s.frm=0
 		del s
 	def crate_refr_ico(self):
 		s=self
-		s.icf=min(s.icf+time.dt*30,63.99)
-		if s.icf > 63.98:
-			s.icf=0
-		s.texture=crti+'anim_crt_'+str(int(s.icf))+'.png'
+		cc.incr_frm(s,s.spd)
+		s.texture=LC.box_texture[int(s.frm)]
 	def check_c(self):
 		if (st.bonus_solved and st.crate_bonus > 0):
 			return True
@@ -350,7 +355,7 @@ class GameOverScreen(Entity):
 		st.game_over=False
 	def input(self,key):
 		s=self
-		if key in {'w','s','down arrow','up arrow'}:
+		if key in ('w','s','down arrow','up arrow'):
 			sn.ui_audio(ID=0,pit=.125)
 			if s.opt_select == 0:
 				s.opt_select=1
@@ -375,7 +380,7 @@ class TitleScreen(Entity):
 		self.s_text=Text('press start to begin',font=_fnt,scale=3,color=color.orange,position=(-.3,-.25),parent=CU)
 		self.blk=.3
 	def input(self,key):
-		if key in ['enter','space down','escape']:
+		if key in ('enter','space down','escape'):
 			sn.ui_audio(ID=1)
 			invoke(lambda:warproom.level_select(),delay=.1)
 	def update(self):
@@ -464,6 +469,8 @@ class LevelSelector(Entity):
 		s.lf3=Entity(model=q,texture=ivy_+'.png',scale=.2,position=(.8,-.4,.1),rotation_z=90,parent=CU)
 		s.lv_col_gem.scale_y=gcsa[idx]
 		s.lvID=idx
+		s.max_frm=89.99
+		s.spd=30
 		for iwb in range(3):
 			Entity(model=q,texture=icb,position=(s.lv_col_gem.x+iwb/7,s.y,1),scale=.16,parent=CU,color=color.rgb32(120,140,120))
 		if idx in st.CRYSTAL:
@@ -484,7 +491,7 @@ class LevelSelector(Entity):
 		del gcsa,idx,pos,req_col
 	def refr(self):
 		s=self
-		cc.incr_frm(s,89,30)
+		cc.incr_frm(s,s.spd)
 		kg=f'{int(s.frm)}.png'
 		s.lv_crystal.texture=cr_i+kg
 		s.lv_col_gem.texture=LC.fdc[s.lvID]+kg
@@ -608,7 +615,9 @@ class PauseMenu(Entity):
 		s.gm_org_sz={'4':.075,'5':.19}
 		s.check_collected()
 		s.opt_menu=False
+		s.max_frm=89
 		s.sel_opt=0
+		s.spd=30
 		s.frm=0
 		##gem anim
 		s.gm_timer=1
@@ -619,13 +628,13 @@ class PauseMenu(Entity):
 			del key
 			return
 		if not s.opt_menu:
-			if key in {'down arrow','s'}:
+			if key in ('down arrow','s'):
 				sn.ui_audio(ID=0,pit=.125)
 				if s.choose < 2:
 					s.choose+=1
 				del key
 				return
-			if key in {'up arrow','w'}:
+			if key in ('up arrow','w'):
 				sn.ui_audio(ID=0,pit=.125)
 				if s.choose > 0:
 					s.choose-=1
@@ -650,9 +659,9 @@ class PauseMenu(Entity):
 						cc.clear_level(passed=False)
 			del key
 			return
-		if key in {'w','s','down arrow','up arrow'}:
+		if key in ('w','s','down arrow','up arrow'):
 			s.sel_opt=1 if s.sel_opt == 0 else 0
-		if key in {'+','d','right arrow'}:
+		if key in ('+','d','right arrow'):
 			if s.sel_opt == 1:
 				if settings.SFX_VOLUME < 1:
 					settings.SFX_VOLUME+=.1
@@ -664,7 +673,7 @@ class PauseMenu(Entity):
 					if settings.MUSIC_VOLUME > 1:
 						settings.MUSIC_VOLUME=1
 			sn.ui_audio(ID=1)
-		if key in {'-','a','left arrow'}:
+		if key in ('-','a','left arrow'):
 			if s.sel_opt == 1:
 				if settings.SFX_VOLUME > .1:
 					settings.SFX_VOLUME-=.1
@@ -683,7 +692,7 @@ class PauseMenu(Entity):
 		s.crystal_counter.text=str(st.collected_crystals)+'/5'
 		s.game_progress.text='Progress '+str(st.color_gems*6+st.clear_gems*4+st.collected_crystals*6)+'%'
 		s.add_text.text='+ '+str(st.clear_gems)
-		for qc in {s.col_gem1,s.col_gem2,s.col_gem3,s.col_gem3,s.col_gem4,s.col_gem5}:
+		for qc in (s.col_gem1,s.col_gem2,s.col_gem3,s.col_gem3,s.col_gem4,s.col_gem5):
 			if int(qc.name) in st.COLOR_GEM:
 				qc.scale_x=.15
 				if qc.name in s.gm_org_sz:
@@ -701,14 +710,14 @@ class PauseMenu(Entity):
 		del mn,s
 	def select_option(self):
 		s=self
-		for ot in {s.music_vol,s.sound_vol}:
+		for ot in (s.music_vol,s.sound_vol):
 			if s.sel_opt == ot.tag:
 				text_blink(M=s,t=ot)
 			else:
 				ot.color=s.font_color
 	def refr_ico(self):
 		s=self
-		cc.incr_frm(s,89,30)
+		cc.incr_frm(s,s.spd)
 		kw=f'{int(s.frm)}.png'
 		s.cry_anim.texture=cr_i+kw
 		s.cleargem.texture=LC.ge_0+kw

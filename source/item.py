@@ -31,13 +31,14 @@ class WumpaFruit(Entity):
 	def __init__(self,p,c_prg):
 		s=self
 		super().__init__(model='quad',texture=w_pa+'w0.png',name='wmpf',position=(p[0],p[1],p[2]),scale=.22)
-		s.collider=BoxCollider(s,size=Vec3(1,1,1))
+		s.collider=BoxCollider(s,size=Vec3(1.25,1.25,1.25))
+		s.max_frm=len(LC.wmp_texture)-1+.99
 		s.follow=False
 		s.c_purge=c_prg
 		s.spawn_pos=p
+		s.spd=18
 		s.frm=0
-		if st.level_index == 8 and p[1] < -10:
-			s.unlit=False
+		s.unlit=bool(st.level_index == 8 and p[1] < -10)
 		del p,c_prg,s
 	def destroy(self):
 		if not self.c_purge:
@@ -52,7 +53,7 @@ class WumpaFruit(Entity):
 		s=self
 		fp=distance(s,LC.ACTOR)
 		if s.follow:
-			s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.2,LC.ACTOR.z),time.dt*18)
+			s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.2,LC.ACTOR.z),time.dt*s.spd)
 			return
 		if fp < 5:
 			ui.wmp_anim(s)
@@ -86,12 +87,12 @@ class ExtraLive(Entity):
 class GemStone(Entity):
 	def __init__(self,pos,c):
 		s=self
-		ge=i_path+'gemstone/gem'
+		ge=f'{i_path}gemstone/gem'
 		if c == 2:
-			ge=i_path+'gemstone/gem1'
+			ge=f'{i_path}gemstone/gem1'
 		elif c == 3:
-			ge=i_path+'gemstone/gem2'
-		super().__init__(model=ge+'.ply',texture=ge+'.tga',name='gems',scale=.0011,position=pos,rotation_x=-90,collider=b)
+			ge=f'{i_path}gemstone/gem2'
+		super().__init__(model=f'{ge}.ply',texture=f'{ge}.png',name='gems',scale=.0011,position=pos,rotation_x=-90,collider=b)
 		s.gemID=c
 		s.gem_visual()
 		if c != 0:
@@ -106,7 +107,7 @@ class GemStone(Entity):
 		s=self
 		s.color=LC.GMC[s.gemID]
 		##scale - info: blue gem and yellow gem are Y scaled
-		if s.gemID in {4,5}:
+		if s.gemID in (4,5):
 			s.scale_z={4:s.scale_z/2,5:s.scale_z*1.5}[s.gemID]
 		##fake light reflection
 		s.shine=SpotLight(position=(s.x-0,s.y+.32,s.z-.18),color=color.gray)
@@ -156,8 +157,8 @@ class GemStone(Entity):
 class EnergyCrystal(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=i_path+CRY+'.ply',texture=i_path+CRY+'.tga',name='crys',scale=.0013,rotation_x=-90,position=pos,double_sided=True,color=color.magenta)
-		s.glow=Entity(model='quad',texture=i_path+CRY+'_shine.tga',scale=(.5,.8),position=s.position,color=color.magenta,unlit=False)
+		super().__init__(model=f'{i_path}{CRY}.ply',texture=f'{i_path}{CRY}.png',name='crys',scale=.0013,rotation_x=-90,position=pos,double_sided=True,color=color.magenta)
+		s.glow=Entity(model='quad',texture=f'{i_path}{CRY}_shine.png',scale=(.5,.8),position=s.position,color=color.magenta,unlit=False)
 		s.collider=b
 		del pos,s
 	def collect(self):
@@ -177,7 +178,8 @@ class EnergyCrystal(Entity):
 
 class TimeTrialClock(Entity):
 	def __init__(self,pos):
-		super().__init__(model=CLK+'.ply',texture=CLK+'.tga',position=pos,scale=.003,color=color.rgb32(200,190,0),double_sided=True,rotation_x=-90,name='clock',collider=b)
+		super().__init__(model=f'{CLK}.ply',texture=f'{CLK}.png',position=pos,scale=.0035,color=color.rgb32(200,190,0),double_sided=True,rotation_x=-90,name='clock',collider=b)
+		self.mark=-1# -1 for time trial boxes
 		self.rsp=90
 	def collect(self):
 		print(self)

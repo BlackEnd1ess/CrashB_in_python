@@ -4,6 +4,7 @@ import environment
 
 ## debug options
 debg_color=color.rgb32(180,180,180)
+debg_gm=False
 debg=True
 
 ## keyboard bindings

@@ -1,4 +1,4 @@
-from ursina import *
+import ursina
 
 ## one load level settings
 checkpoint=None
@@ -88,15 +88,20 @@ crd_seen=False
 loading=False
 pause=False
 
+##memory debug
+SNAP_NUM=0
+snap1=None
+snap2=None
+
 ## global funcs
 def wtr_dist(w,p):
 	return ((p.z < w.z+(w.scale_z/2)+4) and (p.z > w.z-(w.scale_z/2)-4) and (p.x < w.x+(w.scale_x/2)+2) and (p.x > w.x-w.scale_x/2-2))
 
 def p_idle(c):
-	return (c.landed and not any([c.jumping,c.is_attack,c.walking,c.is_landing,c.pushed]))
+	return c.landed and not (c.jumping or c.is_spin or c.walking or c.is_landing or c.pushed)
 
 def p_rst(c):
-	return (not c.warped or any([c.standup,c.freezed,death_event]))
+	return not c.warped or (c.standup or c.freezed or death_event)
 
 def gproc():
-	return any([loading,pause,LV_CLEAR_PROCESS,game_over])
+	return (loading or pause or LV_CLEAR_PROCESS or game_over)

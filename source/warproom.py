@@ -179,9 +179,9 @@ def level_select():
 	Memorycard()
 	LvSelect()
 	if st.bonus_warp_room:
-		for lvs in {6,7,8}:
+		for lvs in (6,7,8):
 			ui.SpecialLevelSelector(idx=lvs,pos=(-.8,1.2-lvs/6))
 	else:
-		for lvs in {1,2,3,4,5}:
+		for lvs in (1,2,3,4,5):
 			ui.LevelSelector(idx=lvs,pos=(-.8,.5-lvs/6))
 	st.loading=False

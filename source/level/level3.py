@@ -107,12 +107,13 @@ def load_object():
 		o.ObjType_Deco(ID=6,pos=(0,1.9-cbb/7,79.5+cbb*44.4),sca=(2,3,.75),rot=(-90,0,0))
 	del cbb
 	#waterflow
-	o.ObjType_Water(ID=1,pos=(0,-.3,-16),sca=(5,32),col=color.rgb32(170,170,170),rot=(0,0,0),al=.65,frames=3,spd=10)
-	o.ObjType_Water(ID=1,pos=(0,.7,30),sca=(5,62),col=color.rgb32(170,170,170),rot=(0,0,0),al=.65,frames=3,spd=10)
-	o.ObjType_Water(ID=1,pos=(0,1.7,73),sca=(5,32),col=color.rgb32(170,170,170),rot=(0,0,0),al=.65,frames=3,spd=10)
+	wtcol=165
+	o.ObjType_Water(pos=(0,-.3,-16),sca=(5,32),txs=(1,12),col=color.rgb32(wtcol,wtcol,wtcol),rot=(0,0,0),al=.625,spd=10)
+	o.ObjType_Water(pos=(0,.7,30),sca=(5,62),txs=(1,24),col=color.rgb32(wtcol,wtcol,wtcol),rot=(0,0,0),al=.625,spd=10)
+	o.ObjType_Water(pos=(0,1.7,73),sca=(5,32),txs=(1,12),col=color.rgb32(wtcol,wtcol,wtcol),rot=(0,0,0),al=.625,spd=10)
 	#waterfall
-	o.ObjType_Water(ID=2,pos=(0,.2,-1),sca=(5,1),frames=31,rot=(0,0,0),spd=8,al=1)
-	o.ObjType_Water(ID=2,pos=(0,1.2,57),sca=(5,1),frames=31,rot=(0,0,0),spd=8,al=1)
+	o.Waterfall(pos=(0,.2,-1),sca=(5,1))
+	o.Waterfall(pos=(0,1.2,57),sca=(5,1))
 	#scene
 	sg=(.0225,.0265,.025)
 	sr=(-.0225,.0265,.025)
@@ -134,7 +135,6 @@ def load_object():
 	o.ObjType_Scene(ID=3,pos=(-2.8,2.3,80),ro_y=-90,sca=sg,col=sh)
 	o.ObjType_Scene(ID=3,pos=(2.8,2.3,80),ro_y=90,sca=sr,col=sh)
 	o.EndRoom(pos=(1,3.7,88),c=color.rgb32(200,210,200))
-	#Entity(model='quad',color=color.black,scale=(100,20),position=(0,-10,95))
 	del sg,sr,sh
 def load_crate():
 	if not 5 in status.COLOR_GEM:

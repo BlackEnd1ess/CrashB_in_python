@@ -1,11 +1,11 @@
-from ursina import Entity,color,time,distance,invoke,BoxCollider,Vec3,SpotLight,camera,Audio,Text,scene
-import _core,status,item,sound,animation,player,_loc,settings,effect,npc,ui,danger,random
+from ursina import Entity,color,time,distance,distance_xz,invoke,BoxCollider,Vec3,SpotLight,camera,Audio,Text,scene,load_texture
+import _core,status,item,sound,animation,player,_loc,settings,npc,ui,danger,random
+from effect import WarpVortex,WaterDrips
 from ursina.ursinastuff import destroy
 from ursina.shaders import *
 
 an=animation
 dg=danger
-ef=effect
 st=status
 sn=sound
 cc=_core
@@ -40,7 +40,7 @@ class ObjType_Block(Entity):
 		s=self
 		s.vnum=ID
 		super().__init__(model=omf+mpk[ID]+'.obj',texture=mpk[ID]+'.png',position=pos,rotation_y=ro_y,scale=sca)
-		s.double_sided=ID in {1,3,4}
+		s.double_sided=ID in (1,3,4)
 		bl_c={0:lambda:setattr(s,'collider',b),
 			1:lambda:setattr(s,'collider',BoxCollider(s,size=Vec3(2,4,2))),
 			2:lambda:setattr(s,'collider',BoxCollider(s,size=Vec3(2.4,1,2.4),center=Vec3(0,-.1,0))),
@@ -56,7 +56,7 @@ class ObjType_Block(Entity):
 			#temp collision landing fixx
 			if st.level_index == 7 and s.y > 4:
 				s.scale_y=1.2
-		if ID in {3,5}:
+		if ID in (3,5):
 			s.matr='metal'
 		del pos,sca,ro_y,typ,ID,bl_c,s
 
@@ -170,7 +170,7 @@ class ObjType_Scene(Entity):
 		del pos,sca,ID,ro_y,col,typ,s
 	def check_obj(self):
 		s=self
-		if s.vnum in {3,10,11}:
+		if s.vnum in (3,10,11):
 			s.model=omf+sds[s.vnum]+'.obj'
 			return
 		s.model=omf+sds[s.vnum]+'.ply'
@@ -194,11 +194,11 @@ class ObjType_Wall(Entity):
 		super().__init__(model=omf+smd[ID]+'.ply',texture=omf+smd[ID]+'.png',position=pos,scale=sca,rotation=(-90,ro_y,0),color=col,double_sided=True)
 		if ID == 0 and pos[0] > 190:
 			s.color=color.rgb32(0,140,160)
-		if ID in {2,4}:
+		if ID in (2,4):
 			s.collider=b
 		if ID == 7:
 			s.unlit=False
-			if ro_y in {180,0}:
+			if ro_y in (180,0):
 				s.collider=BoxCollider(s,center=Vec3(-1,-4,5),size=Vec3(2,24,20))
 		del ID,pos,sca,ro_y,col
 
@@ -228,17 +228,15 @@ class ObjType_Deco(Entity):#UL=unlit Flag, htb=HitBox
 	def __init__(self,ID,pos,sca,rot,col=color.white,UL=False,htb=False):
 		s=self
 		s.vnum=ID
-		super().__init__(model=None,texture=omf+dms[ID]+'.png',position=pos,scale=sca,rotation=rot,color=col)
-		s.check_model()
+		super().__init__(model=None,texture=f'{omf}{dms[ID]}.png',position=pos,scale=sca,rotation=rot,color=col)
+		s.model='quad' if ID == 0 else f'{omf}{dms[ID]}.ply'
 		if ID == 1:
 			HitBox(pos=pos,sca=(1,5,1))
 		if ID == 2:
 			ObjType_Deco(ID=3,pos=(s.x,s.y+1.1,s.z+.075),sca=(.025,.02,.03),rot=(-90,45,0),col=col)
 			HitBox(pos=(pos[0],pos[1]+4.9,pos[2]),sca=(.5,10,.5))
-		if ID in {8,9}:
-			vvf=random.randint(0,1)
-			if vvf == 0:
-				ObjType_Water(ID=4,pos=(s.x,s.y-{8:1,9:.2}[ID],s.z-{8:.25,9:.5}[ID]),sca=(.9,.4),rot=(0,0,90),frames=7,spd=10,al=1)
+		if ID in (8,9):
+			WaterDrips(pos=(s.x,s.y-{8:1,9:.2}[ID],s.z-{8:.25,9:.5}[ID]),sca=(.9,.4),rot=(0,0,90))
 		if ID == 13:
 			s.shader=unlit_shader
 		if UL:
@@ -246,11 +244,6 @@ class ObjType_Deco(Entity):#UL=unlit Flag, htb=HitBox
 		if htb:
 			s.collider=b
 		del ID,pos,sca,rot,col,htb
-	def check_model(self):
-		if self.vnum == 0:
-			self.model='quad'
-			return
-		self.model=omf+dms[self.vnum]+'.ply'
 
 
 ####################
@@ -284,7 +277,7 @@ class ObjType_Corridor(Entity):
 			s.visible=False
 			dg.FireTrap(pos=(s.x-1.34,s.y+1.58,s.z+.675))
 			dg.FireTrap(pos=(s.x+1.225,s.y+1.58,s.z+.675))
-			for pvb in {(s.x-1.4,s.y+1.7,s.z),(s.x+1.4,s.y+1.7,s.z)}:
+			for pvb in ((s.x-1.4,s.y+1.7,s.z),(s.x+1.4,s.y+1.7,s.z)):
 				HitBox(pos=pvb,sca=(.5,2,3))
 			del pvb
 			IndoorZone(pos=(s.x,s.y+2.55,s.z),sca=3)
@@ -339,11 +332,11 @@ class ObjType_Floor(Entity):
 		del ID,pos,sca,rot,col,al,txa,s
 	def set_model(self,txa):
 		s=self
-		if s.vnum in {0,8}:
+		if s.vnum in (0,8):
 			s.model='cube'
 			s.texture=trn+trx[s.vnum]
 			return
-		if s.vnum in {2,4,5,6,7,9}:
+		if s.vnum in (2,4,5,6,7,9):
 			s.model=omf+flr[s.vnum]+'.obj'
 			s.double_sided=True
 		else:
@@ -401,57 +394,32 @@ class ObjType_Background(Entity):
 
 ################
 ##level water ##
-wtr={0:'ev/water/water_',
-	1:'l3/water_flow/water_flow',
-	2:'l3/water_fall/waterf',
-	3:'l3/foam/foam',
-	4:'l4/drips/',#wrong pos
-	5:'l8/polar_water/'}
 class ObjType_Water(Entity):
-	def __init__(self,ID,pos,frames,spd,sca,rot,al=0,col=color.white,rev=False,UL=False):
+	def __init__(self,pos,sca,spd,rot,al=0,txs=(1,1),col=color.white,rev=False,UL=False):
 		s=self
-		s.vnum=ID
-		super().__init__(texture=omf+wtr[s.vnum]+'0.png',position=pos,rotation=rot,color=col)
-		s.frm=frames+.999 if rev else 0
-		s.frames=frames
+		super().__init__(model='plane',texture=LC.wtr_texture[0],texture_scale=txs,position=pos,scale=(sca[0],.1,sca[1]),rotation=rot,color=col,alpha=al,unlit=(not UL))
+		dg.WaterHit(p=(s.x,s.y-.1,s.z),sc=sca)
+		s.max_frm=int(len(LC.wtr_texture))-1+.99
+		s.frm=a.max_frm+.999 if rev else 0
 		s.reverse=rev
 		s.speed=spd
-		s.alpha=al
-		if ID in {0,1,5}:
-			s.wtr_surface(ID,sca)
-		else:
-			s.water_fall(ID,sca)
-		if UL:
-			s.unlit=False
-		del ID,pos,frames,spd,sca,rot,al,col,rev,UL,s
-	def wtr_surface(self,ID,sca):
+		s.frozen=bool(s.max_frm == 0 or spd == 0)
+		del pos,sca,spd,rot,al,txs,col,rev,UL
+	def refr_texture(self):
 		s=self
-		s.model='plane'
-		s.scale=(sca[0],.1,sca[1])
-		s.texture_scale={0:(sca[0]/3,sca[1]/3),1:(1,12),5:(sca[0],sca[1])}[ID]
-		dg.WaterHit(p=(s.x,s.y-.1,s.z),sc=sca)
-		del sca,ID
-	def water_fall(self,ID,sca):
-		s=self
-		s.model='quad'
-		s.scale=(sca[0],sca[1])
-		s.texture_scale=(s.scale_x,1)
-		if ID == 2:
-			ObjType_Water(ID=3,pos=(s.x,s.y-.49,s.z-.5),sca=(5,1),rot=(90,0,0),frames=15,spd=6,al=1)
-			ObjType_Water(ID=3,pos=(s.x,s.y+.501,s.z+.49),sca=(5,1),rot=(90,180,0),frames=15,spd=6,col=color.rgb32(210,210,210),rev=True,al=1)
-		del ID,sca
+		s.texture=LC.wtr_texture[int(s.frm)]
+		if s.reverse:
+			s.frm=max(s.frm-time.dt*s.speed,0)
+			if s.frm <= 0:
+				s.frm=s.max_frm
+			return
+		cc.incr_frm(s,s.speed)
 	def update(self):
 		s=self
-		if st.gproc() or 0 in {s.speed,s.frames} or (s.y < -15 and not st.bonus_round):
+		if st.gproc() or s.frozen or (s.y < -15 and not st.bonus_round) or (s.x > 190 and not st.death_route):
 			return
 		if st.wtr_dist(s,LC.ACTOR):
-			s.texture=omf+wtr[s.vnum]+f'{int(s.frm)}.png'
-			if s.reverse:
-				s.frm=max(s.frm-time.dt*s.speed,0)
-				if s.frm <= 0:
-					s.frm=s.frames
-				return
-			cc.incr_frm(s,s.frames,s.speed)
+			s.refr_texture()
 
 
 #####################
@@ -463,7 +431,7 @@ def plank_bridge(pos,typ,cnt,ro_y,DST):
 		plNK[ro_y]()
 	del pos,typ,cnt,ro_y,DST,wP
 
-plob=omf+'l2/plank/plank.png'
+plob=f'{omf}l2/plank/plank.png'
 class Plank(Entity):
 	def __init__(self,pos,typ,ro_y):
 		s=self
@@ -494,7 +462,7 @@ class Plank(Entity):
 			invoke(s.fall_down,delay=1)
 			invoke(s.hide,delay=1.5)
 
-rpt=omf+'l2/rope/rope_pce.jpg'
+rpt=f'{omf}l2/rope/rope_pce.jpg'
 class Ropes(Entity):
 	def __init__(self,pos,le):
 		s=self
@@ -502,14 +470,69 @@ class Ropes(Entity):
 		s.dup=Entity(model='cube',scale=s.scale,name=s.name,position=(s.x+.95,s.y,s.z),texture=rpt,texture_scale=(1,le*8),origin_z=s.origin_z)
 		del pos,le,s
 
+#####################
+## leve 3 objects ###
+class Waterfall(Entity):
+	def __init__(self,pos,sca):
+		s=self
+		if len(LC.wtf_texture) <= 0:
+			LC.wtf_texture=[load_texture(f'res/objects/l3/water_fall/waterf{cbx}.png') for cbx in range(31+1)]
+		super().__init__(model='quad',texture=LC.wtf_texture[0],position=pos,scale=(sca[0],sca[1]),texture_scale=(sca[0],1))
+		WaterFoam(pos=(s.x,s.y-.49,s.z-.5),sc_x=5)
+		WaterFoam(pos=(s.x,s.y+.501,s.z+.49),sc_x=5,rev=True)
+		s.max_frm=len(LC.wtf_texture)-1+.99
+		s.spd=10
+		s.frm=0
+		del pos,sca,s
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		cc.incr_frm(s,s.spd)
+		if s.texture != LC.wtf_texture[int(s.frm)]:
+			s.texture=LC.wtf_texture[int(s.frm)]
+
+class WaterFoam(Entity):
+	def __init__(self,pos,sc_x,al=1,rev=False):
+		s=self
+		if len(LC.wff_texture) <= 0:#water foam l3
+			LC.wff_texture=[load_texture(f'res/objects/l3/water_foam/foam{cbx}.png') for cbx in range(15+1)]
+		super().__init__(model='plane',texture=LC.wff_texture[0],position=pos,rotation=(0,0,0),scale=(sc_x,1),texture_scale=(sc_x,1),alpha=al)
+		s.max_frm=len(LC.wff_texture)-1+.99
+		s.frm=s.max_frm if rev else 0
+		s.reverse=rev
+		s.spd=6
+		if rev:
+			s.color=color.rgb32(210,210,210)
+			s.rotation=(0,180,0)
+		del pos,sc_x,al,rev,s
+	def decrase_frame(self):
+		s=self
+		s.frm-=time.dt*s.spd
+		if s.frm <= 0:
+			s.frm=s.max_frm
+	def refr_texture(self):
+		s=self
+		if s.texture != LC.wff_texture[int(s.frm)]:
+			s.texture=LC.wff_texture[int(s.frm)]
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.refr_texture()
+		if s.reverse:
+			s.decrase_frame()
+			return
+		cc.incr_frm(s,s.spd)
+
 
 #####################
 ## level 4 objects ##
-swmi=omf+'l4/swr_swim/swr_swim'
+swmi=f'{omf}l4/swr_swim/swr_swim'
 class SwimPlatform(Entity):##box collider
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=swmi+'.obj',texture=swmi+'.png',name='swpt',scale=.00625,position=pos,color=color.rgb32(120,200,200),double_sided=True)
+		super().__init__(model=f'{swmi}.obj',texture=f'{swmi}.png',name='swpt',scale=.00625,position=pos,color=color.rgb32(120,200,200),double_sided=True)
 		s.collider=BoxCollider(s,size=Vec3(100,30,100))
 		s.active=False
 		s.matr='metal'
@@ -537,11 +560,11 @@ class SwimPlatform(Entity):##box collider
 
 #####################
 ## level 5 objects ##
-lpp=omf+'l5/loose_ptf/'
+lpp=f'{omf}l5/loose_ptf/'
 class LoosePlatform(Entity):
 	def __init__(self,pos,t):
 		s=self
-		super().__init__(model=lpp+f'{t}/lpf.obj',texture=lpp+f'{t}/0.png',name='loos',scale=.01/15,position=pos,rotation_y=90,double_sided=True)
+		super().__init__(model=f'{lpp}{t}/lpf.obj',texture=f'{lpp}{t}/0.png',name='loos',scale=.01/15,position=pos,rotation_y=90,double_sided=True)
 		s.collider=BoxCollider(s,center=Vec3(0,-.5,0),size=(100*10,100,100*10))
 		s.active=False
 		s.typ=t
@@ -568,11 +591,11 @@ class LoosePlatform(Entity):
 
 #####################
 ## level 7 objects ##
-lbff=omf+'l7/piston_ptf/piston_ptf'
+lbff=f'{omf}l7/piston_ptf/piston_ptf'
 class PistonPlatform(Entity):
 	def __init__(self,pos,spd,pa):
 		s=self
-		super().__init__(model=lbff+'.obj',texture=lbff+'.png',name='pipf',position=pos,scale=.1/100,double_sided=True)
+		super().__init__(model=f'{lbff}.obj',texture=f'{lbff}.png',name='pipf',position=pos,scale=.1/100,double_sided=True)
 		s.collider=BoxCollider(s,size=Vec3(700,700,700),center=Vec3(0,1685,0))
 		s.matr='metal'
 		s.spw_y=s.y
@@ -610,14 +633,13 @@ class PistonPlatform(Entity):
 				return
 			s.mv_up()
 
-
 ###################
 ## logic objects ##
+ev='res/crate/'
 class CrateScore(Entity):## level reward
 	def __init__(self,pos):
 		s=self
-		ev='res/crate/'
-		super().__init__(model=ev+'cr_t0.ply',texture=ev+'1.tga',scale=.18,position=pos,origin_y=.5,unlit=False,color=color.light_gray,alpha=.4)
+		super().__init__(model=f'{ev}cr_t0.obj',texture=f'{ev}1.tga',scale=.18,position=pos,origin_y=.5,unlit=False,color=color.light_gray,alpha=.4)
 		s.cc_text=Text(parent=scene,position=(s.x-.2,s.y,s.z),name=s.name,text=None,font=ui._fnt,color=color.rgb32(255,255,100),scale=10,unlit=False)
 		del pos,s
 	def update(self):
@@ -635,11 +657,11 @@ class CrateScore(Entity):## level reward
 			destroy(s.cc_text)
 			destroy(s)
 
-rmp=omf+'ev/s_room/room'
+rmp=f'{omf}ev/s_room/room'
 class StartRoom(Entity):## game spawn point
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=rmp+'.ply',texture=rmp+'.tga',name='strm',position=pos,scale=(.07,.07,.08),rotation=(270,90),color=color.white)
+		super().__init__(model=f'{rmp}.ply',texture=f'{rmp}.png',name='strm',position=pos,scale=(.07,.07,.08),rotation=(270,90),color=color.white)
 		HitBox(pos=(s.x,s.y+.6,s.z-.2),sca=(1.7,.5,1.7))#floor 0
 		HitBox(pos=(s.x,s.y+.2,s.z+1.7),sca=(2,.5,2))#floor 1
 		HitBox(pos=(s.x-1,s.y+1.5,s.z),sca=(.4,13,6))#wall left
@@ -649,7 +671,7 @@ class StartRoom(Entity):## game spawn point
 		Entity(model='plane',name=s.name,position=(s.x,s.y+0.01,s.z),color=color.black,scale=3)
 		Entity(model='quad',name=s.name,color=color.black,scale=(6,.5),position=(s.x,s.y+2.3,s.z+2.4))
 		RoomDoor(pos=(s.x,s.y+1.875,s.z+2.3))
-		an.CrateBreak(pos=(0,-5,-10),col=color.white)
+		an.BoxBreak(pos=(0,-5,-10),col=color.white)
 		player.CrashB(pos=(s.x,s.y+.85,s.z-.1))
 		if st.aku_hit > 0:
 			npc.AkuAkuMask(pos=(s.x-.3,s.y+1,s.z+.5))
@@ -661,11 +683,11 @@ class StartRoom(Entity):## game spawn point
 			s.unlit=False
 		del pos,s
 
-eR=omf+'ev/e_room/e_room'
+eR=f'{omf}ev/e_room/e_room'
 class EndRoom(Entity):## finish level
 	def __init__(self,pos,c):
 		s=self
-		super().__init__(model=eR+'.ply',texture=eR+'.tga',scale=.025,name='enrm',rotation=(-90,90,0),position=pos,color=c,unlit=False)
+		super().__init__(model=f'{eR}.ply',texture=f'{eR}.png',scale=.025,name='enrm',rotation=(-90,90,0),position=pos,color=c,unlit=False)
 		Entity(model='plane',name=s.name,color=color.black,scale=(4,1,16),position=(s.x-1,s.y-1.8,s.z+3))#curtain
 		HitBox(sca=(4,1,16),pos=(s.x-1,s.y-2,s.z+3))#floor
 		HitBox(sca=(1,3,16),pos=(s.x-2.2,s.y,s.z+3))#wall left
@@ -687,7 +709,7 @@ class EndRoom(Entity):## finish level
 			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=4)
 		if st.level_index == 2 and not 1 in st.COLOR_GEM:
 			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=1)
-		if st.level_index in {6,7,8} and not st.level_index in st.COLOR_GEM:
+		if st.level_index in (6,7,8) and not st.level_index in st.COLOR_GEM:
 			if st.level_index == 8:
 				s.unlit=False
 			item.GemStone(c=st.level_index,pos=(s.x-1.1,s.y-.9,s.z))
@@ -726,18 +748,32 @@ class RoomDoor(Entity):## door for start and end room
 			an.door_close(s)
 
 class BonusPlatform(Entity):## switch -> bonus round
-	def __init__(self,pos):
+	def __init__(self,pos,ID=0):
 		s=self
-		sIN='ev/bonus/bonus'
-		if st.level_index == 7:
-			sIN='ev/bonus/bonus_e'
-			s.matr='metal'
-		super().__init__(model=omf+sIN+'.ply',texture=omf+sIN+'.tga',name='bnpt',collider=b,scale=-.001,rotation_x=90,position=pos,unlit=False)
+		k=bool(st.level_index == 7 or ID == 1)
+		sIN=f'{omf}ev/bonus/bonus_e' if k else f'{omf}ev/bonus/bonus'
+		s.matr='metal' if k else None
+		super().__init__(model=f'{sIN}.ply',texture=f'{sIN}.png',name='bnpt',collider=b,scale=-.001,rotation_x=90,position=pos,unlit=False)
+		s.fixx_y=s.y+.25
 		s.start_y=s.y
-		del pos
+		s.w_time=0
+		del pos,k,sIN,ID
+	def refr(self):
+		s=self
+		s.w_time+=time.dt
+		if s.w_time > .5:
+			s.w_time=0
+			LC.ACTOR.y=s.fixx_y
+			LC.ACTOR.freezed=False
 	def update(self):
+		if st.gproc() or st.death_event:
+			return
+		s=self
 		if st.bonus_solved:
-			cc.destroy_entity(self)
+			destroy(s)
+			return
+		if LC.ACTOR.freezed and LC.ACTOR.y < s.fixx_y and distance_xz(LC.ACTOR,s) < .3:
+			s.refr()
 
 class GemPlatform(Entity):## gem platform
 	def __init__(self,pos,t):
@@ -750,7 +786,7 @@ class GemPlatform(Entity):## gem platform
 			if settings.debg:
 				t=0
 		super().__init__(model=wfc,name='gmpt',scale=(.6,.4,.6),position=pos,collider=b,visible=False)
-		s.opt_model=Entity(model=omf+'ev/'+ne+'/'+ne+'.ply',name=s.name,texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=LC.GMC[t],unlit=False)
+		s.opt_model=Entity(model=f'{omf}ev/{ne}/{ne}.ply',name=s.name,texture=f'{omf}ev/{ne}/{ne}.png',rotation_x=-90,scale=.001,position=pos,color=LC.GMC[t],unlit=False)
 		s.org_color=s.color
 		s.start_y=s.y
 		s.typ=t
@@ -779,25 +815,23 @@ class PseudoGemPlatform(Entity):
 			s.is_enabled=True
 			if settings.debg:
 				t=0
-		super().__init__(model=omf+'ev/'+ne+'/'+ne+'.ply',texture=omf+'ev/'+ne+'/'+ne+'.tga',rotation_x=-90,scale=.001,position=pos,color=LC.GMC[t],unlit=False)
+		super().__init__(model=f'{omf}ev/{ne}/{ne}.ply',texture=f'{omf}ev/{ne}/{ne}.png',rotation_x=-90,scale=.001,position=pos,color=LC.GMC[t],unlit=False)
 		del pos,t
 		if s.is_enabled:
 			HitBox(pos=(s.x,s.y-.15,s.z),sca=(.6,.4,.6))
 			return
 		s.alpha=.5
 
-
 ##############
 ## Switches ##
 class LevelFinish(Entity):## finish level
 	def __init__(self,p):
 		s=self
-		trpv=omf+'ev/teleport/warp_effect'
 		super().__init__(model='sphere',name='lvfi',collider=b,scale=1,position=p,visible=False)
-		ef.WarpVortex(pos=(s.x,s.y+.1,s.z),col=color.yellow,sca=.6,drc=1)
-		ef.WarpVortex(pos=(s.x,s.y+.3,s.z),col=color.orange,sca=.7,drc=0)
-		ef.WarpVortex(pos=(s.x,s.y+.5,s.z),col=color.yellow,sca=.8,drc=1)
-		ef.WarpVortex(pos=(s.x,s.y+.7,s.z),col=color.orange,sca=.7,drc=0)
+		WarpVortex(pos=(s.x,s.y+.1,s.z),col=color.yellow,sca=.6,drc=1)
+		WarpVortex(pos=(s.x,s.y+.3,s.z),col=color.orange,sca=.7,drc=0)
+		WarpVortex(pos=(s.x,s.y+.5,s.z),col=color.yellow,sca=.8,drc=1)
+		WarpVortex(pos=(s.x,s.y+.7,s.z),col=color.orange,sca=.7,drc=0)
 		s.w_audio=Audio('res/snd/obj_portal.wav',volume=0,loop=True)
 		LC.lv_fin_pos=(p[0],p[1]+.3,p[2])
 		s.refr=.3
@@ -856,8 +890,9 @@ class InvWall(Entity):
 class PseudoCrash(Entity):
 	def __init__(self):
 		s=self
-		super().__init__(model=LC.ctx+'.ply',texture=LC.ctx+'.png',scale=.1/20,rotation=(-90,30,0),position=(9,-4,0),unlit=False)
-		Entity(model=mpt[0]+'.ply',texture=mpt[0]+'.png',scale=.00275,position=(s.x,s.y,s.z),double_sided=True,color=color.rgb32(170,190,180),rotation_x=-90,unlit=False)
+		super().__init__(model=f'{LC.ctx}.ply',texture=f'{LC.ctx}.png',scale=.1/20,rotation=(-90,30,0),position=(9,-4,0),unlit=False)
+		Entity(model=f'{mpt[0]}.ply',texture=f'{mpt[0]}.png',scale=.00275,position=(s.x,s.y,s.z),double_sided=True,color=color.rgb32(170,190,180),rotation_x=-90,unlit=False)
 		s.idfr=0
+		del s
 	def update(self):
 		animation.idle(self)

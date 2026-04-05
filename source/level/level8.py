@@ -79,7 +79,7 @@ def load_object():
 	dg.Role(pos=(52.5,2.5+.75,84),di=0)
 	dg.Role(pos=(52.5,2.5+.75,86),di=1)
 	#water
-	o.ObjType_Water(ID=5,pos=(8,.2,90),sca=(128,180),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
+	o.ObjType_Water(pos=(8,.2,90),sca=(128,180),txs=(128,180),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),spd=0,UL=True)
 	#ice floor
 	o.multi_ice_floor(pos=(7,-.55,12.5),cnt=[4,10])
 	o.multi_ice_floor(pos=(19,-.5,36),cnt=[6,5])
@@ -291,7 +291,7 @@ def load_wumpa():
 
 def bonus_zone():
 	o.HitBox(pos=(0,-35,U+.2),sca=(80,20,.1))
-	o.ObjType_Water(ID=5,pos=(0,-38.5,0),sca=(128,32),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
+	o.ObjType_Water(pos=(0,-38.5,0),sca=(128,32),txs=(128,32),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),spd=0,UL=True)
 	o.ObjType_Wall(ID=7,pos=(0,-39,2),ro_y=-90,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(12,-39,2),ro_y=-90,sca=.5,col=color.dark_gray)
 	o.ObjType_Wall(ID=7,pos=(-1,-38,4),ro_y=-90,sca=.5,col=color.dark_gray)
@@ -418,11 +418,11 @@ def gem_zone():
 	o.ObjType_Deco(ID=4,pos=(199.2,-5.1,-89.6),sca=.6,rot=(-90,-90,0),col=color.azure,UL=True,htb=True)
 	o.ObjType_Deco(ID=4,pos=(200.8,-5.1,-91.4),sca=.6,rot=(-90,-90,0),col=color.azure,UL=True,htb=True)
 	#water
-	o.ObjType_Water(ID=5,pos=(q,-3.3,-15),sca=(6,8),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
-	o.ObjType_Water(ID=5,pos=(q,-3.3,-36),sca=(6,6),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
-	o.ObjType_Water(ID=5,pos=(q,-4.3,-67),sca=(6,12),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
-	o.ObjType_Water(ID=5,pos=(q,-5.5,-86),sca=(6,10),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
-	o.ObjType_Water(ID=5,pos=(q,-6,-100),sca=(6,5),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),frames=0,spd=0,UL=True)
+	o.ObjType_Water(pos=(q,-3.3,-15),sca=(6,8),txs=(6,8),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),spd=0,UL=True)
+	o.ObjType_Water(pos=(q,-3.3,-36),sca=(6,6),txs=(6,6),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),spd=0,UL=True)
+	o.ObjType_Water(pos=(q,-4.3,-67),sca=(6,12),txs=(6,12),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),spd=0,UL=True)
+	o.ObjType_Water(pos=(q,-5.5,-86),sca=(6,10),txs=(6,10),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),spd=0,UL=True)
+	o.ObjType_Water(pos=(q,-6,-100),sca=(6,5),txs=(6,5),al=.96,rot=(0,0,0),col=color.rgb32(0,65,65),spd=0,UL=True)
 	#npc
 	n.spawn(ID=6,POS=(198.7,-3,-25.7),DRC=2,RNG=3)
 	n.spawn(ID=4,POS=(200,-3,-31.3),DRC=2,RNG=3)

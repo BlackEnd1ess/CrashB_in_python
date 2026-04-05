@@ -240,13 +240,14 @@ class Rat(Entity):
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.scale=.8/1000
 		s.move_speed=1
-		s.max_frm=8
+		s.max_frm=10 if not cmv else 8
 		s.tme=1
 		s.frm=0
 		del s,pos,drc,rng,rtyp,cmv
 	def idle_action(self):
 		s=self
 		if (s.is_hitten or s.is_purge):
+			cc.npc_action(s)
 			return
 		an.rat_idle(s)
 		if distance(s,LC.ACTOR) < 2.5:
@@ -256,9 +257,10 @@ class Rat(Entity):
 			return
 		s=self
 		sn.npc_loop_audio(n=s,PIT=random.uniform(.65,.75),tme_r=random.uniform(1,1.5))
-		cc.npc_action(s)
 		if not s.can_move:
 			s.idle_action()
+			return
+		cc.npc_action(s)
 
 class Lizard(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -371,7 +373,7 @@ class Gorilla(Entity):
 			s.throw_act[s.t_mode]()
 
 class Bee(Entity):
-	def __init__(self,pos,drc,rng,rtyp,cmv,bID=0):
+	def __init__(self,pos,drc=0,rng=0,rtyp=0,cmv=True,bID=0):
 		s=self
 		s.vnum=15
 		super().__init__(rotation_x=-90,position=pos,collider='box')
@@ -426,7 +428,7 @@ class Bee(Entity):
 		s.check_near_npc()
 		if s.is_hitten or s.is_purge:
 			return
-		sn.npc_loop_audio(n=self,PIT=1,tme_r=.0001)
+		sn.npc_loop_audio(n=self,PIT=5,tme_r=0)
 		s.fly_event()
 
 class Lumberjack(Entity):
@@ -655,7 +657,7 @@ class Hippo(Entity):
 		if not s.active:
 			s.active=True
 			sn.pc_audio(ID=10)
-			invoke(lambda:s.dive_down(),delay=1)
+			invoke(s.dive_down,delay=1)
 	def dive_down(self):
 		s=self
 		s.animate_y(s.start_y-1,duration=1)
@@ -667,16 +669,17 @@ class Hippo(Entity):
 		invoke(lambda:setattr(s,'active',False),delay=3)
 		invoke(lambda:setattr(s.col,'collider','box'),delay=1)
 	def update(self):
-		if not st.gproc():
-			s=self
-			if s.col.active:
-				s.col.active=False
-				s.do_act()
-				return
-			if not s.active:
-				animation.hippo_wait(s)
-				return
-			animation.hippo_dive(s)
+		if st.gproc():
+			return
+		s=self
+		if s.col.active:
+			s.col.active=False
+			s.do_act()
+			return
+		if not s.active:
+			animation.hippo_wait(s)
+			return
+		animation.hippo_dive(s)
 
 ffly=npf+'firefly/0'
 tfd=.01

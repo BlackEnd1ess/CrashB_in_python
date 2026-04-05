@@ -1,5 +1,6 @@
-from ursina import Sky,Entity,PointLight,AmbientLight,Animation,color,invoke,scene,camera,window
-import status,_loc,sound,time,random,_core
+from ursina import Sky,Entity,PointLight,AmbientLight,color,invoke,scene,camera,window,load_texture
+import status,_loc,sound,time,random,_core,settings
+from ursina.ursinastuff import destroy
 
 st=status
 LC=_loc
@@ -16,7 +17,8 @@ def env_switch():
 	if st.toggle_rain:
 		WeatherRain()
 	set_fog()
-	print(f'<info> Environment Setting for Level {st.level_index} loaded.')
+	if settings.debg:
+		print(f'<info> Environment Setting for Level {st.level_index} loaded.')
 
 ##Fog Distance
 def set_fog():
@@ -28,24 +30,29 @@ def set_fog():
 	scene.fog_color=LC.FOG_L_COLOR
 
 ##Rainfall Func
-rnf='res/ui/misc/rain/'
 class WeatherRain(Entity):
 	def __init__(self):
 		s=self
+		s.rain_particle=[load_texture(f'res/ui/misc/rain/{cbx}.png') for cbx in range(58+1)]
 		super().__init__(model='quad',texture=None,scale=(1.8,1),parent=camera.ui,z=1,visible=False)
+		s.max_frm=len(s.rain_particle)-1
 		LC.ACTOR.indoor=.5
 		sound.Rainfall()
 		s.frm=0
-		s.fp=40
+		s.spd=40
 		if st.level_index == 5:
-			s.fp=50
+			s.spd=50
 		del s
 	def update(self):
 		s=self
 		if st.pause:
 			return
-		_core.incr_frm(s,58,s.fp)
-		s.texture=rnf+f'{int(s.frm)}.png'
+		if st.LV_CLEAR_PROCESS:
+			destroy(s)
+			return
+		_core.incr_frm(s,s.spd)
+		if s.texture != s.rain_particle[int(s.frm)]:
+			s.texture=s.rain_particle[int(s.frm)]
 		if LC.ACTOR.warped and LC.ACTOR.indoor <= 0:
 			s.visible=True
 			s.alpha=lerp(s.alpha,1,time.dt*2.3)

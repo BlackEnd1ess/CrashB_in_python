@@ -31,11 +31,11 @@ def spawn(p,ID,m=0,l=1,pse=False):
 	14:lambda:Protected(pos=p,m=m,l=l,pse=pse),
 	15:lambda:cTime(pos=p,m=m,l=l,pse=pse),
 	16:lambda:LvInfo(pos=p,m=m,l=l,pse=pse)}[ID]()
-	if not ID in {0,8,9,10,15,16} and not pse:
+	if not ID in (0,8,9,10,15,16) and not pse:
 		st.crates_in_level+=1
 		if p[1] < -20:
 			st.crates_in_bonus+=1
-		if ID == 13 and l in {0,8}:
+		if ID == 13 and l in (0,8):
 			st.crates_in_level-=1
 	del p,ID,m,l,pse
 
@@ -46,7 +46,7 @@ class Iron(Entity):
 		super().__init__(model=cr1)
 		cc.box_set_val(cR=self,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		self.p_snd=False
-		del pos,pse,m,l
+		del pos,pse,m,l,self
 	def destroy(self):
 		cc.block_destroy(self)
 
@@ -55,7 +55,7 @@ class Normal(Entity):
 		self.vnum=1
 		super().__init__(model=cr1)
 		cc.box_set_val(cR=self,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
-		del pos,pse,m,l
+		del pos,pse,m,l,self
 	def destroy(self):
 		s=self
 		item.spawn_wumpa(s.position,cnt=1,c_prg=True)
@@ -66,7 +66,7 @@ class QuestionMark(Entity):
 		self.vnum=2
 		super().__init__(model=cr2)
 		cc.box_set_val(cR=self,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
-		del pos,pse,m,l
+		del pos,pse,m,l,self
 	def destroy(self):
 		s=self
 		item.spawn_wumpa(s.position,cnt=5,c_prg=True)
@@ -78,45 +78,40 @@ class Bounce(Entity):
 		s.vnum=3
 		super().__init__(model=cr2)
 		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
-		s.is_bounc=False
-		s.lf_time=5
+		s.bnc_anim_done=True
+		s.lf_time=0
 		s.b_cnt=0
 		s.frm=0
 		del pos,pse,m,l,s
+	def check_status(self):
+		s=self
+		if s.b_cnt > 0:
+			if st.death_event:
+				s.reset_status()
+				return
+			if s.lf_time < 5:
+				s.lf_time+=time.dt
+	def reset_status(self):
+		self.lf_time=0
+		self.b_cnt=0
 	def empty_destroy(self):
 		if st.aku_hit > 2:
 			cc.wumpa_count(10)
 		cc.box_destroy_event(self)
-	def bnc_event(self):
-		s=self
-		if st.aku_hit < 3:
-			LC.ACTOR.jump_typ(t=3)
-		cc.wumpa_count(2)
-		sn.pc_audio(ID=5,pit=1+s.b_cnt/10)
-		s.b_cnt+=1
-		s.lf_time=5
-		s.is_bounc=True
-		if s.b_cnt > 4 or s.lf_time <= 0:
-			s.empty_destroy()
 	def destroy(self):
 		s=self
-		if s.lf_time > 0 and s.b_cnt < 5:
-			if not LC.ACTOR.b_smash:
-				s.bnc_event()
+		s.b_cnt+=1
+		if s.b_cnt < 5 and s.lf_time < 5:
+			sn.pc_audio(ID=5,pit=1+s.b_cnt/10)
+			cc.wumpa_count(2)
+			s.lf_time=0
 			return
+		s.visible=True
 		s.empty_destroy()
 	def update(self):
 		if st.gproc():
 			return
-		s=self
-		if s.b_cnt > 0 and st.death_event:
-			s.lf_time=5
-			s.b_cnt=0
-			return
-		if s.is_bounc:
-			an.bnc_anim(s)
-		if s.lf_time > 0 and s.b_cnt > 0:
-			s.lf_time=max(s.lf_time-time.dt,0)
+		self.check_status()
 
 class ExtraLife(Entity):
 	def __init__(self,pos,pse,m,l):
@@ -172,18 +167,11 @@ class SpringWood(Entity):
 		s.vnum=7
 		super().__init__(model=cr2)
 		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
-		s.is_bounc=False
-		s.frm=0
+		s.bnc_anim_done=True
 		del pos,pse,m,l,s
 	def destroy(self):
 		item.spawn_wumpa(self.position,cnt=1,c_prg=True)
 		cc.box_destroy_event(self)
-	def update(self):
-		if st.gproc():
-			return
-		s=self
-		if s.is_bounc:
-			an.bnc_anim(s)
 
 class SpringIron(Entity):
 	def __init__(self,pos,pse,m,l):
@@ -191,18 +179,11 @@ class SpringIron(Entity):
 		s.vnum=8
 		super().__init__(model=cr2)
 		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
-		s.is_bounc=False
+		s.bnc_anim_done=True
 		s.p_snd=False
-		s.frm=0
 		del pos,pse,m,l,s
 	def destroy(self):
 		cc.block_destroy(self)
-	def update(self):
-		if st.gproc():
-			return
-		s=self
-		if s.is_bounc:
-			an.bnc_anim(s)
 
 class SwitchEmpty(Entity):
 	def __init__(self,pos,m,l,pse):
@@ -309,6 +290,7 @@ class Nitro(Entity):
 		s.vnum=12
 		super().__init__(model=cr2,color=color.white,unlit=False)
 		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
+		s.new_y=s.spawn_pos[1]
 		s.can_jmp=False
 		s.is_jmp=False
 		s.snd_time=1
@@ -327,9 +309,9 @@ class Nitro(Entity):
 	def c_fall_act(self):
 		s=self
 		s.y-=time.dt*3
-		if s.y <= s.spawn_pos[1]:
+		if s.y <= s.new_y:
 			s.is_jmp=False
-			s.y=s.spawn_pos[1]
+			s.y=s.new_y
 			s.mode=0
 	def refr(self):
 		s=self
@@ -371,21 +353,16 @@ class Protected(Entity):
 		s.vnum=14
 		super().__init__(model=cr1)
 		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
-		s.hitten=False
 		s.p_snd=False
 		s.frm=0
 		del pos,pse,m,l,s
 	def destroy(self):
 		s=self
-		s.hitten=True
 		cc.block_destroy(s)
 	def c_destroy(self):
 		sn.crate_audio(ID=4,pit=.35)
 		item.spawn_wumpa(self.position,cnt=random.randint(5,10),c_prg=True)
 		cc.box_destroy_event(self)
-	def update(self):
-		if not st.gproc() and self.hitten:
-			an.prtc_anim(self)
 
 class cTime(Entity):
 	def __init__(self,pos,tm=1):

@@ -1,10 +1,16 @@
-import gc,os,ui,settings,psutil,_loc,status,sys,sound
+import gc,os,ui,settings,psutil,_loc,status,sys,sound,tracemalloc,item,types
 from collections import defaultdict
 from collections import Counter
+from ursina import application
 from ursina import *
+
 CV=camera.ui
 st=status
 LC=_loc
+
+known_sequences = set()
+snap1=None
+snap2=None
 
 #pos info
 def pos_info(c):
@@ -29,6 +35,74 @@ def complete_level():
 	sound.ui_audio(ID=4)
 	invoke(lambda:setattr(LC.ACTOR,'position',LC.lv_fin_pos),delay=1)
 
+#check multible objects where in memory
+def chck_mem():
+	TRG='Entity'
+	ATR='name'
+	all_objects=gc.get_objects(generation=2)
+	class_counts=Counter()
+	details=[]
+	os.system('cls')
+	for obj in all_objects:
+		if isinstance(obj,(Entity)):
+			class_name=type(obj).__name__
+			class_counts[class_name]+=1
+			if class_name == TRG and obj.parent == scene:
+				fs=getattr(obj,ATR)
+				details.append(fs)
+	print("MEMORY INFO:")
+	print(' ')
+	for class_name, count in class_counts.items():
+		print(f"{class_name}: {count} Instances")
+	print("\n",TRG,'-results in MEMORY:')
+	for i, filename in enumerate(details,1):
+		print(f"{TRG} {i}: {ATR} = {filename if filename else 'NONE'}")
+
+prev_sizes={}
+def make_snap():
+	#os.system('cls')
+	print("Entities:", len(scene.entities))
+	print("Sequences:", len(application.sequences))
+	print("GC objects:", len(gc.get_objects()))
+	print("----")
+	#global prev_sizes
+	#current_sizes = {}
+	#for obj in gc.get_objects():
+	#	if isinstance(obj, list) or isinstance(obj, set):
+	#		obj_id = id(obj)
+	#		obj_len = len(obj)
+	#		current_sizes[obj_id] = (obj, obj_len)
+	#		if obj_id in prev_sizes:
+	#			old_len = prev_sizes[obj_id][1]
+	#			if obj_len != old_len and obj_len > 0:
+	#				print(f"{type(obj)} hat sich geändert: {old_len} -> {obj_len} Elemente -> {repr(obj)[:100]}")
+			#else:
+			#	# Optional: nur beim ersten Mal ausgeben
+			#	if obj_len > 0:
+			#		print(f"Neue {type(obj)} entdeckt: {obj_len} Elemente -> {repr(obj)[:100]}")
+	# Snapshot für den nächsten Vergleich speichern
+	#prev_sizes = current_sizes
+	##snapshots
+	#if st.SNAP_NUM <= 0:
+	#	tracemalloc.start(25)
+	#	st.snap1=tracemalloc.take_snapshot()
+	#	st.SNAP_NUM+=1
+	#	return
+	#if st.SNAP_NUM == 1:
+	#	st.SNAP_NUM=5
+	#	st.snap2=tracemalloc.take_snapshot()
+	#	top_stats = st.snap2.compare_to(st.snap1,'lineno')
+	#	print("\nTop Speicherzuwachs nach Zeile:\n")
+	#	for stat in top_stats[:30]:
+	#		print(stat)
+
+def show_sequences():
+	print('before remove',len(application.sequences))
+	for seq in application.sequences:
+		if seq.finished:
+			print(seq.funcs)
+	print('after remove: ',len(application.sequences))
+
 #player attr info
 class PlayerDBG(Entity):
 	def __init__(self):
@@ -39,6 +113,7 @@ class PlayerDBG(Entity):
 		super().__init__()
 		tct=settings.debg_color
 		Entity(model='quad',position=(-.76,-.25),color=color.black,alpha=.75,scale=(.4,.9),z=1,parent=CV)
+		s.sq_active=Text(color=tct,font=ui._fnt,position=(sx,hg-.025),parent=CV,scale=fw)
 		s.fwt_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.05),parent=CV,scale=fw)
 		s.frz_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.075),parent=CV,scale=fw)
 		s.sta_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.1),parent=CV,scale=fw)
@@ -102,30 +177,9 @@ class PlayerDBG(Entity):
 			s.inj_state.text=f'INJURED     : {rv.injured}'
 			s.frz_state.text=f'FREEZED     : {rv.freezed}'
 			s.fwt_state.text=f'FALL TIME   : {rv.fall_time:.1f}'
+			s.sq_active.text=f'ACTIVE SEQs : {len(application.sequences)}'
 
-#check multible objects where in memory
-def chck_mem():
-	TRG='Entity'
-	ATR='name'
-	all_objects=gc.get_objects(generation=2)
-	class_counts=Counter()
-	details=[]
-	os.system('cls')
-	for obj in all_objects:
-		if isinstance(obj,(Entity)):
-			class_name=type(obj).__name__
-			class_counts[class_name]+=1
-			if class_name == TRG and obj.parent == scene:
-				fs=getattr(obj,ATR)
-				details.append(fs)
-	print("MEMORY INFO:")
-	print(' ')
-	for class_name, count in class_counts.items():
-		print(f"{class_name}: {count} Instances")
-	print("\n",TRG,'-results in MEMORY:')
-	for i, filename in enumerate(details,1):
-		print(f"{TRG} {i}: {ATR} = {filename if filename else 'NONE'}")
-
+#mem check
 class MemoryTracker(Entity):
 	def __init__(self,interval=5,threshold=100000,**kwargs):
 		super().__init__(**kwargs)

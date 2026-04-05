@@ -1,4 +1,4 @@
-from ursina import Audio,Entity,color,time,distance,invoke,BoxCollider,Vec3,scene,Vec3,lerp
+from ursina import Audio,Entity,color,time,distance,invoke,BoxCollider,Vec3,scene,Vec3,lerp,load_texture
 import _core,status,item,sound,animation,player,_loc,settings,effect,npc,random
 from ursina.ursinastuff import destroy
 
@@ -111,38 +111,42 @@ class SewerGlowIron(Entity):
 		if s.intersects(LC.ACTOR):
 			cc.get_damage(LC.ACTOR,rsn=4)
 
-wtt=omf+'l4/wtr/'
 class EletricWater(Entity):
-	def __init__(self,pos,sca):
+	def __init__(self,pos,sca,sw_delay=8):
 		s=self
-		super().__init__(model='cube',texture=wtt+'0.png',name='elwt',position=pos,scale=(sca[0],.1,sca[1]),texture_scale=(sca[0],sca[1]),color=color.rgb32(0,180,180),alpha=.9,collider=b)
+		super().__init__(model='cube',texture=LC.wtr_texture[0],name='elwt',position=pos,scale=(sca[0],.1,sca[1]),texture_scale=(sca[0],sca[1]),color=color.rgb32(0,180,180),alpha=.9,collider=b)
+		s.max_frm=len(LC.wtr_texture)-1+.99
 		s.tx=(sca[0],sca[1])
 		s.electric=False
+		s.sw_delay=sw_delay
+		s.elc_time=0
 		s.matr='wtr'
 		s.nr=False
 		s.frm=0
-		s.tme=8
-		del pos,sca,s
-	def wtr_danger(self):
+		s.tme=.1 if s.x > 180 else 8
+		s.spd=8
+		del pos,sca,s,sw_delay
+	def switch_state(self,state):
 		s=self
-		if not s.electric:
-			s.electric=True
-			s.color=color.yellow
-			s.unlit=False
+		if state == 0:
+			s.electric=False
+			s.color=color.rgb32(0,125,125)
+			s.unlit=True
 			s.alpha=.9
-			if LC.ACTOR.warped and not st.bonus_round:
-				if s.nr:
-					sn.obj_audio(ID=7)
-			invoke(s.wtr_normal,delay=1.5)
-	def wtr_normal(self):
-		s=self
-		if not s:
-			del s
 			return
-		s.electric=False
-		s.color=color.rgb32(0,125,125)
-		s.unlit=True
-		s.alpha=.9
+		s.electric=True
+		s.elc_time=1.5
+		s.color=color.yellow
+		s.unlit=False
+		s.alpha=.8
+		if LC.ACTOR.warped and not st.bonus_round:
+			if s.nr:
+				sn.obj_audio(ID=7)
+	def refr_texture(self):
+		s=self
+		cc.incr_frm(s,s.spd)
+		if s.texture != LC.wtr_texture[int(s.frm)]:
+			s.texture=LC.wtr_texture[int(s.frm)]
 	def check_p(self):
 		s=self
 		fq=s.intersects(LC.ACTOR)
@@ -156,12 +160,16 @@ class EletricWater(Entity):
 		s.nr=st.wtr_dist(w=s,p=LC.ACTOR)
 		if s.nr:
 			s.check_p()
-			cc.incr_frm(s,31,8)
-			s.texture=wtt+f'{int(s.frm)}.png'
+			s.refr_texture()
+			if s.electric and s.elc_time > 0:
+				s.elc_time-=time.dt
+				if s.elc_time <= 0:
+					s.switch_state(0)
+				return
 			s.tme=max(s.tme-time.dt,0)
 			if s.tme <= 0:
-				s.tme=random.uniform(.1,.2) if s.x > 180 else 8
-				s.wtr_danger()
+				s.tme=random.uniform(.1,.2) if s.x > 180 else s.sw_delay
+				s.switch_state(1)
 
 swrp=omf+'l4/heat_pipe/heat_pipe'
 class HeatPipe(Entity):
@@ -625,7 +633,7 @@ class Boulder(Entity):
 					cc.dth_event(LC.ACTOR,rsn=2)
 					return
 				if cc.is_box(blh):
-					if blh.vnum in {3,11}:
+					if blh.vnum in (3,11):
 						blh.empty_destroy()
 					else:
 						blh.destroy()

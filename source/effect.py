@@ -1,20 +1,20 @@
 from ursina import Entity,Vec2,Vec3,color,Shader,Func,load_texture
 from ursina.ursinastuff import destroy
-import status,_core,_loc,time,random
+import status,_loc,time,random,_core
 
 trpv='res/objects/ev/teleport/warp_effect'
 ef='res/effects/'
 q='quad'
 
+cc=_core
 st=status
 cc=_core
 LC=_loc
 
-
 class WarpVortex(Entity):
 	def __init__(self,pos,sca,drc,col):
 		s=self
-		super().__init__(name='wvpx',position=pos,color=col,scale=sca,rotation_x=90,alpha=.5,unlit=False)
+		super().__init__(model=f'{trpv}.ply',texture=f'{trpv}.png',name='wvpx',position=pos,color=col,scale=sca,rotation_x=90,alpha=.5,unlit=False)
 		s.spd=600
 		s.drc=drc
 		del pos,sca,drc,col,s
@@ -23,13 +23,27 @@ class WarpVortex(Entity):
 			return
 		if LC.ACTOR.indoor > 0:
 			s=self
-			if s.texture != trpv+'.png':
-				s.model=trpv+'.ply'
-				s.texture=trpv+'.png'
 			if s.drc == 1:
 				s.rotation_y+=time.dt*s.spd
 				return
 			s.rotation_y-=time.dt*s.spd
+
+class WaterDrips(Entity):
+	def __init__(self,pos,sca,rot):
+		s=self
+		if len(LC.drp_texture) <= 0:
+			LC.drp_texture=[load_texture(f'res/effects/drips/{cbx}.png') for cbx in range(7+1)]
+		super().__init__(model='quad',texture=LC.drp_texture[0],position=pos,scale=sca,rotation=rot)
+		s.max_frm=len(LC.drp_texture)-1
+		s.spd=10
+		s.frm=0
+		del pos,sca,rot,s
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		cc.incr_frm(s,s.spd)
+		s.texture=LC.drp_texture[int(s.frm)]
 
 class ExclamationMark(Entity):
 	def __init__(self,pos,ID):
@@ -127,8 +141,12 @@ llfr=ef+'fire/fire_'
 class LightFire(Entity):
 	def __init__(self,pos,lft=None):
 		s=self
-		super().__init__(model=q,texture=llfr+'0.png',position=pos,scale=.4,unlit=False)
+		if len(LC.fre_texture) <= 0:
+			LC.fre_texture=[load_texture(f'res/effects/fire/fire_{cbx}.png') for cbx in range(31+1)]
+		super().__init__(model=q,texture=LC.fre_texture[0],position=pos,scale=.4,unlit=False)
+		s.max_frm=len(LC.fre_texture)-1
 		s.life_time=lft
+		s.spd=12
 		s.frm=0
 		del pos,lft,s
 	def update(self):
@@ -136,12 +154,12 @@ class LightFire(Entity):
 			return
 		s=self
 		if s.life_time:
-			s.life_time=max(s.life_time-time.dt,0)
+			s.life_time-=time.dt
 			if s.life_time <= 0:
 				destroy(s)
 				return
-		cc.incr_frm(s,31,12)
-		s.texture=llfr+f'{int(s.frm)}.png'
+		cc.incr_frm(s,s.spd)
+		s.texture=LC.fre_texture[int(s.frm)]
 
 class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
@@ -150,7 +168,7 @@ class FireThrow(Entity):
 		s.life_time=.4
 		s.direc=ro_y
 		s.mvs=4
-		if ro_y in {90,-90}:
+		if ro_y in (90,-90):
 			s.z=s.z+random.uniform(-.1,.1)
 		del pos,ro_y,s
 	def fly_away(self):

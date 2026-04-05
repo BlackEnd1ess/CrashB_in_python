@@ -1,7 +1,7 @@
 import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,time,random,json,math,objects
-from ursina import Entity,Text,camera,scene,invoke,Vec3,color,distance,boxcast,raycast,window
+from ursina import Entity,camera,scene,invoke,Vec3,color,distance,boxcast,raycast,window,load_texture
+from animation import NPCAnimator,BoxBreak,BoxAnimation,npc_walking
 from effect import JumpDust,PressureWave,Fireball,ExclamationMark
-from animation import NPCAnimator,CrateBreak,npc_walking
 from math import atan2,sqrt,pi,sin,cos,radians
 from ursina.ursinastuff import destroy
 from danger import LandMine
@@ -20,26 +20,25 @@ N=npc
 
 ## player
 def set_val(c):#run jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound inwater slide_wait
-	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','dthfr','pshfr','stnfr','dth_cause','space_time','crt_wait','sld_wait','c_stack_limit'}:
+	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','dthfr','pshfr','stnfr','dth_cause','space_time','crt_wait','sld_wait','atk_cooldown','atk_duration'}:
 		setattr(c,_a,0)#values
-	for _v in {'aq_bonus','walking','jumping','landed','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','sma_dth','dth_snd','is_slp','pushed','cwall','in_water'}:
+	for _v in {'aq_bonus','walking','jumping','landed','frst_lnd','is_landing','is_attack','is_flip','is_spin','warped','freezed','injured','b_smash','standup','falling','stun','sma_dth','dth_snd','is_slp','pushed','cwall','in_water'}:
 		setattr(c,_v,False)#flags
 	c.move_speed=LC.dfsp
-	c.cur_tex=c.texture
 	c.gravity=LC.dfsp
 	c.inv_sc=-.1/115
 	c.nor_sc=.1/115
 	c.direc=(0,0,0)
-	c.vpos=c.y
 	c.dth_timer=4
 	c.indoor=.5
+	c.vpos=c.y
 	c.CMS=3
-	_loc.ACTOR=c
+	LC.ACTOR=c
 	if st.level_index == 8:
 		c.color=color.dark_gray
 	del _a,_v
 def get_damage(c,rsn):
-	if st.aku_hit > 2:
+	if st.aku_hit > 2 or settings.debg_gm:
 		return
 	if not (c.injured or st.death_event):
 		if st.aku_hit > 0:
@@ -77,7 +76,8 @@ def reset_state(c):
 		st.bonus_round=False
 		sn.BackgroundMusic(m=0)
 	else:
-		st.extra_lives-=1
+		if not settings.debg_gm:
+			st.extra_lives-=1
 		st.fails+=1
 		if st.level_index == 2:
 			st.gem_death=True
@@ -115,21 +115,22 @@ def reset_state(c):
 	c.stun=False
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def various_val(c):
-	c.c_stack_limit=max(c.c_stack_limit-time.dt,0)
 	c.crt_wait=max(c.crt_wait-time.dt,0)
-	c.indoor=max(c.indoor-time.dt,0)
 	c.sld_wait=max(c.sld_wait-time.dt,0)
+	c.indoor=max(c.indoor-time.dt,0)
 	st.wu_sn=max(st.wu_sn-time.dt,0)
+	st.br_sn=max(st.br_sn-time.dt,0)
+	st.ex_sn=max(st.ex_sn-time.dt,0)
+	st.ni_sn=max(st.ni_sn-time.dt,0)
+	if not c.is_attack and c.atk_cooldown > 0:
+		c.atk_cooldown=max(c.atk_cooldown-time.dt,0)
+	c.atk_duration=max(c.atk_duration-time.dt,0)
+	if c.atk_duration <= 0:
+		c.is_attack=False
 	if not c.is_slp:
 		c.move_speed=LC.dfsp
 	if st.bonus_solved and not st.wait_screen:
 		c.aq_bonus=bool(st.wumpa_bonus > 0 or st.crate_bonus > 0 or st.lives_bonus > 0)
-	if st.br_sn > 4:
-		invoke(lambda:setattr(st,'br_sn',0),delay=kpp)
-	if st.ex_sn > 2:
-		invoke(lambda:setattr(st,'ex_sn',0),delay=kpp)
-	if st.ni_sn > 2:
-		invoke(lambda:setattr(st,'ni_sn',0),delay=kpp)
 def c_slide(c):
 	if not c.walking:
 		if c.slide_fwd > 0 and st.p_last_direc:
@@ -149,11 +150,33 @@ def c_slide(c):
 	c.move_speed=min(c.move_speed+time.dt/2,3)
 	if c.move_speed > 0:
 		c.slide_fwd=c.move_speed
+def c_spin(c):
+	for qd in scene.entities:
+		if not qd or not qd.collider or distance(c,qd) > .5:
+			continue
+		if is_box(qd) and qd.vnum != 13:
+			if qd.vnum in (3,11):
+				qd.empty_destroy()
+			else:
+				qd.destroy()
+		if is_enemie(qd):
+			if not (qd.is_purge or qd.is_hitten):
+				if qd.vnum in (1,11) or (qd.vnum == 5 and qd.def_mode):
+					get_damage(c,rsn=2)
+					return
+				if qd.vnum == 17 and qd.ro_mode == 0:
+					get_damage(c,rsn=6)
+					return
+				if qd.vnum != 13:
+					bash_enemie(qd,c)
+	del qd
 def c_smash(c):
-	for sw in scene.entities[:]:
+	for sw in scene.entities:
+		if not sw or not sw.collider:
+			continue
 		if (is_box(sw) or is_enemie(sw)) and bool(distance(c.position,sw.position) < .4 and sw.collider):
 			if is_box(sw):
-				if sw.vnum in {3,11}:
+				if sw.vnum in (3,11):
 					sw.empty_destroy()
 				if sw.vnum == 14:
 					sw.c_destroy()
@@ -161,32 +184,18 @@ def c_smash(c):
 					sw.destroy()
 			if is_enemie(sw) and sw.vnum != 13:
 				sw.is_purge=True
-def p_bounce(m):
-	if m.vnum == 8:
+	del sw
+def c_bounce(c):
+	if c.vnum == 8 and LC.ACTOR.b_smash:
 		LC.ACTOR.b_smash=False
 	LC.ACTOR.is_flip=False
-	LC.ACTOR.jump_typ(t=4)
-	m.is_bounc=True
+	LC.ACTOR.jump_typ(t=3 if (c.vnum == 3) else 4)
 	sn.crate_audio(ID=4)
-def c_attack(c):
-	for qd in scene.entities[:]:
-		if qd and qd.collider:
-			if distance(qd.position,c.position) < .5:
-				if is_box(qd) and qd.vnum != 13:
-					if qd.vnum in {3,11}:
-						qd.empty_destroy()
-					else:
-						qd.destroy()
-				if is_enemie(qd):
-					if not (qd.is_purge or qd.is_hitten):
-						if qd.vnum in {1,11} or (qd.vnum == 5 and qd.def_mode):
-							get_damage(c,rsn=2)
-						if qd.vnum == 17 and qd.ro_mode == 0:
-							get_damage(c,rsn=6)
-						if qd.vnum != 13:
-							bash_enemie(qd,h=c)
+	if c.vnum == 3:
+		c.destroy()
+	BoxAnimation(c)
 def c_shield():
-	if st.aku_hit < 3 or st.gproc():
+	if st.aku_hit < 3:
 		return
 	for rf in scene.entities:
 		if rf and rf.collider:
@@ -195,12 +204,12 @@ def c_shield():
 					rf.collect()
 				if is_enemie(rf) and rf.vnum != 13:
 					bash_enemie(rf,LC.ACTOR)
-				if is_box(rf) and not rf.vnum in {0,8,13}:
+				if is_box(rf) and not rf.vnum in (0,8,13):
 					if rf.vnum == 14:
 						rf.c_destroy()
-					if not (rf.vnum in {9,10} and rf.activ):
+					if not (rf.vnum in (9,10) and rf.activ):
 						rf.destroy()
-					if rf.vnum in {3,11}:
+					if rf.vnum in (3,11):
 						rf.empty_destroy()
 
 ## camera actor
@@ -331,6 +340,7 @@ def delete_states():
 	st.gem_death=False
 	st.pause=False
 	level_ready=False
+	LC.IGNORE.clear()
 def collect_rewards():
 	cdx=st.level_index
 	if st.level_crystal:
@@ -399,7 +409,7 @@ def purge_wumpa():
 
 ## collisions
 def check_ceiling(c):
-	vc=c.intersects(ignore=[c,LC.shdw])
+	vc=c.intersects(ignore=LC.IGNORE)
 	ve=vc.entity
 	if ve and ve.collider:
 		if vc.normal == Vec3(0,-1,0):
@@ -408,11 +418,13 @@ def check_ceiling(c):
 					if c.crt_wait <= 0:
 						c.crt_wait=.1
 						ve.destroy()
+						if ve.vnum == 3:
+							BoxAnimation(ve)
 				c.y=c.y
 				c.jumping=False
 def check_floor(c):
 	fwd_drc=Vec3(-sin(radians(c.rotation_y))*.05,0,-cos(radians(c.rotation_y))*.05)
-	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=[LC.ACTOR,LC.shdw],debug=settings.debg)
+	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=LC.IGNORE,debug=settings.debg)
 	stm=bool(vj.hit and vj.normal) and not (str(vj.entity) in LC.item_lst|LC.dangers|LC.trigger_lst)
 	c.falling=bool(not stm)
 	c.landed=stm
@@ -434,7 +446,8 @@ def land_act(c,vp):
 	sn.landing_sound(vp)
 	c.anim_land()
 	if is_box(vp):
-		box_jump_action(vp)
+		if LC.ACTOR.fall_time > .01:
+			box_jump_action(vp)
 		return
 	if is_enemie(vp):
 		npc_jump_action(vp)
@@ -444,10 +457,10 @@ def land_act(c,vp):
 def spc_floor(e):
 	u=str(e)
 	LC.ACTOR.is_slp=u == 'obj_type__floor' and e.vnum == 0
-	if u in {'bnpt','gmpt'}:
+	if u in ('bnpt','gmpt'):
 		ptf_up(e,LC.ACTOR)
 		return
-	if u in {'swpt','HPP','epad'}:
+	if u in ('swpt','HPP','epad'):
 		e.active=True
 		return
 	if (u == 'plnk' and e.typ == 1) or u == 'loos':
@@ -462,7 +475,7 @@ def spc_floor(e):
 	if u == 'wtrh':
 		dth_event(LC.ACTOR,rsn=3)
 		return
-	if u in {'mptf','lbbt'} and not any([LC.ACTOR.walking,LC.ACTOR.jumping]):
+	if u in ('mptf','lbbt') and not (LC.ACTOR.walking or LC.ACTOR.jumping):
 		e.mv_player()
 def ptf_up(e,c):
 	if not c.freezed:
@@ -473,19 +486,38 @@ def ptf_up(e,c):
 	if e.y > e.start_y+3:
 		e.y=e.start_y
 		{'bnpt':lambda:load_bonus(c),'gmpt':lambda:load_gem_route(c)}[e.name]()
-def wall_hit(o):
-	if str(o) == 'fthr':
-		get_damage(LC.ACTOR,rsn=4)
-	if is_box(o) and o.vnum == 12:
-		o.destroy()
-	if str(o) in LC.item_lst:
-		o.collect()
-	if is_enemie(o) and o.vnum != 20:
-		if o.is_purge or o.is_hitten:
+def wall_hit_walk(c):
+	if c.stun or c.b_smash or c.pushed or st.p_rst(c):
+		return
+	mc=raycast(c.world_position+(0,.2,0),c.direc,distance=.25,ignore=LC.IGNORE,debug=settings.debg)
+	c.rotation_y=atan2(-c.direc.x,-c.direc.z)*180/math.pi
+	st.p_last_direc=c.direc
+	c.walk_event()
+	if not mc or str(mc.entity) in LC.item_lst|LC.trigger_lst:
+		c.position+=c.direc*(time.dt*c.move_speed)
+	if mc and is_box(mc.entity) and mc.entity.vnum == 12:
+		mc.entity.destroy()
+def wall_hit_idle(c):
+	hT=c.intersects(ignore=LC.IGNORE,debug=settings.debg)
+	if hT or hT.entity:
+		if str(hT.entity) in LC.item_lst:
+			hT.entity.collect()
 			return
-		RS=kmw[o.vnum] if o.vnum in kmw else 2
-		if not LC.ACTOR.is_attack:
-			get_damage(LC.ACTOR,rsn=RS)
+		if hT.normal.y != -1 and hT.normal.y != 1:
+			if str(hT.entity) not in LC.item_lst|LC.trigger_lst:
+				c.position+=hT.normal/20
+			if hT.entity and hT.entity.collider:
+				if hT.entity.name == 'fthr':
+					get_damage(LC.ACTOR,rsn=4)
+				if is_box(hT.entity) and hT.entity.vnum == 12:
+					hT.entity.destroy()
+					return
+				if is_enemie(hT.entity):
+					if hT.entity.is_purge or hT.entity.is_hitten:
+						return
+					RS=kmw[hT.entity.vnum] if hT.entity.vnum in kmw else 2
+					if not LC.ACTOR.is_attack:
+						get_damage(LC.ACTOR,rsn=RS)
 
 ## interface,collectables
 def wumpa_count(n):
@@ -524,7 +556,7 @@ def box_set_val(cR,Cpos,Cpse,Cmk,Ctl):
 	cR.texture=f'res/crate/{cR.vnum}.tga'
 	if cR.vnum == 15:
 		cR.texture=f'res/crate/crate_t{cR.time_stop}.tga'
-	if cR.vnum in {9,10}:
+	if cR.vnum in (9,10):
 		cR.org_tex=cR.texture
 	cR.spawn_pos=Cpos
 	cR.position=Cpos
@@ -543,6 +575,8 @@ def box_stack(c_pos):
 	for wm in scene.entities:
 		if (is_box(wm) and  not wm.vnum in (3,13)) and (wm.x == c_pos[0] and wm.z == c_pos[2]):
 			if (wm.y > c_pos[1]) and abs(wm.y-c_pos[1]) <= sdi*.32:
+				if wm.vnum == 12:
+					wm.new_y-=.32
 				wm.c_fall=True
 				box_move(wm)
 		sdi+=1
@@ -551,39 +585,43 @@ def box_move(c):
 	c.animate_y(c.y-.32,duration=.2)
 	invoke(lambda:setattr(c,'c_fall',False),delay=.25)
 def check_nitro_stack():
-	stacks={}
-	for nt in scene.entities:
-		if not nt:
-			continue
-		if (is_box(nt) and nt.vnum == 12 and not nt.can_jmp):
-			key=(round(nt.x,2),round(nt.z,2))
-			if key not in stacks:
-				stacks[key]=[]
-			stacks[key].append(nt)
-	for stack in stacks.values():
-		max(stack,key=lambda c:c.y).can_jmp=True
-	stacks.clear()
+	nt_pos=[v.position for v in scene.entities if (is_box(v) and v.vnum == 12)]
+	jp_box=[]
+	if len(nt_pos) > 0:
+		for nt in scene.entities:
+			if not nt:
+				continue
+			for k in nt_pos:
+				if is_box(nt):
+					if round(nt.x == k[0]) and round(nt.z == k[2]):
+						jp_box.append(nt)
+	if len(jp_box) > 0:
+		nbj=max(jp_box)
+		if nbj.vnum == 12:
+			nbj.can_jmp=True
+	nt_pos.clear()
+	jp_box.clear()
 def block_destroy(c):
 	if not c.p_snd:
 		c.p_snd=True
 		if c.vnum == 14:
+			BoxAnimation(c)
 			sn.crate_audio(ID=1)
 		else:
 			if LC.ACTOR.is_attack:
 				sn.crate_audio(ID=0)
 		invoke(lambda:setattr(c,'p_snd',False),delay=.5)
 def box_jump_action(c):
-	if LC.ACTOR.fall_time > .01:
-		if (c.vnum in (9,10,11) and c.activ) or c.vnum == 0:
-			return
-		if c.vnum in {7,8}:
-			p_bounce(c)
-			return
-		if c.vnum != 14:
-			LC.ACTOR.jump_typ(t=2)
-		c.destroy()
+	if (c.vnum in (9,10,11) and c.activ) or c.vnum == 0:
+		return
+	if c.vnum in (3,7,8):
+		c_bounce(c)
+		return
+	if c.vnum != 14:
+		LC.ACTOR.jump_typ(t=2)
+	c.destroy()
 def box_destroy_event(c):
-	if c.c_fall:
+	if c.c_fall or not c:
 		return
 	c.collider=None
 	if c.vnum in (11,12):
@@ -594,7 +632,7 @@ def box_destroy_event(c):
 		if c.visible:
 			sn.crate_audio(ID=2)
 			twc=LC.cbrc[c.vnum] if c.vnum in LC.cbrc else color.rgb32(180,80,0)
-			CrateBreak(c.position,col=twc)
+			BoxBreak(c.position,col=twc)
 		if st.bonus_round:
 			st.crate_bonus+=1
 		else:
@@ -614,18 +652,19 @@ def explosion(c):
 	if c.vnum == 12:
 		sn.crate_audio(ID=10,pit=2.05)
 		invoke(lambda:sn.crate_audio(ID=9),delay=.075)
-	for nbc in scene.entities[:]:
-		if nbc and nbc.collider:
-			if distance(c,nbc) < 1:
-				if is_box(nbc):
-					if nbc.vnum in {3,11}:
-						nbc.empty_destroy()
-					else:
-						nbc.destroy()
-				if is_enemie(nbc) and not nbc.is_hitten:
-					bash_enemie(nbc,c)
-				if nbc == LC.ACTOR:
-					get_damage(LC.ACTOR,rsn=4)
+	for nbc in scene.entities:
+		if not nbc or not nbc.collider:
+			continue
+		if distance(c,nbc) < 1:
+			if is_box(nbc) and nbc.vnum != 6:
+				if nbc.vnum in (3,11):
+					nbc.empty_destroy()
+				else:
+					nbc.destroy()
+			if is_enemie(nbc) and not nbc.is_hitten:
+				bash_enemie(nbc,c)
+			if nbc == LC.ACTOR:
+				get_damage(LC.ACTOR,rsn=4)
 	del c,nbc
 def spawn_ico(cr_pos):
 	sn.crate_audio(ID=11)
@@ -668,7 +707,7 @@ class AirBoxReplacer(Entity):
 ## bonus level
 def load_b_ui():
 	ui.WumpaBonus()
-	ui.CrateBonus()
+	ui.BoxBonus()
 	ui.LiveBonus()
 def load_bonus(c):
 	st.loading=True
@@ -731,7 +770,7 @@ def load_droute(c):
 def clear_gem_route():
 	for grd in scene.entities[:]:
 		if grd.parent == scene and grd.x > 180:
-			if not (is_box(grd) or grd in {LC.shdw,LC.ACTOR} or isinstance(grd,N.AkuAkuMask) or grd.name == 'firefly' or grd.name == 'point_light'):
+			if not (is_box(grd) or grd in (LC.shdw,LC.ACTOR) or isinstance(grd,N.AkuAkuMask) or grd.name == 'firefly' or grd.name == 'point_light'):
 				destroy(grd)
 	del grd
 
@@ -826,7 +865,7 @@ def fly_away(n):
 		npc_destroy_event(n)
 		return
 	if (is_box(ke) and ke.vnum != 6):
-		if ke.vnum in {3,11}:
+		if ke.vnum in (3,11):
 			ke.empty_destroy()
 		else:
 			ke.destroy()
@@ -865,7 +904,7 @@ def npc_mv_back(m):
 		m.x=lerp(m.x,m.spawn_pos[0],time.dt*m.move_speed)
 def npc_jump_action(m):
 	if not (m.is_hitten or m.is_purge):
-		if m.vnum in {2,9,13} or (m.vnum == 5 and m.def_mode):
+		if m.vnum in (2,9,13) or (m.vnum == 5 and m.def_mode):
 			get_damage(LC.ACTOR,rsn=2)
 		m.is_purge=bool(m.vnum != 13)
 		LC.ACTOR.jump_typ(t=2)
@@ -917,9 +956,9 @@ def load_game():
 	st.crd_seen=save_data['CRD_W']
 
 ##entity-frames+ : ENTITY/FRAME_COUNT/SPEED
-def incr_frm(o,cnt,sp):
-	o.frm=min(o.frm+time.dt*sp,cnt+.999)
-	if o.frm > cnt+.99:
+def incr_frm(o,sp):
+	o.frm+=time.dt*sp
+	if o.frm > o.max_frm:
 		o.frm=0
 
 ##lv6 func
@@ -931,3 +970,17 @@ def reset_mines():
 	for rsm in LC.LDM_POS[:]:
 		LandMine(pos=rsm)
 	LC.LDM_POS.clear()
+
+def preload_ui_texture():
+	LC.wmp_texture=[load_texture(f'res/ui/icon/wumpa/w{cbx}.png') for cbx in range(13+1)]
+	LC.box_texture=[load_texture(f'res/ui/icon/box/anim_crt_{cbx}.png') for cbx in range(63+1)]
+
+def preload_water_texture(ID):
+	if len(LC.wtr_texture) > 0:
+		LC.wtr_texture.clear()
+	if ID == 0:
+		LC.wtr_texture=[load_texture(f'res/objects/ev/wtr/{cbx}.png') for cbx in range(31+1)]
+	if ID == 1:
+		LC.wtr_texture=[load_texture(f'res/objects/l3/water_flow/water_flow{cbx}.png') for cbx in range(3+1)]
+	if ID == 2:
+		LC.wtr_texture='res/objects/l8/polar_water/0.png'

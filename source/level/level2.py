@@ -41,8 +41,8 @@ def load_object():
 	o.spawn_ice_wall(pos=(20,4,15.5),cnt=2,d=0)
 	o.spawn_ice_wall(pos=(26,4,10),cnt=1,d=1)
 	o.spawn_ice_wall(pos=(44,4,29),cnt=1,d=1)
-	o.ObjType_Water(ID=0,pos=(12,-.5,-32),sca=(32,128),al=1,rot=(0,0,0),col=color.cyan,frames=0,spd=0)
-	o.ObjType_Water(ID=0,pos=(51,4.5,23.5),sca=(64,40),al=1,rot=(0,0,0),col=color.cyan,frames=0,spd=0)
+	o.ObjType_Water(pos=(12,-.5,-32),sca=(32,128),al=1,rot=(0,0,0),txs=(32*2,64*2),col=color.cyan,spd=0)
+	o.ObjType_Water(pos=(51,4.5,23.5),sca=(64,40),al=1,rot=(0,0,0),txs=(64*2,40*2),col=color.cyan,spd=0)
 	Entity(model='quad',scale=(256,128,1),color=color.white,z=64)
 	#invisible walls
 	o.InvWall(pos=(-2.3,3,-30),sca=(1,10,70))

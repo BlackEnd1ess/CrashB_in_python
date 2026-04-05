@@ -44,3 +44,24 @@
 
 #27.03.2026
 - fixxed AirSwitch continuing transform while death event by new AirBoxReplacer class
+
+#31.03.2026
+- fixxed crashs flip animation after attack and fall
+- bounce boxes play animation by CrateBounce Animator
+- remove update func in box ID 7 und box ID 8
+
+#01.04.2026
+- reduce memory usage by fixxing garbage code
+- stored rain, wumpa and eletric water texture in memory
+- remove update func from protected box and play animation by animator
+
+#03.04.2026
+- removed water from level 1 and replaced with new swamp textures from orginal game
+- stored water texture, lightfire textures in RAM by loading texture before level laods
+
+#04.04.2026
+- stored interface textures in RAM and preload by starting the game
+- waterfoam and waterfall and waterdrips are seperated classes
+- player attack fixxed attack range + cooldown
+- fixxed gamebreaking glitch, while player stuck on bonus platform
+- nitro box update jump positions after fall_down

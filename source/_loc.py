@@ -1,6 +1,7 @@
 ## lists, arrays and list access
 from ursina import color
 c=color
+
 #checkpoint - bonus
 bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(9,5,20),(26,5,-36),(34,6,60.5)]
 
@@ -119,5 +120,18 @@ ACTOR=None
 #shadow
 shdw=None
 
+#shadow and player collision
+IGNORE=[]
+
+#preloading textures
+wmp_texture=[]
+box_texture=[]
+
+#water effect texture
+wtr_texture=[]
+wtf_texture=[]
+wff_texture=[]
+drp_texture=[]
+fre_texture=[]
 #pause
 p_menu=None

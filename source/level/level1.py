@@ -36,7 +36,7 @@ def start_load():
 def load_object():
 	o.StartRoom(pos=(-.3,1,-66.5))
 	cG=color.green
-	o.ObjType_Water(ID=0,pos=(0,.6,-16),sca=(10,96),al=.9,col=color.rgb32(90,100,120),frames=57,spd=15,rot=(0,0,0))
+	o.ObjType_Water(pos=(0,.6,-16),sca=(10,96),al=1,col=color.rgb32(150,150,150),spd=8,rot=(0,0,0),txs=(10*2,96*2))
 	o.InvWall(pos=(-5,.5,-32),sca=(5.,10,128))
 	o.InvWall(pos=(5.3,.5,-32),sca=(5.,10,128))
 	o.BonusPlatform(pos=(1.1,1.2,-6))
@@ -181,7 +181,7 @@ def load_npc():
 ## bonus level / gem path
 def bonus_zone():
 	o.BonusPlatform(pos=(12,-36.2,U))
-	o.ObjType_Water(ID=0,pos=(0,-37.5,0),sca=(48,32),al=1,col=color.rgb32(80,80,120),rot=(0,0,0),frames=57,spd=15)
+	o.ObjType_Water(pos=(0,-37.5,0),sca=(48,32),txs=(48*2,32*2),al=1,col=color.rgb32(80,80,120),rot=(0,0,0),spd=8)
 	o.ObjType_Deco(ID=1,pos=(.3,-36.6,-1.75),sca=.018,rot=(-90,0,0))
 	o.ObjType_Deco(ID=1,pos=(3.5,-36.5,-1.75),sca=.017,rot=(-90,0,0))
 	o.ObjType_Deco(ID=1,pos=(6.6,-36.6,-1.75),sca=.018,rot=(-90,0,0))
@@ -205,7 +205,7 @@ def bonus_zone():
 	mt.wumpa_row(POS=(9.4,-36.72,U),CNT=4,WAY=0)
 	mt.wumpa_row(POS=(2,-36,U),CNT=3,WAY=0)
 def gem_zone():
-	o.ObjType_Water(ID=0,pos=(220,-1,0),sca=(50,12),al=1,col=color.rgb32(70,70,100),rot=(0,0,0),frames=57,spd=15)
+	o.ObjType_Water(pos=(220,-1,0),sca=(50,12),txs=(50,12),al=1,col=color.rgb32(70,70,100),rot=(0,0,0),spd=8)
 	for w in range(4):
 		o.ObjType_Wall(ID=0,pos=(195+w*14,1,1.5),ro_y=90,sca=.02)
 	del w

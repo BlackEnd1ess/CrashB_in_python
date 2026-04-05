@@ -1,5 +1,6 @@
 import settings,objects,map_tools,crate,npc,status,item,random,sys,os,_loc,danger
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
+from effect import WaterDrips
 from ursina import *
 
 mtx='res/terrain/metal_01.png'
@@ -46,8 +47,8 @@ def load_object():
 	o.GemPlatform(pos=(4.2,2,31.7),t=5)
 	dg.EletricWater(pos=(0,.2,-48),sca=(8,96))
 	dg.EletricWater(pos=(14.5,3.5,83),sca=(8,64))
-	o.ObjType_Water(ID=0,pos=(10,1,40),sca=(20,23),col=color.rgb32(100,255,0),al=1,rot=(0,0,0),frames=57,spd=15)
-	o.ObjType_Water(ID=0,pos=(0,-1,6),sca=(30,10),col=color.rgb32(100,255,0),al=1,rot=(0,0,0),frames=57,spd=15)
+	o.ObjType_Water(pos=(10,1,40),sca=(20,23),txs=(20,23),col=color.rgb32(100,255,0),al=1,rot=(0,0,0),spd=15)
+	o.ObjType_Water(pos=(0,-1,6),sca=(30,10),txs=(30,10),col=color.rgb32(100,255,0),al=1,rot=(0,0,0),spd=15)
 	o.EndRoom(pos=(15.65,5.5,78.5),c=color.rgb32(200,200,200))
 	#invisible walls
 	o.InvWall(pos=(-2,0,-30),sca=(1,15,70))
@@ -79,7 +80,8 @@ def load_object():
 	o.ObjType_Scene(ID=8,pos=(5.2,2.75,8.7),ro_y=90,sca=2)
 	o.ObjType_Scene(ID=8,pos=(5,2.75,29.3),ro_y=90,sca=2)
 	o.ObjType_Scene(ID=8,pos=(14.5,4.75,49.7),ro_y=90,sca=2)
-	o.ObjType_Water(ID=4,pos=(.08,2,-59),sca=(.5,.3),rot=(0,0,90),frames=7,spd=10,al=1)
+	#water drips
+	WaterDrips(pos=(.08,2,-59),sca=(.5,.3),rot=(0,0,90))
 	Entity(model='cube',scale=(16,1,96),position=(0,-.5,-48),collider=b,color=color.black)
 	Entity(model='cube',scale=(4,.5,5),position=(0,.5,1.5),texture_scale=(4,5),collider=b,texture=mtx)
 	Entity(model='cube',scale=(4,.5,5),position=(14.5,3.5,52.25),texture_scale=(4,5),collider=b,texture=mtx)
