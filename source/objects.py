@@ -571,10 +571,11 @@ class LoosePlatform(Entity):
 		del pos,t
 	def reset(self):
 		s=self
-		s.collision,s.visible,s.active=True,True,False
+		s.collision=True
+		s.visible=True
+		s.active=False
 	def collapse(self):
 		s=self
-		sn.obj_audio(ID=8)
 		s.collision=False
 		invoke(s.reset,delay=8)
 	def action(self):
@@ -585,6 +586,7 @@ class LoosePlatform(Entity):
 	def pl_touch(self):
 		s=self
 		if not s.active:
+			sn.obj_audio(ID=8)
 			s.active=True
 			s.action()
 

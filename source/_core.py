@@ -311,6 +311,7 @@ def clear_level(passed):
 	delete_states()
 	invoke(lambda:warproom.level_select(),delay=3)
 def delete_states():
+	unload_textures(st.level_index)
 	st.level_index=0
 	st.crates_in_bonus=0
 	st.crates_in_level=0
@@ -432,7 +433,7 @@ def check_ceiling(c):
 				c.jumping=False
 def check_floor(c):
 	fwd_drc=Vec3(-sin(radians(c.rotation_y))*.05,0,-cos(radians(c.rotation_y))*.05)
-	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.13,.13),ignore=LC.IGNORE,debug=settings.debg)
+	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.12,.12),ignore=LC.IGNORE,debug=settings.debg)
 	stm=bool(vj.hit and vj.normal) and not (str(vj.entity) in LC.item_lst|LC.dangers|LC.trigger_lst)
 	c.falling=bool(not stm)
 	c.landed=stm
@@ -507,22 +508,22 @@ def wall_hit_walk(c):
 		mc.entity.destroy()
 def wall_hit_idle(c):
 	hT=c.intersects(ignore=LC.IGNORE,debug=settings.debg)
-	if hT or hT.entity:
-		if str(hT.entity) in LC.item_lst:
+	if hT:
+		if hT.entity.name in LC.item_lst:
 			hT.entity.collect()
 			return
-		if hT.normal.y != -1 and hT.normal.y != 1:
-			if str(hT.entity) not in LC.item_lst|LC.trigger_lst:
-				c.position+=hT.normal/20
-			if hT.entity and hT.entity.collider:
-				if hT.entity.name == 'fthr':
-					get_damage(LC.ACTOR,rsn=4)
+		if hT.entity.name == 'fthr':
+			get_damage(LC.ACTOR,rsn=4)
+			return
+		if hT.entity.name in LC.trigger_lst:
+			return
+		if not hT.normal in (Vec3(0,-1,0),Vec3(0,1,0)):
+			c.position+=hT.world_normal*(time.dt*c.move_speed)
+			if hT.entity.collider:
 				if is_box(hT.entity) and hT.entity.vnum == 12:
 					hT.entity.destroy()
 					return
-				if is_enemie(hT.entity):
-					if hT.entity.is_purge or hT.entity.is_hitten:
-						return
+				if is_enemie(hT.entity) and not (hT.entity.is_purge or hT.entity.is_hitten):
 					RS=kmw[hT.entity.vnum] if hT.entity.vnum in kmw else 2
 					if not LC.ACTOR.is_attack:
 						get_damage(LC.ACTOR,rsn=RS)
@@ -719,7 +720,7 @@ def load_b_ui():
 	ui.LiveBonus()
 def load_bonus(c):
 	st.loading=True
-	st.checkpoint=LC.bonus_checkpoint[st.level_index]
+	st.checkpoint=LC.bonus_checkp[st.level_index]
 	collect_reset()
 	if st.bonus_round:
 		invoke(lambda:back_to_level(c),delay=.5)
@@ -979,10 +980,10 @@ def reset_mines():
 		LandMine(pos=rsm)
 	LC.LDM_POS.clear()
 
+##preload global texture
 def preload_ui_texture():
 	LC.wmp_texture=[load_texture(f'res/ui/icon/wumpa/w{cbx}.png') for cbx in range(13+1)]
 	LC.box_texture=[load_texture(f'res/ui/icon/box/anim_crt_{cbx}.png') for cbx in range(63+1)]
-
 def preload_water_texture(ID):
 	if len(LC.wtr_texture) > 0:
 		LC.wtr_texture.clear()
@@ -992,3 +993,13 @@ def preload_water_texture(ID):
 		LC.wtr_texture=[load_texture(f'res/objects/l3/water_flow/water_flow{cbx}.png') for cbx in range(3+1)]
 	if ID == 2:
 		LC.wtr_texture='res/objects/l8/polar_water/0.png'
+def unload_textures(idx):
+	if settings.debg:
+		print('depending object textures unloaded')
+	if idx == 3:
+		LC.wtf_texture.clear()
+		LC.wff_texture.clear()
+	if idx == 4:
+		LC.drp_texture.clear()
+	if idx == 5:
+		LC.fre_texture.clear()

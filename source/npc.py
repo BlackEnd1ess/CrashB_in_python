@@ -343,27 +343,38 @@ class Gorilla(Entity):
 		rmo={0:0,1:90,2:180,3:-90}
 		super().__init__(rotation=(-90,rmo[drc],0),position=pos,scale=.8/1200)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y,s.z+450),size=Vec3(400,400,800))
-		s.throw_act={0:lambda:an.gorilla_take(self),1:lambda:an.gorilla_throw(self)}
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
+		s.wait_next=False
+		s.do_throw=False
 		s.max_frm=10#for death animtor
 		s.t_sleep=.5
-		s.t_mode=0
-		s.f_frame=0
 		s.t_frame=0
+		s.t_mode=0
+		s.frm=0
 		del s,pos,drc,rng,rtyp,cmv,rmo
 	def throw_log(self):
+		LogDanger(pos=(self.x,self.y+.6,self.z),ro_y=self.rotation_y)
+	def refr_function(self):
 		s=self
-		invoke(lambda:LogDanger(pos=(s.x,s.y+.6,s.z),ro_y=s.rotation_y),delay=.1)
+		if s.t_mode == 0:
+			an.gorilla_take(s)
+			return
+		an.gorilla_throw(s)
 	def update(self):
 		if st.gproc():
 			return
 		s=self
+		if s.do_throw and not s.wait_next:
+			s.do_throw=False
+			s.wait_next=True
+			s.throw_log()
+			return
 		if (s.is_hitten or s.is_purge):
 			cc.npc_destroy_event(s)
 			return
-		s.t_sleep=max(s.t_sleep-time.dt,0)
+		s.t_sleep-=time.dt
 		if s.t_sleep <= 0:
-			s.throw_act[s.t_mode]()
+			s.refr_function()
 
 class Bee(Entity):
 	def __init__(self,pos,drc=0,rng=0,rtyp=0,cmv=True,bID=0):

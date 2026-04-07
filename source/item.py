@@ -63,8 +63,8 @@ class WumpaFruit(Entity):
 class ExtraLive(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model='quad',texture=lfic,name='exlf',position=pos,scale=(.4,.3),collider=b,unlit=False)
-		s.collider=BoxCollider(s,size=Vec3(1,1,1))
+		super().__init__(model='quad',texture=lfic,name='exlf',position=pos,scale=(.4,.3),collider=None,unlit=False)
+		s.collider=BoxCollider(s,size=Vec3(1.25,1.25,1.25))
 		s.follow=False
 		del pos,s
 	def collect(self):
@@ -105,8 +105,8 @@ class GemStone(Entity):
 	def set_glow(self):
 		s=self
 		s.glow.color=s.color
-		s.glow.scale={0:(.625,.6),1:(.625,.6),2:(.8,.5),3:(.75,.55),4:(.7,.4),5:(.625,.8)}[s.gemID]
-		s.glow.y+={0:.01,1:.01,2:.05,3:.03,4:.01,5:.01}[s.gemID]
+		s.glow.scale={0:(.625,.6),1:(.625,.6),2:(.8,.5),3:(.75,.55),4:(.7,.4),5:(.625,.8),6:(.625,.6),7:(.625,.6),8:(.625,.6)}[s.gemID]
+		s.glow.y+={0:.01,1:.01,2:.05,3:.03,4:.01,5:.01,6:.01,7:.01,8:.01}[s.gemID]
 	def gem_visual(self):
 		s=self
 		s.color=LC.GMC[s.gemID]

@@ -672,19 +672,20 @@ class PauseMenu(Entity):
 				settings.MUSIC_VOLUME=max(settings.MUSIC_VOLUME-.1,0)
 	def input(self,key):
 		s=self
-		sk={'down arrow'	:lambda:s.select_btn(1),
-			's'				:lambda:s.select_btn(1),
-			'up arrow'		:lambda:s.select_btn(0),
-			'w'				:lambda:s.select_btn(0),
-			'+'				:lambda:s.change_volume(1),
-			'd'				:lambda:s.change_volume(1),
-			'right arrow'	:lambda:s.change_volume(1),
-			'-'				:lambda:s.change_volume(0),
-			'a'				:lambda:s.change_volume(0),
-			'left arrow'	:lambda:s.change_volume(0),
-			'enter'		:lambda:s.select_action()}
-		if key in sk:
-			sk[key]()
+		if st.pause:
+			sk={'down arrow'	:lambda:s.select_btn(1),
+				's'				:lambda:s.select_btn(1),
+				'up arrow'		:lambda:s.select_btn(0),
+				'w'				:lambda:s.select_btn(0),
+				'+'				:lambda:s.change_volume(1),
+				'd'				:lambda:s.change_volume(1),
+				'right arrow'	:lambda:s.change_volume(1),
+				'-'				:lambda:s.change_volume(0),
+				'a'				:lambda:s.change_volume(0),
+				'left arrow'	:lambda:s.change_volume(0),
+				'enter'		:lambda:s.select_action()}
+			if key in sk:
+				sk[key]()
 		del key
 	def check_collected(self):
 		s=self
@@ -806,7 +807,7 @@ class CollectedGem(Entity):
 		s.clear_gem.texture=None
 
 ## Gem Hint
-class GemHint(Entity):
+class GemInfo(Entity):
 	def __init__(self):
 		s=self
 		super().__init__()
@@ -878,8 +879,8 @@ class GemTimeTrial(Entity):
 		if st.level_index == 3 and st.level_col_gem:
 			s.trial_interrupt()
 			return
-		s.disp.text=strftime("%M:%S",gmtime(s.TME))
-		s.tme=max(s.TME-time.dt,0)
+		s.disp.text=strftime("%M:%S",gmtime(s.tme))
+		s.tme=max(s.tme-time.dt,0)
 		if s.tme <= 0 or st.bonus_round:
 			if not s.fin:
 				s.fin=True

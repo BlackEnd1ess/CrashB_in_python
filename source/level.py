@@ -7,7 +7,7 @@ st=status
 cc=_core
 LC=_loc
 
-flt=5
+flt=7 if not settings.debg else 1
 ## start level
 def free_level():
 	camera.rotation_x=15

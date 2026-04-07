@@ -49,6 +49,7 @@
 - fixxed crashs flip animation after attack and fall
 - bounce boxes play animation by CrateBounce Animator
 - remove update func in box ID 7 und box ID 8
+- godmode for debug in settings.debg_gm
 
 #01.04.2026
 - reduce memory usage by fixxing garbage code
@@ -70,3 +71,9 @@
 - updated akuakumask function
 - gemstone glow
 - fixxed odd value in SOUND and MUSIC options in pause menu, updated functions
+
+#07.04.2026
+- improved idle wall collision
+- improved walking on slopes
+- improved Gorilla function: removed invoke sequences
+- removed non used textures from RAM after solved level

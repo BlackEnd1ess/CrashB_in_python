@@ -39,6 +39,7 @@ def load_object():
 	item.TimeTrialClock(pos=(-1.75,.3,7))
 	item.EnergyCrystal(pos=(-1,.3,7))
 	item.ExtraLive(pos=(-.3,.3,7))
+	Entity(model='cube',texture='grass',collider='box',scale=(1,1,5),rotation=(-35,90,0),position=(-2,.5,3))
 	#o.BonusPlatform(pos=(1,.15,-25))
 	#o.PseudoGemPlatform(pos=(0,.3,-25),t=1)
 	#o.PseudoGemPlatform(pos=(1,.3,-25),t=2)
@@ -74,7 +75,6 @@ def load_crate():
 def load_wumpa():
 	mt.wumpa_wall(POS=(.5,.3,7),CNT=[5,2])
 def load_npc():
-	return
 	#n.spawn(ID=0,POS=(-3,0,-14),RNG=.5,DRC=2,RTYP=1)
 	#n.spawn(ID=8,POS=(1,0,-12),RNG=.5,DRC=2,RTYP=1,CMV=True)
 	#n.spawn(ID=2,POS=(-1,0,-14),RNG=1,DRC=2)
@@ -89,7 +89,7 @@ def load_npc():
 	#n.spawn(ID=11,POS=(0,0,-16),RNG=0,DRC=1)
 	#n.spawn(ID=12,POS=(1,0,-16),RNG=0,DRC=1)
 	#n.spawn(ID=13,POS=(2,0,-16),RNG=0,DRC=1)
-	#n.spawn(ID=14,POS=(3,0,-16),RNG=0,DRC=1)
+	n.spawn(ID=14,POS=(3,0,0),RNG=0,DRC=1)
 	########################################
 	#n.spawn(ID=16,POS=(-3,0,-18),RNG=0,DRC=1)
 	#n.spawn(ID=17,POS=(-2,0,-18),RNG=0,DRC=1)

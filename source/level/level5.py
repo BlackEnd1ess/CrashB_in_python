@@ -21,7 +21,7 @@ def map_setting():
 	LC.BN_DST=(10,20)
 	LC.RCX=10
 	LC.RCB=6
-	LC.RCZ=32
+	LC.RCZ=20
 	st.toggle_thunder=True
 	st.toggle_rain=True
 

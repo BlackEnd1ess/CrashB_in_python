@@ -55,7 +55,7 @@ class CrashB(Entity):
 					sg.DEV_WARP:lambda:setattr(s,'position',(4.2,3,31.7)),
 					sg.DEV_INFO:lambda:_debug_.pos_info(s),
 					sg.DEV_COLL:_debug_.complete_level,
-					sg.DEV_INFO:lambda:_debug_.make_snap(),
+					sg.DEV_INFO:lambda:_debug_.chck_mem(),
 					sg.DEV_ECAM:lambda:EditorCamera()}
 		LC.IGNORE.append(s)
 		del pos

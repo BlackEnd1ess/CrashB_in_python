@@ -1,7 +1,6 @@
 v 1.3.2
 - weather lagg fixx
 - convert tga to png npcs,assets
-- clear level: empty list: waterfall, water_flat, water_drips, water_foam, light_fire
 - time trial + ui + time boxes
 - VIDEO!!
 
@@ -11,5 +10,4 @@ v 1.4
 - add npcs, items, textures and sounds from CB3!
 - freemap
 - command console
-- music selector
 - level 8 no lights when playing other levels before

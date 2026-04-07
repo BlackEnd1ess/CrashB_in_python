@@ -105,21 +105,21 @@ class CollapseFloor(Entity):
 	def __init__(self,t,pos):
 		s=self
 		dc=.01/15
-		super().__init__(model=cl+f'{t}/0.ply',texture=cl+f'{t}/0.png',position=pos,scale=(-dc,dc,dc),rotation=(-90,-270,0))
-		s.typ=t
+		super().__init__(model=f'{cl}{t}/0.ply',texture=f'{cl}{t}/0.png',position=pos,scale=(-dc,dc,dc),rotation=(-90,-270,0))
+		s.spd=20
 		s.frm=0
+		s.typ=t
 		del t,pos,dc,s
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		s.frm=min(s.frm+time.dt*18,32.999)
+		s.frm+=time.dt*s.spd
 		if s.frm > 32.99:
-			s.frm=0
-			s.disable()
+			s.visible=False
 			destroy(s)
 			return
-		s.model=cl+f'{s.typ}/{int(s.frm)}.ply'
+		s.model=f'{cl}{s.typ}/{int(s.frm)}.ply'
 
 class WarpRingEffect(Entity):
 	def __init__(self,pos):
@@ -413,16 +413,17 @@ def hippo_dive(m):
 	m.model=f'{hpo}{int(m.a_frame)}.ply'
 
 def gorilla_take(m):
-	m.anim_frame=min(m.anim_frame+time.dt*gp,32.999)
-	if m.anim_frame > 32.99:
-		m.anim_frame=0
+	m.frm+=time.dt*gp
+	if m.frm > 32.99:
+		m.frm=0
 		m.t_mode=1
-		m.throw_log()
+		m.do_throw=True
 		return
-	m.model=f'{go}{int(m.anim_frame)}.ply'
+	m.model=f'{go}{int(m.frm)}.ply'
 def gorilla_throw(m):
-	m.t_frame=min(m.t_frame+time.dt*gp,10.999)
+	m.t_frame+=time.dt*gp
 	if m.t_frame > 10.99:
+		m.wait_next=False
 		m.t_frame=0
 		m.t_mode=0
 		return

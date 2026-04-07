@@ -1,5 +1,6 @@
-import item,status,_core,animation,sound,npc,settings,_loc,ui,random,time
+import item,status,_core,animation,sound,npc,settings,_loc,random,time
 from ursina import Entity,Text,Audio,color,scene,invoke,distance
+from ui import GemInfo,CheckpointLetter,GemTimeTrial
 from ursina.ursinastuff import destroy
 
 an=animation
@@ -157,7 +158,7 @@ class Checkpoint(Entity):
 		s=self
 		st.checkpoint=(s.x,s.y+1.5,s.z)
 		sn.crate_audio(ID=6)
-		ui.CheckpointLetter(s.position)
+		CheckpointLetter(s.position)
 		cc.box_destroy_event(s)
 		cc.collect_reset()
 
@@ -388,7 +389,7 @@ class LvInfo(Entity):
 		s=self
 		if st.level_index == 3:
 			item.GemStone(pos=(-.05,2.75,88),c=5)
-			ui.GemTimeTrial(t=90)
+			GemTimeTrial(t=90)
 		if distance(s,LC.ACTOR) < 3:
-			ui.GemHint()
+			GemInfo()
 		cc.box_destroy_event(s)

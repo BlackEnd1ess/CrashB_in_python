@@ -251,9 +251,10 @@ class LogDanger(Entity):
 		super().__init__(model=ldg+'.ply',texture=ldg+'.png',position=pos,scale=.001,rotation=(-90,ro_y,0),collider=b,unlit=False)
 		s.spawn_pos=s.position
 		s.stop_throw=False
-		s.fly_time=0
-		s.start_delay=.3
+		s.is_purge=False
+		s.start_delay=.4
 		s.life_time=3
+		s.fly_time=0
 		s.direc_y=0
 		s.fsp=2.75
 		s.rtf=175
@@ -288,7 +289,7 @@ class LogDanger(Entity):
 			ac=LC.ACTOR
 			s=self
 			s.life_time=max(s.life_time-time.dt,0)
-			if s.life_time <= 0:
+			if s.life_time <= 0 or s.is_purge:
 				cc.destroy_entity(s)
 				return
 			if s.stop_throw:
@@ -299,11 +300,13 @@ class LogDanger(Entity):
 			if s.start_delay <= 0:
 				s.hit_ground()
 				if s.intersects(ac):
+					s.collider=None
 					if LC.ACTOR.is_attack:
 						sn.pc_audio(ID=17)
 						s.stop_throw=True
 						return
 					cc.get_damage(LC.ACTOR,rsn=2)
+					s.is_purge=True
 
 behv=omf+'l6/hive/0'
 class Hive(Entity):

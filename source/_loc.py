@@ -3,7 +3,16 @@ from ursina import color
 c=color
 
 #checkpoint - bonus
-bonus_checkpoint=[None,(0,2,-6),(23,6,3.3),(0,2.5,.85*8),(0,2,3),(12,1,-22),(9,5,20),(26,5,-36),(34,6,60.5)]
+bonus_checkp={
+	0:None,#			#sel menu
+	1:(0,2,-6),#		#level 1
+	2:(23,6,3.3),#		#level 2
+	3:(0,2.5,.85*8),#	#level 3
+	4:(0,2,3),#			#level 4
+	5:(12,1.3,-22),#		#level 5
+	6:(9,5,20),#		#level 6
+	7:(26,5,-36),#		#level 7
+	8:(34,6,60.5)}#		#level 8
 
 #display the name in pause menu and loading screen
 lv_name=['CENTRAL - WARP ROOM',
