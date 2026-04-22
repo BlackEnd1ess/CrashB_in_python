@@ -1,11 +1,12 @@
-from ursina import Entity,BoxCollider,Vec3,SpotLight,color,distance,lerp
-import _core,status,sound,ui,_loc,random,time
+from ursina import Entity,BoxCollider,Vec3,SpotLight,color,distance,lerp,scene
+import _core,status,sound,ui,_loc,random,time,crate
 from ursina.ursinastuff import destroy
 
-lfic='res/ui/icon/crash_live.tga'
+lfic='res/ui/icon/crash_live.png'
 w_pa='res/ui/icon/wumpa/'
 CRY='crystal/crystal'
 CLK='clock/clock'
+RLC='relic/relic'
 i_path='res/item/'
 b='box'
 
@@ -90,52 +91,61 @@ class GemStone(Entity):
 		s=self
 		s.gemID=c
 		ge=f'{i_path}gemstone/gem'
-		if c == 2:
+		if c == 4:
 			ge=f'{i_path}gemstone/gem1'
-		elif c == 3:
+		elif c == 5:
 			ge=f'{i_path}gemstone/gem2'
 		super().__init__(model=f'{ge}.ply',texture=f'{ge}.png',name='gem',scale=.0011,position=pos,rotation_x=-90,collider=b)
-		s.glow=Entity(model='quad',texture=sh,scale=.6,position=(pos[0],pos[1],pos[2]+.075),unlit=False,alpha=.6)
 		s.gem_visual()
-		s.set_glow()
 		if st.level_index == 8:
 			s.unlit=False
 		LC.C_GEM=s if (c > 0) else None
+		s.check_block_position()
 		del ge,pos,c,s
-	def set_glow(self):
+	def check_block_position(self):
 		s=self
-		s.glow.color=s.color
-		s.glow.scale={0:(.625,.6),1:(.625,.6),2:(.8,.5),3:(.75,.55),4:(.7,.4),5:(.625,.8),6:(.625,.6),7:(.625,.6),8:(.625,.6)}[s.gemID]
-		s.glow.y+={0:.01,1:.01,2:.05,3:.03,4:.01,5:.01,6:.01,7:.01,8:.01}[s.gemID]
+		for vk in scene.entities[:]:
+			if not vk or vk == s:
+				continue
+			if not isinstance(vk,GemStone):
+				continue
+			if distance(s,vk) < .2:
+				vk.position=(s.x,s.y+.225,s.z)
+		del vk
+	def set_gem_size(self):
+		s=self
+		if s.gemID in (1,3):
+			s.scale_z={1:s.scale_z/2,3:s.scale_z*1.5}[s.gemID]
+			return
+		s.scale_z=s.scale_z
+	def set_gem_color(self):
+		s=self
+		if s.gemID in LC.GEM_MESH_COLOR:
+			s.color=LC.GEM_MESH_COLOR[s.gemID]
+			return
+		s.color=LC.mesh_normal_gem_color
 	def gem_visual(self):
 		s=self
-		s.color=LC.GMC[s.gemID]
-		if s.gemID in (4,5):
-			s.scale_z={4:s.scale_z/2,5:s.scale_z*1.5}[s.gemID]
+		s.set_gem_color()
+		s.set_gem_size()
 		gm_pos=(s.x-0,s.y+.32,s.z-.18) if s.gemID != 2 else (s.x-0,s.y+.32,s.z-.2)
-		s.shine=SpotLight(position=gm_pos,color=color.gray)
+		s.shine=SpotLight(position=gm_pos,color=s.color)
 	def purge(self):
 		s=self
 		s.collider=None
 		LC.C_GEM=None
 		s.shine.color=color.black
-		destroy(s.glow)
 		destroy(s.shine)
 		destroy(s)
 	def collect(self):
 		if self.gemID == 0:
 			st.level_cle_gem=True
 		else:
+			st.color_gem_id=self.gemID
 			st.level_col_gem=True
 		sn.ui_audio(ID=5)
 		st.show_gems=5
 		self.purge()
-	def push_gem(self):
-		s=self
-		if LC.C_GEM:
-			if abs(s.x-LC.C_GEM.x) < .5:
-				if (s.y < LC.C_GEM.y+.25):
-					s.y+=time.dt
 	def refr_func(self):
 		s=self
 		s.shine.color=color.black if (st.bonus_round) else color.gray
@@ -145,11 +155,8 @@ class GemStone(Entity):
 			return
 		s=self
 		s.refr_func()
-		if cc.gem_challange_fail(s.gemID):
+		if cc.gem_challange_fail(s.gemID) or st.relic_challange:
 			s.purge()
-			return
-		if s.gemID == 0:
-			s.push_gem()
 
 class EnergyCrystal(Entity):
 	def __init__(self,pos):
@@ -176,12 +183,62 @@ class EnergyCrystal(Entity):
 class TimeTrialClock(Entity):
 	def __init__(self,pos):
 		super().__init__(model=f'{CLK}.ply',texture=f'{CLK}.png',position=pos,scale=.0035,color=color.rgb32(240,230,0),double_sided=True,rotation_x=-90,name='clock',collider=b)
-		self.mark=-1# -1 for time trial boxes
 		self.rsp=90
+		if st.level_index == 8:
+			self.unlit=False
+	def transform_box(self,bp,l):
+		st.BOX_RESET.append((bp.vnum,bp.spawn_pos,bp.poly,bp.mark,bp.c_ID))
+		crate.spawn(ID=15,p=bp.position,l=l)
+		destroy(bp)
+	def check_boxes(self):
+		s=self
+		for v in scene.entities[:]:
+			if v:
+				if cc.is_box(v):
+					if v.vnum in (1,7):
+						s.transform_box(v,1)
+					elif v.vnum in (2,6):
+						s.transform_box(v,2)
+					elif v.vnum == 4:
+						s.transform_box(v,3)
+					elif v.vnum == 13 and v.c_ID != 0:
+						destroy(v)
+		del v
 	def collect(self):
-		print(self)
+		self.check_boxes()
+		ui.RelicTimer()
+		if st.aku_hit > 0:
+			st.aku_hit=0
+			sn.pc_audio(ID=6,pit=.8)
+		TimeRelic(LC.gem_pod_position)
 		destroy(self)
 	def update(self):
 		if st.gproc():
 			return
 		self.rotation_y+=time.dt*self.rsp
+
+class TimeRelic(Entity):
+	def __init__(self,pos,rank=0):
+		s=self
+		super().__init__(model=f'{i_path}{RLC}.ply',texture=f'{i_path}{RLC}.png',position=pos,scale=.004,rotation_x=-90,name='relic',unlit=False,collider=b)
+		s.rank=rank
+		s.spd=60
+		del s,rank
+	def collect(self):
+		st.RELIC_TRIAL_DONE=True
+		st.relic_rank=self.rank
+		sn.ui_audio(ID=5)
+		destroy(self)
+	def refr_function(self):
+		s=self
+		if st.relic_challange:
+			s.rank=cc.refresh_relic_rank(st.level_index)
+		s.rotation_y+=time.dt*s.spd
+		s.color=LC.relic_color[s.rank]
+	def update(self):
+		if st.gproc():
+			return
+		if st.death_event:
+			destroy(self)
+			return
+		self.refr_function()

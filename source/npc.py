@@ -1,4 +1,4 @@
-from ursina import BoxCollider,Vec3,Entity,distance,distance_xz,lerp,invoke,PointLight,color,scene
+from ursina import BoxCollider,Vec3,Entity,Audio,distance,distance_xz,lerp,invoke,PointLight,color,scene
 import settings,_core,math,animation,status,sound,_loc,effect,time,random
 from ursina.ursinastuff import destroy
 from math import radians,cos,sin,pi
@@ -381,7 +381,9 @@ class Bee(Entity):
 		s=self
 		s.vnum=15
 		super().__init__(rotation_x=-90,position=pos,collider='box')
+		s.buzz_snd=Audio(sn.BE,pitch=random.uniform(1,2),loop=True,volume=settings.SFX_VOLUME)
 		cc.set_val_npc(s)
+		s.play_sfx()
 		s.is_hunt=False
 		s.is_home=False
 		s.move_speed=2
@@ -391,9 +393,21 @@ class Bee(Entity):
 		s.pgt=0
 		s.tme=0
 		del s,pos,drc,rng,rtyp,cmv,bID
+	def play_sfx(self):
+		self.buzz_snd.fade_in()
+		self.buzz_snd.play()
+	def manage_sfx(self):
+		s=self
+		nvv=max(0,1-(distance(s,LC.ACTOR)/10))
+		s.buzz_snd.volume=min(1,nvv*settings.SFX_VOLUME)
+		s.buzz_snd.pitch=1.5 if s.is_hunt else 1.4
+	def stop_sfx(self):
+		self.buzz_snd.stop()
+		self.buzz_snd.fade_out()
 	def fly_event(self):
 		s=self
-		if (LC.ACTOR.z < s.spawn_pos[2]+8 and LC.ACTOR.z > s.spawn_pos[2]-2):
+		s.manage_sfx()
+		if (LC.ACTOR.z < s.spawn_pos[2]+8 and LC.ACTOR.z > s.spawn_pos[2]-2) and abs(LC.ACTOR.x-s.x) < 4:
 			if not s.purge or not s.is_hitten:
 				s.hunt_p()
 			s.is_hunt=True
@@ -408,12 +422,13 @@ class Bee(Entity):
 		s.rotation_y=math.degrees(angle)
 		if abs(s.spawn_pos-s.position) < .05:
 			s.pgt+=time.dt
-			s.is_home=bool(s.pgt > .5)
+			s.is_home=s.pgt > .5
 	def hunt_p(self):
 		s=self
 		s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.35,LC.ACTOR.z),time.dt*2.3)
 		cc.rotate_to_crash(s)
 	def purge(self):
+		self.stop_sfx()
 		destroy(self)
 	def check_near_npc(self):
 		s=self
@@ -431,8 +446,8 @@ class Bee(Entity):
 		cc.npc_action(s)
 		s.check_near_npc()
 		if s.is_hitten or s.is_purge:
+			s.stop_sfx()
 			return
-		sn.npc_loop_audio(n=self,PIT=5,tme_r=0)
 		s.fly_event()
 
 class Lumberjack(Entity):
@@ -643,49 +658,54 @@ class AkuAkuMask(Entity):
 			return
 		s.cover_player()
 
+hpo=f'{npf}hippo/'
 class Hippo(Entity):
 	def __init__(self,POS):
 		s=self
-		super().__init__(position=POS,rotation_x=-90,scale=.0005)
-		s.col=Entity(model='cube',name='HPP',position=(s.x,s.y-.15,s.z-.2),scale=(.6,.5,1),visible=False,collider='box')
-		vgv=s.name
-		s.model=npf+f'{vgv}/0.ply'
-		s.texture=npf+f'{vgv}/0.tga'
+		super().__init__(model=f'{hpo}0.ply',texture=f'{hpo}/0.png',position=POS,rotation_x=-90,scale=.0005)
+		s.col=Entity(model='cube',name='HPP',position=(s.x,s.y-.15,s.z-.2),scale=(.6,.5,1),collider='box',visible=False)
 		s.col.active=False
+		s.is_dive=False
 		s.active=False
+		s.p_snd=False
+		s.spawn_y=s.y
 		s.a_frame=0
-		s.start_y=s.y
-		del POS,vgv,s
-	def do_act(self):
+		s.tme=0
+		del POS,s
+	def refr_wait(self):
 		s=self
-		if not s.active:
+		an.hippo_wait(s)
+		s.y=min(s.y+time.dt/2,s.spawn_y)
+		if not s.col.collider:
+			s.col.collider='box'
+		if s.col.active:
 			s.active=True
-			sn.pc_audio(ID=10)
-			invoke(s.dive_down,delay=1)
-	def dive_down(self):
+	def refr_dive(self):
 		s=self
-		s.animate_y(s.start_y-1,duration=1)
-		invoke(lambda:setattr(s.col,'collider',None),delay=1)
-		invoke(s.dive_up,delay=3)
-	def dive_up(self):
-		s=self
-		s.animate_y(s.start_y,duration=1)
-		invoke(lambda:setattr(s,'active',False),delay=3)
-		invoke(lambda:setattr(s.col,'collider','box'),delay=1)
+		if s.col.active:
+			s.col.active=False
+		s.y=max(s.y-time.dt/2,s.spawn_y-.31)
+		s.tme+=time.dt
+		if s.tme > 4:
+			s.tme=0
+			s.is_dive=False
+			s.p_snd=False
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		if s.col.active:
-			s.col.active=False
-			s.do_act()
+		if s.active:
+			an.hippo_dive(s)
 			return
-		if not s.active:
-			animation.hippo_wait(s)
+		if s.is_dive:
+			if not s.p_snd:
+				s.p_snd=True
+				sn.pc_audio(ID=10,pit=.85)
+			s.refr_dive()
 			return
-		animation.hippo_dive(s)
+		s.refr_wait()
 
-ffly=npf+'firefly/0'
+ffly=f'{npf}firefly/0'
 tfd=.01
 class Firefly(Entity):
 	def __init__(self,pos):

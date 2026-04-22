@@ -45,6 +45,7 @@ def get_damage(c,rsn):
 			st.aku_hit-=1
 			c.injured=True
 			c.hurt_visual()
+			sn.pc_audio(ID=21)
 			sn.pc_audio(ID=6,pit=.8)
 			invoke(lambda:setattr(c,'injured',False),delay=2)
 			invoke(lambda:setattr(c,'alpha',1),delay=2)
@@ -66,6 +67,10 @@ def dth_event(c,rsn):
 def reset_state(c):
 	ui.BlackScreen()
 	st.crate_count-=st.crate_to_sv
+	if st.relic_challange:
+		st.relic_challange=False
+		st.level_relic_time=0
+		item.TimeTrialClock(pos=LC.CLOCK_POSITION[st.level_index])
 	if st.death_route and st.checkpoint[0] < 198.5:
 		st.death_route=False
 		sn.BackgroundMusic(m=0)
@@ -76,7 +81,7 @@ def reset_state(c):
 		st.bonus_round=False
 		sn.BackgroundMusic(m=0)
 	else:
-		if not settings.debg_gm:
+		if not (settings.debg_gm or st.relic_challange):
 			st.extra_lives-=1
 		st.fails+=1
 		if st.level_index == 2:
@@ -106,6 +111,7 @@ def reset_state(c):
 	if c.scale_x < 0:
 		c.scale_x=c.nor_sc
 	c.is_slp=False
+	c.in_water=False
 	st.death_event=False
 	c.dthfr=0
 	setattr(c,'texture',LC.ctx)
@@ -115,6 +121,7 @@ def reset_state(c):
 	c.stun=False
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def various_val(c):
+	st.show_gems=max(st.show_gems-time.dt,0)
 	c.crt_wait=max(c.crt_wait-time.dt,0)
 	c.sld_wait=max(c.sld_wait-time.dt,0)
 	c.indoor=max(c.indoor-time.dt,0)
@@ -190,9 +197,10 @@ def c_bounce(c):
 		LC.ACTOR.b_smash=False
 	LC.ACTOR.is_flip=False
 	LC.ACTOR.jump_typ(t=3 if (c.vnum == 3) else 4)
-	sn.crate_audio(ID=4)
 	if c.vnum == 3:
 		c.destroy()
+	else:
+		sn.crate_audio(ID=4)
 	BoxAnimation(c)
 def c_shield():
 	if st.aku_hit < 3:
@@ -202,6 +210,7 @@ def c_shield():
 			if distance(rf,LC.ACTOR) < 1.5:
 				if rf.name in LC.item_lst:
 					rf.collect()
+					sn.pc_audio(ID=21)
 				if is_enemie(rf):
 					bash_enemie(rf,LC.ACTOR)
 				if is_box(rf) and not rf.vnum in (0,8,13):
@@ -246,8 +255,21 @@ def cam_bonus(c):
 def spawn_level_crystal(idx):
 	if idx > 5 or idx == 0:
 		return
-	if not idx in st.CRYSTAL:
-		item.EnergyCrystal(pos={1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7)}[idx])
+	item.EnergyCrystal(pos={1:(0,1.5,-13),2:(35.5,6.4,28.5),3:(0,2.5,60.5),4:(14,4.25,66),5:(12,.8,-7)}[idx])
+def spawn_trial_clock(idx):
+	if check_best_relic(idx):
+		return
+	if idx in st.CRYSTAL or idx > 5:
+		item.TimeTrialClock(pos=LC.CLOCK_POSITION[idx])
+def spawn_color_gem(idx):
+	#if idx == st.DEV_LEVEL_INDEX:
+	#	return
+	cgem_pos=LC.gem_pod_position
+	if idx == 4:
+		cgem_pos=(200,0,28.9)
+	if idx == 5:
+		cgem_pos=(194.4,-2,37.7)
+	item.GemStone(pos=cgem_pos,c=idx)
 def collect_reset():
 	st.BOX_RESET.clear()
 	st.WMP_RESET.clear()
@@ -261,7 +283,7 @@ def c_subtract(cY):
 	st.crates_in_level-=1
 def reset_crates():
 	for sr in scene.entities[:]:
-		if is_box(sr) and sr.poly:
+		if is_box(sr) and (sr.poly or sr.vnum == 15):
 			sr.enabled=False
 			destroy(sr)
 	del sr
@@ -311,10 +333,12 @@ def clear_level(passed):
 	delete_states()
 	invoke(lambda:warproom.level_select(),delay=3)
 def delete_states():
+	st.color_gem_id=None
 	unload_textures(st.level_index)
 	st.level_index=0
 	st.crates_in_bonus=0
 	st.crates_in_level=0
+	st.level_relic_time=0
 	st.wumpas_in_level=0
 	st.npc_in_level=0
 	st.crate_bonus=0
@@ -332,6 +356,8 @@ def delete_states():
 	st.level_crystal=False
 	st.level_col_gem=False
 	st.level_cle_gem=False
+	st.RELIC_TRIAL_DONE=False
+	st.relic_challange=False
 	st.gem_path_solved=False
 	st.death_route=False
 	st.bonus_solved=False
@@ -345,27 +371,20 @@ def delete_states():
 def collect_rewards():
 	cdx=st.level_index
 	if st.level_crystal:
-		st.CRYSTAL.append(cdx)
-		st.collected_crystals+=1
+		if not cdx in st.CRYSTAL:
+			st.CRYSTAL.append(cdx)
 	if st.level_cle_gem:
-		st.CLEAR_GEM.append(cdx)
-		st.clear_gems+=1
+		if not cdx in st.CLEAR_GEM:
+			st.CLEAR_GEM.append(cdx)
+	if st.relic_challange:
+		jtv=(st.level_index,st.relic_rank)
+		if not jtv in st.RELIC:
+			st.RELIC.append(jtv)
 	if st.level_col_gem:
-		if cdx > 5:
-			st.clear_gems+=1
-		else:
-			st.color_gems+=1
 		if st.level_index != 9:
-			wcg={1:4,#lv1#blue
-				2:1,#lv2#red
-				3:5,#lv3#yellow
-				4:2,#lv4#green
-				5:3,#lv5#purple
-				6:6,#lv6#clear
-				7:7,#lv7#clear
-				8:8}#lv8#clear
-			st.COLOR_GEM.append(wcg[cdx])
-			del wcg
+			if st.color_gem_id != st.DEV_LEVEL_INDEX:
+				if not st.color_gem_id in st.COLOR_GEM:
+					st.COLOR_GEM.append(st.color_gem_id)
 	delete_states()
 	invoke(lambda:warproom.level_select(),delay=2)
 def destroy_entity(v):
@@ -378,26 +397,6 @@ def destroy_entity(v):
 	del v
 def game_pause():
 	st.pause=not st.pause
-	pa=st.pause
-	pm=LC.p_menu
-	pm.crystal_counter.visible=pa
-	pm.game_progress.visible=pa
-	pm.gem_counter.visible=pa
-	pm.lvl_name.visible=pa
-	pm.add_text.visible=pa
-	pm.cry_anim.visible=pa
-	pm.select_0.visible=pa
-	pm.select_1.visible=pa
-	pm.select_2.visible=pa
-	pm.col_gem1.visible=pa
-	pm.col_gem2.visible=pa
-	pm.col_gem3.visible=pa
-	pm.col_gem4.visible=pa
-	pm.col_gem5.visible=pa
-	pm.cleargem.visible=pa
-	pm.p_name.visible=pa
-	pm.ppt.visible=pa
-	pm.visible=pa
 def game_over():
 	invoke(lambda:ui.GameOverScreen(),delay=2)
 def is_obj_scene(o):
@@ -408,13 +407,26 @@ def purge_wumpa():
 			if (isinstance(wf,item.WumpaFruit) and wf.c_purge):
 				wf.destroy()
 def gem_challange_fail(gemID):
-	if gemID == 4 and (st.level_index == 1 and st.crate_count > 0):#blue gem
+	if gemID == 1 and (st.level_index == 1 and st.crate_count > 0):#blue gem
 		return True
-	if gemID == 1 and (st.level_index == 2 and st.gem_death):#red gem
+	if gemID == 2 and (st.level_index == 2 and st.gem_death):#red gem
 		return True
-	if gemID == 5 and (st.level_index == 3 and st.gem_death):#yellow gem
+	if gemID == 3 and (st.level_index == 3 and st.gem_death):#yellow gem
 		return True
 	return False
+def refresh_relic_rank(idx):
+	relic_time_limit=LC.RELIC_TIME_LIMIT_LEVEL[idx]
+	if st.level_relic_time <= relic_time_limit[0]:
+		return 0
+	if st.level_relic_time > relic_time_limit[0] and st.level_relic_time < relic_time_limit[2]:
+		return 1
+	return 2
+def check_best_relic(idx):
+	for lpr in st.RELIC:
+		if idx == lpr[0]:
+			if lpr[1] == 0:
+				return True
+		return False
 
 ## collisions
 def check_ceiling(c):
@@ -448,6 +460,7 @@ def check_floor(c):
 		return
 	c.y-={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}[c.b_smash]
 	c.fall_time=min(c.fall_time+time.dt,1)
+	c.first_lnd=True
 	c.anim_fall()
 def land_act(c,vp):
 	c.stun=False
@@ -464,27 +477,29 @@ def land_act(c,vp):
 	if c.b_smash:
 		PressureWave(pos=c.position,col=color.light_gray)
 def spc_floor(e):
-	u=str(e)
-	LC.ACTOR.is_slp=u == 'obj_type__floor' and e.vnum == 0
-	if u in ('bnpt','gmpt'):
+	if not e.name:
+		del e
+		return
+	LC.ACTOR.is_slp=(e.name == 'obj_type__floor' and e.vnum == 0)
+	if e.name in ('bnpt','gmpt'):
 		ptf_up(e,LC.ACTOR)
 		return
-	if u in ('swpt','HPP','epad'):
+	if e.name in ('swpt','HPP','epad'):
 		e.active=True
 		return
-	if (u == 'plnk' and e.typ == 1) or u == 'loos':
+	if (e.name == 'plnk' and e.typ == 1) or e.name == 'loos':
 		e.pl_touch()
 		return
-	if (u == 'obj_type__deco' and  e.vnum == 4):
+	if (e.name == 'obj_type__deco' and e.vnum == 4):
 		get_damage(LC.ACTOR,rsn=2)
 		return
-	if (u == 'swpi' and e.typ == 3) or (u == 'labt' and e.danger):
+	if (e.name == 'swpi' and e.typ == 3) or (e.name == 'labt' and e.danger):
 		get_damage(LC.ACTOR,rsn=4)
 		return
-	if u == 'wtrh':
+	if e.name == 'wtrh':
 		dth_event(LC.ACTOR,rsn=3)
 		return
-	if u in ('mptf','lbbt') and not (LC.ACTOR.walking or LC.ACTOR.jumping):
+	if e.name in ('mptf','lbbt') and not (LC.ACTOR.walking or LC.ACTOR.jumping):
 		e.mv_player()
 def ptf_up(e,c):
 	if not c.freezed:
@@ -555,18 +570,16 @@ def give_extra_live():
 	st.show_lives=5
 def show_status_ui():
 	st.show_wumpas=5
-	st.show_crates=5
-	st.show_lives=5
+	if not st.relic_challange:
+		st.show_crates=5
+		st.show_lives=5
 	st.show_gems=5
 
 ## crate actions
 def box_set_val(cR,Cpos,Cpse,Cmk,Ctl):
 	cR.idf='cr'
-	cR.texture=f'res/crate/{cR.vnum}.tga'
-	if cR.vnum == 15:
-		cR.texture=f'res/crate/crate_t{cR.time_stop}.tga'
-	if cR.vnum in (9,10):
-		cR.org_tex=cR.texture
+	cR.texture=f'res/crate/15_t{cR.time_stop}.png' if (cR.vnum == 15) else f'res/crate/{cR.vnum}.png'
+	cR.org_tex=cR.texture if (cR.vnum in (9,10)) else None
 	cR.spawn_pos=Cpos
 	cR.position=Cpos
 	cR.collider='box'
@@ -582,7 +595,7 @@ def box_set_val(cR,Cpos,Cpse,Cmk,Ctl):
 def box_stack(c_pos):
 	sdi=0
 	for wm in scene.entities:
-		if (is_box(wm) and  not wm.vnum in (3,13)) and (wm.x == c_pos[0] and wm.z == c_pos[2]):
+		if (is_box(wm) and not wm.vnum in (3,13)) and (wm.x == c_pos[0] and wm.z == c_pos[2]):
 			if (wm.y > c_pos[1]) and abs(wm.y-c_pos[1]) <= sdi*.32:
 				if wm.vnum == 12:
 					wm.new_y-=.32
@@ -597,7 +610,7 @@ def check_nitro_stack():
 	nt_pos=[v.position for v in scene.entities if (is_box(v) and v.vnum == 12)]
 	jp_box=[]
 	if len(nt_pos) > 0:
-		for nt in scene.entities:
+		for nt in scene.entities[:]:
 			if not nt:
 				continue
 			for k in nt_pos:
@@ -635,17 +648,15 @@ def box_destroy_event(c):
 	c.collider=None
 	if c.vnum in (11,12):
 		explosion(c)
-	if not c.poly:
+	if not (c.poly or st.relic_challange):
 		st.BOX_RESET.append((c.vnum,c.spawn_pos,c.poly,c.mark,c.c_ID))
 	if c.vnum != 13:
 		if c.visible:
-			sn.crate_audio(ID=2)
-			twc=LC.cbrc[c.vnum] if c.vnum in LC.cbrc else color.rgb32(180,80,0)
-			BoxBreak(c.position,col=twc)
+			BoxBreak(c.position,c.vnum)
 		if st.bonus_round:
 			st.crate_bonus+=1
 		else:
-			if c.vnum != 16:
+			if not (c.vnum in (15,16) or st.relic_challange):
 				st.crate_to_sv+=1
 				st.crate_count+=1
 				st.show_crates=5
@@ -739,12 +750,12 @@ def enter_bonus(c):
 def clear_bonus():
 	for brd in scene.entities[:]:
 		if brd and brd.y < -15:
-			if isinstance(brd,(o.ObjType_Block,o.ObjType_Wall)):
+			if isinstance(brd,(o.ObjType_Block,o.ObjType_Wall,o.ObjType_Water)):
 				destroy(brd)
 	del brd
 def back_to_level(c):
 	ui.BlackScreen()
-	c.position=(60.5,3.3,111.5) if (st.level_index == 8 and st.checkpoint[0] > 198.5) else st.checkpoint
+	c.position=st.checkpoint
 	if st.death_route:
 		st.death_route=False
 		st.gem_path_solved=True
@@ -803,7 +814,7 @@ def set_val_npc(m,drc=None,rng=None,rtyp=0,cmv=True):
 	m.scale=.8/1200
 	vnn=m.name if m.vnum != 17 else m.name+f'/{rtyp}'
 	m.model=npf+f'{vnn}/0.ply'
-	m.texture=npf+f'{vnn}/0.tga'
+	m.texture=npf+f'{vnn}/0.png'
 	m.collider.visible=settings.debg
 	if st.level_index == 8:
 		m.color=color.dark_gray
@@ -936,13 +947,11 @@ def save_game():
 	save_data={
 		'SV_WU':st.wumpa_fruits,#wumpa fruits
 		'SV_LF':st.extra_lives,#extra lives
-		'SV_CR':st.collected_crystals,#crystal count
-		'SV_CG':st.color_gems,#color gem count
-		'SV_CL':st.clear_gems,#clear gem count
 		'SV_AK':st.aku_hit,#aku mask
 		'LS_CR':st.CRYSTAL,#Lv ID crystal
 		'LS_CL':st.CLEAR_GEM,#Lv ID clear gem
 		'LS_CG':st.COLOR_GEM,#Color Gem ID
+		'LS_RL':st.RELIC,#time relic
 		'M_VOL':settings.MUSIC_VOLUME,
 		'S_VOL':settings.SFX_VOLUME,
 		'CRD_W':st.crd_seen}
@@ -953,11 +962,9 @@ def load_game():
 		save_data=json.load(f)
 	st.wumpa_fruits=save_data['SV_WU']
 	st.extra_lives=save_data['SV_LF']
-	st.collected_crystals=save_data['SV_CR']
-	st.color_gems=save_data['SV_CG']
-	st.clear_gems=save_data['SV_CL']
 	st.aku_hit=save_data['SV_AK']
 	st.CRYSTAL=[(x) for x in save_data['LS_CR']]
+	st.RELIC=[(x) for x in save_data['LS_RL']]
 	st.CLEAR_GEM=[(x) for x in save_data['LS_CL']]
 	st.COLOR_GEM=[(x) for x in save_data['LS_CG']]
 	settings.SFX_VOLUME=save_data['S_VOL']
@@ -966,8 +973,8 @@ def load_game():
 
 ##entity-frames+ : ENTITY/FRAME_COUNT/SPEED
 def incr_frm(o,sp):
-	o.frm+=time.dt*sp
-	if o.frm > o.max_frm:
+	o.frm=min(o.frm+time.dt*sp,o.max_frm)
+	if o.frm >= o.max_frm:
 		o.frm=0
 
 ##lv6 func
@@ -984,6 +991,11 @@ def reset_mines():
 def preload_ui_texture():
 	LC.wmp_texture=[load_texture(f'res/ui/icon/wumpa/w{cbx}.png') for cbx in range(13+1)]
 	LC.box_texture=[load_texture(f'res/ui/icon/box/anim_crt_{cbx}.png') for cbx in range(63+1)]
+	LC.crystal_texture=[load_texture(f'res/ui/icon/crystal/{cbx}.png') for cbx in range(32+1)]
+	LC.normal_gem_texture=[load_texture(f'res/ui/icon/gem0/{cbx}.png') for cbx in range(64+1)]
+	LC.green_gem_texture=[load_texture(f'res/ui/icon/gem1/{cbx}.png') for cbx in range(64+1)]
+	LC.purple_gem_texture=[load_texture(f'res/ui/icon/gem2/{cbx}.png') for cbx in range(64+1)]
+	LC.relic_texture=[load_texture(f'res/ui/icon/relic/{cbx}.png') for cbx in range(16+1)]
 def preload_water_texture(ID):
 	if len(LC.wtr_texture) > 0:
 		LC.wtr_texture.clear()

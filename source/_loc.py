@@ -9,10 +9,34 @@ bonus_checkp={
 	2:(23,6,3.3),#		#level 2
 	3:(0,2.5,.85*8),#	#level 3
 	4:(0,2,3),#			#level 4
-	5:(12,1.3,-22),#		#level 5
+	5:(12,1.3,-22),#	#level 5
 	6:(9,5,20),#		#level 6
 	7:(26,5,-36),#		#level 7
 	8:(34,6,60.5)}#		#level 8
+
+#time trial clock position
+CLOCK_POSITION={0:(0,0,0),
+				1:(.3,1.25,-57),
+				2:(.9,1.25,-57.4),
+				3:(.6,.5,-21.6),
+				4:(.6,.75,-57.7),
+				5:(5.3,.5,-55.5),
+				6:(.4,.3,-60.6),
+				7:(-1,.3,-59),
+				8:(7.6,.8,7.7),
+				9:(-1.75,.3,7)}
+
+##LV_INDEX:(platinum, gold, saphire)
+RELIC_TIME_LIMIT_LEVEL={
+	1:(35,40,50),#ok
+	2:(45,50,60),#ok
+	3:(25,30,45),#ok
+	4:(35,45,55),#ok
+	5:(50,55,60),#ok
+	6:(25,30,40),#ok
+	7:(45,50,55),#ok
+	8:(40,45,55),#ok
+	9:(10,15,20)}#test
 
 #display the name in pause menu and loading screen
 lv_name=['CENTRAL - WARP ROOM',
@@ -49,41 +73,34 @@ RCZ=0#z pos
 RCB=0#back dst
 
 #2d gem animation
-ge_0='res/ui/icon/gem_0/gem'
-ge_1='res/ui/icon/gem_1/gem'
-ge_2='res/ui/icon/gem_2/gem'
-fdc={1:ge_0,2:ge_0,3:ge_0,4:ge_1,5:ge_2,6:ge_0,7:ge_0,8:ge_0,9:ge_0}
+relic='res/ui/icon/relic/'
+ge_0='res/ui/icon/gem0/'
+ge_1='res/ui/icon/gem1/'
+ge_2='res/ui/icon/gem2/'
+
+#relic color
+relic_color={0:color.light_gray,1:color.gold,2:color.azure}
 
 #gem ui color
-O=180
-cglr=c.rgb32(O,O,O)#clear gem
-GMU={1:c.rgb32(0,0,O),#blue
-	2:c.rgb32(O,0,0),#red
-	3:c.rgb32(O,O,0),#violet
-	4:c.rgb32(0,O,0),#green
-	5:c.rgb32(O,0,O),#yellow
-	6:cglr,#clear
-	7:cglr,#clear
-	8:cglr,#clear
-	9:cglr}#clear
+ui_crystal_color=c.rgb32(170,0,170)
+ui_normal_gem_color=c.rgb32(220,220,230)
 
-#gem color
-GMC={0:cglr,
-	1:c.rgb32(O+40,0,0),
-	2:c.rgb32(0,O,0),
-	3:c.rgb32(O,0,O),
-	4:c.rgb32(0,0,O),
-	5:c.rgb32(O,O,0),
-	6:cglr,
-	7:cglr,
-	8:cglr,
-	9:cglr}
+ui_red_gem_color=c.rgb32(180,50,50)
+ui_green_gem_color=c.rgb32(0,160,0)
+ui_purple_gem_color=c.rgb32(160,0,160)
+ui_blue_gem_color=c.rgb32(0,0,160)
+ui_yellow_gem_color=c.rgb32(160,160,0)
 
-#crate break animation color
-cbrc={3:c.rgb32(140,70,0),
-	11:c.rgb32(190,0,0),
-	12:c.rgb32(0,190,0),
-	16:c.rgb32(160,0,160)}
+#gem model color
+mesh_normal_gem_color=c.rgb32(160,160,160)
+mesh_red_gem_color=c.rgb32(170,0,0)
+mesh_green_gem_color=c.rgb32(0,160,0)
+mesh_purple_gem_color=c.rgb32(140,0,140)
+mesh_blue_gem_color=c.rgb32(0,0,150)
+mesh_yellow_gem_color=c.rgb32(150,150,0)
+
+GEM_MESH_COLOR={1:mesh_blue_gem_color,2:mesh_red_gem_color,3:mesh_yellow_gem_color,4:mesh_green_gem_color,5:mesh_purple_gem_color}
+GEM_PLATFORM_COLOR={1:color.rgb32(0,0,130),2:color.rgb32(130,0,0),3:color.rgb32(130,130,0),4:color.rgb32(0,130,0),5:color.violet}
 
 #fog dst/color/dst
 SKY_BG_COLOR=None
@@ -92,6 +109,9 @@ FOG_L_COLOR=None
 FOG_B_COLOR=None
 LV_DST=None
 BN_DST=None
+
+#gem podium position
+gem_pod_position=(0,-120,0)
 
 #level fin
 lv_fin_pos=(0,0,0)
@@ -106,10 +126,13 @@ LDM_POS=[]
 trigger_lst={'indz','lvfi','elwt','fthr','eball'}
 
 #item/obj name list
-item_lst={'wmpf','exlf','gem','crys','clock'}
+item_lst={'wmpf','exlf','gem','crys','clock','relic'}
 
 #danger zone
 dangers={'wood_log','role','fllz','piston'}
+
+#gem interface frames
+GEM_MAX_FRM=150.99
 
 #default speed for move and gravity
 dfsp=2.5
@@ -136,11 +159,15 @@ IGNORE=[]
 wmp_texture=[]
 box_texture=[]
 
+crystal_texture=[]
+normal_gem_texture=[]
+green_gem_texture=[]
+purple_gem_texture=[]
+relic_texture=[]
+
 #water effect texture
 wtr_texture=[]
 wtf_texture=[]
 wff_texture=[]
 drp_texture=[]
 fre_texture=[]
-#pause
-p_menu=None

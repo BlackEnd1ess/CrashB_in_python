@@ -1,7 +1,7 @@
-import item,status,_core,animation,sound,npc,settings,_loc,random,time
-from ursina import Entity,Text,Audio,color,scene,invoke,distance
-from ui import GemInfo,CheckpointLetter,GemTimeTrial
+import item,status,_core,animation,sound,npc,settings,_loc,random,time,ui
+from ursina import Entity,Audio,color,scene,invoke,distance
 from ursina.ursinastuff import destroy
+from effect import TrialTimeStopInfo
 
 an=animation
 cc=_core
@@ -10,19 +10,19 @@ st=status
 LC=_loc
 
 pp='res/crate/'
-cr1=pp+'cr_t0.obj'# single texture
-cr2=pp+'cr_t1.obj'# double texture
+cr1=f'{pp}cr_t0.obj'# single texture
+cr2=f'{pp}cr_t1.obj'# double texture
 
 ## spawn func
-def spawn(p,ID,m=0,l=1,pse=False):
+def spawn(p,ID,m=0,l=0,pse=False):
 	{0:lambda:Iron(pos=p,m=m,l=l,pse=pse),
-	1:lambda:Normal(pos=p,m=m,l=l,pse=pse),
-	2:lambda:QuestionMark(pos=p,m=m,l=l,pse=pse),
+	1:lambda:Normal(pos=p,m=m,l=l,pse=pse),##t1
+	2:lambda:QuestionMark(pos=p,m=m,l=l,pse=pse),##t2
 	3:lambda:Bounce(pos=p,m=m,l=l,pse=pse),
-	4:lambda:ExtraLife(pos=p,m=m,l=l,pse=pse),
+	4:lambda:ExtraLife(pos=p,m=m,l=l,pse=pse),##t3
 	5:lambda:AkuAku(pos=p,m=m,l=l,pse=pse),
-	6:lambda:Checkpoint(pos=p,m=m,l=l,pse=pse),
-	7:lambda:SpringWood(pos=p,m=m,l=l,pse=pse),
+	6:lambda:Checkpoint(pos=p,m=m,l=l,pse=pse),##t2
+	7:lambda:SpringWood(pos=p,m=m,l=l,pse=pse),##t1
 	8:lambda:SpringIron(pos=p,m=m,l=l,pse=pse),
 	9:lambda:SwitchEmpty(pos=p,m=m,l=l,pse=pse),
 	10:lambda:SwitchNitro(pos=p,m=m,l=l,pse=pse),
@@ -158,7 +158,7 @@ class Checkpoint(Entity):
 		s=self
 		st.checkpoint=(s.x,s.y+1.5,s.z)
 		sn.crate_audio(ID=6)
-		CheckpointLetter(s.position)
+		ui.CheckpointLetter(s.position)
 		cc.box_destroy_event(s)
 		cc.collect_reset()
 
@@ -204,7 +204,7 @@ class SwitchEmpty(Entity):
 		s=self
 		s.activ=True
 		s.model=cr1
-		s.texture=pp+'0.tga'
+		s.texture=f'{pp}0.png'
 	def destroy(self):
 		s=self
 		cc.block_destroy(s)
@@ -233,7 +233,7 @@ class SwitchNitro(Entity):
 		s=self
 		s.activ=True
 		s.model=cr1
-		s.texture=pp+'0.tga'
+		s.texture=f'{pp}0.png'
 	def destroy(self):
 		s=self
 		cc.block_destroy(s)
@@ -246,7 +246,7 @@ class SwitchNitro(Entity):
 			st.SWI_RESET.append(s)
 			del nt
 
-tx=pp+'crate_tnt_'
+tx=f'{pp}crate_tnt_'
 class TNT(Entity):
 	def __init__(self,pos,pse,m,l):
 		s=self
@@ -281,7 +281,7 @@ class TNT(Entity):
 			if s.aud.playing:
 				s.aud.volume=settings.SFX_VOLUME
 			s.countdown=max(s.countdown-time.dt/1.15,0)
-			s.texture=tx+f'{int(s.countdown)}.tga'
+			s.texture=tx+f'{int(s.countdown)}.png'
 			if s.countdown <= 0:
 				s.empty_destroy()
 
@@ -319,7 +319,8 @@ class Nitro(Entity):
 		s.snd_time=max(s.snd_time-time.dt,0)
 		if s.snd_time <= 0:
 			s.snd_time=random.randint(2,3)
-			sn.crate_audio(ID=8,pit=random.uniform(.8,1.1))
+			if distance(LC.ACTOR,s) < 3:
+				sn.crate_audio(ID=8,pit=random.uniform(.8,1.1))
 			s.jmp_y=s.y+random.uniform(.3,.5)
 			if s.can_jmp:
 				s.mode=1
@@ -366,15 +367,21 @@ class Protected(Entity):
 		cc.box_destroy_event(self)
 
 class cTime(Entity):
-	def __init__(self,pos,tm=1):
+	def __init__(self,pos,m,l,pse=None):
 		s=self
 		s.vnum=15
 		super().__init__(model=cr2)
-		s.time_stop=tm
+		s.time_stop=l
 		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		del pos,pse,m,l,s
 	def destroy(self):
-		cc.box_destroy_event(self)
+		s=self
+		if st.relic_time_stop <= 3:
+			st.relic_time_stop+=s.time_stop
+			if st.relic_time_stop >= 3:
+				st.relic_time_stop=3
+		TrialTimeStopInfo(s.position,s.time_stop)
+		cc.box_destroy_event(s)
 
 class LvInfo(Entity):
 	def __init__(self,pos,pse,m,l):
@@ -387,9 +394,6 @@ class LvInfo(Entity):
 		del pos,pse,m,l,s
 	def destroy(self):
 		s=self
-		if st.level_index == 3:
-			item.GemStone(pos=(-.05,2.75,88),c=5)
-			GemTimeTrial(t=90)
 		if distance(s,LC.ACTOR) < 3:
-			GemInfo()
+			ui.GemInfo()
 		cc.box_destroy_event(s)

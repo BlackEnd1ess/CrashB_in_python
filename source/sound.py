@@ -8,6 +8,7 @@ cc=_core
 st=status
 LC=_loc
 
+BE=f'{sfx_db.NPC[5]}.wav'
 MC='res/music/'
 SF='res/snd/'
 
@@ -52,8 +53,8 @@ def landing_sound(o):
 
 ##ambience sound
 def thu_audio(ID,pit=1):
-	pth=Audio(f'{SF}{sfx_db.AMBIENCE[ID]}.wav',pitch=random.uniform(.1,.5),volume=se.SFX_VOLUME,add_to_scene_entities=False)
-	destroy(pth,delay=pth.length+vq)
+	pth=Audio(f'{SF}{sfx_db.AMBIENCE[ID]}.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
+	destroy(pth,delay=pth.length*4)
 
 ## INTERFACE SFX
 def ui_audio(ID,pit=1):
@@ -61,7 +62,7 @@ def ui_audio(ID,pit=1):
 		ua=Audio(f'{SF}{sfx_db.INTERFACE[ID]}.wav',pitch=pit,volume=se.SFX_VOLUME/2,add_to_scene_entities=False)
 	else:
 		ua=Audio(f'{SF}{sfx_db.INTERFACE[ID]}.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
-	destroy(ua,delay=ua.length+.1)
+	destroy(ua,delay=ua.length+.2)
 
 ## PLAYER SFX
 def pc_audio(ID,pit=1):
@@ -83,7 +84,7 @@ def npc_audio(ID,pit=1,vol=None):
 	if not vol:
 		vol=se.SFX_VOLUME
 	np=Audio(f'{SF}{sfx_db.NPC[ID]}.wav',pitch=pit,volume=vol,add_to_scene_entities=False)
-	destroy(np,delay=np.length+vq)
+	destroy(np,delay=np.length+vq*2)
 
 def npc_loop_audio(n,PIT,tme_r):
 	if (n.is_hitten or n.is_purge):
@@ -110,7 +111,7 @@ class WaterRiver(Audio):
 		self.tme=.5
 	def update(self):
 		s=self
-		s.tme=max(s.tme-time.dt,0)
+		s.tme-=time.dt
 		if s.tme <= 0:
 			s.volume=0 if st.gproc() or st.bonus_round else se.SFX_VOLUME
 
@@ -181,7 +182,6 @@ class AkuMusic(Audio):
 		st.aku_inv_time=max(st.aku_inv_time-time.dt,0)
 		if st.aku_inv_time <= 0 or bool(st.death_event or st.bonus_round or LC.ACTOR.freezed):
 			s.rmv_music()
-
 
 class GameOverMusic(Audio):
 	def __init__(self):

@@ -1,8 +1,10 @@
-from ursina import Entity,Vec3,color,load_texture
+from ursina import Entity,Text,Vec3,color,load_texture,scene
 from ursina.ursinastuff import destroy
 import status,_loc,time,random,_core
+from sound import pc_audio,obj_audio
 
 trpv='res/objects/ev/teleport/warp_effect'
+wrv='res/objects/ev/warp_rings/'
 ef='res/effects/'
 q='quad'
 
@@ -95,6 +97,52 @@ class JumpDust(Entity):
 		s.scale+=(time.dt,time.dt)
 		if s.scale_x > .6:
 			destroy(s)
+
+class WarpRingEffect(Entity):
+	def __init__(self):
+		s=self
+		super().__init__(model=f'{wrv}0.ply',texture=f'{wrv}0.png',scale=.0016/2,rotation_x=-90,position=LC.ACTOR.position,color=color.white,alpha=.9,unlit=False)
+		s.activ=False
+		s.max_rings=8
+		s.rings=0
+		s.times=0
+		s.spd=48
+		del s
+	def update(self):
+		if st.gproc() or not cc.level_ready:
+			return
+		s=self
+		if not s.activ:
+			s.activ=True
+			obj_audio(ID=0)
+		s.rings+=time.dt*s.spd
+		if s.rings > 8.99:
+			s.rings=0
+			s.times+=1
+			pc_audio(ID=1,pit=.35)
+		s.model=f'{wrv}{int(s.rings)}.ply'
+		if s.times > s.max_rings:
+			LC.ACTOR.warped=True
+			destroy(s)
+
+class TrialTimeStopInfo(Entity):
+	def __init__(self,pos,n):
+		s=self
+		super().__init__()
+		s.text_info=Text(str(n),font='res/ui/font.ttf',color=color.gold,position=(pos[0]+random.uniform(-.2,.2),pos[1]+random.uniform(-.2,.2),pos[2]+random.uniform(-.2,.2)),parent=scene,unlit=False,scale=6)
+		s.is_done=False
+		s.lftime=0
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.text_info.y+=time.dt*.75
+		s.lftime+=time.dt
+		if s.lftime > 2:
+			if not s.is_done:
+				s.is_done=True
+				destroy(s.text_info)
+				destroy(s)
 
 prsv='res/crate/anim/exp_wave/'
 class PressureWave(Entity):

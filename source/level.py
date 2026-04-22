@@ -1,4 +1,4 @@
-import ui,_core,status,environment,sound,LODsystem,sys,os,settings,_loc
+import ui,_core,status,environment,sound,LODsystem,sys,os,settings,_loc,gc
 from ursina import camera,invoke,load_texture
 from ursina.ursinastuff import destroy
 
@@ -7,26 +7,34 @@ st=status
 cc=_core
 LC=_loc
 
-flt=7 if not settings.debg else 1
+flt=7 if not settings.debg else 3
 ## start level
 def free_level():
+	idx=st.level_index
 	camera.rotation_x=15
 	LODsystem.ManageObjects()
+	sound.BackgroundMusic(m=0)
 	cc.check_nitro_stack()
 	st.loading=False
-	cc.spawn_level_crystal(st.level_index)
-	st.fails=0
-	sound.BackgroundMusic(m=0)
-	if st.level_index == 3:
+	if not idx in st.CRYSTAL:
+		cc.spawn_level_crystal(idx)
+	if idx != 3 and not idx in st.COLOR_GEM:
+		cc.spawn_color_gem(idx)
+	if idx in st.CRYSTAL:
+		cc.spawn_trial_clock(idx)
+	if idx == 3:
 		sound.AmbienceSound()
 		sound.WaterRiver()
 	ui.load_interface()
 	cc.level_ready=True
+	st.fails=0
 	if settings.debg:
-		print(f'<info> level {st.level_index} boxes: {st.crates_in_level}')
-		print(f'<info> level {st.level_index} wumpa: {st.wumpas_in_level}')
-		print(f'<info> level {st.level_index} npc: {st.npc_in_level}')
-		print(f'<info> Level {st.level_index} successfully loaded')
+		print(f'<info> level {idx} boxes: {st.crates_in_level}')
+		print(f'<info> level {idx} wumpa: {st.wumpas_in_level}')
+		print(f'<info> level {idx} npc: {st.npc_in_level}')
+		print(f'<info> Level {idx} successfully loaded')
+	del idx
+	gc.collect()
 
 ##preload water
 def preload_water_texture(ID):
@@ -36,9 +44,6 @@ def preload_water_texture(ID):
 		LC.wtr_texture=[load_texture(f'res/objects/l1/swamp/{cbx}.png') for cbx in range(3+1)]
 		return
 	if ID == 1:
-		LC.wtr_texture=[load_texture(f'res/objects/l3/water_flow/water_flow{cbx}.png') for cbx in range(3+1)]
-		return
-	if ID == 2:
 		LC.wtr_texture=[load_texture(f'res/objects/ev/wtr/{cbx}.png') for cbx in range(31+1)]
 		return
 	if ID == 3:
@@ -76,13 +81,12 @@ def level2():# road to nowhere
 
 def level3():# river stream
 	import level3
-	preload_water_texture(1)
 	level3.start_load()
 	invoke(free_level,delay=flt)
 
 def level4():# drain damage
 	import level4
-	preload_water_texture(2)
+	preload_water_texture(1)
 	level4.start_load()
 	invoke(free_level,delay=flt)
 

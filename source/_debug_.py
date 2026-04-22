@@ -8,7 +8,7 @@ CV=camera.ui
 st=status
 LC=_loc
 
-known_sequences = set()
+known_sequences=set()
 snap1=None
 snap2=None
 
@@ -28,10 +28,16 @@ def pos_info(c):
 #collect all gems in level and finish them
 def complete_level():
 	print(f'COMPLETE ALL GEMS IN LEVEL: {st.level_index}')
-	st.level_crystal=st.level_index < 6
+	st.RELIC_TRIAL_DONE=True
 	st.level_cle_gem=True
-	st.level_col_gem=True
-	st.show_gems=1
+	for collect_all in scene.entities[:]:
+		if not collect_all:
+			continue
+		if collect_all.name in LC.item_lst:
+			if not collect_all.name in ('wmpf','clock','exlf'):
+				collect_all.collect()
+	st.RELIC.append((st.level_index,0))
+	st.show_gems=5
 	sound.ui_audio(ID=4)
 	invoke(lambda:setattr(LC.ACTOR,'position',LC.lv_fin_pos),delay=1)
 
@@ -60,41 +66,63 @@ def chck_mem():
 
 prev_sizes={}
 def make_snap():
-	#os.system('cls')
+	global prev_sizes
+	current_sizes = {}
+	for obj in gc.get_objects():
+		if isinstance(obj, list) or isinstance(obj, set):
+			obj_id = id(obj)
+			obj_len = len(obj)
+			current_sizes[obj_id] = (obj, obj_len)
+			if obj_id in prev_sizes:
+				old_len = prev_sizes[obj_id][1]
+				if obj_len != old_len and obj_len > 0:
+					print(f"{type(obj)} hat sich geändert: {old_len} -> {obj_len} Elemente -> {repr(obj)[:100]}")
+		else:
+			if obj_len > 0:
+				print(f"Neue {type(obj)} entdeckt: {obj_len} Elemente -> {repr(obj)[:100]}")
+	## Snapshot für den nächsten Vergleich speichern
+	prev_sizes=current_sizes
+	##snapshots
+	if st.SNAP_NUM <= 0:
+		tracemalloc.start(25)
+		st.snap1=tracemalloc.take_snapshot()
+		st.SNAP_NUM+=1
+		return
+	if st.SNAP_NUM == 1:
+		st.SNAP_NUM=5
+		st.snap2=tracemalloc.take_snapshot()
+		top_stats = st.snap2.compare_to(st.snap1,'lineno')
+		print("\nTop Speicherzuwachs nach Zeile:\n")
+		for stat in top_stats[:30]:
+			print(stat)
+
+def dev_console():
+	print("-"*20)
+	print('Crash Bandicoot DEV CONSOLE')
+	exec('import crate,item,npc', globals())
+	exec('c=crate', globals())
+	exec('n=npc', globals())
+	cmd = input(">>> ")
+	if cmd.strip() in {"exit", "quit"}:
+		return
+	try:
+		exec(cmd, globals())
+	except Exception as e:
+		print("Error:", e)
+
+def show_instance_count():
+	os.system('cls')
 	print("Entities:", len(scene.entities))
 	print("Sequences:", len(application.sequences))
 	print("GC objects:", len(gc.get_objects()))
 	print("----")
-	#global prev_sizes
-	#current_sizes = {}
-	#for obj in gc.get_objects():
-	#	if isinstance(obj, list) or isinstance(obj, set):
-	#		obj_id = id(obj)
-	#		obj_len = len(obj)
-	#		current_sizes[obj_id] = (obj, obj_len)
-	#		if obj_id in prev_sizes:
-	#			old_len = prev_sizes[obj_id][1]
-	#			if obj_len != old_len and obj_len > 0:
-	#				print(f"{type(obj)} hat sich geändert: {old_len} -> {obj_len} Elemente -> {repr(obj)[:100]}")
-			#else:
-			#	# Optional: nur beim ersten Mal ausgeben
-			#	if obj_len > 0:
-			#		print(f"Neue {type(obj)} entdeckt: {obj_len} Elemente -> {repr(obj)[:100]}")
-	# Snapshot für den nächsten Vergleich speichern
-	#prev_sizes = current_sizes
-	##snapshots
-	#if st.SNAP_NUM <= 0:
-	#	tracemalloc.start(25)
-	#	st.snap1=tracemalloc.take_snapshot()
-	#	st.SNAP_NUM+=1
-	#	return
-	#if st.SNAP_NUM == 1:
-	#	st.SNAP_NUM=5
-	#	st.snap2=tracemalloc.take_snapshot()
-	#	top_stats = st.snap2.compare_to(st.snap1,'lineno')
-	#	print("\nTop Speicherzuwachs nach Zeile:\n")
-	#	for stat in top_stats[:30]:
-	#		print(stat)
+
+def show_growth():
+	for obj in gc.get_objects():
+		if isinstance(obj, dict):
+			size = sys.getsizeof(obj)
+			if size > 5000:  # nur große
+				print("DICT:", size, obj.keys())
 
 def show_sequences():
 	print('before remove',len(application.sequences))
@@ -112,7 +140,8 @@ class PlayerDBG(Entity):
 		s=self
 		super().__init__()
 		tct=settings.debg_color
-		Entity(model='quad',position=(-.76,-.25),color=color.black,alpha=.75,scale=(.4,.9),z=1,parent=CV)
+		Entity(model='quad',position=(-.76,-.25),color=color.black,alpha=.75,scale=(.4,.95),z=1,parent=CV)
+		s.relic_time=Text(color=tct,font=ui._fnt,position=(sx,hg),parent=CV,scale=fw)
 		s.sq_active=Text(color=tct,font=ui._fnt,position=(sx,hg-.025),parent=CV,scale=fw)
 		s.fwt_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.05),parent=CV,scale=fw)
 		s.frz_state=Text(color=tct,font=ui._fnt,position=(sx,hg-.075),parent=CV,scale=fw)
@@ -178,9 +207,10 @@ class PlayerDBG(Entity):
 			s.frz_state.text=f'FREEZED     : {rv.freezed}'
 			s.fwt_state.text=f'FALL TIME   : {rv.fall_time:.1f}'
 			s.sq_active.text=f'ACTIVE SEQs : {len(application.sequences)}'
+			s.relic_time.text=f'RELIC STOP  : {st.relic_time_stop}'
 
 #mem check
-class MemoryTracker(Entity):
+class MemoryGrowTracker(Entity):
 	def __init__(self,interval=5,threshold=100000,**kwargs):
 		super().__init__(**kwargs)
 		self.interval = interval
@@ -210,3 +240,4 @@ class MemoryTracker(Entity):
 			for class_name, increase in growth.items():
 				print(f"{class_name}: +{increase / 1024:.2f} KB")
 		invoke(self.track_memory_growth, delay=self.interval)
+		print('#'*20)

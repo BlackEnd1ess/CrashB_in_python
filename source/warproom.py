@@ -1,5 +1,5 @@
+import status,_loc,level,sound,settings,ui,_core,objects,time,gc
 from ursina import Audio,Text,Entity,camera,scene,color,invoke
-import status,_loc,level,sound,settings,ui,_core,objects,time
 from ursina.ursinastuff import destroy
 cu=camera.ui
 st=status
@@ -12,10 +12,18 @@ q='quad'
 class Memorycard(Entity):
 	def __init__(self):
 		s=self
-		super().__init__(model=q,texture=mc,position=(.6,.24),scale=(.07,.1),parent=camera.ui)
+		super().__init__(model=q,texture=mc,position=(.65,.24),scale=(.07,.1),parent=camera.ui)
 		s.desc_s=Text('Save Game - F2',font=fn,scale=1.5,position=(s.x-.1,s.y-.07,s.z),color=color.green,parent=cu)
 		s.desc_l=Text('Load Game - F3',font=fn,scale=1.5,position=(s.x-.1,s.y-.12,s.z),color=color.azure,parent=cu)
 		del s
+
+class MusicInfo(Entity):
+	def __init__(self):
+		super().__init__()
+		self.info_text=Text('',font=fn,scale=2,position=(.35,-.45),color=color.cyan,parent=cu)
+	def update(self):
+		if self.info_text.text != f'Music Crash Bandicoot - {st.WARP_ROOM_MUSIC}':
+			self.info_text.text=f'WARP ROOM MUSIC - {st.WARP_ROOM_MUSIC}'
 
 class SvSuccessInfo(Text):
 	def __init__(self):
@@ -41,7 +49,12 @@ class BonusRoomEntry(Entity):
 class LvSelect(Entity):
 	def __init__(self):
 		super().__init__()
-		self.bgm=Audio(f'res/music/level/wroom.mp3',volume=settings.MUSIC_VOLUME,loop=True)
+		self.bgm=Audio(f'res/music/level/wroom{st.WARP_ROOM_MUSIC}.mp3',volume=settings.MUSIC_VOLUME,loop=True)
+		objects.PseudoCrash()
+		Memorycard()
+		MusicInfo()
+		gc.collect()
+		self.index=0
 	def input(self,key):
 		if key in settings.BCK_KEY:
 			sn.ui_audio(ID=0,pit=.125)
@@ -57,6 +70,12 @@ class LvSelect(Entity):
 			else:
 				st.selected_level=st.selected_level-1 if st.selected_level > 1 else 1
 			return
+		if key == 'm':
+			sn.ui_audio(ID=1)
+			st.WARP_ROOM_MUSIC+=1
+			if st.WARP_ROOM_MUSIC > 3:
+				st.WARP_ROOM_MUSIC=0
+			return
 		if key == 'f2':
 			sn.ui_audio(ID=1)
 			_core.save_game()
@@ -65,15 +84,13 @@ class LvSelect(Entity):
 		if key == 'f3':
 			sn.ui_audio(ID=1)
 			_core.load_game()
-			scene.clear()
 			ui.BlackScreen()
 			level_select()
 			return
-		if key == 'f1' and st.collected_crystals >= 5:
+		if key == 'f1' and len(st.CRYSTAL) >= 5:
 			sn.ui_audio(ID=1)
 			st.bonus_warp_room=not st.bonus_warp_room
 			st.selected_level=6 if st.bonus_warp_room else 1
-			scene.clear()
 			level_select()
 			return
 		if key == 'enter':
@@ -82,6 +99,17 @@ class LvSelect(Entity):
 			st.level_index=st.selected_level
 			st.loading=True
 			level.load(st.selected_level)
+	def refr_music(self):
+		s=self
+		if s.bgm:
+			s.bgm.stop()
+			s.bgm.fade_out()
+			destroy(s.bgm)
+		s.bgm=Audio(f'res/music/level/wroom{st.WARP_ROOM_MUSIC}.mp3',volume=settings.MUSIC_VOLUME,loop=True)
+	def update(self):
+		if st.WARP_ROOM_MUSIC != self.index:
+			self.index=st.WARP_ROOM_MUSIC
+			self.refr_music()
 
 class Credits(Entity):
 	def __init__(self):
@@ -167,21 +195,21 @@ def level_select():
 	st.level_index=0
 	camera.position=(0,0,-20)
 	camera.rotation=(0,0,0)
-	scene.fog_color=color.gray
-	scene.fog_density=(100,200)
-	if st.collected_crystals >= 5:
+	scene.fog_color=color.rgb32(70,100,70)
+	scene.fog_density=(20,60)
+	if len(st.CRYSTAL) >= 5:
 		if not st.crd_seen:
 			st.crd_seen=True
 			Credits()
 			return
 		BonusRoomEntry()
-	objects.PseudoCrash()
-	Memorycard()
 	LvSelect()
 	if st.bonus_warp_room:
+		ui.set_warproom_scene(1)
 		for lvs in (6,7,8):
 			ui.SpecialLevelSelector(idx=lvs,pos=(-.8,1.2-lvs/6))
 	else:
+		ui.set_warproom_scene(0)
 		for lvs in (1,2,3,4,5):
 			ui.LevelSelector(idx=lvs,pos=(-.8,.5-lvs/6))
 	st.loading=False

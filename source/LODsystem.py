@@ -37,7 +37,7 @@ class ManageObjects(Entity):
 				continue
 			AZ=LC.ACTOR
 			if cc.is_box(v):
-				if v.vnum in (3,11,12):
+				if v.vnum in (3,11,12,13):
 					v.visible=not((AZ.z > v.z+s.box_dst_bf) or (AZ.z < v.z-s.box_dst_zf))
 				else:
 					v.enabled=not((AZ.z > v.z+s.box_dst_bf) or (AZ.z < v.z-s.box_dst_zf))
@@ -49,7 +49,6 @@ class ManageObjects(Entity):
 				v.enabled=dx < s.frt_dst
 			if v.name == SCENE:
 				v.enabled=dx < LC.RCZ
-			del dx
 			if v.name in DECO and not v.vnum in (6,13):
 				v.enabled=s.check_dst(v,LC.ACTOR)
 			if v.name in (CORRIDOR,BLOCK,FLOOR,WALL) or hasattr(v,'danger') or v.name == 'mptf':

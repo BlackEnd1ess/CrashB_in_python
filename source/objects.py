@@ -1,4 +1,4 @@
-from ursina import Entity,color,time,distance,distance_xz,invoke,BoxCollider,Vec3,SpotLight,camera,Audio,Text,scene,load_texture
+from ursina import Entity,color,time,distance,distance_xz,invoke,BoxCollider,Vec2,Vec3,SpotLight,camera,Audio,Text,scene,load_texture
 import _core,status,item,sound,animation,player,_loc,settings,npc,ui,danger,random
 from effect import WarpVortex,WaterDrips
 from ursina.ursinastuff import destroy
@@ -372,10 +372,8 @@ class ObjType_Background(Entity):
 		if ID == 3:
 			s.texture_scale=txa
 			s.orginal_x,s.orginal_y=s.x,s.y
-			s.orginal_tsc=s.texture_scale
 			s.spawn_y=s.y
 			s.bonus_y=-70
-			LC.bgT=s
 		if UL:
 			s.unlit=False
 			s.shader=unlit_shader
@@ -397,13 +395,15 @@ class ObjType_Background(Entity):
 class ObjType_Water(Entity):
 	def __init__(self,pos,sca,spd,rot,al=0,txs=(1,1),col=color.white,rev=False,UL=False):
 		s=self
-		super().__init__(model='plane',texture=LC.wtr_texture[0],texture_scale=txs,position=pos,scale=(sca[0],.1,sca[1]),rotation=rot,color=col,alpha=al,unlit=(not UL))
+		super().__init__(model='plane',texture=LC.wtr_texture[0],texture_scale=txs,position=pos,scale=(sca[0],.1,sca[1]),rotation=rot,color=col,alpha=al)
 		dg.WaterHit(p=(s.x,s.y-.1,s.z),sc=sca)
 		s.max_frm=int(len(LC.wtr_texture))-1+.99
 		s.frm=a.max_frm+.999 if rev else 0
 		s.reverse=rev
 		s.speed=spd
 		s.frozen=bool(s.max_frm == 0 or spd == 0)
+		if UL:
+			s.unlit=False
 		del pos,sca,spd,rot,al,txs,col,rev,UL
 	def refr_texture(self):
 		s=self
@@ -472,6 +472,18 @@ class Ropes(Entity):
 
 #####################
 ## leve 3 objects ###
+class WaterFlow(Entity):
+	def __init__(self,pos,sca):
+		s=self
+		super().__init__(model='plane',texture=f'{omf}l3/water_flow/water_flow.png',position=pos,scale=(sca[0],0,sca[1]),color=color.white,alpha=.75)
+		dg.WaterHit(p=(s.x,s.y-.1,s.z),sc=sca)
+		s.texture_scale=(1,sca[1]/16)
+		s.speed=.1
+	def update(self):
+		if st.gproc():
+			return
+		self.texture_offset+=Vec2(0,time.dt*self.speed)
+
 class Waterfall(Entity):
 	def __init__(self,pos,sca):
 		s=self
@@ -641,23 +653,30 @@ ev='res/crate/'
 class CrateScore(Entity):## level reward
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=f'{ev}cr_t0.obj',texture=f'{ev}1.tga',scale=.18,position=pos,origin_y=.5,unlit=False,color=color.light_gray,alpha=.4)
+		super().__init__(model=f'{ev}cr_t0.obj',texture=f'{ev}1.png',scale=.18,position=pos,origin_y=.5,unlit=False,color=color.light_gray,alpha=.4)
 		s.cc_text=Text(parent=scene,position=(s.x-.2,s.y,s.z),name=s.name,text=None,font=ui._fnt,color=color.rgb32(255,255,100),scale=10,unlit=False)
 		del pos,s
+	def refr_function(self):
+		self.cc_text.text=f'{st.crate_count}/{st.crates_in_level}'
+		self.rotation_y-=120*time.dt
+	def spawn_gemstone(self):
+		s=self
+		item.GemStone(pos=(s.x,s.y-.3,s.z),c=0)
+		sn.ui_audio(ID=4)
+		destroy(s.cc_text)
+		destroy(s)
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		dv=LC.C_GEM and distance(s,LC.C_GEM) < .5
-		s.cc_text.visible,s.visible=not(dv),not(dv)
-		if s.visible:
-			s.cc_text.text=f'{st.crate_count}/{st.crates_in_level}'
-			s.rotation_y-=120*time.dt
 		if st.crate_count >= st.crates_in_level:
-			item.GemStone(pos=(s.x,s.y-.3,s.z),c=0)
-			sn.ui_audio(ID=4)
-			destroy(s.cc_text)
-			destroy(s)
+			s.spawn_gemstone()
+			return
+		dv=LC.C_GEM and distance(s,LC.C_GEM) < .5
+		s.cc_text.visible=not(dv or st.relic_challange)
+		s.visible=not(dv or st.relic_challange)
+		if s.visible:
+			s.refr_function()
 
 rmp=f'{omf}ev/s_room/room'
 class StartRoom(Entity):## game spawn point
@@ -673,13 +692,15 @@ class StartRoom(Entity):## game spawn point
 		Entity(model='plane',name=s.name,position=(s.x,s.y+0.01,s.z),color=color.black,scale=3)
 		Entity(model='quad',name=s.name,color=color.black,scale=(6,.5),position=(s.x,s.y+2.3,s.z+2.4))
 		RoomDoor(pos=(s.x,s.y+1.875,s.z+2.3))
-		an.BoxBreak(pos=(0,-5,-10),col=color.white)
 		player.CrashB(pos=(s.x,s.y+.85,s.z-.1))
 		if st.aku_hit > 0:
 			npc.AkuAkuMask(pos=(s.x-.3,s.y+1,s.z+.5))
 		st.checkpoint=(s.x,s.y+2,s.z)
 		camera.position=(s.x,s.y+2,s.z-3)
 		IndoorZone(pos=(s.x,s.y+1.5,s.z),sca=(3,2,7))
+		if st.level_index == 5:
+			s.color=color.rgb32(120,120,120)
+			s.unlit=False
 		if st.level_index == 8:
 			s.color=color.rgb32(60,60,60)
 			s.unlit=False
@@ -702,28 +723,24 @@ class EndRoom(Entity):## finish level
 		IndoorZone(pos=(s.x-1,s.y-.15,s.z+1),sca=(5,2,12))
 		LevelFinish(p=(s.x-1.1,s.y-1.1,s.z+7))
 		RoomDoor(pos=(s.x-1.1,s.y+.25,s.z-4.78))
+		if s.x < 180:
+			LC.gem_pod_position=(s.x-1.1,s.y-.9,s.z)
 		if st.level_index != 5:
 			Entity(model='cube',scale=(20,10,.1),name=s.name,position=(s.x,s.y-5,s.z+16),color=color.black)
 		if st.crates_in_level > 0 and not st.level_index in st.CLEAR_GEM:
 			if s.x < 180:# pos_x 190 is death zone in lv 5
 				CrateScore(pos=(s.x-1.1,s.y-.7,s.z))
-		if st.level_index == 1 and not 4 in st.COLOR_GEM:
-			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=4)
-		if st.level_index == 2 and not 1 in st.COLOR_GEM:
-			item.GemStone(pos=(s.x-1.1,s.y-.9,s.z),c=1)
-		if st.level_index in (6,7,8) and not st.level_index in st.COLOR_GEM:
-			if st.level_index == 8:
-				s.unlit=False
-			item.GemStone(c=st.level_index,pos=(s.x-1.1,s.y-.9,s.z))
+		if st.level_index == 8:
+			s.unlit=False
 		del pos,c
 
 class RoomDoor(Entity):## door for start and end room
 	def __init__(self,pos):
 		s=self
-		s.dPA=omf+'ev/door/'
+		s.dPA=f'{omf}ev/door/'
 		s.idf='mo'
-		super().__init__(model=s.dPA+'u0.ply',texture=s.dPA+'u_door.tga',name='rmdr',position=pos,scale=.001,rotation_x=90,collider=b)
-		s.door_part=Entity(model=s.dPA+'d0.ply',name=s.name,texture=s.dPA+'d_door.tga',position=(s.x,s.y+.1,s.z),scale=.001,rotation_x=90,collider=b)
+		super().__init__(model=f'{s.dPA}u0.ply',texture=f'{s.dPA}u_door.png',name='rmdr',position=pos,scale=.001,rotation_x=90,collider=b)
+		s.door_part=Entity(model=f'{s.dPA}d0.ply',name=s.name,texture=f'{s.dPA}d_door.png',position=(s.x,s.y+.1,s.z),scale=.001,rotation_x=90,collider=b)
 		s.active=False
 		s.d_opn=False
 		s.d_frm=0
@@ -771,6 +788,8 @@ class BonusPlatform(Entity):## switch -> bonus round
 		if st.gproc() or st.death_event:
 			return
 		s=self
+		s.collider=None if (st.relic_challange) else b
+		s.visible=not(st.relic_challange)
 		if st.bonus_solved:
 			destroy(s)
 			return
@@ -780,49 +799,55 @@ class BonusPlatform(Entity):## switch -> bonus round
 class GemPlatform(Entity):## gem platform
 	def __init__(self,pos,t):
 		s=self
-		ne='gem_ptf_e'
-		s.is_enabled=False
-		if t in st.COLOR_GEM or settings.debg:
-			ne='gem_ptf'
-			s.is_enabled=True
-			if settings.debg:
-				t=0
-		super().__init__(model=wfc,name='gmpt',scale=(.6,.4,.6),position=pos,collider=b,visible=False)
-		s.opt_model=Entity(model=f'{omf}ev/{ne}/{ne}.ply',name=s.name,texture=f'{omf}ev/{ne}/{ne}.png',rotation_x=-90,scale=.001,position=pos,color=LC.GMC[t],unlit=False)
+		physical=bool(t in st.COLOR_GEM or settings.debg)
+		ne='gem_ptf' if physical else 'gem_ptf_e'
+		s.is_enabled=physical
+		super().__init__(model=wfc,name='gmpt',scale=(.6,.4,.6),position=pos,visible=False)
+		s.opt_model=Entity(model=f'{omf}ev/{ne}/{ne}.ply',name=s.name,texture=f'{omf}ev/{ne}/{ne}.png',rotation_x=-90,scale=.001,position=pos,color=LC.GEM_PLATFORM_COLOR[t],unlit=False)
+		s.alpha=1 if physical else .5
 		s.org_color=s.color
 		s.start_y=s.y
 		s.typ=t
-		if not s.is_enabled:
-			s.collider=None
-			s.alpha=.5
-		del pos,t
+		del pos,t,physical
+	def check_collider(self):
+		s=self
+		if st.relic_challange:
+			if s.collider:
+				s.collider=None
+			return
+		if s.is_enabled:
+			if not s.collider:
+				s.collider=b
 	def update(self):
-		if not st.gproc():
-			s=self
-			if st.gem_path_solved:
-				cc.destroy_entity(s.opt_model)
-				cc.destroy_entity(s)
-				return
-			s.opt_model.position=(s.x,s.y+.15,s.z)
-			if s.is_enabled and not LC.ACTOR.freezed:
-				s.opt_model.rotation_y+=time.dt*20
+		if st.gproc():
+			return
+		s=self
+		s.check_collider()
+		s.opt_model.visible=not(st.relic_challange)
+		if st.gem_path_solved or st.relic_challange:
+			destroy(s.opt_model)
+			cc.destroy_entity(s)
+			return
+		s.opt_model.position=(s.x,s.y+.15,s.z)
+		if s.is_enabled and not LC.ACTOR.freezed:
+			s.opt_model.rotation_y+=time.dt*20
 
 class PseudoGemPlatform(Entity):
 	def __init__(self,pos,t):
 		s=self
-		ne='gem_ptf_e'
-		s.is_enabled=False
-		if t in st.COLOR_GEM or settings.debg:
-			ne='gem_ptf'
-			s.is_enabled=True
-			if settings.debg:
-				t=0
-		super().__init__(model=f'{omf}ev/{ne}/{ne}.ply',texture=f'{omf}ev/{ne}/{ne}.png',rotation_x=-90,scale=.001,position=pos,color=LC.GMC[t],unlit=False)
+		physical=bool(t in st.COLOR_GEM or settings.debg)
+		ne='gem_ptf' if physical else 'gem_ptf_e'
+		s.is_enabled=physical
+		super().__init__(model=f'{omf}ev/{ne}/{ne}.ply',texture=f'{omf}ev/{ne}/{ne}.png',rotation_x=-90,scale=.001,position=pos,color=LC.GEM_PLATFORM_COLOR[t],unlit=False)
 		del pos,t
 		if s.is_enabled:
 			HitBox(pos=(s.x,s.y-.15,s.z),sca=(.6,.4,.6))
 			return
 		s.alpha=.5
+	def update(self):
+		if st.gproc():
+			return
+		self.visible=not(st.relic_challange)
 
 ##############
 ## Switches ##

@@ -15,11 +15,11 @@ cc=_core
 LC=_loc
 
 ## classes for dangerous objects ingame where causes player damage or death event ###
-inp=omf+'l2/wood_log/wood_log'
+inp=f'{omf}l2/wood_log/wood_log'
 class WoodLog(Entity):#level 2
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=inp+'.ply',texture=inp+'.png',name='wdlg',position=pos,scale=(.001,.001,.0015),rotation=(-90,0,0),collider=b)
+		super().__init__(model=f'{inp}.ply',texture=f'{inp}.png',name='wdlg',position=pos,scale=(.001,.001,.0015),rotation=(-90,0,0),collider=b)
 		Entity(model='cube',texture=trn+'bricks.png',name=s.name,position=(s.x,s.y+.8,s.z-.075),scale=(.5,2,.5),collider=b)
 		Entity(model='cube',texture=trn+'bricks.png',name=s.name,position=(s.x,s.y-.1,s.z+.6),scale=(.5,3,.5),texture_scale=(1,2),collider=b)
 		s.danger=True
@@ -52,11 +52,11 @@ class WoodLog(Entity):#level 2
 			cc.get_damage(LC.ACTOR,rsn=2)
 		{0:s.reset_pos,1:s.stomp}[s.stat]()
 
-rol=omf+'l2/role/role'
+rol=f'{omf}l2/role/role'
 class Role(Entity):
 	def __init__(self,pos,di):
 		s=self
-		super().__init__(model=rol+'.ply',texture=rol+'.png',rotation=(-90,90,90),position=pos,scale=.01,collider=b)
+		super().__init__(model=f'{rol}.ply',texture=f'{rol}.png',rotation=(-90,90,90),position=pos,scale=.01,collider=b)
 		s.main_pos=s.position
 		s.is_rolling=False
 		s.danger=False
@@ -102,7 +102,7 @@ class Role(Entity):
 
 class SewerGlowIron(Entity):
 	def __init__(self,pos,sca):
-		super().__init__(model='cube',texture=trn+'swr_iron.png',position=pos,scale=sca,color=color.rgb32(255,50,0),texture_scale=(sca[0],sca[2]),unlit=False,collider=b)
+		super().__init__(model='cube',texture=f'{trn}swr_iron.png',position=pos,scale=sca,color=color.rgb32(255,50,0),texture_scale=(sca[0],sca[2]),unlit=False,collider=b)
 		del pos,sca
 	def update(self):
 		s=self
@@ -171,11 +171,11 @@ class EletricWater(Entity):
 				s.tme=random.uniform(.1,.2) if s.x > 180 else s.sw_delay
 				s.switch_state(1)
 
-swrp=omf+'l4/heat_pipe/heat_pipe'
+swrp=f'{omf}l4/heat_pipe/heat_pipe'
 class HeatPipe(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=swrp+'.ply',texture=swrp+'.png',name='hotp',position=pos,scale=.75,rotation=(0,90,0),color=color.red,unlit=False)
+		super().__init__(model=f'{swrp}.ply',texture=f'{swrp}.png',name='hotp',position=pos,scale=.75,rotation=(0,90,0),color=color.red,unlit=False)
 		s.collider=BoxCollider(s,size=Vec3(.5,.5,5))
 		s.danger=True
 		del pos
@@ -185,15 +185,15 @@ class HeatPipe(Entity):
 		if self.intersects(LC.ACTOR):
 			cc.get_damage(LC.ACTOR,rsn=4)
 
-rmsc=omf+'l5/m_sculpt/m_sculpt'
+rmsc=f'{omf}l5/m_sculpt/m_sculpt'
 class MonkeySculpture(Entity):
 	def __init__(self,pos,r,d,ro_y=90):
 		s=self
 		super().__init__(name='mnks',position=pos,scale=.003,rotation=(-90,ro_y,0))
-		s.model=rmsc+'1.ply'
+		s.model=f'{rmsc}1.ply'
 		if r:
-			s.model=rmsc+'.ply'
-			s.podium=Entity(model='cube',texture=trn+'moss.png',name=s.name,scale=(.5,1,.5),texture_scale=(1,2),position=(s.x,s.y-.5,s.z))
+			s.model=f'{rmsc}.ply'
+			s.podium=Entity(model='cube',texture=f'{trn}moss.png',name=s.name,scale=(.5,1,.5),texture_scale=(1,2),position=(s.x,s.y-.5,s.z))
 		s.texture=rmsc+'.png'
 		s.f_pause=False
 		s.s_audio=False
@@ -236,19 +236,19 @@ class MonkeySculpture(Entity):
 		if s.rot:
 			s.rot_to_crash()
 
-ftf=omf+'l5/fire_trap/fire_trap'
+ftf=f'{omf}l5/fire_trap/fire_trap'
 class FireTrap(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=ftf+'.obj',texture=ftf+'.png',position=pos,scale=.2,color=color.yellow,collider=b,double_sided=True)
+		super().__init__(model=f'{ftf}.obj',texture=f'{ftf}.png',position=pos,scale=.2,color=color.yellow,collider=b,double_sided=True)
 		ef.LightFire(pos=(s.x,s.y+.2,s.z))
 		del pos
 
-ldg=omf+'l5/log_danger/log_danger'
+ldg=f'{omf}l5/log_danger/log_danger'
 class LogDanger(Entity):
 	def __init__(self,pos,ro_y):
 		s=self
-		super().__init__(model=ldg+'.ply',texture=ldg+'.png',position=pos,scale=.001,rotation=(-90,ro_y,0),collider=b,unlit=False)
+		super().__init__(model=f'{ldg}.ply',texture=f'{ldg}.png',position=pos,scale=.001,rotation=(-90,ro_y,0),collider=b,unlit=False)
 		s.spawn_pos=s.position
 		s.stop_throw=False
 		s.is_purge=False
@@ -308,11 +308,11 @@ class LogDanger(Entity):
 					cc.get_damage(LC.ACTOR,rsn=2)
 					s.is_purge=True
 
-behv=omf+'l6/hive/0'
+behv=f'{omf}l6/hive/0'
 class Hive(Entity):
 	def __init__(self,pos,bID,bMAX):
 		s=self
-		super().__init__(model=behv+'.ply',texture=behv+'.tga',position=pos,scale=.1/150,rotation_x=-90)
+		super().__init__(model=f'{behv}.ply',texture=f'{behv}.png',position=pos,scale=.1/150,rotation_x=-90)
 		s.locked=False
 		s.bees_out=0
 		s.bMAX=bMAX
@@ -342,11 +342,11 @@ class Hive(Entity):
 			if not s.locked:
 				an.hive_awake(s,sp=12)
 
-tk=omf+'l6/tikki/'
+tk=f'{omf}l6/tikki/'
 class TikkiSculpture(Entity):
 	def __init__(self,pos,spd,rng):
 		s=self
-		super().__init__(model=tk+'0.ply',texture=tk+'0.tga',position=pos,scale=.0004,rotation_x=-90,name='tksc',collider=b)
+		super().__init__(model=f'{tk}0.ply',texture=f'{tk}0.png',position=pos,scale=.0004,rotation_x=-90,name='tksc',collider=b)
 		s.is_moving=False
 		s.move_speed=spd
 		s.move_point=pos
@@ -384,11 +384,11 @@ class TikkiSculpture(Entity):
 			s.is_moving=True
 			del ksp
 
-lm=omf+'l6/lmine/'
+lm=f'{omf}l6/lmine/'
 class LandMine(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=lm+'0.ply',name='ldmn',texture=lm+'0.tga',position=pos,rotation_x=-90,scale=.00065)
+		super().__init__(model=f'{lm}0.ply',name='ldmn',texture=f'{lm}0.png',position=pos,rotation_x=-90,scale=.00065)
 		s.explode=False
 		s.danger=True
 		s.p_snd=False
@@ -425,7 +425,7 @@ class LandMine(Entity):
 			an.mine_destroy(s,sp=12)
 			return
 		lmd=distance(s,LC.ACTOR)
-		an.land_mine(s,sp=12)
+		an.land_mine(s,sp=13)
 		if lmd < .3:
 			s.explosion()
 			return
@@ -438,11 +438,11 @@ def multi_heat_tile(p,typ,ro_y,sca,CNT):
 			HeatTile(pos=(p[0]+mhx,p[1],p[2]+mhz),typ=typ,ro_y=ro_y,sca=sca)
 	del mhx,mhz,p,typ,ro_y,sca,CNT
 
-lbcb=omf+'l7/lab_ptf/lab_ptf'
+lbcb=f'{omf}l7/lab_ptf/lab_ptf'
 class HeatTile(Entity):
 	def __init__(self,pos,ro_y=0,typ=0,sca=(.5,.8,.5)):
 		s=self
-		super().__init__(model=lbcb+'.obj',texture=lbcb+'.png',name='labt',position=pos,scale=sca,collider=b,rotation_y=ro_y,color=color.red,unlit=False)
+		super().__init__(model=f'{lbcb}.obj',texture=f'{lbcb}.png',name='labt',position=pos,scale=sca,collider=b,rotation_y=ro_y,color=color.red,unlit=False)
 		s.matr='metal'
 		s.danger=True
 		if typ == 1:
@@ -472,11 +472,11 @@ class HeatTile(Entity):
 					s.refr=1
 					s.is_heat=True
 
-lbpi=omf+'l7/piston/piston'
+lbpi=f'{omf}l7/piston/piston'
 class Piston(Entity):
 	def __init__(self,pos,typ,spd):
 		s=self
-		super().__init__(model=lbpi+'.ply',texture=lbpi+'.png',position=(pos[0],pos[1],pos[2]),scale=(.1/110,.1/110,.1/100),rotation=(-90,0,0),collider=b)
+		super().__init__(model=f'{lbpi}.ply',texture=f'{lbpi}.png',position=(pos[0],pos[1],pos[2]),scale=(.1/110,.1/110,.1/100),rotation=(-90,0,0),collider=b)
 		s.collider=BoxCollider(s,center=Vec3(0,0,-1100),size=Vec3(900,900,1800))
 		s.danger=True
 		s.spawn_y=s.y
@@ -521,11 +521,11 @@ class Piston(Entity):
 			pva[s.mode]()
 			del pva
 
-lpad=omf+'l7/e_pad/'
+lpad=f'{omf}l7/e_pad/'
 class LabPad(Entity):
 	def __init__(self,pos,ID):
 		s=self
-		super().__init__(model=lpad+'0/0.ply',texture=lpad+'0/0.tga',name='epad',position=pos,scale=.1/85,rotation_x=-90,collider=b)
+		super().__init__(model=f'{lpad}0/0.ply',texture=f'{lpad}0/0.png',name='epad',position=pos,scale=.1/85,rotation_x=-90,collider=b)
 		s.active=False
 		s.locked=False
 		s.matr='metal'
@@ -543,7 +543,7 @@ class LabPad(Entity):
 		s=self
 		s.mode=0
 		s.unlit,s.locked=True,False
-		s.texture=lpad+'0/0.tga'
+		s.texture=f'{lpad}0/0.png'
 	def enable_pad(self):
 		s=self
 		s.tme=.5
@@ -552,7 +552,7 @@ class LabPad(Entity):
 			s.locked=True
 			s.trigger_taser()
 		s.mode=1
-		s.texture=lpad+'1/0.tga'
+		s.texture=f'{lpad}1/0.png'
 		s.unlit=False
 	def update(self):
 		if st.gproc():
@@ -567,11 +567,11 @@ class LabPad(Entity):
 		if s.tme <= 0:
 			s.disable_pad()
 
-lbts=omf+'l7/lab_taser/'
+lbts=f'{omf}l7/lab_taser/'
 class LabTaser(Entity):
 	def __init__(self,pos,ID):
 		s=self
-		super().__init__(model=lbts+'0.ply',texture=lbts+'0.tga',name='ltts',position=pos,scale=.1/150,rotation_x=-90)
+		super().__init__(model=f'{lbts}0.ply',texture=f'{lbts}0.png',name='ltts',position=pos,scale=.1/150,rotation_x=-90)
 		s.frm=0
 		s.ID=ID
 		del pos,ID
@@ -595,11 +595,11 @@ class FallingZone(Entity):## falling
 		if self.intersects(LC.ACTOR):
 			cc.dth_event(LC.ACTOR,rsn=1)
 
-bldr=omf+'l8/boulder/boulder'
+bldr=f'{omf}l8/boulder/boulder'
 class Boulder(Entity):
 	def __init__(self,pos,fldd):
 		s=self
-		super().__init__(model=bldr+'.ply',texture=bldr+'.png',position=pos,scale=.0016,rotation_x=-90,unlit=False)
+		super().__init__(model=f'{bldr}.ply',texture=f'{bldr}.png',position=pos,scale=.0016,rotation_x=-90,unlit=False)
 		s.imp_snd=Audio(sn.BLD_ROLL,loop=True,autoplay=False,volume=settings.SFX_VOLUME)
 		s.follow_speed=1.8
 		s.rs_delay=3.5

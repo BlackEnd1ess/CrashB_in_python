@@ -11,7 +11,7 @@ MUSIC={0:'wroom',
 	9:'woods'}
 
 ##SFX
-INTERFACE={0:'ui_select',1:'ui_enter',2:'ui_wumpa',3:'ui_lives',4:'ui_reward',5:'ui_collect'}
+INTERFACE={0:'ui_select',1:'ui_enter',2:'ui_wumpa',3:'ui_lives',4:'ui_reward',5:'ui_collect',6:'ui_clock'}
 
 AMBIENCE={0:'amb_rain',1:'amb_thunder_start',2:'amb_thunder0',3:'amb_thunder1',4:'amb_river'}
 
@@ -35,7 +35,8 @@ PLAYER={0:'cb_footstep_dirt',
 		17:'cb_spin_hit',
 		18:'cb_footstep_snow',
 		19:'cb_fire_burn',
-		20:'cb_electric'}
+		20:'cb_electric',
+		21:'cb_dodge'}
 
 CRATE={0:'box_iron',
 		1:'box_steel',

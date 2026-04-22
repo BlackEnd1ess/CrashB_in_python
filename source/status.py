@@ -1,12 +1,16 @@
-import ursina
+from ursina import Entity
 
 ## one load level settings
 checkpoint=None
+
+## warp room music index
+WARP_ROOM_MUSIC=1
 
 ## game progress items
 COLOR_GEM=[]
 CLEAR_GEM=[]
 CRYSTAL=[]
+RELIC=[]
 
 ## reset instances
 BOX_RESET=[]
@@ -14,7 +18,12 @@ WMP_RESET=[]
 NPC_RESET=[]
 SWI_RESET=[]
 
-## player rule
+## relic rule
+current_relic_rank=2
+level_relic_time=0
+relic_time_stop=0
+
+##player rule
 p_last_direc=None
 selected_level=1
 aku_inv_time=20
@@ -41,10 +50,10 @@ crate_bonus=0
 lives_bonus=0
 extra_lives=4
 
-## collected gems/crystal
-collected_crystals=0
-color_gems=0
-clear_gems=0
+## collected gems/crystal/relic
+ui_gem_anim_index=1
+color_gem_id=0
+relic_rank=2
 
 ## ui timer
 show_wumpas=0
@@ -60,6 +69,8 @@ ni_sn=0
 
 ## level processing
 LV_CLEAR_PROCESS=False
+RELIC_TRIAL_DONE=False
+DEV_LEVEL_INDEX=9
 LEVEL_CLEAN=False
 game_over=False
 
@@ -78,7 +89,7 @@ weather_thunder=False
 gem_path_solved=False
 
 bonus_warp_room=False
-is_time_trial=False
+relic_challange=False
 is_invincible=False
 wait_screen=False
 death_event=False

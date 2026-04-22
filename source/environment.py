@@ -1,7 +1,8 @@
-from ursina import Sky,Entity,PointLight,AmbientLight,color,invoke,scene,camera,window,load_texture
+from ursina import Sky,Entity,PointLight,AmbientLight,color,invoke,scene,camera,window,load_texture,Vec2
 import status,_loc,sound,time,random,_core,settings
 from ursina.ursinastuff import destroy
 
+sn=sound
 st=status
 LC=_loc
 c=color
@@ -33,16 +34,22 @@ def set_fog():
 class WeatherRain(Entity):
 	def __init__(self):
 		s=self
-		s.rain_particle=[load_texture(f'res/ui/misc/rain/{cbx}.png') for cbx in range(58+1)]
-		super().__init__(model='quad',texture=None,scale=(1.8,1),parent=camera.ui,z=1,visible=False)
-		s.max_frm=len(s.rain_particle)-1
+		ttxt=f'res/ui/misc/rain/{random.randint(0,4)}.png'
+		super().__init__(model='quad',texture=ttxt,scale=(1.8,1),parent=camera.ui,z=1,visible=False,color=color.white,unlit=False)
+		s.spd=65 if (st.level_index == 5) else 55
+		s.alpha_fade_speed=2.3
 		LC.ACTOR.indoor=.5
-		sound.Rainfall()
-		s.spd=55
-		s.frm=0
-		if st.level_index == 5:
-			s.spd=65
+		sn.Rainfall()
 		del s
+	def check_indoor(self):
+		s=self
+		if LC.ACTOR.warped and LC.ACTOR.indoor <= 0:
+			s.visible=True
+			s.alpha=min(s.alpha+time.dt*s.alpha_fade_speed,1)
+			return
+		s.alpha=max(s.alpha-time.dt*s.alpha_fade_speed,0)
+	def refr_texture(self):
+		self.texture_offset+=Vec2(0,.06)
 	def update(self):
 		s=self
 		if st.pause:
@@ -50,51 +57,42 @@ class WeatherRain(Entity):
 		if st.LV_CLEAR_PROCESS:
 			destroy(s)
 			return
-		_core.incr_frm(s,s.spd)
-		if s.texture != s.rain_particle[int(s.frm)]:
-			s.texture=s.rain_particle[int(s.frm)]
-		if LC.ACTOR.warped and LC.ACTOR.indoor <= 0:
-			s.visible=True
-			s.alpha=lerp(s.alpha,1,time.dt*2.3)
-			return
-		s.alpha=lerp(s.alpha,0,time.dt*2.3)
+		s.check_indoor()
+		s.refr_texture()
+
 
 ##Thunder SFX/SKY
 skp='res/background/ruin'
-class Thunderbolt(Entity):
+class Thunderbolt(PointLight):
 	def __init__(self):
 		s=self
-		super().__init__()
-		s.flash=PointLight(position=s.position,color=color.black)
-		s.org_bgc=window.color
-		s.thnt=3
-	def thunder_bolt(self):
+		super().__init__(color=color.black,scale=5)
+		s.active=False
+		s.reset_time=0
+		s.tme=1
+	def refr_lighbolt(self):
 		s=self
-		AC=LC.ACTOR
-		if LC.bgT:
-			LC.bgT.texture=skp+'_th.jpg'
-			LC.bgT.texture_scale=LC.bgT.orginal_tsc
-		else:
-			window.color=color.white
-		s.flash.position=(AC.x,AC.y+3,AC.z)
-		s.flash.color=color.white
-		sound.thu_audio(ID=1,pit=random.uniform(.1,.5))
-		invoke(lambda:sound.thu_audio(ID=random.randint(2,3),pit=random.uniform(.1,.5)),delay=.5)
-		invoke(s.reset_sky,delay=random.uniform(.1,.4))
-		del AC
-	def reset_sky(self):
+		if LC.ACTOR.indoor <= 0:
+			s.position=(LC.ACTOR.x+random.uniform(-.5,.5),LC.ACTOR.y+1,LC.ACTOR.z+random.uniform(1,2))
+		sn.thu_audio(ID=1,pit=random.uniform(.1,.5))
+		s.color=color.white
+		s.active=True
+	def reset_lightbolt(self):
 		s=self
-		if LC.bgT:
-			LC.bgT.texture=skp+'.jpg'
-			LC.bgT.texture_scale=LC.bgT.orginal_tsc
-		else:
-			window.color=s.org_bgc
-		s.flash.color=color.black
-		s.thnt=random.randint(4,10)
+		s.reset_time+=time.dt
+		if s.reset_time > .3:
+			s.reset_time=0
+			s.color=color.black
+			sn.thu_audio(ID=random.randint(2,3),pit=random.uniform(.1,.5))
+			s.active=False
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		s.thnt=max(s.thnt-time.dt,0)
-		if s.thnt <= 0:
-			s.thunder_bolt()
+		if s.active:
+			s.reset_lightbolt()
+			return
+		s.tme-=time.dt
+		if s.tme <= 0:
+			s.tme=random.randint(4,10)
+			s.refr_lighbolt()

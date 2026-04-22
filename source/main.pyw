@@ -26,9 +26,8 @@ def dev_start(idx):
 	status.level_index=idx
 	if idx == 0:
 		ui.TitleScreen()
-	else:
-		level.load(idx)
-	del idx
+		return
+	level.load(idx)
 
 game()
 app.run()

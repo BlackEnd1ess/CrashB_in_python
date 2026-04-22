@@ -12,16 +12,16 @@ labt='res/objects/l7/lab_taser/'
 labp='res/objects/l7/e_pad/'
 tki='res/objects/l6/tikki/'
 hpf='res/objects/l6/hive/'
-lbh=nf+'lumberjack/smash/'
 ldm='res/objects/l6/lmine/'
 dpw='res/objects/ev/door/'
-lbas=nf+'lab_assistant/'
-plt=nf+'eating_plant/'
-wrv='res/objects/ev/'
-hdg=nf+'hedgehog/'
-rti=nf+'rat/idle/'
-hpo=nf+'hippo/'
-go=nf+'gorilla/'
+
+lbh=f'{nf}lumberjack/smash/'
+lbas=f'{nf}lab_assistant/'
+plt=f'{nf}eating_plant/'
+hdg=f'{nf}hedgehog/'
+rti=f'{nf}rat/idle/'
+hpo=f'{nf}hippo/'
+go=f'{nf}gorilla/'
 
 st=status
 sn=sound
@@ -35,11 +35,14 @@ gp=20
 t=18
 ## animator classes
 class BoxBreak(Entity):
-	def __init__(self,pos,col):
+	def __init__(self,pos,ID):
 		s=self
+		s.vcol={3:color.rgb32(140,70,0),11:color.red,12:color.green,15:color.gold,16:color.rgb32(180,0,180)}
+		col=color.orange if not (ID in s.vcol) else s.vcol[ID]
 		super().__init__(model=f'{cf}brk/0.ply',texture=f'{cf}brk/0.png',rotation=(-90,0,0),scale=.4/1000,position=(pos[0],pos[1]-.16,pos[2]),color=col,unlit=False)
+		sn.crate_audio(ID=2)
 		s.frm=0
-		del pos,col,s
+		del pos,ID,s,col
 	def update(self):
 		if st.gproc():
 			return
@@ -99,7 +102,10 @@ class NPCAnimator(Entity):
 		if s.frm >= s.max_frame+.99:
 			destroy(s)
 			return
-		s.model={14:f'{go}',19:f'{lbas}'}[s.vnum]+f'fall/{int(s.frm)}.ply'
+		if s.vnum == 14:
+			s.model=f'{go}fall/{int(s.frm)}.ply'
+		if s.vnum == 19:
+			s.model=f'{lbas}fall/{int(s.frm)}.ply'
 
 class CollapseFloor(Entity):
 	def __init__(self,t,pos):
@@ -120,31 +126,6 @@ class CollapseFloor(Entity):
 			destroy(s)
 			return
 		s.model=f'{cl}{s.typ}/{int(s.frm)}.ply'
-
-class WarpRingEffect(Entity):
-	def __init__(self,pos):
-		s=self
-		super().__init__(model=wrv+'warp_rings/0.ply',texture=wrv+'warp_rings/ring.png',scale=.0016/2,rotation_x=-90,position=pos,color=color.white,alpha=.9,unlit=False)
-		s.activ=False
-		s.max_rings=8
-		s.rings=0
-		s.times=0
-		del pos,s
-	def update(self):
-		if not st.gproc() and cc.level_ready:
-			s=self
-			if not s.activ:
-				s.activ=True
-				sn.obj_audio(ID=0)
-			s.rings=min(s.rings+time.dt*48,8.999)
-			if s.rings > 8.99:
-				s.rings=0
-				s.times+=1
-				sn.pc_audio(ID=1,pit=.35)
-			s.model=wrv+f'warp_rings/{int(s.rings)}.ply'
-			if s.times > s.max_rings:
-				LC.ACTOR.warped=True
-				destroy(s)
 
 ##player animation logic
 def c_animation(c):
@@ -180,9 +161,8 @@ def idle(c):
 	c.idfr+=ps
 	if c.idfr > 10.99:
 		c.idfr=0
-	vv=af+f'idle/{int(c.idfr)}.ply'
-	if c.model != vv:
-		c.model=vv
+	if c.model != f'{af}idle/{int(c.idfr)}.ply':
+		c.model=f'{af}idle/{int(c.idfr)}.ply'
 
 def run(c):
 	c.rnfr+=ps
@@ -302,8 +282,8 @@ def c_push_back(c):
 def dth_angelfly(c):
 	c.y+=time.dt
 	c.dthfr+=ps
-	if c.texture != f'{af}death/angel/0.tga':
-		c.texture=f'{af}death/angel/0.tga'
+	if c.texture != f'{af}death/angel/0.png':
+		c.texture=f'{af}death/angel/0.png'
 	if not c.dth_snd:
 		c.dth_snd=True
 		sn.pc_audio(ID=15,pit=.35)
@@ -337,7 +317,7 @@ def dth_el_shock(c):
 	c.dthfr+=ps
 	if c.dthfr > 1.99:
 		c.dthfr=0
-	c.texure=af+f'death/volt/{int(c.dthfr)}.tga'
+	c.texure=af+f'death/volt/{int(c.dthfr)}.png'
 	c.model=af+f'death/volt/{int(c.dthfr)}.ply'
 
 def dth_beesting(c):
@@ -355,8 +335,8 @@ def dth_c_buried(c):
 	if not c.sma_dth:#flag for mirror anim
 		c.sma_dth=True
 		c.y-=.3
-	if c.texture != f'{af}death/buried/0.tga':
-		c.texture=f'{af}death/buried/0.tga'
+	if c.texture != f'{af}death/buried/0.png':
+		c.texture=f'{af}death/buried/0.png'
 	c.dthfr+=ps
 	if c.dthfr > 10.99:
 		c.dthfr=10
@@ -400,15 +380,19 @@ def rat_idle(m):
 	m.model=f'{rti}{int(m.frm)}.ply'
 
 def hippo_wait(m):
-	m.a_frame=min(m.a_frame+time.dt*t,23.999)
+	m.a_frame+=time.dt*t
 	if m.a_frame > 23.99:
 		m.a_frame=0
 		return
 	m.model=f'{hpo}{int(m.a_frame)}.ply'
+
 def hippo_dive(m):
-	m.a_frame=min(m.a_frame+time.dt*t,57.999)
+	m.a_frame+=time.dt*t
 	if m.a_frame > 57.99:
+		m.active=False
+		m.is_dive=True
 		m.a_frame=0
+		m.col.collider=None
 		return
 	m.model=f'{hpo}{int(m.a_frame)}.ply'
 
@@ -467,7 +451,9 @@ def lmbjack_smash(m,sp):
 	m.model=f'{lbh}{int(m.sma_frm)}.ply'
 
 def land_mine(m,sp):
-	cc.incr_frm(m,sp)
+	m.frm+=time.dt*sp
+	if m.frm > 10.99:
+		m.frm=0
 	m.model=f'{ldm}{int(m.frm)}.ply'
 
 def mine_destroy(m,sp):
@@ -485,7 +471,9 @@ def pad_refr(lp):
 		lp.frm=3
 	lp.model=labp+f'{lp.mode}/{int(lp.frm)}.ply'
 def taser_rotation(t):
-	cc.incr_frm(t,15)
+	t.frm+=time.dt*15
+	if t.frm > 6.99:
+		t.frm=0
 	t.model=labt+f'/{int(t.frm)}.ply'
 
 ## door animation

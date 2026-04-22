@@ -1,4 +1,5 @@
 import _core,status,animation,sound,_loc,settings,_debug_
+from effect import WarpRingEffect
 from math import atan2
 from ursina import *
 
@@ -40,23 +41,17 @@ class CrashB(Entity):
 		super().__init__(model=LC.ctx+'.ply',texture=LC.ctx+'.png',scale=.1/115,rotation_x=-90,position=pos,unlit=False)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+500),size=Vec3(300,300,500))
 		cc.set_val(s)
-		an.WarpRingEffect(pos=s.position)
+		WarpRingEffect()
 		pShadow()
-		s.KEY_ACT={sg.MNU_KEY:lambda:cc.game_pause(),
-					sg.JMP_KEY:lambda:s.check_jump(),
-					sg.IFC_KEY:lambda:cc.show_status_ui(),
-					sg.ATK_KEY:lambda:s.spin_attack(),
-					sg.BLY_KEY:lambda:s.belly_smash(),
-					sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),
-					sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
+		s.KEY_ACT={sg.MNU_KEY:lambda:cc.game_pause(),sg.JMP_KEY:lambda:s.check_jump(),sg.IFC_KEY:lambda:cc.show_status_ui(),sg.ATK_KEY:lambda:s.spin_attack(),sg.BLY_KEY:lambda:s.belly_smash(),sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
 		if sg.debg:
-			debg.PlayerDBG()
-			s.dev_act={
-					sg.DEV_WARP:lambda:setattr(s,'position',(4.2,3,31.7)),
-					sg.DEV_INFO:lambda:_debug_.pos_info(s),
-					sg.DEV_COLL:_debug_.complete_level,
-					sg.DEV_INFO:lambda:_debug_.chck_mem(),
-					sg.DEV_ECAM:lambda:EditorCamera()}
+			#debg.PlayerDBG()
+			s.dev_act={sg.DEV_WARP:lambda:setattr(s,'position',(4.2,3,31.7)),
+						sg.DEV_INFO:lambda:_debug_.pos_info(s),
+						sg.DEV_COLL:_debug_.complete_level,
+						sg.DEV_INFO:lambda:_debug_.show_instance_count(),
+						sg.DEV_ECAM:lambda:EditorCamera(),
+						sg.DEV_TERM:lambda:_debug_.dev_console()}
 		LC.IGNORE.append(s)
 		del pos
 	def input(self,key):
@@ -137,7 +132,6 @@ class CrashB(Entity):
 			s.b_smash=False
 	def jump(self):
 		s=self
-		s.frst_lnd=True
 		kt=bool(s.space_time > .09)
 		s.y=lerp(s.y,s.vpos+hgt[kt]+.1,(time.dt*s.gravity)*fgt[kt])
 		if s.walking and not s.is_attack:
