@@ -22,7 +22,7 @@ def map_setting():
 	LC.BN_DST=(7,15)
 	LC.RCX=12
 	LC.RCZ=26
-	LC.RCB=8
+	LC.RCB=12
 	st.toggle_thunder=False
 	st.toggle_rain=False
 
@@ -201,10 +201,12 @@ def load_npc():
 
 ## bonus level / gem path
 def bonus_zone():
-	dg.FallingZone(pos=(0,-38.5,0),s=(32,.1,20),v=True)
-	Entity(model='quad',color=color.black,scale=(30,12),position=(0,-37,2))
-	o.ObjType_Wall(ID=5,pos=(0,-37,0),sca=.015,ro_y=90,col=color.rgb32(80,170,150))
-	o.ObjType_Wall(ID=5,pos=(15,-37,0),sca=.015,ro_y=90,col=color.rgb32(80,170,150))
+	dg.FallingZone(pos=(0,-38.5,0),s=(60,.1,20),v=True)
+	Entity(model='quad',color=color.black,scale=(30,24),position=(0,-37,2))
+	o.ObjType_Wall(ID=5,pos=(-10,-37,0),sca=.015,ro_y=90,col=color.rgb32(80,170,150))
+	o.ObjType_Wall(ID=5,pos=(5,-37,0),sca=.015,ro_y=90,col=color.rgb32(80,170,150))
+	o.ObjType_Wall(ID=5,pos=(20,-37,0),sca=.015,ro_y=90,col=color.rgb32(80,170,150))
+	o.ObjType_Wall(ID=5,pos=(35,-37,0),sca=.015,ro_y=90,col=color.rgb32(80,170,150))
 	o.ObjType_Floor(ID=9,pos=(0,-37.5,U),sca=(.5,.5,.3),col=color.rgb32(90,140,180))
 	o.ObjType_Floor(ID=9,pos=(-3,-37,U),sca=(.5,.5,.3),col=color.rgb32(90,140,180))
 	o.ObjType_Floor(ID=9,pos=(3,-37.5,U),sca=(.5,.5,.3),col=color.rgb32(90,140,180))

@@ -12,6 +12,8 @@ c=crate
 n=npc
 U=-3
 
+GEM_VNUM=4
+
 def map_setting():
 	LC.FOG_L_COLOR=color.black
 	LC.FOG_B_COLOR=color.black
@@ -28,7 +30,7 @@ def map_setting():
 def start_load():
 	load_crate()
 	bonus_zone()
-	if 5 in st.COLOR_GEM or settings.debg:
+	if GEM_VNUM in st.COLOR_GEM or settings.debg:
 		gem_zone()
 	load_object()
 	load_wumpa()
@@ -39,7 +41,7 @@ def load_object():
 	blh=.2
 	o.StartRoom(pos=(0,0,-64.2))
 	o.BonusPlatform(pos=(9+.75*6,.5,-22))
-	o.GemPlatform(pos=(16.9,.4,-.1),t=2)
+	o.GemPlatform(pos=(16.9,.4,-.1),t=GEM_VNUM)
 	dg.FallingZone(pos=(0,-2,0),s=(150,.3,128))
 	o.ObjType_Background(ID=3,sca=(800,120),pos=(50,-38,128),col=color.rgb32(160,160,170),txa=(2,1),UL=True)
 	o.ObjType_Floor(ID=5,pos=(0,blh,-56),sca=(.03,.03,.03),rot=(0,-90,0))
@@ -158,11 +160,11 @@ def load_object():
 	dg.MonkeySculpture(pos=(53.4,1.1,18.7),r=False,d=True,ro_y=90)
 	dg.MonkeySculpture(pos=(51.4,1.1,20.2),r=False,d=True,ro_y=-90)
 	#pseudo gem pltf
-	o.PseudoGemPlatform(pos=(43.5,-.52,3.5),t=1)
-	o.PseudoGemPlatform(pos=(43.5,-.52,2),t=1)
-	o.PseudoGemPlatform(pos=(55.1,1.1,15.7),t=3)
-	o.PseudoGemPlatform(pos=(56.6,1.1,15.7),t=3)
-	o.PseudoGemPlatform(pos=(58.1,1.1,15.7),t=3)
+	o.PseudoGemPlatform(pos=(43.5,-.52,3.5),t=2)
+	o.PseudoGemPlatform(pos=(43.5,-.52,2),t=2)
+	o.PseudoGemPlatform(pos=(55.1,1.1,15.7),t=5)
+	o.PseudoGemPlatform(pos=(56.6,1.1,15.7),t=5)
+	o.PseudoGemPlatform(pos=(58.1,1.1,15.7),t=5)
 	# background objects
 	ccw=color.white
 	sk=.03
@@ -273,7 +275,7 @@ def load_crate():
 	c.spawn(ID=6,p=(11.9,.36,-28.6))
 	c.spawn(ID=6,p=(25.4,.36,4.5))
 	c.spawn(ID=6,p=(40.5,.3+.16,4.6))
-	if not 3 in status.COLOR_GEM:
+	if not st.level_index in st.COLOR_GEM:
 		c.spawn(ID=16,p=(-.4,.36,-56.4))
 def load_wumpa():
 	mt.wumpa_row(POS=(0,.5,-60.3),CNT=3,WAY=1)
@@ -433,7 +435,5 @@ def gem_zone():
 	o.ObjType_Scene(ID=9,pos=(191,-4,16),ro_y=-90,sca=.08)
 	o.ObjType_Scene(ID=9,pos=(198,-4,32),ro_y=90,sca=.08)
 	o.ObjType_Scene(ID=9,pos=(191,-4,32),ro_y=-90,sca=.08)
-	if not 3 in st.COLOR_GEM:
-		item.GemStone(c=3,pos=(194.4,-2,37.7))
 	o.EndRoom(pos=(195.5,-1.01,37.7),c=color.rgb32(220,100,220))
 	del sk

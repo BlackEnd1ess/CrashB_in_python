@@ -120,7 +120,6 @@ def load_object():
 	o.ObjType_Block(ID=5,pos=(96,4.5,1),sca=(.5,1.2,.5),typ=1,ro_y=90)
 	dg.Piston(pos=(96,4.65+4.2,1),typ=0,spd=4)
 	#e pads
-	
 	dg.LabPad(pos=(74,3.4,1),ID=142)
 	dg.LabPad(pos=(75,3.4,1),ID=143)
 	dg.LabPad(pos=(77,3.4,1),ID=144)
@@ -129,6 +128,7 @@ def load_object():
 	dg.LabPad(pos=(93,4.7,1),ID=148)
 	#e1
 	o.spw_block(ID=5,p=(0,0,-62),vx=[1,4],ro_y=90)
+	o.spw_block(ID=5,p=(-1,0,-59),vx=[1,1],ro_y=0)
 	o.spw_block(ID=5,p=(0,0,-57),vx=[3,1],ro_y=0)
 	o.spw_block(ID=5,p=(4,0,-57),vx=[1,1],ro_y=0)
 	dg.multi_heat_tile(p=(8,.45,-57),typ=0,ro_y=0,sca=(.5,.8,.5),CNT=[1,1])

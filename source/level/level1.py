@@ -10,6 +10,8 @@ c=crate
 n=npc
 U=-3
 
+GEM_VNUM=1
+
 def map_setting():
 	LC.FOG_L_COLOR=color.rgb32(20,70,50)
 	LC.FOG_B_COLOR=color.rgb32(20,70,50)
@@ -26,7 +28,7 @@ def map_setting():
 def start_load():
 	load_crate()
 	bonus_zone()
-	if 4 in st.COLOR_GEM or settings.debg:
+	if GEM_VNUM in st.COLOR_GEM or settings.debg:
 		gem_zone()
 	load_object()
 	load_wumpa()
@@ -36,11 +38,11 @@ def start_load():
 def load_object():
 	o.StartRoom(pos=(-.3,1,-66.5))
 	cG=color.green
-	o.ObjType_Water(pos=(0,.6,-16),sca=(10,96),al=1,col=color.rgb32(150,150,150),spd=8,rot=(0,0,0),txs=(10*2,96*2))
+	o.ObjType_Water(pos=(0,.6,-16),sca=(10,96),al=1,col=color.rgb32(190,190,190),spd=8,rot=(0,0,0),txs=(10*2,96*2))
 	o.InvWall(pos=(-5,.5,-32),sca=(5.,10,128))
 	o.InvWall(pos=(5.3,.5,-32),sca=(5.,10,128))
 	o.BonusPlatform(pos=(1.1,1.2,-6))
-	o.GemPlatform(pos=(-.3,1.2,-18),t=4)
+	o.GemPlatform(pos=(-.3,1.2,-18),t=GEM_VNUM)
 	gt=(1,2,1.4)
 	gs=1.6
 	fgg=color.rgb32(190,200,190)
@@ -112,7 +114,7 @@ def load_object():
 	o.EndRoom(pos=(1,2.4,26.2),c=color.rgb32(160,180,160))
 def load_crate():
 	CRP=1.16
-	if not 4 in st.COLOR_GEM:
+	if not st.level_index in st.COLOR_GEM:
 		c.spawn(ID=16,p=(-1.1,CRP,-57))
 	mt.crate_plane(ID=2,POS=(-1.8,CRP,3.3),CNT=[2,1])
 	mt.crate_wall(ID=14,POS=(-1.3,1.14,8.8),CNT=[2,2])
@@ -181,7 +183,7 @@ def load_npc():
 ## bonus level / gem path
 def bonus_zone():
 	o.BonusPlatform(pos=(12,-36.2,U))
-	o.ObjType_Water(pos=(0,-37.5,0),sca=(48,32),txs=(48*2,32*2),al=1,col=color.rgb32(80,80,120),rot=(0,0,0),spd=8)
+	o.ObjType_Water(pos=(0,-37.5,0),sca=(48,32),txs=(48*2,32*2),al=1,col=color.rgb32(180,180,180),rot=(0,0,0),spd=8)
 	o.ObjType_Deco(ID=1,pos=(.3,-36.6,-1.75),sca=.018,rot=(-90,0,0))
 	o.ObjType_Deco(ID=1,pos=(3.5,-36.5,-1.75),sca=.017,rot=(-90,0,0))
 	o.ObjType_Deco(ID=1,pos=(6.6,-36.6,-1.75),sca=.018,rot=(-90,0,0))
@@ -205,7 +207,7 @@ def bonus_zone():
 	mt.wumpa_row(POS=(9.4,-36.72,U),CNT=4,WAY=0)
 	mt.wumpa_row(POS=(2,-36,U),CNT=3,WAY=0)
 def gem_zone():
-	o.ObjType_Water(pos=(220,-1,0),sca=(50,12),txs=(50,12),al=1,col=color.rgb32(70,70,100),rot=(0,0,0),spd=8)
+	o.ObjType_Water(pos=(220,-1,0),sca=(50,12),txs=(50*2,12*2),al=1,col=color.rgb32(190,190,190),rot=(0,0,0),spd=8)
 	for w in range(4):
 		o.ObjType_Wall(ID=0,pos=(195+w*14,1,1.5),ro_y=90,sca=.02)
 	del w
@@ -229,4 +231,4 @@ def gem_zone():
 	mt.wumpa_row(POS=(209,1.8,-2),CNT=4,WAY=2)
 	mt.wumpa_row(POS=(230.6,2.7,-2),CNT=3,WAY=0)
 	mt.wumpa_row(POS=(233.7,3.7,-2),CNT=4,WAY=0)
-	o.GemPlatform(pos=(237.8,3.75,-2),t=4)
+	o.GemPlatform(pos=(237.8,3.75,-2),t=GEM_VNUM)

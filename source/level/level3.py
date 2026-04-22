@@ -108,9 +108,9 @@ def load_object():
 	del cbb
 	#waterflow
 	wtcol=165
-	o.ObjType_Water(pos=(0,-.3,-16),sca=(5,32),txs=(1,12),col=color.rgb32(wtcol,wtcol,wtcol),rot=(0,0,0),al=.625,spd=10)
-	o.ObjType_Water(pos=(0,.7,30),sca=(5,62),txs=(1,24),col=color.rgb32(wtcol,wtcol,wtcol),rot=(0,0,0),al=.625,spd=10)
-	o.ObjType_Water(pos=(0,1.7,73),sca=(5,32),txs=(1,12),col=color.rgb32(wtcol,wtcol,wtcol),rot=(0,0,0),al=.625,spd=10)
+	o.WaterFlow(pos=(0,-.291,-16),sca=(5,32))
+	o.WaterFlow(pos=(0,.7,30),sca=(5,62))
+	o.WaterFlow(pos=(0,1.7,73),sca=(5,32))
 	#waterfall
 	o.Waterfall(pos=(0,.2,-1),sca=(5,1))
 	o.Waterfall(pos=(0,1.2,57),sca=(5,1))
@@ -137,7 +137,7 @@ def load_object():
 	o.EndRoom(pos=(1,3.7,88),c=color.rgb32(200,210,200))
 	del sg,sr,sh
 def load_crate():
-	if not 5 in status.COLOR_GEM:
+	if not st.level_index in st.COLOR_GEM:
 		c.spawn(ID=16,p=(0,.24+.16,-21))
 	#crate
 	u0=.82

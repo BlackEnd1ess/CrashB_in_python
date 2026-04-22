@@ -201,7 +201,7 @@ def load_crate():
 	c.spawn(ID=10,p=(42.8,6.4+.16,37.7))
 	c.spawn(ID=5,p=(5.3,2.2+.16,2.5))
 	c.spawn(ID=5,p=(23.9,h3,6.8))
-	if not 1 in status.COLOR_GEM:
+	if not st.level_index in st.COLOR_GEM:
 		c.spawn(ID=16,p=(.75,.925+.16,-56.7))
 	#checkpoints
 	c.spawn(ID=6,p=(0,h2,-41))

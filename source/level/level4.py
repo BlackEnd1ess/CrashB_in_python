@@ -15,6 +15,8 @@ c=crate
 n=npc
 U=-3
 
+GEM_VNUM=3
+
 def map_setting():
 	LC.FOG_L_COLOR=color.rgb32(160,160,0)
 	LC.FOG_B_COLOR=color.rgb32(128,64,0)
@@ -31,7 +33,7 @@ def map_setting():
 def start_load():
 	load_crate()
 	bonus_zone()
-	if 5 in st.COLOR_GEM or settings.debg:
+	if GEM_VNUM in st.COLOR_GEM or settings.debg:
 		gem_zone()
 	load_object()
 	load_wumpa()
@@ -44,11 +46,11 @@ def load_object():
 	o.StartRoom(pos=(0,.3,-64.2))
 	dg.FallingZone(pos=(0,-1,0),s=(128,.3,128))
 	o.BonusPlatform(pos=(5.2,2,11))
-	o.GemPlatform(pos=(4.2,2,31.7),t=5)
+	o.GemPlatform(pos=(4.2,2,31.7),t=GEM_VNUM)
 	dg.EletricWater(pos=(0,.2,-48),sca=(8,96))
 	dg.EletricWater(pos=(14.5,3.5,83),sca=(8,64))
-	o.ObjType_Water(pos=(10,1,40),sca=(20,23),txs=(20,23),col=color.rgb32(100,255,0),al=1,rot=(0,0,0),spd=15)
-	o.ObjType_Water(pos=(0,-1,6),sca=(30,10),txs=(30,10),col=color.rgb32(100,255,0),al=1,rot=(0,0,0),spd=15)
+	o.ObjType_Water(pos=(10,1,40),sca=(20,23),txs=(20,23),col=color.rgb32(100,255,0),al=1,rot=(0,0,0),spd=8)
+	o.ObjType_Water(pos=(0,-1,6),sca=(30,10),txs=(30,10),col=color.rgb32(100,255,0),al=1,rot=(0,0,0),spd=8)
 	o.EndRoom(pos=(15.65,5.5,78.5),c=color.rgb32(200,200,200))
 	#invisible walls
 	o.InvWall(pos=(-2,0,-30),sca=(1,15,70))
@@ -204,7 +206,7 @@ def load_crate():
 	c.spawn(ID=5,p=(-.4,.56,-47.1))
 	c.spawn(ID=5,p=(.04,.9,6.4))
 	c.spawn(ID=5,p=(5,1.9,39.9))
-	if not 2 in status.COLOR_GEM:
+	if not st.level_index in status.COLOR_GEM:
 		c.spawn(ID=16,p=(-.6,.56,-57.5))
 def load_wumpa():
 	mt.wumpa_row(POS=(-.5,.16+.2,-51.8),CNT=4,WAY=1)
@@ -349,6 +351,4 @@ def gem_zone():
 	o.ObjType_Floor(ID=4,pos=(200,-.3,29.4),sca=.5,rot=(0,0,0))
 	n.spawn(POS=(200,-.25,29),ID=11,DRC=0,RTYP=1)
 	o.ObjType_Wall(ID=2,pos=(200,-1.7,33),ro_y=90,sca=.0175,col=color.rgb32(180,160,140))
-	if not 2 in status.COLOR_GEM:
-		item.GemStone(c=2,pos=(200,0,28.9))
-	o.GemPlatform(pos=(200,0,31.1),t=5)
+	o.GemPlatform(pos=(200,0,31.1),t=GEM_VNUM)

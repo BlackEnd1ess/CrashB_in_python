@@ -11,6 +11,8 @@ c=crate
 n=npc
 U=-3
 
+GEM_VNUM=5
+
 def map_setting():
 	LC.FOG_L_COLOR=color.black
 	LC.FOG_B_COLOR=color.black
@@ -32,7 +34,7 @@ def map_setting():
 
 def start_load():
 	bonus_zone()
-	if 3 in st.COLOR_GEM or settings.debg:
+	if GEM_VNUM in st.COLOR_GEM or settings.debg:
 		gem_zone()
 	load_crate()
 	load_object()
@@ -44,7 +46,7 @@ def load_object():
 	o.StartRoom(pos=(8,.5,-1))
 	o.EndRoom(pos=(61.5,2,152.6),c=color.light_gray)
 	o.BonusPlatform(pos=(35,4.3,61))
-	o.GemPlatform(pos=(61.8,2,111.5),t=3)
+	o.GemPlatform(pos=(61.8,2,111.5),t=GEM_VNUM)
 	#skybox
 	o.ObjType_Background(ID=4,pos=(8,10,200),sca=(400,300),txa=(1,1),col=color.rgb32(50,100,100),UL=True)
 	#wall
