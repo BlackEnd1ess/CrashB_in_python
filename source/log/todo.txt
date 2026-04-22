@@ -1,13 +1,23 @@
-v 1.3.2
-- weather lagg fixx
-- convert tga to png npcs,assets
-- time trial + ui + time boxes
+v 1.3.5
 - VIDEO!!
 
 v 1.4
+- crate just invisible in LOD
+- plant npc lagg fix
+- box switch delay
+- fixx nitro stack on nitro
+- music warp room index savegame
+- better 2d frames (light)
+- color butterfly npc (green, red, blue)
 - better 3d models: tree, mushrooms
 - upgrade level 1
-- add npcs, items, textures and sounds from CB3!
-- freemap
-- command console
 - level 8 no lights when playing other levels before
+- VIDEO!!
+
+v 1.5
+- gorilla sound
+- add npcs, items, textures and sounds from CB3!
+- penguin spin/dizzy
+- frog CB3
+- digin plant
+- freemap

@@ -62,7 +62,7 @@
 
 #04.04.2026
 - stored interface textures in RAM and preload by starting the game
-- waterfoam and waterfall and waterdrips are seperated classes
+- waterfoam and waterfall and waterdrips updated to seperated classes
 - player attack fixxed attack range + cooldown
 - fixxed gamebreaking glitch, while player stuck on bonus platform
 - nitro box update jump positions after fall_down
@@ -77,3 +77,40 @@
 - improved walking on slopes
 - improved Gorilla function: removed invoke sequences
 - removed non used textures from RAM after solved level
+
+#08.04.2026
+- Beta: time trial challange for relics
+- updated 2D animation in interface for gem, relics and crystals
+- time trial clock updated: sound effect while trial time stops
+
+#13.04.2026
+- updated menü icons
+- implmentented item relic
+- time relic color ui in collected interface, timer ui + icon on timer
+- savegame store relic list
+
+#15.04.2026
+- relic time in level 1-5
+- animation rain , animation water_flow changes texture_offset instead loading single frames
+
+#18.04.2026
+- UI 2d animation reduced frames and sprite scale
+
+#20.04.2026
+- new UI classes for gem, crystal and relic
+- gem colors for UI and mesh does not depending anymore from level ID
+- removed black slihuette from warp room
+- relic count to progress
+- pause menu relic counter
+- gem platforms updated: ID, funciton
+- gemstone alpha value
+- crash second hurt sound effect
+- crash akuaku dodge sound effect
+- restored bee buzz sound effect
+
+#21.04.2026
+- updated NPC hippo function
+
+#22.04.2026
+- updated thunderbolt function
+- music select in warproom track 1-4
