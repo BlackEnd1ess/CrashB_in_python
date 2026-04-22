@@ -23,6 +23,7 @@ Information: This Project is a lowpoly based Crash Bandicoot inspired game writt
   <tr>
     <td><img src="screenshot/cb_13.jpg" width="300" /></td>
     <td><img src="screenshot/cb_14.jpg" width="300" /></td>
+    <td><img src="screenshot/cb_15.jpg" width="300" /></td>
   </tr>
 </table>
 
