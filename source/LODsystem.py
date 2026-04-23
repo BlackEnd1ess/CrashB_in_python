@@ -37,10 +37,7 @@ class ManageObjects(Entity):
 				continue
 			AZ=LC.ACTOR
 			if cc.is_box(v):
-				if v.vnum in (3,11,12,13):
-					v.visible=not((AZ.z > v.z+s.box_dst_bf) or (AZ.z < v.z-s.box_dst_zf))
-				else:
-					v.enabled=not((AZ.z > v.z+s.box_dst_bf) or (AZ.z < v.z-s.box_dst_zf))
+				v.visible=not((AZ.z > v.z+s.box_dst_bf) or (AZ.z < v.z-s.box_dst_zf))
 			if cc.is_enemie(v):
 				if v.vnum != 15:
 					v.enabled=not((AZ.z > v.z+s.npc_dst_zb) or (AZ.z < v.z-s.npc_dst_zf))

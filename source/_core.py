@@ -1,5 +1,5 @@
 import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,time,random,json,math,objects
-from ursina import Entity,camera,scene,invoke,Vec3,color,distance,boxcast,raycast,window,load_texture
+from ursina import Entity,camera,scene,invoke,Vec3,color,distance,distance_xz,boxcast,raycast,window,load_texture
 from animation import NPCAnimator,BoxBreak,BoxAnimation,npc_walking
 from effect import JumpDust,PressureWave,Fireball,ExclamationMark
 from math import atan2,sqrt,pi,sin,cos,radians
@@ -134,6 +134,8 @@ def various_val(c):
 	c.atk_duration=max(c.atk_duration-time.dt,0)
 	if c.atk_duration <= 0:
 		c.is_attack=False
+	if c.falling and c.fall_time > .3:
+		c.frst_lnd=True
 	if not c.is_slp:
 		c.move_speed=LC.dfsp
 	if st.bonus_solved and not st.wait_screen:
@@ -158,24 +160,25 @@ def c_slide(c):
 	if c.move_speed > 0:
 		c.slide_fwd=c.move_speed
 def c_spin(c):
-	for qd in scene.entities:
-		if not qd or not qd.collider or distance(c,qd) > .5:
+	for qd in scene.entities[:]:
+		if not qd or not qd.collider:
 			continue
-		if is_box(qd) and qd.vnum != 13:
-			if qd.vnum in (3,11):
-				qd.empty_destroy()
-			else:
-				qd.destroy()
-		if is_enemie(qd):
-			if not (qd.is_purge or qd.is_hitten):
-				if qd.vnum in (1,11) or (qd.vnum == 5 and qd.def_mode):
-					get_damage(c,rsn=2)
-					return
-				if qd.vnum == 17 and qd.ro_mode == 0:
-					get_damage(c,rsn=6)
-					return
-				if qd.vnum != 13:
-					bash_enemie(qd,c)
+		if distance_xz(c,qd) < .5 and abs(c.y-qd.y) < .4:
+			if is_box(qd) and qd.vnum != 13:
+				if qd.vnum in (3,11):
+					qd.empty_destroy()
+				else:
+					qd.destroy()
+			if is_enemie(qd):
+				if not (qd.is_purge or qd.is_hitten):
+					if qd.vnum in (1,11) or (qd.vnum == 5 and qd.def_mode):
+						get_damage(c,rsn=2)
+						return
+					if qd.vnum == 17 and qd.ro_mode == 0:
+						get_damage(c,rsn=6)
+						return
+					if qd.vnum != 13:
+						bash_enemie(qd,c)
 	del qd
 def c_smash(c):
 	for sw in scene.entities:
@@ -216,7 +219,7 @@ def c_shield():
 				if is_box(rf) and not rf.vnum in (0,8,13):
 					if rf.vnum == 14:
 						rf.c_destroy()
-					if not (rf.vnum in (9,10) and rf.activ):
+					if not (rf.vnum in (9,10) and rf.active):
 						rf.destroy()
 					if rf.vnum in (3,11):
 						rf.empty_destroy()
@@ -262,8 +265,8 @@ def spawn_trial_clock(idx):
 	if idx in st.CRYSTAL or idx > 5:
 		item.TimeTrialClock(pos=LC.CLOCK_POSITION[idx])
 def spawn_color_gem(idx):
-	#if idx == st.DEV_LEVEL_INDEX:
-	#	return
+	if idx == st.DEV_LEVEL_INDEX:
+		return
 	cgem_pos=LC.gem_pod_position
 	if idx == 4:
 		cgem_pos=(200,0,28.9)
@@ -283,9 +286,14 @@ def c_subtract(cY):
 	st.crates_in_level-=1
 def reset_crates():
 	for sr in scene.entities[:]:
-		if is_box(sr) and (sr.poly or sr.vnum == 15):
-			sr.enabled=False
-			destroy(sr)
+		if not sr:
+			continue
+		if is_box(sr):
+			if sr.poly or sr.vnum == 15:
+				sr.enabled=False
+				destroy(sr)
+			else:
+				sr.position=sr.spawn_pos
 	del sr
 	if len(st.SWI_RESET) > 0:
 		for ssw in st.SWI_RESET[:]:
@@ -318,11 +326,6 @@ def jmp_lv_fin():
 		clear_level(passed=True)
 def clear_level(passed):
 	st.LV_CLEAR_PROCESS=True
-	if st.level_index == 8:#removes the light glitch after solving this level
-		for klk in scene.entities[:]:
-			if klk.name == 'point_light':
-				klk.color=color.black
-		del klk
 	scene.clear()
 	if passed:
 		window.color=color.gray
@@ -460,7 +463,6 @@ def check_floor(c):
 		return
 	c.y-={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}[c.b_smash]
 	c.fall_time=min(c.fall_time+time.dt,1)
-	c.first_lnd=True
 	c.anim_fall()
 def land_act(c,vp):
 	c.stun=False
@@ -607,22 +609,19 @@ def box_move(c):
 	c.animate_y(c.y-.32,duration=.2)
 	invoke(lambda:setattr(c,'c_fall',False),delay=.25)
 def check_nitro_stack():
-	nt_pos=[v.position for v in scene.entities if (is_box(v) and v.vnum == 12)]
-	jp_box=[]
-	if len(nt_pos) > 0:
-		for nt in scene.entities[:]:
-			if not nt:
-				continue
-			for k in nt_pos:
-				if is_box(nt):
-					if round(nt.x == k[0]) and round(nt.z == k[2]):
-						jp_box.append(nt)
-	if len(jp_box) > 0:
-		nbj=max(jp_box)
-		if nbj.vnum == 12:
-			nbj.can_jmp=True
-	nt_pos.clear()
-	jp_box.clear()
+	nitro_boxes=[e for e in scene.entities if (is_box(e) and e.vnum == 12)]
+	if len(nitro_boxes) > 0:
+		for np in nitro_boxes:
+			box_above=False
+			for op in scene.entities:
+				if not is_box(op) or op is np:
+					continue
+				if np.x == op.x and np.z == op.z:
+					if op.y > np.y:
+						box_above=True
+						break
+			if not box_above:
+				np.can_jmp=True
 def block_destroy(c):
 	if not c.p_snd:
 		c.p_snd=True
@@ -634,7 +633,7 @@ def block_destroy(c):
 				sn.crate_audio(ID=0)
 		invoke(lambda:setattr(c,'p_snd',False),delay=.5)
 def box_jump_action(c):
-	if (c.vnum in (9,10,11) and c.activ) or c.vnum == 0:
+	if (c.vnum in (9,10,11) and c.active) or c.vnum == 0:
 		return
 	if c.vnum in (3,7,8):
 		c_bounce(c)
@@ -687,7 +686,6 @@ def explosion(c):
 				get_damage(LC.ACTOR,rsn=4)
 	del c,nbc
 def spawn_ico(cr_pos):
-	sn.crate_audio(ID=11)
 	for exm in range(5):
 		ExclamationMark(pos=cr_pos,ID=exm)
 	del exm,cr_pos
@@ -952,6 +950,7 @@ def save_game():
 		'LS_CL':st.CLEAR_GEM,#Lv ID clear gem
 		'LS_CG':st.COLOR_GEM,#Color Gem ID
 		'LS_RL':st.RELIC,#time relic
+		'M_IDX':st.WARP_ROOM_MUSIC,
 		'M_VOL':settings.MUSIC_VOLUME,
 		'S_VOL':settings.SFX_VOLUME,
 		'CRD_W':st.crd_seen}
@@ -964,6 +963,7 @@ def load_game():
 	st.extra_lives=save_data['SV_LF']
 	st.aku_hit=save_data['SV_AK']
 	st.CRYSTAL=[(x) for x in save_data['LS_CR']]
+	st.WARP_ROOM_MUSIC=save_data['M_IDX']
 	st.RELIC=[(x) for x in save_data['LS_RL']]
 	st.CLEAR_GEM=[(x) for x in save_data['LS_CL']]
 	st.COLOR_GEM=[(x) for x in save_data['LS_CG']]

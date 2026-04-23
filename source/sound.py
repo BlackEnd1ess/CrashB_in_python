@@ -44,7 +44,7 @@ def landing_sound(o):
 	if LC.ACTOR.in_water:
 		pc_audio(ID=10)
 		return
-	if cc.is_box(o) and ((o.vnum in (7,8)) or (o.vnum in (9,10,11) and not o.activ)) or cc.is_enemie(o):
+	if cc.is_box(o) and ((o.vnum in (7,8)) or (o.vnum in (9,10,11) and not o.active)) or cc.is_enemie(o):
 		pc_audio(ID=5)
 		return
 	ldnp=.6 if LC.ACTOR.b_smash else 1

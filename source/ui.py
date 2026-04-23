@@ -584,6 +584,11 @@ class UIColorGem(Entity):
 			s.scale_y=.12
 	def gem_scale_animation(self):
 		s=self
+		if st.ui_gem_anim_index in st.COLOR_GEM:
+			rmi=random.randint(1,5)
+			if st.ui_gem_anim_index != rmi:
+				st.ui_gem_anim_index=rmi
+			return
 		if s.index != st.ui_gem_anim_index:
 			return
 		if s.scale_anim_done:

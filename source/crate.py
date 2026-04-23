@@ -192,28 +192,38 @@ class SwitchEmpty(Entity):
 		s.vnum=9
 		super().__init__(model=cr2)
 		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
+		s.active=False
 		s.p_snd=False
-		s.activ=False
+		s.done=False
+		s.tme=.5
 		del pos,pse,m,l,s
 	def c_reset(self):
 		s=self
 		s.model=cr2
 		s.texture=s.org_tex
-		s.activ=False
-	def c_transform(self):
+		s.active=False
+		s.done=False
+	def c_action(self):
 		s=self
-		s.activ=True
 		s.model=cr1
 		s.texture=f'{pp}0.png'
+		cc.spawn_ico(s.position)
+		cc.AirBoxReplacer(mark=s.mark)
+		st.SWI_RESET.append(s)
 	def destroy(self):
+		if not self.active:
+			self.active=True
+			sn.crate_audio(ID=11)
+	def update(self):
+		if st.gproc():
+			return
 		s=self
-		cc.block_destroy(s)
-		if not s.activ:
-			s.c_transform()
-			cc.AirBoxReplacer(mark=s.mark)
-			cc.spawn_ico(s.position)
-			invoke(lambda:sn.crate_audio(ID=13),delay=.15)
-			st.SWI_RESET.append(s)
+		if s.active and not s.done:
+			s.tme-=time.dt
+			if s.tme <= 0:
+				s.tme=.5
+				s.done=True
+				s.c_action()
 
 class SwitchNitro(Entity):
 	def __init__(self,pos,pse,m,l):
@@ -221,30 +231,43 @@ class SwitchNitro(Entity):
 		s.vnum=10
 		super().__init__(model=cr2)
 		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
+		s.active=False
 		s.p_snd=False
-		s.activ=False
+		s.done=False
+		s.tme=.5
 		del pos,pse,m,l,s
 	def c_reset(self):
 		s=self
 		s.model=cr2
 		s.texture=s.org_tex
-		s.activ=False
-	def c_transform(self):
+		s.active=False
+		s.done=False
+	def destroy(self):
+		if not self.active:
+			self.active=True
+			sn.crate_audio(ID=11)
+	def c_action(self):
 		s=self
-		s.activ=True
 		s.model=cr1
 		s.texture=f'{pp}0.png'
-	def destroy(self):
+		cc.spawn_ico(s.position)
+		st.SWI_RESET.append(s)
+		for nc in scene.entities[:]:
+			if not nc or not nc.collider:
+				continue
+			if isinstance(nc,Nitro):
+				nc.destroy()
+		del nc
+	def update(self):
+		if st.gproc():
+			return
 		s=self
-		cc.block_destroy(s)
-		if not s.activ:
-			s.c_transform()
-			cc.spawn_ico(s.position)
-			for nt in scene.entities[:]:
-				if isinstance(nt,Nitro) and nt.collider:
-					nt.destroy()
-			st.SWI_RESET.append(s)
-			del nt
+		if s.active and not s.done:
+			s.tme-=time.dt
+			if s.tme <= 0:
+				s.tme=.5
+				s.done=True
+				s.c_action()
 
 tx=f'{pp}crate_tnt_'
 class TNT(Entity):
@@ -254,13 +277,13 @@ class TNT(Entity):
 		super().__init__(model=cr2)
 		cc.box_set_val(cR=self,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		s.aud=Audio(sn.TC,name='ctn',volume=0,autoplay=False,auto_destroy=True,add_to_scene_entities=False)
-		s.activ=False
+		s.active=False
 		s.countdown=0
 		del pos,pse,m,l,s
 	def destroy(self):
 		s=self
-		if not s.activ:
-			s.activ=True
+		if not s.active:
+			s.active=True
 			s.unlit=False
 			if st.aku_hit < 3:
 				s.aud.fade_in()
@@ -268,8 +291,8 @@ class TNT(Entity):
 			s.countdown=3.99
 	def empty_destroy(self):
 		s=self
-		if s.activ:
-			s.activ=False
+		if s.active:
+			s.active=False
 			s.aud.fade_out()
 		s.countdown=0
 		cc.box_destroy_event(s)
@@ -277,7 +300,7 @@ class TNT(Entity):
 		s=self
 		if st.gproc():
 			return
-		if s.activ:
+		if s.active:
 			if s.aud.playing:
 				s.aud.volume=settings.SFX_VOLUME
 			s.countdown=max(s.countdown-time.dt/1.15,0)
