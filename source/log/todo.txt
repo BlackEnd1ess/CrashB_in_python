@@ -1,20 +1,14 @@
-v 1.3.5
-- VIDEO!!
-
 v 1.4
-- crate just invisible in LOD
 - plant npc lagg fix
-- box switch delay
-- fixx nitro stack on nitro
-- music warp room index savegame
+- preload break animations
 - better 2d frames (light)
-- color butterfly npc (green, red, blue)
-- better 3d models: tree, mushrooms
 - upgrade level 1
 - level 8 no lights when playing other levels before
 - VIDEO!!
 
 v 1.5
+- better 3d models: tree, mushrooms
+- color butterfly npc (green, red, blue)
 - gorilla sound
 - add npcs, items, textures and sounds from CB3!
 - penguin spin/dizzy

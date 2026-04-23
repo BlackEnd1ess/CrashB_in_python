@@ -114,3 +114,9 @@
 #22.04.2026
 - updated thunderbolt function
 - music select in warproom track 1-4
+
+#23.04.2026
+- fixxed nitro stack on other nitro boxes
+- savegame store warp room music index
+- updated switch boxes: delay after trigger + fixxed sfx
+- fixxed crash landing without jumping
