@@ -2,16 +2,14 @@ v 1.4
 - plant npc lagg fix
 - preload break animations
 - better 2d frames (light)
-- upgrade level 1
+- upgrade level 1 -> btfly, blocks, tree
 - level 8 no lights when playing other levels before
 - VIDEO!!
 
 v 1.5
 - better 3d models: tree, mushrooms
-- color butterfly npc (green, red, blue)
 - gorilla sound
-- add npcs, items, textures and sounds from CB3!
+- add npcs, textures and sounds from CB3!
 - penguin spin/dizzy
-- frog CB3
 - digin plant
 - freemap

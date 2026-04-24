@@ -120,3 +120,6 @@
 - savegame store warp room music index
 - updated switch boxes: delay after trigger + fixxed sfx
 - fixxed crash landing without jumping
+
+#24.04.2026
+- new NPC: butterfly in 5 different types
