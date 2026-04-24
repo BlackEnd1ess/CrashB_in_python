@@ -5,7 +5,7 @@ import environment
 ## debug options
 debg_color=color.rgb32(180,180,180)
 debg_gm=False
-debg=False
+debg=True
 
 ## keyboard bindings
 MNU_KEY='p'#		pause
@@ -26,7 +26,7 @@ DEV_TERM='j'#		#python terminal
 
 
 ## global volume
-MUSIC_VOLUME=1
+MUSIC_VOLUME=0
 SFX_VOLUME=1
 
 ## window

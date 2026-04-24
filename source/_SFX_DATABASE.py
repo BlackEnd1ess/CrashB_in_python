@@ -62,7 +62,8 @@ NPC={0:'npc_plant_bite',
 	6:'npc_spider_robot',
 	7:'npc_lab_assistant_push',
 	8:'npc_lab_assistant_fall',
-	9:'npc_lumberjack_smash'}
+	9:'npc_lumberjack_smash',
+	10:'npc_frog'}
 
 OBJECT={0:'obj_teleport_spawn',
 		1:'obj_room_door',

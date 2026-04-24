@@ -987,6 +987,10 @@ def reset_mines():
 		LandMine(pos=rsm)
 	LC.LDM_POS.clear()
 
+##preload animation
+def preload_animator():
+	print('test')
+
 ##preload global texture
 def preload_ui_texture():
 	LC.wmp_texture=[load_texture(f'res/ui/icon/wumpa/w{cbx}.png') for cbx in range(13+1)]

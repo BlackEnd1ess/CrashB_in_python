@@ -15,11 +15,13 @@ hpf='res/objects/l6/hive/'
 ldm='res/objects/l6/lmine/'
 dpw='res/objects/ev/door/'
 
+frg=f'{nf}frog/'
 lbh=f'{nf}lumberjack/smash/'
 lbas=f'{nf}lab_assistant/'
 plt=f'{nf}eating_plant/'
 hdg=f'{nf}hedgehog/'
 rti=f'{nf}rat/idle/'
+btf=f'{nf}butterfly/'
 hpo=f'{nf}hippo/'
 go=f'{nf}gorilla/'
 
@@ -449,6 +451,19 @@ def lmbjack_smash(m,sp):
 		m.sma_frm=0
 		m.is_atk=False
 	m.model=f'{lbh}{int(m.sma_frm)}.ply'
+
+def frog_jump(m,sp):
+	m.frm+=time.dt*sp
+	if m.frm > m.max_frm:
+		m.frm=0
+		m.jmp_anim=False
+	if m.model != f'{frg}{int(m.frm)}.ply':
+		m.model=f'{frg}{int(m.frm)}.ply'
+
+def btfly_fly(m):
+	cc.incr_frm(m,m.spd)
+	if m.model != f'{btf}/{m.typ}/{int(m.frm)}.ply':
+		m.model=f'{btf}/{m.typ}/{int(m.frm)}.ply'
 
 def land_mine(m,sp):
 	m.frm+=time.dt*sp

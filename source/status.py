@@ -4,7 +4,7 @@ from ursina import Entity
 checkpoint=None
 
 ## warp room music index
-WARP_ROOM_MUSIC=0
+WARP_ROOM_MUSIC=1
 
 ## game progress items
 COLOR_GEM=[]

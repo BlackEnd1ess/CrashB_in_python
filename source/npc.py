@@ -1,7 +1,7 @@
 from ursina import BoxCollider,Vec3,Entity,Audio,distance,distance_xz,lerp,invoke,PointLight,color,scene
 import settings,_core,math,animation,status,sound,_loc,effect,time,random
+from math import radians,cos,sin,pi,degrees,atan2
 from ursina.ursinastuff import destroy
-from math import radians,cos,sin,pi
 from danger import LogDanger
 
 npf='res/npc/'
@@ -31,7 +31,8 @@ def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True):
 	16:lambda:Lumberjack(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
 	17:lambda:SpiderRobot(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
 	18:lambda:WalkerRobot(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
-	19:lambda:LabAssistant(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV)}[ID]()
+	19:lambda:LabAssistant(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	20:lambda:Frog(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV)}[ID]()
 	st.npc_in_level+=1
 	del ID,POS,DRC,RTYP,RNG,CMV
 
@@ -598,6 +599,55 @@ class LabAssistant(Entity):
 			s.tme=random.randint(1,3)
 			s.do_push=True
 
+class Frog(Entity):
+	def __init__(self,pos,drc,rng,rtyp,cmv):
+		s=self
+		s.vnum=20
+		super().__init__(position=pos)
+		s.collider=BoxCollider(s,size=Vec3(80,80,120),center=Vec3(0,0,0))
+		cc.set_val_npc(s,drc,rng)
+		s.new_position=None
+		s.jmp_anim=False
+		s.is_jmp=False
+		s.p_snd=False
+		s.max_frm=20.99
+		s.move_speed=1
+		s.scale=.005
+		s.frm=0
+		s.tme=1
+		if s.mov_range < .55:#min range = 0.5
+			s.mov_range=.55
+	def jmp_action(self):
+		s=self
+		if distance_xz(s.position,s.new_position) < .05:
+			s.is_jmp=False
+			s.tme=random.uniform(.5,2)
+	def refr_function(self):
+		s=self
+		if not s.is_jmp:
+			s.is_jmp=True
+			s.jmp_anim=True
+			sp=s.spawn_pos
+			s.new_position=(sp[0]+random.uniform(.5,s.mov_range*2),s.y,sp[2]+random.uniform(.5,s.mov_range*2))
+			s.rotation_y=degrees(atan2(s.new_position[0]-s.x,s.new_position[2]-s.z))+180
+			s.animate_position(s.new_position,duration=s.move_speed/2)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if s.is_hitten or s.is_purge:
+			s.is_jmp=False
+			cc.npc_action(s)
+			return
+		if s.jmp_anim:
+			an.frog_jump(s,20)
+		if s.is_jmp:
+			s.jmp_action()
+			return
+		s.tme-=time.dt
+		if s.tme <= 0:
+			s.refr_function()
+
 ## passive NPC
 tpa1='res/npc/akuaku/aku'
 tpa2='res/npc/akuaku/aku2'
@@ -705,12 +755,45 @@ class Hippo(Entity):
 			return
 		s.refr_wait()
 
+btfly=f'{npf}butterfly/'
+class Butterfly(Entity):
+	def __init__(self,pos,typ=0,rng=1):
+		s=self
+		super().__init__(model=f'{btfly}{typ}/3.ply',texture=f'{btfly}{typ}/0.png',position=pos,scale=.001,rotation_x=-90,double_sided=True)
+		s.angle=random.uniform(0,360)
+		s.mov_range=rng
+		s.rng_swap=rng*.3
+		s.spawn_pos=pos
+		s.height_limit=s.spawn_pos[2]/2
+		s.max_frm=7.99
+		s.typ=typ
+		s.spd=20
+		s.frm=0
+	def refr_function(self):
+		s=self
+		an.btfly_fly(s)
+		prev=Vec3(s.position)
+		s.angle+=time.dt*60
+		#radius
+		radius=s.mov_range+sin(time.time()*.5)*s.rng_swap
+		s.x=s.spawn_pos[0]+cos(radians(s.angle))*radius
+		s.z=s.spawn_pos[2]+sin(radians(s.angle))*radius
+		#rotation_y
+		dr=s.position-prev
+		s.rotation_y=degrees(atan2(dr[0],dr[2]))+180
+		#height
+		s.y=s.spawn_pos[1]+(sin(time.time()*2)*.3+.3)*s.height_limit
+	def update(self):
+		if st.gproc():
+			return
+		self.refr_function()
+
 ffly=f'{npf}firefly/0'
 tfd=.01
 class Firefly(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=ffly+'.ply',texture=ffly+'.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False)
+		super().__init__(model=f'{ffly}.ply',texture=f'{ffly}.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False)
 		s.lgt=PointLight(position=s.position,scale=.2,color=color.rgb32(255,200,180))
 		s.start_checkp=st.checkpoint
 		s.spawn_pos=pos

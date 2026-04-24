@@ -5,12 +5,14 @@ st=status
 cc=_core
 LC=_loc
 
+
 CORRIDOR='obj_type__corridor'
 BLOCK='obj_type__block'
 SCENE='obj_type__scene'
 FLOOR='obj_type__floor'
 WALL='obj_type__wall'
 DECO='obj_type__deco'
+BTFLY='butterfly'
 WM='wmpf'
 
 class ManageObjects(Entity):
@@ -44,6 +46,8 @@ class ManageObjects(Entity):
 			dx=distance_xz(AZ,v)
 			if v.name == WM:
 				v.enabled=dx < s.frt_dst
+			if v.name == BTFLY:
+				v.enabled=dx < s.npc_dst_zf
 			if v.name == SCENE:
 				v.enabled=dx < LC.RCZ
 			if v.name in DECO and not v.vnum in (6,13):
