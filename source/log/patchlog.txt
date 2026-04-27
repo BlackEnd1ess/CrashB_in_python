@@ -123,3 +123,12 @@
 
 #24.04.2026
 - new NPC: butterfly in 5 different types
+
+#26.04.2026
+- updated player death animator
+- updated npc loop_sounds reference
+- updated npc refresh actions
+- updated player jump function
+
+#27.04.2026
+- updated player animation function

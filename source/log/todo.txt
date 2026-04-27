@@ -1,5 +1,7 @@
 v 1.4
-- plant npc lagg fix
+- bee hive typ 1
+- vulture function
+- frog snd + logic + pathfinding
 - preload break animations
 - better 2d frames (light)
 - upgrade level 1 -> btfly, blocks, tree
