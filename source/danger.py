@@ -194,9 +194,10 @@ class MonkeySculpture(Entity):
 		if r:
 			s.model=f'{rmsc}.ply'
 			s.podium=Entity(model='cube',texture=f'{trn}moss.png',name=s.name,scale=(.5,1,.5),texture_scale=(1,2),position=(s.x,s.y-.5,s.z))
-		s.texture=rmsc+'.png'
+		s.texture=f'{rmsc}.png'
 		s.f_pause=False
 		s.s_audio=False
+		s.snd_reset=0
 		s.danger=d
 		s.f_cnt=0
 		s.tme=.08
@@ -218,23 +219,26 @@ class MonkeySculpture(Entity):
 			s.f_cnt+=1
 			if not s.s_audio:
 				s.s_audio=True
+				s.snd_reset=3
 				sn.obj_audio(ID=9,pit=1)
-				invoke(lambda:setattr(s,'s_audio',False),delay=3)
-	def rot_to_crash(self):
-		s=self
-		if distance(s,LC.ACTOR) < 2:
-			cc.rotate_to_crash(s)
-	def update(self):
-		if st.gproc():
-			return
+	def refr_function(self):
 		s=self
 		if s.danger:
 			s.tme=max(s.tme-time.dt,0)
 			if s.tme <= 0:
 				s.tme=.08
 				s.fire_throw()
+		if s.s_audio:
+			s.snd_reset-=time.dt
+			if s.snd_reset <= 0:
+				s.s_audio=False
 		if s.rot:
-			s.rot_to_crash()
+			if distance(s,LC.ACTOR) < 2:
+				cc.rotate_to_target(s,LC.ACTOR.position)
+	def update(self):
+		if st.gproc():
+			return
+		self.refr_function()
 
 ftf=f'{omf}l5/fire_trap/fire_trap'
 class FireTrap(Entity):
@@ -323,15 +327,17 @@ class Hive(Entity):
 	def is_own_bee(self):
 		s=self
 		s.bees_out=0
-		for qv in scene.entities[:]:
+		for qv in scene.entities:
 			if isinstance(qv,npc.Bee) and qv.bID == s.bID:
 				s.bees_out+=1
-				s.locked=(s.bees_out >= s.bMAX)
+				s.locked=s.bees_out >= s.bMAX
 	def spawn_bee(self):
 		s=self
-		npc.Bee(pos=s.position,bID=s.bID)
+		npc.Bee(pos=s.position,bID=s.bID,typ=0)
 	def update(self):
 		if st.gproc():
+			return
+		if st.death_event:
 			return
 		s=self
 		s.tme=min(s.tme-time.dt,0)

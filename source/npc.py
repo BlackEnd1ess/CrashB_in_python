@@ -11,7 +11,7 @@ sn=sound
 cc=_core
 LC=_loc
 
-def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True):
+def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True,MTYP=0):
 	{0:lambda:Amadillo(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
 	1:lambda:Turtle(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
 	2:lambda:SawTurtle(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
@@ -26,15 +26,15 @@ def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True):
 	11:lambda:Mouse(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
 	12:lambda:Eel(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
 	13:lambda:SewerMine(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
-	14:lambda:Gorilla(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
-	15:lambda:Bee(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
-	16:lambda:Lumberjack(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
-	17:lambda:SpiderRobot(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
+	14:lambda:Gorilla(pos=POS,drc=DRC),
+	15:lambda:Bee(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV,typ=MTYP),
+	16:lambda:Lumberjack(pos=POS),
+	17:lambda:SpiderRobot(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV,typ=MTYP),
 	18:lambda:WalkerRobot(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
-	19:lambda:LabAssistant(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
-	20:lambda:Frog(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV)}[ID]()
+	19:lambda:LabAssistant(pos=POS,drc=DRC),
+	20:lambda:Frog(pos=POS,drc=DRC,rng=RNG,CMV=CMV)}[ID]()
 	st.npc_in_level+=1
-	del ID,POS,DRC,RTYP,RNG,CMV
+	del ID,POS,DRC,RTYP,RNG,CMV,MTYP
 
 ## Enemies
 class Amadillo(Entity):
@@ -50,7 +50,10 @@ class Amadillo(Entity):
 	def update(self):
 		if st.gproc():
 			return
-		cc.npc_action(self)
+		s=self
+		if not (s.is_purge or s.is_hitten):
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class Turtle(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -65,7 +68,10 @@ class Turtle(Entity):
 	def update(self):
 		if st.gproc():
 			return
-		cc.npc_action(self)
+		s=self
+		if not (s.is_purge or s.is_hitten):
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class SawTurtle(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -80,7 +86,10 @@ class SawTurtle(Entity):
 	def update(self):
 		if st.gproc():
 			return
-		cc.npc_action(self)
+		s=self
+		if not (s.is_purge or s.is_hitten):
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class Vulture(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -93,25 +102,13 @@ class Vulture(Entity):
 		s.move_speed=1.2
 		s.max_frm=13
 		del s,pos,drc,rng,rtyp,cmv
-	def follow_player(self):
-		s=self
-		an.npc_walking(s)
-		if distance_xz(LC.ACTOR,s) < 2:
-			if s.mov_direc == 0:
-				s.x=lerp(s.x,LC.ACTOR.x,time.dt*s.follow_speed)
-				return
-			s.z=lerp(s.z,LC.ACTOR.z,time.dt*s.follow_speed)
-			if LC.ACTOR.x < s.x:
-				s.rotation_y=90
-			else:
-				s.rotation_y=270
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		cc.npc_action(s)
-		if not (s.is_hitten or s.is_purge):
-			s.follow_player()
+		if not (s.is_purge or s.is_hitten):
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class Penguin(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -126,7 +123,10 @@ class Penguin(Entity):
 	def update(self):
 		if st.gproc():
 			return
-		cc.npc_action(self)
+		s=self
+		if not (s.is_purge or s.is_hitten):
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class Hedgehog(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -141,27 +141,31 @@ class Hedgehog(Entity):
 		s.def_frame=0
 		s.def_time=5
 		s.max_frm=12
-		s.wait=5
+		s.wait=0
 		del s,pos,drc,rng,rtyp,cmv
+	def refr_function(self):
+		s=self
+		if not s.def_mode:
+			if distance(s,LC.ACTOR) < 2:
+				s.def_mode=True
+			return
+		if s.def_time > 0:
+			s.def_time-=time.dt
+			if s.def_time <= 0:
+				s.def_mode=False
+				s.def_time=5
+				s.wait=3
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		cc.npc_action(s)
-		s.wait=max(s.wait-time.dt,0)
+		if not (s.is_purge or s.is_hitten):
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 		if s.wait > 0:
+			s.wait-=time.dt
 			return
-		if not (s.is_hitten or s.is_purge):
-			if s.def_mode:
-				s.def_time=max(s.def_time-time.dt,0)
-				an.hedge_defend(s)
-				if s.def_time <= 0:
-					s.def_mode=False
-					s.def_time=5
-					s.wait=5
-				return
-			if distance(s,LC.ACTOR) < 2:
-				s.def_mode=True
+		s.refr_function()
 
 class Seal(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -170,6 +174,7 @@ class Seal(Entity):
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(300,800,300))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
+		s.snID=3
 		s.move_speed=1.1
 		s.max_frm=14
 		s.tme=1
@@ -178,8 +183,12 @@ class Seal(Entity):
 	def update(self):
 		if st.gproc():
 			return
-		cc.npc_action(self)
-		sn.npc_loop_audio(n=self,PIT=random.uniform(.36,.38),tme_r=random.uniform(1,2))
+		s=self
+		if not (s.is_purge or s.is_hitten):
+			if distance(s,LC.ACTOR) < LC.NPC_SND_DISTANCE:
+				sn.npc_loop_audio(n=s,PIT=random.uniform(.36,.38),tme_r=random.uniform(1,2))
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class EatingPlant(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -188,44 +197,32 @@ class EatingPlant(Entity):
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+500),size=Vec3(400,400,700))
 		cc.set_val_npc(s)
-		s.m_direction,s.atk_frame,s.eat_frame=0,0,0
-		s.atk,s.eat=False,False
-		s.scale=.8/900
+		s.can_move=False
+		s.scale=.085/100
+		s.atk_frame=0
+		s.eat_frame=0
 		s.max_frm=13
+		s.atk=False
+		s.eat=False
 		del s,pos,drc,rng,rtyp,cmv
-	def action(self):
+	def refr_function(self):
 		s=self
-		dc=distance(s,LC.ACTOR)
-		if dc < 3:
-			cc.rotate_to_crash(s)
-		if dc <= 1.25:
-			if st.death_event or s.atk:
-				return
+		if st.death_event or s.atk:
+			return
+		if distance(s,LC.ACTOR) < 1.25:
 			s.atk=True
 			sn.npc_audio(ID=0)
-			if not (LC.ACTOR.is_attack or LC.ACTOR.jumping):
-				if LC.ACTOR.y <= s.y+.2:
-					cc.get_damage(LC.ACTOR,rsn=5)
-					s.eat=st.aku_hit < 1 and not s.eat
-	def npc_anim(self):
-		s=self
-		if not s.eat:
-			if s.atk:
-				an.plant_bite(s)
-				return
-			s.atk_frame=0
-			an.npc_walking(s)
-			s.action()
-			return
-		an.plant_eat(s)
+			if LC.ACTOR.landed:
+				cc.get_damage(LC.ACTOR,rsn=5)
+				s.eat=st.aku_hit < 1
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		if s.is_hitten or s.is_purge:
-			cc.npc_action(s)
-			return
-		s.npc_anim()
+		if not (s.is_purge or s.is_hitten):
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
+		s.refr_function()
 
 class Rat(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -234,29 +231,22 @@ class Rat(Entity):
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=(s.x,s.y,s.z+200),size=Vec3(500,600,300))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		s.scale=.8/1000
-		s.move_speed=1
 		s.max_frm=10 if not cmv else 8
+		s.move_speed=1
+		s.scale=.8/1000
+		s.snID=4
 		s.tme=1
 		s.frm=0
 		del s,pos,drc,rng,rtyp,cmv
-	def idle_action(self):
-		s=self
-		if (s.is_hitten or s.is_purge):
-			cc.npc_action(s)
-			return
-		an.rat_idle(s)
-		if distance(s,LC.ACTOR) < 2.5:
-			cc.rotate_to_crash(s)
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		sn.npc_loop_audio(n=s,PIT=random.uniform(.65,.75),tme_r=random.uniform(1,1.5))
-		if not s.can_move:
-			s.idle_action()
-			return
-		cc.npc_action(s)
+		if not (s.is_purge or s.is_hitten):
+			if distance(s,LC.ACTOR) < LC.NPC_SND_DISTANCE:
+				sn.npc_loop_audio(n=s,PIT=random.uniform(.65,.75),tme_r=random.uniform(1,1.5))
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class Lizard(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -267,11 +257,18 @@ class Lizard(Entity):
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1.2
 		s.max_frm=11
+		s.snID=4
 		s.tme=1
 		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
-		cc.npc_action(self)
-		sn.npc_loop_audio(n=self,PIT=random.uniform(.8,1.1),tme_r=random.uniform(.9,1.1))
+		if st.gproc():
+			return
+		s=self
+		if not (s.is_purge or s.is_hitten):
+			if distance(s,LC.ACTOR) < 10:
+				sn.npc_loop_audio(n=s,PIT=random.uniform(.8,1.1),tme_r=random.uniform(.9,1.1))
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class Scrubber(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -283,13 +280,18 @@ class Scrubber(Entity):
 		s.move_speed=1.2
 		s.max_frm=3
 		s.angle=0
+		s.snID=1
 		s.tme=1.5
 		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
-		cc.npc_action(self)
-		sn.npc_loop_audio(self,PIT=1,tme_r=1.5)
+		s=self
+		if not (s.is_purge or s.is_hitten):
+			if distance(s,LC.ACTOR) < LC.NPC_SND_DISTANCE:
+				sn.npc_loop_audio(s,PIT=1,tme_r=1.5)
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class Mouse(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -301,13 +303,18 @@ class Mouse(Entity):
 		s.move_speed=1.2
 		s.max_frm=8
 		s.angle=0
+		s.snID=2
 		s.tme=1
 		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
 		if st.gproc():
 			return
-		cc.npc_action(self)
-		sn.npc_loop_audio(self,PIT=1,tme_r=1)
+		s=self
+		if not (s.is_purge or s.is_hitten):
+			if distance(s,LC.ACTOR) < LC.NPC_SND_DISTANCE:
+				sn.npc_loop_audio(s,PIT=1,tme_r=1)
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class Eel(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -320,7 +327,12 @@ class Eel(Entity):
 		s.max_frm=12
 		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
-		cc.npc_action(self)
+		if st.gproc():
+			return
+		s=self
+		if not (s.is_purge or s.is_hitten):
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class SewerMine(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -335,16 +347,19 @@ class SewerMine(Entity):
 	def update(self):
 		if st.gproc():
 			return
-		cc.npc_action(self)
+		s=self
+		if not (s.is_purge or s.is_hitten):
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class Gorilla(Entity):
-	def __init__(self,pos,drc,rng,rtyp,cmv):
+	def __init__(self,pos,drc):
 		s=self
 		s.vnum=14
 		rmo={0:0,1:90,2:180,3:-90}
 		super().__init__(rotation=(-90,rmo[drc],0),position=pos,scale=.8/1200)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y,s.z+450),size=Vec3(400,400,800))
-		cc.set_val_npc(s,drc,rng,rtyp,cmv)
+		cc.set_val_npc(s,drc)
 		s.wait_next=False
 		s.do_throw=False
 		s.max_frm=10#for death animtor
@@ -352,7 +367,7 @@ class Gorilla(Entity):
 		s.t_frame=0
 		s.t_mode=0
 		s.frm=0
-		del s,pos,drc,rng,rtyp,cmv,rmo
+		del s,pos,drc
 	def throw_log(self):
 		LogDanger(pos=(self.x,self.y+.6,self.z),ro_y=self.rotation_y)
 	def refr_function(self):
@@ -378,12 +393,15 @@ class Gorilla(Entity):
 			s.refr_function()
 
 class Bee(Entity):
-	def __init__(self,pos,drc=0,rng=0,rtyp=0,cmv=True,bID=0):
+	def __init__(self,pos,drc=0,rng=0,rtyp=0,typ=0,cmv=True,bID=0):
 		s=self
 		s.vnum=15
 		super().__init__(rotation_x=-90,position=pos,collider='box')
 		s.buzz_snd=Audio(sn.BE,pitch=random.uniform(1,2),loop=True,volume=settings.SFX_VOLUME)
-		cc.set_val_npc(s)
+		if typ == 0:
+			cc.set_val_npc(s)
+		else:
+			cc.set_val_npc(s,drc,rng,cmv,typ=typ)
 		s.play_sfx()
 		s.is_hunt=False
 		s.is_home=False
@@ -393,7 +411,7 @@ class Bee(Entity):
 		s.bID=bID
 		s.pgt=0
 		s.tme=0
-		del s,pos,drc,rng,rtyp,cmv,bID
+		del s,pos,drc,rng,rtyp,cmv,bID,typ
 	def play_sfx(self):
 		self.buzz_snd.fade_in()
 		self.buzz_snd.play()
@@ -427,7 +445,7 @@ class Bee(Entity):
 	def hunt_p(self):
 		s=self
 		s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.35,LC.ACTOR.z),time.dt*2.3)
-		cc.rotate_to_crash(s)
+		cc.rotate_to_target(s,LC.ACTOR.position)
 	def purge(self):
 		self.stop_sfx()
 		destroy(self)
@@ -435,107 +453,111 @@ class Bee(Entity):
 		s=self
 		jbc=s.intersects()
 		ksc=time.dt*10
-		if jbc and str(jbc.entity) == s.name:
-			jbc.entity.x=lerp(s.x,jbc.entity.x+.4,ksc) if s.x < jbc.entity.x else lerp(s.x,jbc.entity.x-.4,ksc)
-	def update(self):
-		if st.gproc():
-			return
+		if jbc:
+			if jbc.entity.name == s.name and not jbc.entity is s:
+				s.y+=time.dt
+	def depending_home(self):
 		s=self
 		if abs(s.z-s.spawn_pos[2]) > 10.1 or st.death_event or s.is_home:
 			s.purge()
 			return
-		cc.npc_action(s)
-		s.check_near_npc()
 		if s.is_hitten or s.is_purge:
 			s.stop_sfx()
+			cc.refresh_npc_function(s)
 			return
 		s.fly_event()
+		s.check_near_npc()
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if s.typ == 0:
+			s.depending_home()
+			return
+		if not (s.is_purge or s.is_hitten):
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class Lumberjack(Entity):
-	def __init__(self,pos,drc,rng,rtyp,cmv):
+	def __init__(self,pos):
 		s=self
 		s.vnum=16
 		super().__init__(rotation_x=-90,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y,s.z+600),size=Vec3(400,400,800))
 		cc.set_val_npc(s)
 		s.move_speed=1.6
+		s.walking=False
+		s.is_hunt=False
 		s.is_atk=False
-		s.p_snd=False
-		s.sma_dst=.4
+		s.sma_dst=.3
 		s.max_frm=10
 		s.sma_frm=0
-		del s,pos,drc,rng,rtyp,cmv
-	def follow_player(self):
-		s=self
-		drc=(Vec3(LC.ACTOR.x,s.y,LC.ACTOR.z)-s.position).normalized()
-		s.position+=drc*s.move_speed*time.dt
+		s.spd=24
+		del s,pos
 	def back_to_spawn(self):
 		s=self
-		drc=(s.spawn_pos-s.position).normalized()
-		s.position+=drc*s.move_speed*time.dt
-		if st.death_event or abs(s.position-s.spawn_pos) < .01:
+		s.position+=(s.spawn_pos-s.position).normalized()*s.move_speed*time.dt
+		if abs(s.position-s.spawn_pos) < .01:
 			s.position=s.spawn_pos
+			s.walking=False
 			s.is_atk=False
-			s.p_snd=False
+			s.rotation_y=0
 			s.sma_frm=0
-			del drc,s
-	def npc_attack(self):
+	def refr_status(self):
 		s=self
-		an.lmbjack_smash(s,sp=24)
-		if not s.p_snd:
-			s.p_snd=True
-			sn.npc_audio(ID=9)
-			invoke(lambda:setattr(s,'p_snd',False),delay=2)
-	def refr(self):
+		s.walking=abs(s.position-s.spawn_pos) > .01 and not (s.is_atk or st.death_event)
+		s.is_hunt=LC.ACTOR.landed and distance(LC.ACTOR.position,s.spawn_pos) < 4
+		if distance(s,LC.ACTOR) < .3 and not st.death_event:
+			if not s.is_atk:
+				s.is_atk=True
+	def refr_function(self):
 		s=self
+		an.refresh_npc_animation(s)
 		dsp=distance(s.spawn_pos,LC.ACTOR.position)
-		psp=distance_xz(s,LC.ACTOR)
+		s.refr_status()
 		if s.is_atk:
-			s.npc_attack()
-			if psp < s.sma_dst:
-				if LC.ACTOR.landed and not LC.ACTOR.is_attack:
-					if s.is_purge or s.is_hitten:
-						return
-					cc.get_damage(LC.ACTOR,rsn=8)
+			if LC.ACTOR.landed and not LC.ACTOR.is_attack:
+				cc.get_damage(LC.ACTOR,rsn=8)
 			return
-		if s.is_purge or s.is_hitten:
+		if s.is_hunt:
+			cc.rotate_to_target(s,LC.ACTOR.position)
+			if not st.death_event:
+				s.position+=(Vec3(LC.ACTOR.x,s.y,LC.ACTOR.z)-s.position).normalized()*s.move_speed*time.dt
 			return
-		if dsp < 8:
-			cc.rotate_to_crash(s)
-		if psp < s.sma_dst:
-			s.is_atk=not st.death_event
-			return
-		if (s.position-s.spawn_pos).length() > .025:
-			an.npc_walking(s)
-		if dsp < 5 and abs(LC.ACTOR.y-s.y) < .4:
-			s.follow_player()
-			return
+		cc.rotate_to_target(s,s.spawn_pos)
 		s.back_to_spawn()
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		cc.npc_action(s)
-		if not (s.is_hitten or s.is_purge):
-			s.refr()
+		if s.is_hitten or s.is_purge:
+			cc.refresh_npc_function(s)
+			return
+		s.refr_function()
 
 class SpiderRobot(Entity):
-	def __init__(self,pos,drc,rng,rtyp,cmv):
+	def __init__(self,pos,drc,rng,rtyp,cmv,typ):
 		s=self
 		s.vnum=17
+		if typ > 1:
+			typ=1
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
-		cc.set_val_npc(s,drc,rng,rtyp,cmv)
+		cc.set_val_npc(s,drc,rng,rtyp,cmv,typ)
 		s.move_speed=1
 		s.max_frm=13
+		s.snID=6
 		s.tme=1
-		del s,pos,drc,rng,rtyp,cmv
+		del s,pos,drc,rng,rtyp,cmv,typ
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		cc.npc_action(s)
-		sn.npc_loop_audio(n=self,PIT=1,tme_r=.26)
+		if not (s.is_purge or s.is_hitten):
+			if distance(n,LC.ACTOR) < LC.NPC_SND_DISTANCE:
+				sn.npc_loop_audio(n=s,PIT=1,tme_r=.26)
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class WalkerRobot(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -545,27 +567,33 @@ class WalkerRobot(Entity):
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+200),size=Vec3(500,700,300))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1.8
+		s.p_snd=False
 		s.max_frm=29
-		s.tma=.6
+		s.tme=0
 		del s,pos,drc,rng,rtyp,cmv
 	def snd_action(self):
 		s=self
-		if distance(s,LC.ACTOR) < 5:
-			s.tma=max(s.tma-time.dt,0)
-			if s.tma <= 0:
-				s.tma=.6
+		s.tme+=time.dt
+		if s.tme > .6:
+			if not s.p_snd:
+				s.p_snd=True
 				sn.pc_audio(ID=12)
-				invoke(lambda:sn.pc_audio(ID=12,pit=.8),delay=.4)
+			if s.tme > 1:
+				s.tme=0
+				s.p_snd=False
+				sn.pc_audio(ID=12,pit=.8)
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		cc.npc_action(s)
-		if not (s.is_hitten or s.is_purge):
-			s.snd_action()
+		if not (s.is_purge or s.is_hitten):
+			if distance(s,LC.ACTOR) < 5:
+				s.snd_action()
+			an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 
 class LabAssistant(Entity):
-	def __init__(self,pos,drc,rng,rtyp,cmv):
+	def __init__(self,pos,drc):
 		s=self
 		s.vnum=19
 		super().__init__(position=pos,rotation_y={0:90,1:180,2:270,3:0}[drc])
@@ -576,21 +604,12 @@ class LabAssistant(Entity):
 		s.move_speed=1
 		s.max_frm=5#for death animator
 		s.tme=1
-		del s,pos,drc,rng,rtyp,cmv
-	def update(self):
-		if st.gproc():
-			return
+		del s,pos,drc
+	def refr_function(self):
 		s=self
-		if s.is_hitten or s.is_purge:
-			if not s.p_snd:
-				s.p_snd=True
-				s.rotation_y+=90
-				sn.npc_audio(ID=8)
-			cc.npc_destroy_event(s)
-			return
 		s.tme-=time.dt
 		dv=distance(s,LC.ACTOR)
-		LC.ACTOR.pushed=bool(dv < .6 and s.do_push)
+		LC.ACTOR.pushed=dv < .6 and s.do_push
 		if s.do_push:
 			an.lba_push(s)
 		if s.tme <= 0:
@@ -598,55 +617,39 @@ class LabAssistant(Entity):
 				sn.npc_audio(ID=7)
 			s.tme=random.randint(1,3)
 			s.do_push=True
-
-class Frog(Entity):
-	def __init__(self,pos,drc,rng,rtyp,cmv):
-		s=self
-		s.vnum=20
-		super().__init__(position=pos)
-		s.collider=BoxCollider(s,size=Vec3(80,80,120),center=Vec3(0,0,0))
-		cc.set_val_npc(s,drc,rng)
-		s.new_position=None
-		s.jmp_anim=False
-		s.is_jmp=False
-		s.p_snd=False
-		s.max_frm=20.99
-		s.move_speed=1
-		s.scale=.005
-		s.frm=0
-		s.tme=1
-		if s.mov_range < .55:#min range = 0.5
-			s.mov_range=.55
-	def jmp_action(self):
-		s=self
-		if distance_xz(s.position,s.new_position) < .05:
-			s.is_jmp=False
-			s.tme=random.uniform(.5,2)
-	def refr_function(self):
-		s=self
-		if not s.is_jmp:
-			s.is_jmp=True
-			s.jmp_anim=True
-			sp=s.spawn_pos
-			s.new_position=(sp[0]+random.uniform(.5,s.mov_range*2),s.y,sp[2]+random.uniform(.5,s.mov_range*2))
-			s.rotation_y=degrees(atan2(s.new_position[0]-s.x,s.new_position[2]-s.z))+180
-			s.animate_position(s.new_position,duration=s.move_speed/2)
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		if s.is_hitten or s.is_purge:
-			s.is_jmp=False
-			cc.npc_action(s)
-			return
-		if s.jmp_anim:
-			an.frog_jump(s,20)
-		if s.is_jmp:
-			s.jmp_action()
-			return
-		s.tme-=time.dt
-		if s.tme <= 0:
+		if not (s.is_hitten or s.is_purge):
 			s.refr_function()
+			return
+		if not s.p_snd:
+			s.p_snd=True
+			s.rotation_y+=90
+			sn.npc_audio(ID=8)
+			cc.npc_destroy_event(s)
+
+class Frog(Entity):
+	def __init__(self,pos,drc,rng,cmv):
+		s=self
+		s.vnum=20
+		super().__init__(position=pos)
+		s.collider=BoxCollider(s,size=Vec3(80,80,120),center=Vec3(0,0,0))
+		cc.set_val_npc(s,drc,rng,cmv)
+		s.new_position=None
+		s.is_jmp=False
+		s.p_snd=False
+		s.max_frm=20.99
+		s.scale=.005
+		s.mode=0
+		s.spd=20
+		s.frm=0
+		s.tme=1
+		del pos,drc,rng,cmv
+		#s.rotation_y=degrees(atan2(s.new_position[0]-s.x,s.new_position[2]-s.z))+180
+	def update(self):
+		return
 
 ## passive NPC
 tpa1='res/npc/akuaku/aku'
@@ -844,7 +847,7 @@ class Firefly(Entity):
 			s.respawn()
 			return
 		if s.active:
-			cc.rotate_to_crash(s)
+			cc.rotate_to_target(s,LC.ACTOR)
 			if st.bonus_round:
 				s.position=lerp(s.position,(LC.ACTOR.x+.2,LC.ACTOR.y+.5,LC.ACTOR.z),time.dt*2)
 			if st.death_route:

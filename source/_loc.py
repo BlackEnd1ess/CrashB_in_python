@@ -93,7 +93,7 @@ ui_yellow_gem_color=c.rgb32(160,160,0)
 
 #gem model color
 mesh_normal_gem_color=c.rgb32(160,160,160)
-mesh_red_gem_color=c.rgb32(170,0,0)
+mesh_red_gem_color=c.rgb32(255,50,50)
 mesh_green_gem_color=c.rgb32(0,160,0)
 mesh_purple_gem_color=c.rgb32(140,0,140)
 mesh_blue_gem_color=c.rgb32(0,0,150)
@@ -116,6 +116,9 @@ gem_pod_position=(0,-120,0)
 #level fin
 lv_fin_pos=(0,0,0)
 
+NPC_SND_DISTANCE=8
+NPC_FLY_SPEED=40
+
 #lab taser height
 ltth=1.7
 
@@ -135,7 +138,7 @@ dangers={'wood_log','role','fllz','piston'}
 GEM_MAX_FRM=150.99
 
 #default speed for move and gravity
-dfsp=2.5
+dfsp=2.6
 
 #Ambient Light
 AMBIENT_LIGHT=None

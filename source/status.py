@@ -109,7 +109,7 @@ def wtr_dist(w,p):
 	return ((p.z < w.z+(w.scale_z/2)+4) and (p.z > w.z-(w.scale_z/2)-4) and (p.x < w.x+(w.scale_x/2)+2) and (p.x > w.x-w.scale_x/2-2))
 
 def p_idle(c):
-	return c.landed and not (c.jumping or c.is_spin or c.walking or c.is_landing or c.pushed)
+	return c.landed and not (c.jumping or c.is_spin or c.walking or c.is_landing or c.pushed or c.standup or c.b_smash)
 
 def p_rst(c):
 	return not c.warped or (c.standup or c.freezed or death_event)

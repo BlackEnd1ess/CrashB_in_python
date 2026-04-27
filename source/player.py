@@ -11,14 +11,6 @@ sn=sound
 cc=_core
 LC=_loc
 
-jmh={1:.8,2:1,3:1.1,4:1.5}
-
-hgt={True:.3,False:.1}
-fgt={True:2.2,False:2}
-
-atp='res/pc/spin/crash.png'
-dtp='res/pc/crash.png'
-
 class pShadow(Entity):## shadow point
 	def __init__(self):
 		super().__init__(model='quad',texture='res/pc/shdw.png',color=color.black,rotation_x=90,scale=.25,origin_z=.01,alpha=.9)
@@ -110,35 +102,30 @@ class CrashB(Entity):
 		s.walking=True
 		if not s.landed:
 			return
-		if s.is_slp:
-			an.run_s(s)
-		else:
-			if s.is_landing:
-				s.is_landing=False
-			an.run(s)
+		if s.is_landing:
+			s.is_landing=False
 		s.wksn=max(s.wksn-time.dt,0)
 		if s.wksn <= 0:
 			s.wksn=.5 if s.is_slp else .35
 			if not s.jumping:
 				sn.footstep(s)
-	def jump_typ(self,t):
+	def jump_typ(self,typ):
 		s=self
-		s.gravity={1:(2.6),2:(2.9),3:(3.1),4:(2.8)}[t]#fall speed
-		s.vpos=s.y+jmh[t]#jump height limit
+		s.vpos=s.y+s.jmp_hgt[typ]
+		s.jmp_typ=typ
 		s.fall_time=0
 		s.frst_lnd=True
 		s.jumping=True
-		if t == 4:
+		if typ == 3:
 			s.b_smash=False
 	def jump(self):
 		s=self
-		kt=bool(s.space_time > .09)
-		s.y=lerp(s.y,s.vpos+hgt[kt]+.1,(time.dt*s.gravity)*fgt[kt])
-		if s.walking and not s.is_attack:
-			s.is_flip=True
-		if not s.is_flip:
-			an.jump_up(s)
-		if s.y >= s.vpos+hgt[kt]:
+		if held_keys[settings.JMP_KEY]:
+			s.space_time+=time.dt
+			if s.space_time > .2:
+				s.vpos+=.25*time.dt
+		s.y=lerp(s.y,s.vpos,time.dt*s.jmp_pwr[s.jmp_typ])
+		if abs(s.y-s.vpos) < .1:
 			s.space_time=0
 			s.jumping=False
 	def check_jump(self):
@@ -146,40 +133,18 @@ class CrashB(Entity):
 		if s.landed and not (s.jumping or s.falling):
 			s.landed=False
 			sn.pc_audio(ID=1)
-			s.jump_typ(t=1)
+			s.jump_typ(0)
 	def anim_land(self):
 		s=self
 		s.is_flip=False
-		s.flfr=0
-		s.ldfr=0
-		s.jmfr=0
 		s.is_landing=True
-	def anim_fall(self):
-		s=self
-		if s.is_flip or s.is_attack or s.stun or st.death_event:
-			return
-		if s.b_smash:
-			an.belly_smash(s)
-			return
-		an.fall(s)
+		s.jmp_typ=0
 	def death_action(self):
 		s=self
-		dtc=s.dth_cause
-		s.dth_timer-=time.dt
-		if s.dth_timer <= 0:
-			s.dth_timer=4
-			cc.reset_state(s)
-			return
-		if dtc in (1,5):
+		if not s.dth_block:
+			s.dth_block=True
 			s.visible=False
-			return
-		{2:lambda:an.dth_angelfly(s),
-		3:lambda:an.dth_wtr_swim(s),
-		4:lambda:an.dth_fire_ash(s),
-		6:lambda:an.dth_el_shock(s),
-		7:lambda:an.dth_beesting(s),
-		8:lambda:an.dth_c_buried(s),
-		9:lambda:an.dth_shrink(s)}[dtc]()
+			an.PlayerDeathAnimator(pos=s.position,typ=s.dth_cause)
 	def hurt_visual(self):
 		for vkh in range(7):
 			invoke(lambda:cc.hurt_blink(self),delay=vkh/3)
@@ -195,12 +160,14 @@ class CrashB(Entity):
 		s.move()
 		if not st.death_event:
 			s.c_camera()
-		if s.jumping:s.jump()
-		if s.b_smash:cc.c_smash(s)
+		if s.jumping:
+			s.jump()
+		if s.b_smash:
+			cc.c_smash(s)
 		if s.is_attack:
 			cc.c_spin(s)
-		if held_keys[settings.JMP_KEY]:s.space_time+=time.dt/2
-		if st.aku_hit >= 3:cc.c_shield()
+		if st.aku_hit >= 3:
+			cc.c_shield()
 	def c_camera(self):
 		s=self
 		if st.bonus_round:
@@ -220,5 +187,4 @@ class CrashB(Entity):
 		s.c_physic()
 		if not st.p_rst(s):
 			s.c_interact()
-		an.c_animation(s)
-		s.texture=atp if (s.is_spin and atp != s.texture) else dtp
+		an.refr_animation(s)

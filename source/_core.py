@@ -1,13 +1,14 @@
-import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,time,random,json,math,objects
 from ursina import Entity,camera,scene,invoke,Vec3,color,distance,distance_xz,boxcast,raycast,window,load_texture
-from animation import NPCAnimator,BoxBreak,BoxAnimation,npc_walking
+import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,time,random,json,math,objects
 from effect import JumpDust,PressureWave,Fireball,ExclamationMark
-from math import atan2,sqrt,pi,sin,cos,radians
+from animation import NPCAnimator,BoxBreak,BoxAnimation
+from math import atan2,sqrt,pi,sin,cos,radians,degrees
 from ursina.ursinastuff import destroy
 from danger import LandMine
 
 kmw={7:5,15:7,16:8,17:6}
 kpp=.3
+
 level_ready=False
 env=environment
 st=status
@@ -19,17 +20,16 @@ C=crate
 N=npc
 
 ## player
-def set_val(c):#run jump  idle spin land  fall  flip slidestop standup sliderun smashsmash bellyland walksound inwater slide_wait
-	for _a in {'rnfr','jmfr','idfr','spfr','ldfr','fafr','flfr','ssfr','sufr','srfr','smfr','blfr','wksn','fall_time','slide_fwd','dthfr','pshfr','stnfr','dth_cause','space_time','crt_wait','sld_wait','atk_cooldown','atk_duration'}:
-		setattr(c,_a,0)#values
-	for _v in {'aq_bonus','walking','jumping','landed','frst_lnd','is_landing','is_attack','is_flip','is_spin','warped','freezed','injured','b_smash','standup','falling','stun','sma_dth','dth_snd','is_slp','pushed','cwall','in_water'}:
+def set_val(c):
+	for _v in {'aq_bonus','walking','jumping','landed','frst_lnd','is_landing','is_attack','is_flip','is_spin','warped','freezed','injured','b_smash','standup','falling','stun','is_slp','pushed','in_water','dth_block'}:
 		setattr(c,_v,False)#flags
+	for _a in {'frm','anim_idx','wksn','fall_time','slide_fwd','dth_cause','jmp_typ','space_time','crt_wait','sld_wait','atk_cooldown','atk_duration','air_time'}:
+		setattr(c,_a,0)#values
+	c.jmp_hgt={0:0.8, 1:1.0, 2:1.2, 3:1.5}
+	c.jmp_pwr={0:4.0, 1:4.0, 2:6.0, 3:5.0}
+	c.gravity={0:3.0, 1:3.9, 2:3.0, 3:3.1}
 	c.move_speed=LC.dfsp
-	c.gravity=LC.dfsp
-	c.inv_sc=-.1/115
-	c.nor_sc=.1/115
 	c.direc=(0,0,0)
-	c.dth_timer=4
 	c.indoor=.5
 	c.vpos=c.y
 	c.CMS=3
@@ -101,25 +101,35 @@ def reset_state(c):
 	reset_wumpas()
 	reset_npc()
 	if st.level_index == 6:
-		c.sma_dth=False
 		reset_mines()
-		rmv_bees()
 	c.position=status.checkpoint
 	env.set_fog()
 	camera.position=c.position
 	camera.rotation=(15,0,0)
-	if c.scale_x < 0:
-		c.scale_x=c.nor_sc
+	c.dth_block=False
 	c.is_slp=False
 	c.in_water=False
 	st.death_event=False
-	c.dthfr=0
-	setattr(c,'texture',LC.ctx)
-	setattr(c,'scale',.1/115)
-	c.dth_snd=False
 	c.visible=True
 	c.stun=False
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
+def c_anim_flag(n):
+	if n == 5:
+		LC.ACTOR.is_spin=False
+	if n == 6:
+		LC.ACTOR.is_landing=False
+	if n == 8:
+		LC.ACTOR.is_flip=False
+	if n == 10:
+		LC.ACTOR.standup=True
+		LC.ACTOR.b_smash=False
+	if n == 11:
+		LC.ACTOR.is_landing=False
+		LC.ACTOR.standup=False
+	if n == 12:
+		LC.ACTOR.stun=False
+	if n == 13:
+		LC.ACTOR.pushed=False
 def various_val(c):
 	st.show_gems=max(st.show_gems-time.dt,0)
 	c.crt_wait=max(c.crt_wait-time.dt,0)
@@ -129,6 +139,7 @@ def various_val(c):
 	st.br_sn=max(st.br_sn-time.dt,0)
 	st.ex_sn=max(st.ex_sn-time.dt,0)
 	st.ni_sn=max(st.ni_sn-time.dt,0)
+	c.air_time=c.air_time+time.dt if not c.landed else 0
 	if not c.is_attack and c.atk_cooldown > 0:
 		c.atk_cooldown=max(c.atk_cooldown-time.dt,0)
 	c.atk_duration=max(c.atk_duration-time.dt,0)
@@ -199,7 +210,7 @@ def c_bounce(c):
 	if c.vnum == 8 and LC.ACTOR.b_smash:
 		LC.ACTOR.b_smash=False
 	LC.ACTOR.is_flip=False
-	LC.ACTOR.jump_typ(t=3 if (c.vnum == 3) else 4)
+	LC.ACTOR.jump_typ(2 if (c.vnum == 3) else 3)
 	if c.vnum == 3:
 		c.destroy()
 	else:
@@ -449,7 +460,7 @@ def check_ceiling(c):
 def check_floor(c):
 	fwd_drc=Vec3(-sin(radians(c.rotation_y))*.05,0,-cos(radians(c.rotation_y))*.05)
 	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.12,.12),ignore=LC.IGNORE,debug=settings.debg)
-	stm=bool(vj.hit and vj.normal) and not (str(vj.entity) in LC.item_lst|LC.dangers|LC.trigger_lst)
+	stm=bool(vj.hit and vj.normal) and not (vj.entity.name in LC.item_lst|LC.dangers|LC.trigger_lst)
 	c.falling=bool(not stm)
 	c.landed=stm
 	if stm:
@@ -461,9 +472,8 @@ def check_floor(c):
 			spc_floor(vj.entity)
 		c.fall_time=0
 		return
-	c.y-={False:(time.dt*c.gravity),True:(time.dt*c.gravity)*2}[c.b_smash]
+	c.y=c.y-time.dt*6 if c.b_smash else c.y-time.dt*c.gravity[c.jmp_typ]
 	c.fall_time=min(c.fall_time+time.dt,1)
-	c.anim_fall()
 def land_act(c,vp):
 	c.stun=False
 	c.space_time=0
@@ -613,7 +623,7 @@ def check_nitro_stack():
 	if len(nitro_boxes) > 0:
 		for np in nitro_boxes:
 			box_above=False
-			for op in scene.entities:
+			for op in scene.entities[:]:
 				if not is_box(op) or op is np:
 					continue
 				if np.x == op.x and np.z == op.z:
@@ -639,7 +649,7 @@ def box_jump_action(c):
 		c_bounce(c)
 		return
 	if c.vnum != 14:
-		LC.ACTOR.jump_typ(t=2)
+		LC.ACTOR.jump_typ(1)
 	c.destroy()
 def box_destroy_event(c):
 	if c.c_fall or not c:
@@ -671,7 +681,7 @@ def explosion(c):
 	if c.vnum == 12:
 		sn.crate_audio(ID=10,pit=2.05)
 		invoke(lambda:sn.crate_audio(ID=9),delay=.075)
-	for nbc in scene.entities:
+	for nbc in scene.entities[:]:
 		if not nbc or not nbc.collider:
 			continue
 		if distance(c,nbc) < 1:
@@ -795,9 +805,11 @@ def clear_gem_route():
 ## npc
 di={0:'x',1:'y',2:'z'}
 npf='res/npc/'
-def set_val_npc(m,drc=None,rng=None,rtyp=0,cmv=True):
+def set_val_npc(m,drc=None,rng=None,rtyp=0,cmv=True,typ=0):
 	m.idf='np'
-	m.anim_frame,m.fly_time,m.turn=0,0,0
+	m.anim_frame=0
+	m.fly_time=0
+	m.turn=0
 	m.is_hitten,m.is_purge=False,False
 	m.is_defeated=False
 	m.spawn_pos=m.position
@@ -806,63 +818,44 @@ def set_val_npc(m,drc=None,rng=None,rtyp=0,cmv=True):
 	m.mov_direc=drc
 	m.can_move=cmv
 	m.ro_mode=rtyp
+	m.typ=typ
 	if rtyp > 0:
 		m.angle=rng
 	m.rotation_x=-90
 	m.scale=.8/1200
-	vnn=m.name if m.vnum != 17 else m.name+f'/{rtyp}'
-	m.model=npf+f'{vnn}/0.ply'
-	m.texture=npf+f'{vnn}/0.png'
+	vnn=f'{m.name}/{typ}' if m.vnum == 17 else m.name
+	m.model=f'{npf}{vnn}/0.ply'
+	m.texture=f'{npf}{vnn}/0.png'
 	m.collider.visible=settings.debg
 	if st.level_index == 8:
 		m.color=color.dark_gray
 		m.unlit=False
-	del m,drc,rng,vnn,cmv,rtyp
-def npc_action(m):
-	if m.is_hitten:
-		fly_away(m)
-		return
-	if m.is_purge:
-		JumpDust(m.position)
-		npc_destroy_event(m)
-		return
-	if m.vnum in (15,16):
-		return
-	npc_walking(m)
-	if (hasattr(m,'ro_mode') and m.vnum != 17 and m.ro_mode > 0):
-		fv={1:lambda:circle_move_xz(m),2:lambda:circle_move_y(m)}
-		if m.ro_mode in fv:
-			fv[m.ro_mode]()
-		return
-	if getattr(m,'can_move',True):
-		npc_walk(m)
+	del m,drc,rng,vnn,cmv,rtyp,typ
 def npc_walk(m):
 	pdv={0:m.spawn_pos[0],1:m.spawn_pos[1],2:m.spawn_pos[2]}
 	mm=m.mov_direc
 	mt=m.turn
+	ox=m.x
+	oz=m.z
+	step=time.dt*m.move_speed
 	kv=getattr(m,di[mm])
-	{0:lambda:setattr(m,di[mm],kv+time.dt*m.move_speed),1:lambda:setattr(m,di[mm],kv-time.dt*m.move_speed)}[mt]()
-	if mm == 2:
-		if distance(LC.ACTOR,m) < 2 and LC.ACTOR.y == m.y:
-			follow_p(m)
-		else:
-			npc_mv_back(m)
+	if mt == 0:
+		setattr(m,di[mm],kv+step)
+	else:
+		setattr(m,di[mm],kv-step)
 	if (mt == 0 and kv >= pdv[mm]+m.mov_range) or (mt == 1 and kv <= pdv[mm]-m.mov_range):
-		if mt == 0:
-			m.rotation_y={0:90,1:0,2:0}[mm]
-			m.turn=1
-			return
-		m.rotation_y={0:270,1:0,2:180}[mm]
-		m.turn=0
-def circle_move_xz(m):
-	m.angle-=time.dt*m.move_speed
-	m.angle%=(2*math.pi)
-	new_x=m.spawn_pos[0]-m.mov_range*math.cos(m.angle)
-	new_z=m.spawn_pos[2]-m.mov_range*math.sin(m.angle)
-	m.position=Vec3(new_x,m.y,new_z)
-	rot=math.degrees(math.atan2(new_z-m.spawn_pos[2],new_x-m.spawn_pos[0]))
-	m.rotation_y=-rot
-def circle_move_y(m):
+		m.turn=1 if mt == 0 else 0
+	m.rotation_y=degrees(atan2(m.x-ox,m.z-oz))+180
+def circle_move(m):
+	if m.ro_mode == 1:
+		m.angle-=time.dt*m.move_speed
+		m.angle%=(2*math.pi)
+		new_x=m.spawn_pos[0]-m.mov_range*math.cos(m.angle)
+		new_z=m.spawn_pos[2]-m.mov_range*math.sin(m.angle)
+		m.position=Vec3(new_x,m.y,new_z)
+		rot=math.degrees(math.atan2(new_z-m.spawn_pos[2],new_x-m.spawn_pos[0]))
+		m.rotation_y=-rot
+		return
 	m.angle+=time.dt*m.move_speed
 	m.angle%=(2*math.pi)
 	new_x=m.spawn_pos[0]+m.mov_range*math.cos(m.angle)
@@ -871,32 +864,47 @@ def circle_move_y(m):
 	rot=math.degrees(math.atan2(new_y-m.spawn_pos[1],new_x-m.spawn_pos[0]))
 	m.rotation_x=rot
 	m.rotation_y=-90
-def rotate_to_crash(m):
-	rtp=(LC.ACTOR.position-m.position)
+def refresh_npc_function(m):
+	if m.is_hitten:
+		fly_away(m)
+		return
+	if m.is_purge:
+		JumpDust(m.position)
+		npc_destroy_event(m)
+		return
+	if not m.can_move:
+		if distance(m,LC.ACTOR) < 3:
+			rotate_to_target(m,LC.ACTOR.position)
+		return
+	if m.ro_mode > 0:
+		circle_move(m)
+		return
+	npc_walk(m)
+def rotate_to_target(m,target_pos):
+	rtp=(target_pos-m.position)
 	m.rotation_y=atan2(rtp.x,rtp.z)*(180/pi)+180
 	m.rotation_x=-90
 def fly_away(n):
-	n.position+=n.fly_direc*(time.dt*40)
-	n.fly_time=min(n.fly_time+time.dt,.61)
-	ke=n.intersects().entity
-	if n.fly_time > .6:
+	n.position+=n.fly_direc*(time.dt*LC.NPC_FLY_SPEED)
+	n.fly_time+=time.dt
+	npc_fly_hit(n)
+	if n.fly_time > .5:
 		npc_destroy_event(n)
-		return
-	if (is_box(ke) and ke.vnum != 6):
-		if ke.vnum in (3,11):
-			ke.empty_destroy()
-		else:
-			ke.destroy()
-	if is_enemie(ke):
-		if n.vnum == 15:
-			destroy(n)
-			return
-		n.collider=None
-		n.enabled=False
-		if not ke.is_hitten:
-			bash_enemie(e=ke,h=n)
-			npc_destroy_event(n)
-			wumpa_count(1)
+def npc_fly_hit(n):
+	for nh in scene.entities:
+		if not nh or not nh.collider or n is nh:
+			continue
+		if is_box(nh) and nh.vnum != 6:
+			if distance(n,nh) < .3:
+				if nh.vnum in (3,11):
+					nh.empty_destroy()
+				else:
+					nh.destroy()
+		if is_enemie(nh) and not nh.is_hitten:
+			if distance(n,nh) < .3:
+				nh.is_purge=True
+				wumpa_count(1)
+	del nh
 def is_enemie(n):
 	return bool(hasattr(n,'idf') and n.idf == 'np')
 def bash_enemie(e,h):
@@ -914,18 +922,12 @@ def npc_pathfinding(m):
 		if not m.is_done:
 			m.is_done=True
 			m.path_fin()
-def follow_p(m):
-	if abs(m.spawn_pos[0]-m.x) < m.mov_range:
-		setattr(m,'x',lerp(m.x,LC.ACTOR.x,time.dt*m.move_speed))
-def npc_mv_back(m):
-	if m.x != m.spawn_pos[0]:
-		m.x=lerp(m.x,m.spawn_pos[0],time.dt*m.move_speed)
 def npc_jump_action(m):
 	if not (m.is_hitten or m.is_purge):
 		if m.vnum in (2,9,13) or (m.vnum == 5 and m.def_mode):
 			get_damage(LC.ACTOR,rsn=2)
 		m.is_purge=bool(m.vnum != 13)
-		LC.ACTOR.jump_typ(t=2)
+		LC.ACTOR.jump_typ(1)
 def npc_destroy_event(m):
 	if m.vnum in (14,19):
 		NPCAnimator(ID=m.vnum,pos=m.position,sca=m.scale,rot=m.rotation,max_frm=m.max_frm,col=m.color)
@@ -977,11 +979,6 @@ def incr_frm(o,sp):
 	if o.frm >= o.max_frm:
 		o.frm=0
 
-##lv6 func
-def rmv_bees():
-	for vbw in scene.entities[:]:
-		if isinstance(vbw,npc.Bee):
-			vbw.purge()
 def reset_mines():
 	for rsm in LC.LDM_POS[:]:
 		LandMine(pos=rsm)

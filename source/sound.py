@@ -12,8 +12,6 @@ BE=f'{sfx_db.NPC[5]}.wav'
 MC='res/music/'
 SF='res/snd/'
 
-loop_snd_info={6:3,8:4,9:4,10:1,11:2,15:5,17:6}
-
 BLD_ROLL=f'{SF}/{sfx_db.OBJECT[18]}.wav'#boulder roll
 TC=f'{SF}{sfx_db.CRATE[7]}.wav'#tnt box
 dd=1.2
@@ -87,17 +85,14 @@ def npc_audio(ID,pit=1,vol=None):
 	destroy(np,delay=np.length+vq*2)
 
 def npc_loop_audio(n,PIT,tme_r):
-	if (n.is_hitten or n.is_purge):
-		del n,PIT,tme_r
+	if not hasattr(n,'snID'):
 		return
-	if n.vnum in loop_snd_info:
-		if distance(n,LC.ACTOR) < 10:
-			n.tme=max(n.tme-time.dt,0)
-			if n.tme <= 0:
-				n.tme=tme_r
-				cds=distance(n,LC.ACTOR)
-				nvv=max(0,1-(cds/10))
-				npc_audio(ID=loop_snd_info[n.vnum],vol=nvv,pit=PIT)
+	n.tme-=time.dt
+	if n.tme > 0:
+		return
+	n.tme=tme_r
+	nvv=max(0,1-(distance(n,LC.ACTOR)/10))
+	npc_audio(ID=n.snID,vol=nvv,pit=PIT)
 
 ## OBJECTS/ITEM SFX
 def obj_audio(ID,pit=1):

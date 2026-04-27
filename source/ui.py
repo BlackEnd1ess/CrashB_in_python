@@ -1,4 +1,4 @@
-from ursina import Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,curve
+from ursina import Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,application
 import status,_core,_loc,sound,settings,warproom,level,time,random
 from objects import ObjType_Background,ObjType_Deco
 from ursina.ursinastuff import destroy

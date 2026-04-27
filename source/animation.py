@@ -15,6 +15,9 @@ hpf='res/objects/l6/hive/'
 ldm='res/objects/l6/lmine/'
 dpw='res/objects/ev/door/'
 
+atp=f'{af}spin/crash.png'
+dtp=f'{af}crash.png'
+
 frg=f'{nf}frog/'
 lbh=f'{nf}lumberjack/smash/'
 lbas=f'{nf}lab_assistant/'
@@ -129,250 +132,235 @@ class CollapseFloor(Entity):
 			return
 		s.model=f'{cl}{s.typ}/{int(s.frm)}.ply'
 
+class PlayerDeathAnimator(Entity):
+	def __init__(self,pos,typ):
+		s=self
+		s.tex_info={2:f'{af}death/angel/0',
+					3:f'{af}death/water/0',
+					4:f'{af}death/fire/0',
+					6:f'{af}death/volt/0',
+					7:f'{af}death/sting/0',
+					8:f'{af}death/buried/0'}
+		if typ in s.tex_info:
+			s.pre_tex=s.tex_info[typ]
+		else:
+			s.pre_tex=f'{af}idle/0'
+		s.snd_info={
+			2:lambda:sn.pc_audio(ID=15,pit=.35),
+			3:lambda:sn.pc_audio(ID=10,pit=.75),
+			4:lambda:sn.pc_audio(ID=19,pit=1.2),
+			6:lambda:sn.obj_audio(ID=16)}
+		if typ in s.snd_info:
+			s.snd_info[typ]()
+		s.dsc_x=.1/115 if typ != 8 else -.1/115
+		super().__init__(model=f'{s.pre_tex}.ply',texture=f'{s.pre_tex}.png',position=pos,rotation=(-90,0,0),scale=(s.dsc_x,.1/115,.1/115),color=LC.ACTOR.color,unlit=False)
+		s.dth_done=False
+		s.dth_duration=5
+		s.dthfr=0
+		s.typ=typ
+		if typ == 8:
+			s.y-=.3
+	def dth_angelfly(self):
+		s=self
+		s.y+=time.dt
+		s.dthfr+=ps
+		if s.dthfr > 20.99:
+			s.dthfr=0
+			sn.pc_audio(ID=16)
+		s.model=f'{af}death/angel/{int(s.dthfr)}.ply'
+	def dth_water(self):
+		self.dthfr+=ps
+		if self.dthfr > 25.99:
+			return
+		self.model=f'{af}death/water/{int(self.dthfr)}.ply'
+	def dth_fire(self):
+		self.dthfr+=ps
+		if self.dthfr > 24.99:
+			self.dthfr=24
+		self.model=f'{af}death/fire/{int(self.dthfr)}.ply'
+	def dth_electric(self):
+		s=self
+		s.dthfr+=ps
+		if s.dthfr > 1.99:
+			s.dthfr=0
+		if s.model != f'{af}death/volt/{int(s.dthfr)}.ply':
+			s.model=f'{af}death/volt/{int(s.dthfr)}.ply'
+			s.texure=f'{af}death/volt/{int(s.dthfr)}.png'
+	def dth_beesting(self):
+		self.dthfr+=ps
+		if self.dthfr > 47.99:
+			self.dthfr=47
+		self.model=f'{af}death/sting/{int(self.dthfr)}.ply'
+	def dth_buried(self):
+		self.dthfr+=ps
+		if self.dthfr > 10.99:
+			self.dthfr=10
+		self.model=f'{af}death/buried/{int(self.dthfr)}.ply'
+	def dth_shrink(self):
+		fv=time.dt/1000
+		if self.scale_x > .1/400:
+			self.scale-=(fv,fv,fv)
+	def finish_dth_event(self):
+		if not self.dth_done:
+			self.dth_done=True
+			cc.reset_state(LC.ACTOR)
+			destroy(self)
+	def refr_animation(self):
+		s=self
+		if s.typ == 2:
+			s.dth_angelfly()
+			return
+		if s.typ == 3:
+			s.dth_water()
+			return
+		if s.typ == 4:
+			s.dth_fire()
+			return
+		if s.typ == 6:
+			s.dth_electric()
+			return
+		if s.typ == 7:
+			s.dth_beesting()
+			return
+		if s.typ == 8:
+			s.dth_buried()
+			return
+		if s.typ == 9:
+			s.dth_shrink()
+	def update(self):
+		if st.gproc():
+			return
+		self.dth_duration-=time.dt
+		if self.dth_duration <= 0:
+			self.finish_dth_event()
+			return
+		self.refr_animation()
+
 ##player animation logic
-def c_animation(c):
+def refr_animation(c):
+	if c.is_spin:
+		c_animation(c,5)#spin
+		return
+	if c.is_flip:
+		c_animation(c,8)#flip
+		return
 	if c.stun:
-		c_stun(c)
+		c_animation(c,12)#stun fly
 		return
 	if c.pushed:
-		c_push_back(c)
+		c_animation(c,13)#push back
 		return
 	if c.standup:
-		stand_up(c)
+		c_animation(c,11)#stand up from b smash
 		return
-	if c.is_spin:
-		spin(c)
+	if c.is_landing and c.landed and c.b_smash and not c.standup:
+		c_animation(c,10)#belly smash land
 		return
-	if c.is_flip and not (c.landed and c.is_spin):
-		flip(c)
+	if c.jumping:
+		if c.air_time < .1 and c.walking and not (c.is_flip or c.falling):
+			c.is_flip=True
+			c.frm=0
+			return
+		c_animation(c,4)#jump up
 		return
-	if (c.landed and c.is_landing) and not (c.walking or c.jumping or c.is_spin or c.falling):
+	if c.landed:
+		if st.p_idle(c) or c.freezed:
+			if c.is_slp:
+				c_animation(c,3)#idle ice slippery
+				return
+			c_animation(c,0)#idle stand
+			return
+		if c.walking and not c.jumping:
+			if c.is_slp:
+				c_animation(c,2)#slippery walk
+				return
+			c_animation(c,1)#walk normal
+			return
+		if c.is_landing and not c.jumping:
+			c_animation(c,6)#normal landing
+			return
+		return
+	if c.falling:
 		if c.b_smash:
-			belly_land(c)
+			c_animation(c,9)#b smash
 			return
-		land(c)
-		return
-	if st.p_idle(c) or c.freezed:
-		if c.is_slp:
-			slide_stop(c)
+		c_animation(c,7)#fall
+
+frm_info={0:(10,f'{af}idle/'),
+		1:(10,f'{af}run/'),
+		2:(6,f'{af}slide_start/'),
+		3:(3,f'{af}slide_stop/'),
+		4:(2,f'{af}jump_up/'),
+		5:(11,f'{af}spin/'),##error
+		6:(12,f'{af}land/'),
+		7:(7,f'{af}fall/'),
+		8:(16,f'{af}flip/'),
+		9:(2,f'{af}belly_smash/'),
+		10:(3,f'{af}belly_smash_land/'),
+		11:(8,f'{af}stand_up/'),
+		12:(14,f'{af}stun/'),
+		13:(4,f'{af}push_back/')}
+def c_animation(c,n):
+	if c.anim_idx != n:
+		c.anim_idx=n
+		c.frm=0
+		c.texture=atp if n == 5 else dtp
+	if c.frm > frm_info[n][0]+.99:
+		cc.c_anim_flag(n)
+		if n in (3,4,6,7,9,10,11):
 			return
-		idle(c)
-
-##player animations
-def idle(c):
-	c.idfr+=ps
-	if c.idfr > 10.99:
-		c.idfr=0
-	if c.model != f'{af}idle/{int(c.idfr)}.ply':
-		c.model=f'{af}idle/{int(c.idfr)}.ply'
-
-def run(c):
-	c.rnfr+=ps
-	if c.rnfr > 10.99:
-		c.rnfr=0
-	if c.model != af+f'run/{int(c.rnfr)}.ply':
-		c.model=af+f'run/{int(c.rnfr)}.ply'
-
-def run_s(d):
-	d.srfr+=ps
-	if d.srfr > 6.99:
-		d.srfr=0
-	d.model=af+f'slide_start/{int(d.srfr)}.ply'
-
-def slide_stop(d):
-	d.ssfr+=ps
-	if d.ssfr > 3.99:
-		d.ssfr=3
-	d.model=af+f'slide_stop/{int(d.ssfr)}.ply'
-
-def jump_up(d):
-	d.jmfr+=ps
-	if d.jmfr > 2.99:
-		return
-	d.model=af+f'jump_up/{int(d.jmfr)}.ply'
-
-def spin(d):
-	d.spfr+=.45
-	if d.spfr > 11.99:
-		d.spfr=0
-		d.is_spin=False
-	d.model=f'{af}spin/{int(d.spfr)}.ply'
-
-def land(d):
-	d.ldfr+=ps
-	if d.ldfr > 12.99:
-		d.is_landing=False
-		d.ldfr=0
-		return
-	d.model=af+f'land/{int(d.ldfr)}.ply'
-
-def fall(d):
-	if d.fafr < 7.99:
-		d.fafr=min(d.fafr+ps,7.999)
-	d.model=af+f'fall/{int(d.fafr)}.ply'
-
-def flip(d):
-	d.flfr+=ps
-	if d.flfr > 16.99:
-		d.is_flip=False
-		d.flfr=0
-		return
-	d.model=af+f'flip/{int(d.flfr)}.ply'
-
-def belly_smash(d):
-	d.smfr+=ps
-	if d.smfr > 2.99:
-		d.smfr=2
-		return
-	d.model=af+f'belly_smash/{int(d.smfr)}.ply'
-
-def belly_land(d):
-	d.blfr+=ps
-	if d.blfr > 3.99:
-		d.blfr=0
-		d.standup=True
-		d.b_smash=False
-		return
-	d.model=af+f'belly_smash_land/{int(d.blfr)}.ply'
-
-def stand_up(d):
-	d.sufr+=ps
-	if d.sufr > 8.99:
-		d.sufr=0
-		d.blfr=0
-		d.is_landing=False
-		d.standup=False
-		return
-	d.model=af+f'stand_up/{int(d.sufr)}.ply'
-
-def diggin_in(d):
-	d.dgifr+=ps
-	if d.dgifr > 7.99:
-		d.dig_in=False
-		d.digged=True
-		d.visible=False
-		return
-	d.model=f'{af}dig_in/{int(d.dgifr)}.ply'
-
-def diggin_out(d):
-	d.dgofr+=ps
-	if d.dgofr > 2.99:
-		d.dig_out,d.dig_in,d.digged=False,False,False
-		d.visible=True
-		return
-	d.model=f'{af}dig_out/{int(d.dgofr)}.ply'
-
-def c_stun(c):
-	c.position+=(0,time.dt*3,time.dt*4.5)
-	c.stnfr+=ps
-	if c.stnfr > 14.99:
-		c.stnfr=0
-		c.stun=False
-		return
-	c.model=af+f'stun/{int(c.stnfr)}.ply'
-
-def c_push_back(c):
-	c.x-=time.dt*4
-	c.pshfr+=ps
-	if c.pshfr > 4.99:
-		c.pshfr=0
-		c.pushed=False
-		return
-	c.model=af+f'push_back/{int(c.pshfr)}.ply'
-
-##player death animations
-def dth_angelfly(c):
-	c.y+=time.dt
-	c.dthfr+=ps
-	if c.texture != f'{af}death/angel/0.png':
-		c.texture=f'{af}death/angel/0.png'
-	if not c.dth_snd:
-		c.dth_snd=True
-		sn.pc_audio(ID=15,pit=.35)
-	if c.dthfr > 20.99:
-		c.dthfr=0
-		sn.pc_audio(ID=16)
-	c.model=af+f'death/angel/{int(c.dthfr)}.ply'
-
-def dth_wtr_swim(c):
-	if not c.dth_snd:
-		c.dth_snd=True
-		sn.pc_audio(ID=10,pit=.75)
-	c.dthfr+=ps
-	if c.dthfr > 25.99:
-		return
-	c.model=af+f'death/water/{int(c.dthfr)}.ply'
-
-def dth_fire_ash(c):
-	if not c.dth_snd:
-		c.dth_snd=True
-		sn.pc_audio(ID=19,pit=1.2)
-	c.dthfr+=ps
-	if c.dthfr > 24.99:
-		c.dthfr=24
-	c.model=af+f'death/fire/{int(c.dthfr)}.ply'
-
-def dth_el_shock(c):
-	if not c.dth_snd:
-		c.dth_snd=True
-		sn.obj_audio(ID=16)
-	c.dthfr+=ps
-	if c.dthfr > 1.99:
-		c.dthfr=0
-	c.texure=af+f'death/volt/{int(c.dthfr)}.png'
-	c.model=af+f'death/volt/{int(c.dthfr)}.ply'
-
-def dth_beesting(c):
-	if not c.landed:
-		c.y=(c.y-c.y)
-	c.rotation_y=0
-	c.dthfr+=ps
-	if c.dthfr > 47.99:
-		c.dthfr=47
-	c.model=af+f'death/sting/{int(c.dthfr)}.ply'
-
-def dth_c_buried(c):
-	c.scale_x=c.inv_sc
-	c.rotation_y=0
-	if not c.sma_dth:#flag for mirror anim
-		c.sma_dth=True
-		c.y-=.3
-	if c.texture != f'{af}death/buried/0.png':
-		c.texture=f'{af}death/buried/0.png'
-	c.dthfr+=ps
-	if c.dthfr > 10.99:
-		c.dthfr=10
-	c.model=af+f'death/buried/{int(c.dthfr)}.ply'
-
-def dth_shrink(c):
-	fv=time.dt/1000
-	idle(c)
-	if c.scale > (.1/400,.1/400,.1/400):
-		c.scale-=(fv,fv,fv)
+		c.frm=0
+	c.frm=min(c.frm+(ps if n != 5 else .4),frm_info[n][0]+.999)
+	mdl=f'{frm_info[n][1]}{int(c.frm)}.ply'
+	if c.model != mdl:
+		c.model=mdl
 
 ##npc animation
+def refresh_npc_animation(m):
+	if m.vnum == 16 and not m.walking:
+		if m.is_atk:
+			lmbjack_smash(m)
+		return
+	if m.vnum == 7:
+		if m.eat:
+			plant_eat(m)
+			return
+		if m.atk:
+			plant_bite(m)
+			return
+	if m.vnum == 8 and not m.can_move:
+		rat_idle(m)
+		return
+	if m.vnum == 5:
+		if m.def_mode:
+			hedge_defend(m)
+			return
+	npc_walking(m)
+
 def npc_walking(m):
 	m.anim_frame+=ps
 	if m.anim_frame > m.max_frm+.99:
 		m.anim_frame=0
-	m.model=f'{nf}{m}/{int(m.anim_frame)}.ply' if m.vnum != 17 else f'{nf}{m}/{m.ro_mode}/{int(m.anim_frame)}.ply'
+	m.model=f'{nf}{m}/{m.typ}/{int(m.anim_frame)}.ply' if m.vnum == 17 else f'{nf}{m}/{int(m.anim_frame)}.ply'
 
 def plant_bite(m):
-	m.atk_frame=min(m.atk_frame+time.dt*t,18.999)
+	m.atk_frame+=time.dt*t
 	if m.atk_frame > 18.99:
 		m.atk_frame=0
 		m.atk=False
 	m.model=f'{plt}attack/{int(m.atk_frame)}.ply'
+
 def plant_eat(m):
-	m.eat_frame=min(m.eat_frame+time.dt*t,30.999)
+	m.eat_frame+=time.dt*t
 	if m.eat_frame > 30.99:
 		m.eat_frame=0
-		m.eat,m.atk=False,False
+		m.eat=False
+		m.atk=False
 		return
 	m.model=f'{plt}eat/{int(m.eat_frame)}.ply'
 
 def hedge_defend(m):
-	m.def_frame=min(m.def_frame+time.dt*t,6.999)
+	m.def_frame+=time.dt*t
 	if m.def_frame > 6.99:
 		m.def_frame=0
 	m.model=f'{hdg}attack/{int(m.def_frame)}.ply'
@@ -445,18 +433,20 @@ def tikki_rotate(t,sp):
 	t.model=f'{tki}{int(t.frm)}.ply'
 	del t,sp
 
-def lmbjack_smash(m,sp):
-	m.sma_frm=min(m.sma_frm+time.dt*sp,35.999)
+def lmbjack_smash(m):
+	m.sma_frm+=time.dt*m.spd
 	if m.sma_frm > 35.99:
 		m.sma_frm=0
+		sn.npc_audio(ID=9)
 		m.is_atk=False
+		return
 	m.model=f'{lbh}{int(m.sma_frm)}.ply'
 
-def frog_jump(m,sp):
-	m.frm+=time.dt*sp
+def frog_jump(m):
+	m.frm+=time.dt*m.spd
 	if m.frm > m.max_frm:
 		m.frm=0
-		m.jmp_anim=False
+		m.is_jmp=False
 	if m.model != f'{frg}{int(m.frm)}.ply':
 		m.model=f'{frg}{int(m.frm)}.ply'
 

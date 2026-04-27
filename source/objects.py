@@ -919,7 +919,9 @@ class PseudoCrash(Entity):
 		s=self
 		super().__init__(model=f'{LC.ctx}.ply',texture=f'{LC.ctx}.png',scale=.1/20,rotation=(-90,30,0),position=(9,-4,0),unlit=False)
 		Entity(model=f'{mpt[0]}.ply',texture=f'{mpt[0]}.png',scale=.00275,position=(s.x,s.y,s.z),double_sided=True,color=color.rgb32(170,190,180),rotation_x=-90,unlit=False)
-		s.idfr=0
+		s.new_anim_idx=0
+		s.anim_idx=0
+		s.frm=0
 		del s
 	def update(self):
-		animation.idle(self)
+		animation.c_animation(self,0)
