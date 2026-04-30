@@ -132,3 +132,15 @@
 
 #27.04.2026
 - updated player animation function
+
+-29.04.2026
+- updated level 2 ice plank
+- upated sound SFX_DATABASE
+- updated Gorilla SFX
+- updated Rat SFX
+- updated level 5 ruin platform SFX
+- updated hive: type 0 small und type 1 large
+
+#30.04.2026
+- new passive npc: bird
+- updated npc: penguin spin + penguin dizzy animation
