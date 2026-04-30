@@ -220,7 +220,7 @@ class MonkeySculpture(Entity):
 			if not s.s_audio:
 				s.s_audio=True
 				s.snd_reset=3
-				sn.obj_audio(ID=9,pit=1)
+				sn.obj_audio(ID=8,pit=1)
 	def refr_function(self):
 		s=self
 		if s.danger:
@@ -283,7 +283,7 @@ class LogDanger(Entity):
 			if s.y <= s.spawn_pos[1]-.4:
 				s.direc_y=1
 				if distance(s,LC.ACTOR) < 5:
-					sn.obj_audio(ID=10)
+					sn.obj_audio(ID=9)
 			return
 		s.y+=time.dt*3
 		if s.y >= s.spawn_pos[1]+.3:
@@ -312,41 +312,41 @@ class LogDanger(Entity):
 					cc.get_damage(LC.ACTOR,rsn=2)
 					s.is_purge=True
 
-behv=f'{omf}l6/hive/0'
 class Hive(Entity):
-	def __init__(self,pos,bID,bMAX):
+	def __init__(self,pos,bID,bMAX,typ):
 		s=self
-		super().__init__(model=f'{behv}.ply',texture=f'{behv}.png',position=pos,scale=.1/150,rotation_x=-90)
+		s.m_path=f'{omf}l6/hive/{typ}/'
+		super().__init__(model=f'{s.m_path}0.ply',texture=f'{s.m_path}0.png',position=pos,scale=.1/150,rotation_x=-90)
+		s.bMAX=bMAX if (typ == 1) else 1
 		s.locked=False
+		s.max_frm=8.99
 		s.bees_out=0
-		s.bMAX=bMAX
 		s.bID=bID
-		s.tme=.3
+		s.typ=typ
+		s.spd=12
+		s.tme=0
 		s.frm=0
 		del pos,bID,bMAX
 	def is_own_bee(self):
 		s=self
-		s.bees_out=0
-		for qv in scene.entities:
-			if isinstance(qv,npc.Bee) and qv.bID == s.bID:
-				s.bees_out+=1
-				s.locked=s.bees_out >= s.bMAX
+		cnt_bee=[b for b in scene.entities if (isinstance(b,npc.Bee) and b.bID == s.bID)]
+		s.bees_out=len(cnt_bee)
+		print(s.bees_out)
+		s.locked=s.bees_out >= s.bMAX
 	def spawn_bee(self):
 		s=self
 		npc.Bee(pos=s.position,bID=s.bID,typ=0)
 	def update(self):
-		if st.gproc():
-			return
-		if st.death_event:
+		if st.gproc() or st.death_event:
 			return
 		s=self
-		s.tme=min(s.tme-time.dt,0)
-		if s.tme <= 0:
-			s.tme=.3
+		s.tme+=time.dt
+		if s.tme > .3:
+			s.tme=0
 			s.is_own_bee()
 		if (LC.ACTOR.z < s.z+10) and (LC.ACTOR.z > s.z-1.5):
 			if not s.locked:
-				an.hive_awake(s,sp=12)
+				an.hive_awake(s)
 
 tk=f'{omf}l6/tikki/'
 class TikkiSculpture(Entity):
@@ -410,7 +410,7 @@ class LandMine(Entity):
 		s.tme=max(s.tme-time.dt,0)
 		if s.tme <= 0:
 			s.tme=random.randint(1,2)
-			sn.obj_audio(ID=11,pit=random.uniform(.8,1))
+			sn.obj_audio(ID=10,pit=random.uniform(.8,1))
 	def explosion(self):
 		s=self
 		s.frm=0
@@ -501,7 +501,7 @@ class Piston(Entity):
 					cc.get_damage(LC.ACTOR,rsn=2)
 			s.danger=False
 			if distance(s,LC.ACTOR) < 8:
-				sn.obj_audio(ID=12,pit=.8)
+				sn.obj_audio(ID=11,pit=.8)
 			s.mode=1
 			s.tme=.5
 	def reset(self):
@@ -510,7 +510,7 @@ class Piston(Entity):
 		if s.y >= s.spawn_y:
 			s.danger=True
 			if distance(s,LC.ACTOR) < 8 and st.aku_hit < 3:
-				sn.obj_audio(ID=12,pit=.5)
+				sn.obj_audio(ID=11,pit=.5)
 			s.mode=0
 			s.tme=1-(1/s.mvspd)
 	def update(self):
@@ -521,11 +521,12 @@ class Piston(Entity):
 			s.mode=1
 			s.reset()
 			return
-		s.tme=max(s.tme-time.dt,0)
+		s.tme-=time.dt
 		if s.tme <= 0:
-			pva={0:lambda:s.stomp(),1:lambda:s.reset()}
-			pva[s.mode]()
-			del pva
+			if pva == 0:
+				s.stomp()
+				return
+			s.reset()
 
 lpad=f'{omf}l7/e_pad/'
 class LabPad(Entity):
@@ -554,7 +555,7 @@ class LabPad(Entity):
 		s=self
 		s.tme=.5
 		if not s.locked:
-			sn.obj_audio(ID=14,pit=.5)
+			sn.obj_audio(ID=12,pit=.5)
 			s.locked=True
 			s.trigger_taser()
 		s.mode=1
@@ -622,7 +623,7 @@ class Boulder(Entity):
 		s.active=False
 		s.rotation_x=0
 		s.collider=b
-		sn.obj_audio(ID=19)
+		sn.obj_audio(ID=18)
 		s.imp_snd.stop()
 		s.imp_snd.fade_out()
 	def reset_state(self):
@@ -636,7 +637,9 @@ class Boulder(Entity):
 		s.imp_snd.fade_out()
 	def refr(self):
 		self.rotation_x-=time.dt*70
-		for blh in scene.entities[:]:
+		for blh in scene.entities:
+			if not blh:
+				continue
 			if distance(self,blh) < 1.8 and blh.collider:
 				if blh == LC.ACTOR and not st.death_event:
 					cc.dth_event(LC.ACTOR,rsn=2)
@@ -675,7 +678,7 @@ class Boulder(Entity):
 		if s.active:
 			if not s.p_snd:
 				s.p_snd=True
-				sn.obj_audio(ID=17)
+				sn.obj_audio(ID=16)
 				s.imp_snd.fade_in()
 				s.imp_snd.play()
 				return

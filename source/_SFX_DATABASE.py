@@ -13,8 +13,10 @@ MUSIC={0:'wroom',
 ##SFX
 INTERFACE={0:'ui_select',1:'ui_enter',2:'ui_wumpa',3:'ui_lives',4:'ui_reward',5:'ui_collect',6:'ui_clock'}
 
+##background sounds
 AMBIENCE={0:'amb_rain',1:'amb_thunder_start',2:'amb_thunder0',3:'amb_thunder1',4:'amb_river'}
 
+##SFX from entity
 PLAYER={0:'cb_footstep_dirt',
 		1:'cb_jump',
 		2:'cb_land_sand',
@@ -57,13 +59,23 @@ NPC={0:'npc_plant_bite',
 	1:'npc_scrubber',
 	2:'npc_mouse',
 	3:'npc_seal',
-	4:'npc_lizard',
+	4:'npc_rat',
 	5:'npc_bee',
 	6:'npc_spider_robot',
 	7:'npc_lab_assistant_push',
 	8:'npc_lab_assistant_fall',
 	9:'npc_lumberjack_smash',
-	10:'npc_frog'}
+	10:'npc_frog',
+	11:'npc_lizard',
+	12:'npc_gorilla0',
+	13:'npc_gorilla1',
+	14:'npc_gorilla2',
+	15:'npc_gorilla3',
+	16:'npc_monkey0',
+	17:'npc_monkey1',
+	18:'npc_monkey2',
+	19:'npc_bird_alert',
+	20:'npc_bird_fly'}
 
 OBJECT={0:'obj_teleport_spawn',
 		1:'obj_room_door',
@@ -73,15 +85,15 @@ OBJECT={0:'obj_teleport_spawn',
 		5:'obj_waterflow',
 		6:'obj_water_bubble',
 		7:'obj_electric_water',
-		8:'obj_dmg_floor',
-		9:'obj_fire_throw',
-		10:'npc_monkey_log',
-		11:'obj_land_mine',
-		12:'obj_piston',
-		13:'obj_pad0',
-		14:'obj_pad1',
+		8:'obj_fire_throw',
+		9:'obj_gorilla_log',
+		10:'obj_land_mine',
+		11:'obj_piston',
+		12:'obj_pad0',
+		13:'obj_pad1',
 		15:'obj_steam',
-		16:'obj_volt',
-		17:'obj_boulder_impact',
-		18:'obj_boulder_roll',
-		19:'obj_boulder_stop'}
+		16:'obj_boulder_impact',
+		17:'obj_boulder_roll',
+		18:'obj_boulder_stop',
+		19:'obj_ruin_ptf0',
+		20:'obj_ruin_ptf1'}

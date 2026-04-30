@@ -12,7 +12,7 @@ BE=f'{sfx_db.NPC[5]}.wav'
 MC='res/music/'
 SF='res/snd/'
 
-BLD_ROLL=f'{SF}/{sfx_db.OBJECT[18]}.wav'#boulder roll
+BLD_ROLL=f'{SF}/{sfx_db.OBJECT[17]}.wav'#boulder roll
 TC=f'{SF}{sfx_db.CRATE[7]}.wav'#tnt box
 dd=1.2
 vq=.05
@@ -25,14 +25,13 @@ def footstep(c):
 	if c.in_water:
 		pc_audio(ID=11,pit=random.uniform(.9,1))
 		return
-	else:
-		if st.level_index in (4,7):
-			pc_audio(ID=12)
-			return
-		if st.level_index in (2,8):
-			pc_audio(ID=18)
-			return
-		pc_audio(ID=0)
+	if st.level_index in (4,7):
+		pc_audio(ID=12)
+		return
+	if st.level_index in (2,8):
+		pc_audio(ID=18)
+		return
+	pc_audio(ID=0)
 
 ##landing sound material
 def landing_sound(o):

@@ -431,36 +431,60 @@ def plank_bridge(pos,typ,cnt,ro_y,DST):
 		plNK[ro_y]()
 	del pos,typ,cnt,ro_y,DST,wP
 
-plob=f'{omf}l2/plank/plank.png'
+plob=f'{omf}l2/plank/plank'
 class Plank(Entity):
 	def __init__(self,pos,typ,ro_y):
 		s=self
-		super().__init__(model='cube',texture=plob,name='plnk',scale=(1,.1,.4),position=pos,collider=b,rotation_y=ro_y,texture_scale=(2,2))
+		super().__init__(model=f'{plob}.ply',texture=f'{plob}.png',name='plnk',scale=(.0012,.001,.0012),position=pos,collider=b,rotation=(-90,ro_y+90,0),color=color.orange)
 		s.spawn_pos=s.position
-		s.color=color.gray
 		s.typ=typ
 		if typ == 1:
+			s.color=color.rgb32(200,255,255)
 			s.is_touched=False
-			s.color=color.brown
+			s.is_reset=False
+			s.falling=False
+			s.tme=0
 		del pos,typ,ro_y,s
-	def obj_reset(self):
+	def reset_status(self):
 		s=self
 		s.is_touched=False
+		s.is_reset=False
+		s.falling=False
+		s.visible=True
 		s.position=s.spawn_pos
 		s.collider=b
-		s.show()
+	def pl_touch(self):
+		if not self.is_touched:
+			self.is_touched=True
+	def refr_function(self):
+		s=self
+		s.tme+=time.dt
+		if s.tme > 1.5:
+			s.tme=0
+			s.falling=True
+			s.collider=None
+			sn.crate_audio(ID=2,pit=.8)
 	def fall_down(self):
 		s=self
-		s.collider=None
-		sn.crate_audio(ID=2,pit=.8)
-		s.animate_y(s.y-3,duration=.2)
-		invoke(s.obj_reset,delay=5)
-	def pl_touch(self):
+		if s.y > s.spawn_pos[1]-3:
+			s.y-=time.dt*4
+			return
+		s.visible=False
+		s.is_reset=True
+	def update(self):
+		if st.gproc() or self.typ == 0:
+			return
 		s=self
-		if not s.is_touched:
-			s.is_touched=True
-			invoke(s.fall_down,delay=1)
-			invoke(s.hide,delay=1.5)
+		if s.is_reset:
+			s.tme+=time.dt
+			if s.tme > 5:
+				s.tme=0
+				s.reset_status()
+			return
+		if s.falling:
+			s.fall_down()
+		if s.is_touched:
+			s.refr_function()
 
 rpt=f'{omf}l2/rope/rope_pce.jpg'
 class Ropes(Entity):
@@ -578,28 +602,43 @@ class LoosePlatform(Entity):
 		s=self
 		super().__init__(model=f'{lpp}{t}/lpf.obj',texture=f'{lpp}{t}/0.png',name='loos',scale=.01/15,position=pos,rotation_y=90,double_sided=True)
 		s.collider=BoxCollider(s,center=Vec3(0,-.5,0),size=(100*10,100,100*10))
+		s.collapsed=False
 		s.active=False
+		s.tme=0
 		s.typ=t
 		del pos,t
 	def reset(self):
 		s=self
+		s.collapsed=False
 		s.collision=True
 		s.visible=True
-		s.active=False
-	def collapse(self):
-		s=self
-		s.collision=False
-		invoke(s.reset,delay=8)
 	def action(self):
 		s=self
-		s.visible=False
-		an.CollapseFloor(t=s.typ,pos=s.position)
-		invoke(s.collapse,delay=1)
+		s.tme+=time.dt
+		if s.tme > 1:
+			s.tme=0
+			sn.obj_audio(ID=20)
+			s.collision=False
+			s.collapsed=True
+			s.active=False
 	def pl_touch(self):
 		s=self
 		if not s.active:
-			sn.obj_audio(ID=8)
 			s.active=True
+			s.visible=False
+			an.CollapseFloor(t=s.typ,pos=s.position)
+			sn.obj_audio(ID=19)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if s.collapsed:
+			s.tme+=time.dt
+			if s.tme > 8:
+				s.tme=0
+				s.reset()
+			return
+		if s.active:
 			s.action()
 
 
@@ -626,7 +665,7 @@ class PistonPlatform(Entity):
 		s.wait=s.wt
 		s.stat=1
 		if distance(s,LC.ACTOR) < 8:
-			sn.obj_audio(ID=12,pit=.5)
+			sn.obj_audio(ID=11,pit=.5)
 	def mv_up(self):
 		s=self
 		if s.y < s.spw_y:
@@ -635,7 +674,7 @@ class PistonPlatform(Entity):
 		s.wait=s.wt*2
 		s.stat=0
 		if distance(s,LC.ACTOR) < 8:
-			sn.obj_audio(ID=12,pit=.8)
+			sn.obj_audio(ID=11,pit=.8)
 	def update(self):
 		if st.gproc():
 			return
@@ -744,9 +783,9 @@ class RoomDoor(Entity):## door for start and end room
 		s.active=False
 		s.d_opn=False
 		s.d_frm=0
-		if st.level_index == 8:
-			s.door_part.color=color.rgb32(60,60,60)
-			s.color=color.rgb32(60,60,60)
+		if st.level_index in (5,8):
+			s.door_part.color=color.rgb32(60,60,60) if st.level_index == 8 else color.rgb32(120,120,120)
+			s.color=color.rgb32(60,60,60) if st.level_index == 8 else color.rgb32(120,120,120)
 			s.door_part.unlit=False
 			s.unlit=False
 		del pos

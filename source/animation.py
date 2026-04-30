@@ -21,12 +21,14 @@ dtp=f'{af}crash.png'
 frg=f'{nf}frog/'
 lbh=f'{nf}lumberjack/smash/'
 lbas=f'{nf}lab_assistant/'
+peng=f'{nf}penguin/'
 plt=f'{nf}eating_plant/'
 hdg=f'{nf}hedgehog/'
 rti=f'{nf}rat/idle/'
 btf=f'{nf}butterfly/'
 hpo=f'{nf}hippo/'
 go=f'{nf}gorilla/'
+brd=f'{nf}bird/'
 
 st=status
 sn=sound
@@ -149,7 +151,7 @@ class PlayerDeathAnimator(Entity):
 			2:lambda:sn.pc_audio(ID=15,pit=.35),
 			3:lambda:sn.pc_audio(ID=10,pit=.75),
 			4:lambda:sn.pc_audio(ID=19,pit=1.2),
-			6:lambda:sn.obj_audio(ID=16)}
+			6:lambda:sn.pc_audio(ID=20)}
 		if typ in s.snd_info:
 			s.snd_info[typ]()
 		s.dsc_x=.1/115 if typ != 8 else -.1/115
@@ -369,6 +371,15 @@ def rat_idle(m):
 	cc.incr_frm(m,t)
 	m.model=f'{rti}{int(m.frm)}.ply'
 
+def penguin_dizzy(m):
+	m.anim_frame+=time.dt*m.spd
+	if m.anim_frame > 24.99:
+		m.anim_frame=0
+		m.is_dizzy=False
+	mdl=f'{peng}dizzy/{int(m.anim_frame)}.ply'
+	if m.model != mdl:
+		m.model=mdl
+
 def hippo_wait(m):
 	m.a_frame+=time.dt*t
 	if m.a_frame > 23.99:
@@ -410,14 +421,15 @@ def lba_push(m):
 		m.do_push=False
 	m.model=lbas+f'push/{int(m.anim_frame)}.ply'
 
-def hive_awake(h,sp):
-	h.frm=min(h.frm+time.dt*sp,8.999)
-	if h.frm > 8.99:
+def hive_awake(h):
+	h.frm+=time.dt*h.spd
+	if h.frm > h.max_frm:
 		h.frm=0
 		h.active=True
 		h.spawn_bee()
-	h.model=f'{hpf}{int(h.frm)}.ply'
-	del h,sp
+	md=f'{hpf}{h.typ}/{int(h.frm)}.ply'
+	if h.model != md:
+		h.model=md
 
 def tikki_rotate(t,sp):
 	if t.an_mode == 0:
@@ -454,6 +466,21 @@ def btfly_fly(m):
 	cc.incr_frm(m,m.spd)
 	if m.model != f'{btf}/{m.typ}/{int(m.frm)}.ply':
 		m.model=f'{btf}/{m.typ}/{int(m.frm)}.ply'
+
+def bird_idle(m):
+	m.frm+=time.dt*m.spd
+	if m.frm > 7.99:
+		m.frm=0
+	mdl=f'{brd}{int(m.frm)}.ply'
+	if m.model != mdl:
+		m.model=mdl
+def bird_fly(m):
+	m.frm+=time.dt*m.spd
+	if m.frm > 8.99:
+		m.frm=0
+	mdl=f'{brd}/fly/{int(m.frm)}.ply'
+	if m.model != mdl:
+		m.model=mdl
 
 def land_mine(m,sp):
 	m.frm+=time.dt*sp

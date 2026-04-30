@@ -144,7 +144,10 @@ class CrashB(Entity):
 		if not s.dth_block:
 			s.dth_block=True
 			s.visible=False
-			an.PlayerDeathAnimator(pos=s.position,typ=s.dth_cause)
+			if not s.dth_cause in (1,5):
+				an.PlayerDeathAnimator(pos=s.position,typ=s.dth_cause)
+				return
+			invoke(lambda:cc.reset_state(s),delay=5)
 	def hurt_visual(self):
 		for vkh in range(7):
 			invoke(lambda:cc.hurt_blink(self),delay=vkh/3)

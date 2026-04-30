@@ -117,16 +117,57 @@ class Penguin(Entity):
 		super().__init__(scale=.8/1100,position=pos)
 		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+400),size=Vec3(300,300,600))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
+		s.is_dizzy=False
+		s.is_spin=False
 		s.move_speed=1.1
+		s.rot_speed=300
+		s.new_anim_idx=0
+		s.anim_idx=0
+		s.spin_time=3
+		s.wait_time=3
 		s.max_frm=15
+		s.spd=12
 		del s,pos,drc,rng,rtyp,cmv
+	def refr_spin(self):
+		s=self
+		s.rotation_y+=time.dt*s.rot_speed
+		s.spin_time-=time.dt
+		if s.spin_time <= 0:
+			s.spin_time=3
+			s.is_spin=False
+			s.is_dizzy=True
+	def refr_texture(self):
+		s=self
+		tx=f'{npf}penguin/spin/0' if (s.anim_idx == 1) else f'{npf}penguin/0'
+		s.model=f'{tx}.ply' if (s.model != f'{tx}.ply') else s.model
+		s.texture=f'{tx}.png' if (s.texture != f'{tx}.png') else s.texture
+	def refr_function(self):
+		s=self
+		print(s.anim_frame)
+		if not (s.is_hitten or s.is_purge):
+			s.anim_idx=1 if s.is_spin else 0
+			if s.anim_idx != s.new_anim_idx:
+				s.new_anim_idx=s.anim_idx
+				s.refr_texture()
+			if s.is_spin:
+				s.anim_frame=0
+				s.refr_spin()
+				return
+			if s.is_dizzy:
+				an.penguin_dizzy(s)
+				return
+			s.wait_time-=time.dt
+			if s.wait_time <= 0:
+				s.wait_time=random.randint(2,4)
+				s.is_spin=True
+				sn.pc_audio(ID=3,pit=1.2)
+				return
+		an.refresh_npc_animation(s)
+		cc.refresh_npc_function(s)
 	def update(self):
 		if st.gproc():
 			return
-		s=self
-		if not (s.is_purge or s.is_hitten):
-			an.refresh_npc_animation(s)
-		cc.refresh_npc_function(s)
+		self.refr_function()
 
 class Hedgehog(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
@@ -257,7 +298,7 @@ class Lizard(Entity):
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1.2
 		s.max_frm=11
-		s.snID=4
+		s.snID=11
 		s.tme=1
 		del s,pos,drc,rng,rtyp,cmv
 	def update(self):
@@ -383,6 +424,8 @@ class Gorilla(Entity):
 		if s.do_throw and not s.wait_next:
 			s.do_throw=False
 			s.wait_next=True
+			if distance(LC.ACTOR,s) < 2:
+				sn.npc_audio(ID=random.randint(12,15),pit=.3)
 			s.throw_log()
 			return
 		if (s.is_hitten or s.is_purge):
@@ -757,6 +800,40 @@ class Hippo(Entity):
 			s.refr_dive()
 			return
 		s.refr_wait()
+
+brd=f'{npf}bird/'
+class Bird(Entity):
+	def __init__(self,pos):
+		super().__init__(model=f'{brd}/0.ply',texture=f'{brd}/0.png',position=pos,scale=.002,rotation=(-90,random.uniform(-45,45),0),unlit=False)
+		self.spawn_pos=pos
+		self.active=False
+		self.p_snd=False
+		self.spd=12
+		self.frm=0
+	def refr_function(self):
+		s=self
+		an.bird_idle(s)
+		if distance(s,LC.ACTOR) < 2:
+			s.active=True
+			sn.npc_audio(ID=19)
+	def refr_position(self):
+		s=self
+		if not s.p_snd:
+			s.p_snd=True
+			sn.npc_audio(ID=20)
+		an.bird_fly(s)
+		s.z+=time.dt*.5
+		s.y+=time.dt*1.5
+		if s.y > s.spawn_pos[1]+3:
+			destroy(s)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if not s.active:
+			s.refr_function()
+			return
+		s.refr_position()
 
 btfly=f'{npf}butterfly/'
 class Butterfly(Entity):

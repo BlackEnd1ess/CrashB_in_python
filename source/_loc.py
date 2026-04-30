@@ -28,15 +28,15 @@ CLOCK_POSITION={0:(0,0,0),
 
 ##LV_INDEX:(platinum, gold, saphire)
 RELIC_TIME_LIMIT_LEVEL={
-	1:(35,40,50),#ok
-	2:(45,50,60),#ok
-	3:(25,30,45),#ok
-	4:(35,45,55),#ok
-	5:(50,55,60),#ok
-	6:(25,30,40),#ok
-	7:(45,50,55),#ok
-	8:(40,45,55),#ok
-	9:(10,15,20)}#test
+	1:(35,40,50),
+	2:(45,50,60),
+	3:(25,30,45),
+	4:(35,45,55),
+	5:(50,55,60),
+	6:(25,30,40),
+	7:(45,50,55),
+	8:(40,45,55),
+	9:(10,15,20)}#testlevel
 
 #display the name in pause menu and loading screen
 lv_name=['CENTRAL - WARP ROOM',
@@ -134,17 +134,11 @@ item_lst={'wmpf','exlf','gem','crys','clock','relic'}
 #danger zone
 dangers={'wood_log','role','fllz','piston'}
 
-#gem interface frames
-GEM_MAX_FRM=150.99
-
 #default speed for move and gravity
 dfsp=2.6
 
 #Ambient Light
 AMBIENT_LIGHT=None
-
-#Lv 5 Level Background for Thunderbolt
-bgT=None
 
 #color gem
 C_GEM=None
