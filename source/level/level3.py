@@ -1,6 +1,7 @@
-import objects,map_tools,status,crate,npc,sys,os,_loc,danger
+import objects,map_tools,status,crate,npc,sys,os,_loc,danger,settings
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 from ursina.shaders import *
+from item import ExtraLive
 from ursina import *
 
 mt=map_tools
@@ -11,6 +12,8 @@ LC=_loc
 c=crate
 n=npc
 U=-3
+
+GEM_VNUM=4
 
 def map_setting():
 	LC.FOG_L_COLOR=color.rgb32(25,45,25)
@@ -28,6 +31,8 @@ def map_setting():
 def start_load():
 	load_crate()
 	bonus_zone()
+	if GEM_VNUM in st.COLOR_GEM or settings.debg:
+		gem_zone()
 	load_object()
 	load_wumpa()
 	load_npc()
@@ -38,6 +43,7 @@ def load_object():
 	o.BonusPlatform(pos=(.85,1.3,.85*8))
 	o.InvWall(pos=(-2.5,0,20),sca=(.5,15,140))
 	o.InvWall(pos=(2.5,0,20),sca=(.5,15,140))
+	o.GemPlatform(pos=(.8,.1,-5),t=GEM_VNUM,na=True)
 	#temple
 	o.ObjType_Scene(ID=4,pos=(2.55,-.3,-1.4),sca=.025,ro_y=90)
 	o.ObjType_Scene(ID=4,pos=(-2.55,-.3,-1.4),sca=(-.025,.025,.025),ro_y=-90)
@@ -57,16 +63,16 @@ def load_object():
 	o.ObjType_Floor(ID=1,pos=(0,2,60),sca=.03,rot=(-90,90,0),col=color.rgb32(100,100,0))
 	#platforms
 	ptco=color.rgb32(200,200,200)
-	o.ObjType_Movable(ID=0,pos=(0,-.5,-24.8),ptm=2,ptw=1.5,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(0,-.5,-24.8),ptm=2,drc='x',ptw=1.5,col=ptco)
 	o.ObjType_Movable(ID=0,pos=(0,-.5,-23.25),ptm=1,ptw=1.5,pts=3,col=ptco)
 	o.ObjType_Movable(ID=0,pos=(0,-.1,-1.3),ptm=0,col=ptco)
 	o.ObjType_Movable(ID=0,pos=(0,-.5,-7),ptm=0,col=ptco)
 	o.ObjType_Movable(ID=0,pos=(0,.5,0),ptm=0,col=ptco)
 	o.ObjType_Movable(ID=0,pos=(-.3,.5,11.5),ptm=2,ptw=1.5,col=ptco)
-	o.ObjType_Movable(ID=0,pos=(-.85,.5,52.5),ptm=3,ptw=1.5,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(-.85,.5,52.5),ptm=2,ptw=1.5,drc='z',col=ptco)
 	o.ObjType_Movable(ID=0,pos=(.85,.5,52.5),ptm=0,col=ptco)
 	o.ObjType_Movable(ID=0,pos=(0,.75,56.5),ptm=0,col=ptco)
-	o.ObjType_Movable(ID=0,pos=(0,1.5,77.3),ptm=3,ptw=1.5,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(0,1.5,77.3),ptm=2,drc='z',ptw=1.5,col=ptco)
 	#blocks
 	tH=-.2
 	#e0
@@ -213,6 +219,19 @@ def load_npc():
 	n.spawn(ID=7,POS=(0,1.05,41.4))
 	n.spawn(ID=7,POS=(0,1.95,74.1))
 	n.spawn(ID=2,POS=(0,1.05,4.2))
+	n.Bird(pos=(.8,1,45.7))
+	n.Bird(pos=(0,.1,-14.5))
+	n.Bird(pos=(-.7,.1,-13.8))
+	n.Bird(pos=(.9,1,3.1))
+	n.Bird(pos=(-.1,1,6.6))
+	n.Bird(pos=(0,1,13.7))
+	n.Bird(pos=(0,1,16.9))
+	n.Bird(pos=(0,1,19))
+	n.Butterfly(pos=(0,.2,-26.5),typ=1,rng=1)
+	n.Butterfly(pos=(0,.3,-19.1),typ=2,rng=1)
+	n.Butterfly(pos=(-.8,.5,-6.1),typ=3,rng=1)
+	n.Butterfly(pos=(0,1.2,32.8),typ=4,rng=1)
+	n.Butterfly(pos=(0,1.9,47.2),typ=1,rng=1)
 
 ## bonus level / gem path
 def bonus_zone():
@@ -250,3 +269,107 @@ def bonus_zone():
 	c.spawn(ID=4,p=(5.8,-35.1,U))
 	mt.crate_row(ID=2,POS=(10.4,-35.65+.16,U+.1),CNT=4,WAY=0)
 	o.BonusPlatform(pos=(19.3,-35.7,U))
+
+def gem_zone():
+	blh=-.2
+	box_wtr=-.16
+	sg=(.0225,.0265,.025)
+	sr=(-.0225,.0265,.025)
+	ptco=color.rgb32(200,200,200)
+	sh=color.gray
+	o.InvWall(pos=(200+-2.5,0,40),sca=(.5,15,140))
+	o.InvWall(pos=(200+2.5,0,40),sca=(.5,15,140))
+	o.InvWall(pos=(200,0,72),sca=(20,15,.5))
+	Entity(model='quad',position=(200,-20,75),scale=(20,40),color=color.black)
+	o.WaterFlow(pos=(200,-.291,30),sca=(5,80))
+	o.ObjType_Deco(ID=6,pos=(200,0,6),sca=(2,3,2),rot=(-90,0,0))#cobblestone ground
+	o.ObjType_Deco(ID=6,pos=(200,0,50),sca=(2,3,2),rot=(-90,0,0))#cobblestone ground
+	o.ObjType_Scene(ID=4,pos=(200+2.55,-.3,.5),sca=.025,ro_y=90)#temple walls
+	o.ObjType_Scene(ID=4,pos=(200-2.55,-.3,.5),sca=(-.025,.025,.025),ro_y=-90)#temple walls
+	o.ObjType_Scene(ID=4,pos=(200+2.55,-.3,-2.5),sca=.025,ro_y=90)#temple walls
+	o.ObjType_Scene(ID=4,pos=(200-2.55,-.3,-2.5),sca=(-.025,.025,.025),ro_y=-90)#temple walls
+	o.ObjType_Scene(ID=4,pos=(200+2.55,-.3,-5.5),sca=.025,ro_y=90)#temple walls
+	o.ObjType_Scene(ID=4,pos=(200-2.55,-.3,-5.5),sca=(-.025,.025,.025),ro_y=-90)#temple walls
+	o.ObjType_Scene(ID=4,pos=(200+2,0,72.7),sca=.03,ro_y=0)#temple walls
+	o.ObjType_Scene(ID=4,pos=(200-2,0,72.7),sca=.03,ro_y=0)#temple walls
+	for vw in range(6):
+		o.ObjType_Scene(ID=3,pos=(200-2.8,.3,11+vw*11),ro_y=-90,sca=sg,col=sh)#grass side scene
+		o.ObjType_Scene(ID=3,pos=(200+2.8,.3,11+vw*11),ro_y=90,sca=sr,col=sh)#grass side scene
+	o.spw_block(ID=2,p=(200,blh,-3),vx=[1,3])
+	o.spw_block(ID=2,p=(200,blh,1),vx=[1,3])
+	o.ObjType_Movable(ID=0,pos=(200,-.5,4),ptm=2,ptw=.5,col=ptco,tu=0)
+	o.ObjType_Movable(ID=0,pos=(200,-.5,5.5),ptm=2,ptw=.5,col=ptco,tu=1)
+	o.ObjType_Movable(ID=0,pos=(200,-.5,7),ptm=2,ptw=.5,col=ptco,tu=0)
+	o.spw_block(ID=2,p=(200,blh,8),vx=[2,1])
+	o.spw_block(ID=2,p=(200,blh,8.85),vx=[1,4])
+	o.ObjType_Movable(ID=0,pos=(200,-.5,13),ptm=1,tu=0,ptw=1,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(200,-.5,14.5),ptm=1,tu=1,ptw=1,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(200,-.5,16),ptm=1,tu=0,ptw=1,col=ptco)
+	o.spw_block(ID=2,p=(200,blh,17.5),vx=[1,2])
+	mt.crate_plane(ID=1,POS=(200-.32,box_wtr,19.64),CNT=[1,2])
+	mt.crate_plane(ID=11,POS=(200-.32,box_wtr,20.5),CNT=[2,1])
+	mt.crate_plane(ID=11,POS=(200,box_wtr,20.5),CNT=[1,14])
+	o.spw_block(ID=2,p=(200,blh,26),vx=[1,1])
+	mt.crate_plane(ID=2,POS=(200,box_wtr,28),CNT=[1,2])
+	c.spawn(ID=3,p=(200.8,-.1+.2,8))
+	c.spawn(ID=3,p=(200.8,-.1+1.85,8))
+	c.spawn(ID=3,p=(200,box_wtr,29.5))
+	c.spawn(ID=4,p=(200,box_wtr,31))
+	c.spawn(ID=1,p=(200-1,box_wtr,31))
+	c.spawn(ID=1,p=(200-1,box_wtr,32.5))
+	c.spawn(ID=1,p=(200-1,box_wtr,34))
+	c.spawn(ID=3,p=(200,box_wtr,34))
+	mt.box_quad_mixxed(ID=(11,12),POS=(200+1,box_wtr,34))
+	mt.box_quad_mixxed(ID=(1,11),POS=(200+1,box_wtr,35.5))
+	mt.box_quad_mixxed(ID=(11,12),POS=(200+1,box_wtr,37.5))
+	mt.box_quad_mixxed(ID=(2,1),POS=(200+1,box_wtr,39.5))
+	c.spawn(ID=3,p=(200,box_wtr,39.5))
+	c.spawn(ID=2,p=(200-1,box_wtr,39.5))
+	c.spawn(ID=1,p=(200-1,box_wtr,41))
+	c.spawn(ID=11,p=(200-1,box_wtr,42.5))
+	c.spawn(ID=9,p=(200,box_wtr,42.5),m=4)
+	c.spawn(ID=9,p=(200+.32,box_wtr,42.5),m=5)
+	c.spawn(ID=9,p=(200,box_wtr,42.5+.32),m=6)
+	c.spawn(ID=9,p=(200+.32,box_wtr,42.5+.32),m=7)
+	c.spawn(ID=13,p=(200,box_wtr,44),m=4,l=0)
+	c.spawn(ID=13,p=(200,box_wtr,45.5),m=5,l=0)
+	c.spawn(ID=13,p=(200,box_wtr,47),m=6,l=0)
+	c.spawn(ID=13,p=(200,box_wtr,48.5),m=7,l=0)
+	o.ObjType_Floor(ID=1,pos=(200,.2,51),sca=.03,rot=(-90,90,0),col=color.rgb32(100,100,0))
+	mt.box_quad_mixxed(ID=(4,2),POS=(198.7,.24+.16,49.5))
+	mt.box_quad_mixxed(ID=(2,4),POS=(198.7,.24+.16+.32,49.5))
+	mt.crate_row(ID=2,POS=(199.7,.22+.16,50.3),CNT=3,WAY=2)
+	mt.crate_row(ID=1,POS=(199.7+.32,.22+.16,50.3+.32),CNT=4,WAY=2)
+	c.spawn(ID=3,p=(201.3,.24+.16,49.4))
+	c.spawn(ID=3,p=(201.3,.24+1.85,49.4))
+	o.spw_block(ID=2,p=(200,blh,54),vx=[1,1])
+	o.spw_block(ID=2,p=(200,blh,62),vx=[2,1])
+	o.spw_block(ID=2,p=(200,.2,69),vx=[2,1])
+	o.PlatformSpawner(ID=0,pos=(200-1,-.5,73),wait=2,speed=1,RNG=20)
+	o.Waterfall(pos=(200,.2,70),sca=(5,1))
+	o.spw_block(ID=2,p=(200-.85*3,.65,70.25),vx=[7,3])
+	o.ObjType_Deco(ID=1,pos=(200-.1,1,71.8),sca=.02,rot=(-90,0,0))
+	mt.crate_row(ID=11,POS=(199.1,.8+.16,70),CNT=6,WAY=1)
+	mt.crate_block(ID=14,POS=(200.8,.8+.16,70),CNT=[2,6,2])
+	mt.box_quad_mixxed(ID=(1,4),POS=(198,.8+.16,71.1))
+	mt.box_quad_mixxed(ID=(2,1),POS=(198,.8+.16+.32,71.1))
+	c.spawn(ID=5,p=(200,.8+.16,70.6))
+	mt.crate_wall(ID=2,POS=(200.6,-.1+.2,62),CNT=[2,3])
+	#wumpa
+	mt.wumpa_row(POS=(200,-.1+.3,-2.2),CNT=3,WAY=1)
+	mt.wumpa_row(POS=(200,-.1+.3,1),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(200,-.1+.3,8),CNT=10,WAY=1)
+	mt.wumpa_row(POS=(200,-.1+.3,17.5),CNT=3,WAY=1)
+	#npc area
+	o.spw_block(ID=2,p=(200-2,blh,35.8),vx=[1,1])
+	o.spw_block(ID=2,p=(200-2,blh,22.4),vx=[1,1])
+	o.spw_block(ID=2,p=(200+1.8,blh,42),vx=[1,1])
+	o.spw_block(ID=2,p=(200+1.8,blh,32),vx=[1,1])
+	n.spawn(ID=7,POS=(200-1.8,-.1,35.8))
+	n.spawn(ID=7,POS=(200-1.8,-.1,22.4))
+	n.spawn(ID=7,POS=(200+1.8,-.1,42))
+	n.spawn(ID=7,POS=(200+1.8,-.1,32))
+	ExtraLive(pos=(199,1,62))
+	ExtraLive(pos=(199,1,65))
+	ExtraLive(pos=(199,1,68))
+	o.GemPlatform(pos=(201.8,1,70.7),t=GEM_VNUM,na=True)

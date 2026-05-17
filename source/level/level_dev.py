@@ -67,35 +67,35 @@ def presentation():
 	o.BonusPlatform(pos=(0,.15,4))
 	o.BonusPlatform(pos=(1.3,.15,4),ID=1)
 	o.PseudoGemPlatform(pos=(0,.3,2),t=1)
-	o.PseudoGemPlatform(pos=(.8,.3,2),t=2)
+	o.PseudoGemPlatform(pos=(.8,.3,2),t=2,na=True)
 	o.PseudoGemPlatform(pos=(1.6,.3,2),t=3)
-	o.PseudoGemPlatform(pos=(.4,.3,2.8),t=4)
+	o.PseudoGemPlatform(pos=(.4,.3,2.8),t=4,na=True)
 	o.PseudoGemPlatform(pos=(1.2,.3,2.8),t=5)
 
 def load_object():
-	Entity(model='cube',scale=(16,1,16),y=-.5,texture_scale=(16,16),collider='box',texture='grass',alpha=0)
+	Entity(model='cube',scale=(16,1,16),y=-.5,texture_scale=(16,16),collider='box',texture='white_cube',alpha=1)
 	o.StartRoom(pos=(0,0,-8.1))
-	#o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
+	o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
+	o.PlatformSpawner(ID=0,pos=(0,.3,2),wait=2,speed=1.5,RNG=10)
+	o.GemPlatform(pos=(0,.3,-2),t=1,na=True)
 def load_crate():
-	CZ=5
-	mt.crate_block(ID=12,POS=(0,.16,0),CNT=[3,1,1])
-	mt.crate_block(ID=0,POS=(0,.16+.32,0),CNT=[3,1,1])
-	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,1,1])
+	CZ=0
+	mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,1,1])
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.32),CNT=[3,2,2])
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.64),CNT=[3,1,3])
-	#mt.crate_block(ID=1,POS=(-6.5,.16,CZ),CNT=[3,3,1])
+	#mt.crate_block(ID=1,POS=(-6.5,.16,CZ),CNT=[6,6,2])
 	#mt.crate_block(ID=2,POS=(-5.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=3,POS=(-4.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=4,POS=(-3.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=5,POS=(-2.5,.16,CZ),CNT=[3,1,1])
 	#mt.crate_block(ID=6,POS=(-1.5+.32,.16,CZ),CNT=[1,1,1])
 	#mt.crate_block(ID=7,POS=(-.5,.16,CZ),CNT=[3,3,1])
-	#mt.crate_block(ID=8,POS=(.5,.16,CZ),CNT=[3,3,1])
-	#mt.crate_block(ID=9,POS=(1.5+.32,.16,CZ),CNT=[1,1,1])
-	#mt.crate_block(ID=10,POS=(2.5+.32,.16,CZ),CNT=[1,1,1])
-	#mt.crate_block(ID=11,POS=(3.5+.32,.16,CZ),CNT=[1,1,8])
+	mt.crate_block(ID=8,POS=(.5,.16,CZ),CNT=[3,3,1])
+	mt.crate_block(ID=9,POS=(1.5+.32,.16,CZ),CNT=[1,1,1])
+	mt.crate_block(ID=10,POS=(2.5+.32,.16,CZ),CNT=[1,1,1])
+	#mt.crate_block(ID=11,POS=(3.5+.32,.16,CZ),CNT=[1,1,2])
 	#mt.crate_block(ID=12,POS=(4.5+.32,.16,CZ),CNT=[1,1,3])
-	#mt.crate_block(ID=13,POS=(5.5,.16,CZ),CNT=[3,3,3])
+	mt.crate_block(ID=13,POS=(5.5,.16,CZ),CNT=[3,3,3])
 	#mt.crate_block(ID=14,POS=(6.5,.16,CZ),CNT=[3,3,3])
 	#c.spawn(ID=15,p=(5,.16,CZ-3),m=-1,l=1)
 	#c.spawn(ID=15,p=(5.5,.16,CZ-3),m=-1,l=2)
@@ -103,7 +103,16 @@ def load_crate():
 def load_wumpa():
 	return
 def load_npc():
-	return
+	n.Bird(pos=(0,.5,0))
+	n.Bird(pos=(1,.5,1))
+	n.Bird(pos=(-.5,.5,-.5))
+	n.spawn(ID=4,POS=(0,0,2),DRC=0,RNG=1,RTYP=0,CMV=True)
+	#n.spawn(ID=10,POS=(1,0,2),DRC=2,RNG=1,MTYP=1,RTYP=1,CMV=True)
+	#n.spawn(ID=10,POS=(2,0,2),DRC=0,RNG=1,MTYP=1,RTYP=2,CMV=True)
+	#n.spawn(ID=10,POS=(3,0,2),DRC=0,RNG=1,MTYP=1,RTYP=0,CMV=True)
+	#n.spawn(ID=10,POS=(4,0,2),DRC=1,RNG=1,MTYP=1,RTYP=0,CMV=True)
+	#n.spawn(ID=14,POS=(5,0,2))
+
 ## bonus level / gem path
 def bonus_zone():
 	Entity(model='wireframe_cube',scale=2,position=(0,-30,-3),collider='box')

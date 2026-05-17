@@ -155,8 +155,8 @@ def load_object():
 	o.plank_bridge(pos=(23-.025,5.35,18),ro_y=0,typ=1,cnt=1,DST=.5)
 	o.plank_bridge(pos=(23-.025,5.35,19),ro_y=0,typ=0,cnt=1,DST=.5)
 	#bridge 4
-	o.plank_bridge(pos=(24.7,5.3,26.75),ro_y=90,typ=1,cnt=4,DST=.44)
-	o.plank_bridge(pos=(28,5.3,26.75),ro_y=90,typ=1,cnt=3,DST=.44)
+	o.plank_bridge(pos=(24.7,5.3,27),ro_y=-90,typ=1,cnt=4,DST=.46)
+	o.plank_bridge(pos=(28,5.3,27),ro_y=-90,typ=1,cnt=3,DST=.46)
 	#ptf object
 	for ptf1 in range(4):
 		for ptf2 in range(3):
