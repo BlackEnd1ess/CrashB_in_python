@@ -1,13 +1,14 @@
 v 1.4
 - frog snd + logic + pathfinding
-- preload break animations, load_model 
-- upgrade level 1 -> btfly, blocks, tree, birds
+- box reset (airbox -> ironbox)
 - level 8 no lights when playing other levels before
 - VIDEO!!
 
 v 1.5
+- upgrade level 1 -> blocks, tree
 - aku effect, a lot of stars
 - better 2d frames (light)
+- checkpoint texture 1 side
 - better 3d models: tree, mushrooms
 - add npcs, textures and sounds from CB3!
 - digin plant
