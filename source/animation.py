@@ -47,7 +47,6 @@ class BoxBreak(Entity):
 		s.vcol={3:color.rgb32(140,70,0),11:color.red,12:color.green,15:color.gold,16:color.rgb32(180,0,180)}
 		col=color.orange if not (ID in s.vcol) else s.vcol[ID]
 		super().__init__(model=f'{cf}brk/0.ply',texture=f'{cf}brk/0.png',rotation=(-90,0,0),scale=.4/1000,position=(pos[0],pos[1]-.16,pos[2]),color=col,unlit=False)
-		sn.crate_audio(ID=2)
 		s.frm=0
 		del pos,ID,s,col
 	def update(self):
@@ -240,11 +239,11 @@ class PlayerDeathAnimator(Entity):
 
 ##player animation logic
 def refr_animation(c):
-	if c.is_spin:
-		c_animation(c,5)#spin
-		return
 	if c.is_flip:
 		c_animation(c,8)#flip
+		return
+	if c.is_spin:
+		c_animation(c,5)#spin
 		return
 	if c.stun:
 		c_animation(c,12)#stun fly

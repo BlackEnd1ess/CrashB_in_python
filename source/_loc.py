@@ -100,7 +100,7 @@ mesh_blue_gem_color=c.rgb32(0,0,150)
 mesh_yellow_gem_color=c.rgb32(150,150,0)
 
 GEM_MESH_COLOR={1:mesh_blue_gem_color,2:mesh_red_gem_color,3:mesh_yellow_gem_color,4:mesh_green_gem_color,5:mesh_purple_gem_color}
-GEM_PLATFORM_COLOR={1:color.rgb32(0,0,130),2:color.rgb32(130,0,0),3:color.rgb32(130,130,0),4:color.rgb32(0,130,0),5:color.violet}
+GEM_PLATFORM_COLOR={1:color.rgb32(50,50,255),2:color.rgb32(200,50,50),3:color.rgb32(130,130,0),4:color.rgb32(50,200,50),5:color.violet}
 
 #fog dst/color/dst
 SKY_BG_COLOR=None

@@ -66,38 +66,41 @@ mpt={0:'l1/p_moss/moss',
 	1:'l2/snow_platform/snow_platform',
 	2:'l7/space_ptf/space_ptf'}
 class ObjType_Movable(Entity):
-	def __init__(self,pos,ptm,ID,pts=.5,ptw=3,rng=1,tu=0,col=color.light_gray,UL=False):
+	def __init__(self,pos,ptm,ID,pts=.5,ptw=3,rng=1,tu=0,drc='x',col=color.light_gray,UL=False):
 		s=self
-		s.vnum=ID
 		super().__init__(model=wfc,collider=b,position=pos,scale=(.75,1,.75),name='mptf',visible=False)
-		s.opt_model=Entity(model=omf+mpt[ID]+'.ply',texture=omf+mpt[ID]+'.png',color=col,position=(pos[0],pos[1]+(.46 if ID == 0 else +.5),pos[2]),rotation_x=-90,scale=(.0075 if ID == 1 else .001))
+		s.opt_model=Entity(model=f'{omf}{mpt[ID]}.ply',texture=f'{omf}{mpt[ID]}.png',color=col,position=(pos[0],pos[1]+(.46 if ID == 0 else +.5),pos[2]),rotation_x=-90,scale=(.0075 if ID == 1 else .001))
+		s.ptf_target_pos={'x':pos[0],'z':pos[2]}[drc] if drc in ('x','z') else pos[0]
+		s.is_sfc=bool(tu == 0)
 		s.spawn_pos=pos
 		s.ptf_speed=pts
 		s.ptf_range=rng
-		s.ptf_wait=ptw if pts != 1 else 0
-		s.is_sfc=False
+		s.ptf_wait=ptw
 		s.ptf_slp=ptw
+		s.mv_drc=drc
 		s.ptf_mv=ptm
 		s.turn=tu
-		s.mv_drc='z' if ptm == 3 else 'x'
+		s.vnum=ID
 		if UL:
 			s.opt_model.unlit=False
 		if ID == 2:
 			scale=.1/120
 			s.matr='metal'
-		del pos,ptm,ID,pts,ptw,rng,tu,col,UL,s
+		del pos,ptm,ID,pts,ptw,rng,tu,col,UL,s,drc
 	def ptf_move(self):
 		s=self
-		pdv={2:s.spawn_pos[0],3:s.spawn_pos[2]}
-		kv=getattr(s,s.mv_drc)
-		{0:lambda:setattr(s,s.mv_drc,kv+time.dt*s.ptf_speed),1:lambda:setattr(s,s.mv_drc,kv-time.dt*s.ptf_speed)}[s.turn]()
-		if (s.turn == 0 and kv >= pdv[s.ptf_mv]+s.ptf_range):
+		if s.ptf_wait > 0:
+			s.ptf.wait-=time.dt
+			return
+		tp=s.ptf_target_pos+s.ptf_range if s.turn == 0 else s.ptf_target_pos-s.ptf_range
+		if (abs(getattr(s,s.mv_drc)-tp)) < .01:
+			s.turn=0 if s.turn == 1 else 1
 			s.ptf_wait=s.ptf_slp
-			s.turn=1
-		if (s.turn == 1 and kv <= pdv[s.ptf_mv]-s.ptf_range):
-			s.ptf_wait=s.ptf_slp
-			s.turn=0
-		del kv,pdv
+		if s.mv_drc == 'x':
+			s.x=s.x+time.dt*s.ptf_speed if (s.turn == 0) else s.x-time.dt*s.ptf_speed
+			return
+		if s.mv_drc == 'z':
+			s.z=s.z+time.dt*s.ptf_speed if (s.turn == 0) else s.z-time.dt*s.ptf_speed
 	def mv_player(self):
 		if self.ptf_mv < 2:
 			return
@@ -120,23 +123,36 @@ class ObjType_Movable(Entity):
 			s.ptf_wait=s.ptf_slp
 			if distance(s,LC.ACTOR) < 6 and s.vnum == 0:
 				sn.pc_audio(ID=10)
+	def ptf_oneshot(self):
+		s=self
+		spt=time.dt*s.ptf_speed
+		s.z-=spt
+		s.opt_model.z-=spt
+		if s.z <= s.spawn_pos[2]-s.ptf_range:
+			s.y-=time.dt
+			s.opt_model.y-=time.dt
+			if s.y <= s.spawn_pos[1]-1:
+				destroy(s.opt_model)
+				destroy(s)
 	def update(self):
-		if st.gproc():
+		if st.gproc() or self.ptf_mv == 0:
 			return
 		s=self
+		if s.ptf_mv == 3:
+			s.ptf_oneshot()
+			return
 		if s.ptf_mv == 1:
 			s.opt_model.y=s.y+.46 if s.vnum == 0 else s.y+.5
 			s.ptf_wait=max(s.ptf_wait-time.dt,0)
 			if s.ptf_wait <= 0:
 				s.dive()
 			return
-		if s.ptf_mv > 1:
+		if s.ptf_mv == 2:
 			s.opt_model.x=s.x
 			s.opt_model.z=s.z
 			s.ptf_wait=max(s.ptf_wait-time.dt,0)
 			if s.ptf_wait <= 0:
 				s.ptf_move()
-
 
 ###########################
 ##level side wall scenes ##
@@ -421,14 +437,14 @@ class ObjType_Water(Entity):
 		if st.wtr_dist(s,LC.ACTOR):
 			s.refr_texture()
 
-
 #####################
 ## level 2 objects ##
 def plank_bridge(pos,typ,cnt,ro_y,DST):
 	for wP in range(cnt):
-		plNK={90:lambda:Plank(pos=(pos[0]+wP*DST,pos[1],pos[2]),ro_y=ro_y,typ=typ),
-			0:lambda:Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)}
-		plNK[ro_y]()
+		if ro_y in (-90,90):
+			Plank(pos=(pos[0]+wP*DST,pos[1],pos[2]),ro_y=ro_y,typ=typ)
+		else:
+			Plank(pos=(pos[0],pos[1],pos[2]+wP*DST),ro_y=ro_y,typ=typ)
 	del pos,typ,cnt,ro_y,DST,wP
 
 plob=f'{omf}l2/plank/plank'
@@ -836,25 +852,23 @@ class BonusPlatform(Entity):## switch -> bonus round
 			s.refr()
 
 class GemPlatform(Entity):## gem platform
-	def __init__(self,pos,t):
+	def __init__(self,pos,t,na=False):
 		s=self
-		physical=bool(t in st.COLOR_GEM or settings.debg)
-		ne='gem_ptf' if physical else 'gem_ptf_e'
-		s.is_enabled=physical
+		s.active=bool(t in st.COLOR_GEM or settings.debg)
+		gem_p=f'{omf}ev/gem_ptf/gem_ptf' if s.active else f'{omf}ev/gem_ptf_e/gem_ptf_e'
 		super().__init__(model=wfc,name='gmpt',scale=(.6,.4,.6),position=pos,visible=False)
-		s.opt_model=Entity(model=f'{omf}ev/{ne}/{ne}.ply',name=s.name,texture=f'{omf}ev/{ne}/{ne}.png',rotation_x=-90,scale=.001,position=pos,color=LC.GEM_PLATFORM_COLOR[t],unlit=False)
-		s.alpha=1 if physical else .5
-		s.org_color=s.color
+		tm=f'{omf}ev/gem_ptf/gem_ptf_na.png' if (s.active and na) else f'{gem_p}.png'
+		s.opt_model=Entity(model=f'{gem_p}.ply',texture=tm,name=s.name,rotation_x=-90,scale=.001,position=pos,color=LC.GEM_PLATFORM_COLOR[t],unlit=False)
 		s.start_y=s.y
 		s.typ=t
-		del pos,t,physical
+		del pos,t,na
 	def check_collider(self):
 		s=self
 		if st.relic_challange:
 			if s.collider:
 				s.collider=None
 			return
-		if s.is_enabled:
+		if s.active:
 			if not s.collider:
 				s.collider=b
 	def update(self):
@@ -868,21 +882,20 @@ class GemPlatform(Entity):## gem platform
 			cc.destroy_entity(s)
 			return
 		s.opt_model.position=(s.x,s.y+.15,s.z)
-		if s.is_enabled and not LC.ACTOR.freezed:
+		if s.active and not LC.ACTOR.freezed:
 			s.opt_model.rotation_y+=time.dt*20
 
 class PseudoGemPlatform(Entity):
-	def __init__(self,pos,t):
+	def __init__(self,pos,t,na=False):
 		s=self
-		physical=bool(t in st.COLOR_GEM or settings.debg)
-		ne='gem_ptf' if physical else 'gem_ptf_e'
-		s.is_enabled=physical
-		super().__init__(model=f'{omf}ev/{ne}/{ne}.ply',texture=f'{omf}ev/{ne}/{ne}.png',rotation_x=-90,scale=.001,position=pos,color=LC.GEM_PLATFORM_COLOR[t],unlit=False)
-		del pos,t
-		if s.is_enabled:
+		s.active=bool(t in st.COLOR_GEM or settings.debg)
+		ne='gem_ptf' if s.active else 'gem_ptf_e'
+		gem_p=f'{omf}ev/gem_ptf/gem_ptf' if s.active else f'{omf}ev/gem_ptf_e/gem_ptf_e'
+		tm=f'{omf}ev/gem_ptf/gem_ptf_na.png' if (s.active and na) else f'{gem_p}.png'
+		super().__init__(model=f'{gem_p}.ply',texture=tm,rotation_x=-90,scale=.001,position=pos,color=LC.GEM_PLATFORM_COLOR[t],unlit=False)
+		if s.active:
 			HitBox(pos=(s.x,s.y-.15,s.z),sca=(.6,.4,.6))
-			return
-		s.alpha=.5
+		del pos,t,na
 	def update(self):
 		if st.gproc():
 			return
@@ -927,6 +940,24 @@ class IndoorZone(Entity):## disable rain
 		if self.intersects(LC.ACTOR):
 			LC.ACTOR.CMS=3.2
 			LC.ACTOR.indoor=.3
+
+class PlatformSpawner(Entity):
+	def __init__(self,ID,pos,wait,speed,RNG):
+		super().__init__(position=pos)
+		self.reset_time=wait
+		self.pt_vnum=ID
+		self.SPD=speed
+		self.RNG=RNG
+		self.tme=wait
+		del pos,wait,RNG,ID
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.tme-=time.dt
+		if s.tme <= 0:
+			s.tme=s.reset_time
+			ObjType_Movable(ID=s.pt_vnum,pos=s.position,ptm=3,ptw=0,pts=s.SPD,rng=s.RNG,col=color.rgb32(200,200,200))
 
 ####################
 ## global objects ##

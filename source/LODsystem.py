@@ -13,6 +13,7 @@ FLOOR='obj_type__floor'
 WALL='obj_type__wall'
 DECO='obj_type__deco'
 BTFLY='butterfly'
+BIRD='bird'
 WM='wmpf'
 
 class ManageObjects(Entity):
@@ -39,20 +40,25 @@ class ManageObjects(Entity):
 				continue
 			AZ=LC.ACTOR
 			if cc.is_box(v):
-				v.visible=not((AZ.z > v.z+s.box_dst_bf) or (AZ.z < v.z-s.box_dst_zf))
+				if v.vnum in (0,6,14):
+					v.enabled=not((AZ.z > v.z+s.box_dst_bf) or (AZ.z < v.z-s.box_dst_zf))
+				else:
+					v.visible=not((AZ.z > v.z+s.box_dst_bf) or (AZ.z < v.z-s.box_dst_zf))
 			if cc.is_enemie(v):
 				if v.vnum != 15:
 					v.enabled=not((AZ.z > v.z+s.npc_dst_zb) or (AZ.z < v.z-s.npc_dst_zf))
 			dx=distance_xz(AZ,v)
 			if v.name == WM:
 				v.enabled=dx < s.frt_dst
-			if v.name == BTFLY:
-				v.enabled=dx < s.npc_dst_zf
+			if v.name in (BTFLY,BIRD):
+				v.enabled=dx < s.npc_dst_zf/1.5
 			if v.name == SCENE:
 				v.enabled=dx < LC.RCZ
 			if v.name in DECO and not v.vnum in (6,13):
 				v.enabled=s.check_dst(v,LC.ACTOR)
-			if v.name in (CORRIDOR,BLOCK,FLOOR,WALL) or hasattr(v,'danger') or v.name == 'mptf':
+			if v.name == 'mptf':
+				v.opt_model.visible=s.check_dst(v,LC.ACTOR)
+			if v.name in (CORRIDOR,BLOCK,FLOOR,WALL) or hasattr(v,'danger'):
 				v.enabled=s.check_dst(v,LC.ACTOR)
 	def update(self):
 		if st.gproc():

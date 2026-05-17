@@ -72,7 +72,7 @@ def crate_audio(ID,pit=1):
 		return
 	st.br_sn=.1 if ID == 2 else 0
 	st.ex_sn=.1 if ID == 9 else 0
-	st.ni_sn=.025 if ID == 10 else 0
+	st.ni_sn=.01 if ID == 10 else 0
 	ca=Audio(f'{SF}{sfx_db.CRATE[ID]}.wav',pitch=pit,volume=se.SFX_VOLUME*2,add_to_scene_entities=False)
 	destroy(ca,delay=ca.length+vq)
 

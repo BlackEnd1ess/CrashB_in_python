@@ -143,7 +143,6 @@ class Penguin(Entity):
 		s.texture=f'{tx}.png' if (s.texture != f'{tx}.png') else s.texture
 	def refr_function(self):
 		s=self
-		print(s.anim_frame)
 		if not (s.is_hitten or s.is_purge):
 			s.anim_idx=1 if s.is_spin else 0
 			if s.anim_idx != s.new_anim_idx:
@@ -810,6 +809,7 @@ class Bird(Entity):
 		self.p_snd=False
 		self.spd=12
 		self.frm=0
+		self.y+=.15
 	def refr_function(self):
 		s=self
 		an.bird_idle(s)
@@ -841,11 +841,11 @@ class Butterfly(Entity):
 		s=self
 		super().__init__(model=f'{btfly}{typ}/3.ply',texture=f'{btfly}{typ}/0.png',position=pos,scale=.001,rotation_x=-90,double_sided=True)
 		s.angle=random.uniform(0,360)
+		s.height_limit=s.y
 		s.mov_range=rng
-		s.rng_swap=rng*.3
 		s.spawn_pos=pos
-		s.height_limit=s.spawn_pos[2]/2
 		s.max_frm=7.99
+		s.rng_swap=.1
 		s.typ=typ
 		s.spd=20
 		s.frm=0
@@ -862,7 +862,7 @@ class Butterfly(Entity):
 		dr=s.position-prev
 		s.rotation_y=degrees(atan2(dr[0],dr[2]))+180
 		#height
-		s.y=s.spawn_pos[1]+(sin(time.time()*2)*.3+.3)*s.height_limit
+		s.y=s.spawn_pos[1]+(sin(time.time()*1.52)*.3+.3)*s.height_limit
 	def update(self):
 		if st.gproc():
 			return

@@ -36,6 +36,12 @@ def crate_row(ID,POS,CNT,WAY,l=None,m=None):# WAY: 0=right,1=front,2=up
 				c.spawn(ID=ID,p=(POS[0],POS[1]+pO,POS[2]))
 	del ID,POS,CNT,WAY,l,m,cro,pO
 
+def box_quad_mixxed(POS,ID=(0,1)):
+	c.spawn(ID=ID[0],p=(POS[0],POS[1],POS[2]))
+	c.spawn(ID=ID[1],p=(POS[0]+.32,POS[1],POS[2]))
+	c.spawn(ID=ID[0],p=(POS[0]+.32,POS[1],POS[2]+.32))
+	c.spawn(ID=ID[1],p=(POS[0],POS[1],POS[2]+.32))
+
 def crate_wall(ID,POS,CNT):#[x,y]
 	for cwX in range(CNT[0]):
 		for cwY in range(CNT[1]):

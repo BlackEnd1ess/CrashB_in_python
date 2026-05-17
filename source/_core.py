@@ -300,18 +300,17 @@ def reset_crates():
 		if not sr:
 			continue
 		if is_box(sr):
+			sr.position=sr.spawn_pos
 			if sr.poly or sr.vnum == 15:
 				sr.enabled=False
 				destroy(sr)
-			else:
-				sr.position=sr.spawn_pos
 	del sr
 	if len(st.SWI_RESET) > 0:
-		for ssw in st.SWI_RESET[:]:
+		for ssw in st.SWI_RESET:
 			ssw.c_reset()
 		del ssw
 	if len(st.BOX_RESET) > 0:
-		for cv in st.BOX_RESET[:]:
+		for cv in st.BOX_RESET:
 			if not (cv[0] == 13 and cv[4] == 0) and not (cv[0] == 16):
 				c_subtract(cY=cv[1][1])
 			C.spawn(ID=cv[0],p=cv[1],pse=cv[2],m=cv[3],l=cv[4])
@@ -661,6 +660,7 @@ def box_destroy_event(c):
 		st.BOX_RESET.append((c.vnum,c.spawn_pos,c.poly,c.mark,c.c_ID))
 	if c.vnum != 13:
 		if c.visible:
+			sn.crate_audio(ID=2)
 			BoxBreak(c.position,c.vnum)
 		if st.bonus_round:
 			st.crate_bonus+=1
@@ -986,7 +986,7 @@ def reset_mines():
 
 ##preload animation
 def preload_animator():
-	print('test')
+	C.PseudoBox()
 
 ##preload global texture
 def preload_ui_texture():

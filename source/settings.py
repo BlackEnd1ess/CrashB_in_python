@@ -26,8 +26,8 @@ DEV_TERM='j'#		#python terminal
 
 
 ## global volume
-MUSIC_VOLUME=1
-SFX_VOLUME=1
+MUSIC_VOLUME=0
+SFX_VOLUME=.6
 
 ## window
 def load():

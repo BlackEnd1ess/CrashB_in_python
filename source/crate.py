@@ -363,7 +363,7 @@ class Air(Entity):
 	def __init__(self,pos,m,l,pse):
 		s=self
 		s.vnum=13
-		super().__init__(model=cr1)
+		super().__init__(model=cr1,double_sided=True)
 		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		s.collider=None
 		del pos,pse,m,l,s
@@ -420,3 +420,11 @@ class LvInfo(Entity):
 		if distance(s,LC.ACTOR) < 3:
 			ui.GemInfo()
 		cc.box_destroy_event(s)
+
+class PseudoBox(Entity):#preload animations
+	def __init__(self):
+		super().__init__(model=cr1,texture=f'{pp}1.png',position=(-128,-128,-128),scale=.001,color=color.gray,visible=False)
+		self.bnc_anim_done=True
+		self.vnum=99
+		an.BoxAnimation(self)
+		an.BoxBreak(pos=self.position,ID=1)

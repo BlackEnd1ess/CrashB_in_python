@@ -31,7 +31,7 @@ def spawn_wumpa(pos,cnt,c_prg=False):
 class WumpaFruit(Entity):
 	def __init__(self,p,c_prg):
 		s=self
-		super().__init__(model='quad',texture=w_pa+'w0.png',name='wmpf',position=(p[0],p[1],p[2]),scale=.22)
+		super().__init__(model='quad',texture=f'{w_pa}w0.png',name='wmpf',position=(p[0],p[1],p[2]),scale=.22)
 		s.collider=BoxCollider(s,size=Vec3(1.25,1.25,1.25))
 		s.max_frm=len(LC.wmp_texture)-1+.99
 		s.follow=False
@@ -87,7 +87,7 @@ class ExtraLive(Entity):
 
 sh=f'{i_path}gemstone/gem_shine.png'
 class GemStone(Entity):
-	def __init__(self,pos,c):
+	def __init__(self,pos,c,na=False):
 		s=self
 		s.gemID=c
 		ge=f'{i_path}gemstone/gem'
@@ -95,7 +95,8 @@ class GemStone(Entity):
 			ge=f'{i_path}gemstone/gem1'
 		elif c == 5:
 			ge=f'{i_path}gemstone/gem2'
-		super().__init__(model=f'{ge}.ply',texture=f'{ge}.png',name='gem',scale=.0011,position=pos,rotation_x=-90,collider=b)
+		gem_tex=f'{ge}.png' if not na else f'{ge}_a.png' #no alpha
+		super().__init__(model=f'{ge}.ply',texture=gem_tex,name='gem',scale=.0011,position=pos,rotation_x=-90,collider=b)
 		s.gem_visual()
 		if st.level_index == 8:
 			s.unlit=False

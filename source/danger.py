@@ -20,8 +20,8 @@ class WoodLog(Entity):#level 2
 	def __init__(self,pos):
 		s=self
 		super().__init__(model=f'{inp}.ply',texture=f'{inp}.png',name='wdlg',position=pos,scale=(.001,.001,.0015),rotation=(-90,0,0),collider=b)
-		Entity(model='cube',texture=trn+'bricks.png',name=s.name,position=(s.x,s.y+.8,s.z-.075),scale=(.5,2,.5),collider=b)
-		Entity(model='cube',texture=trn+'bricks.png',name=s.name,position=(s.x,s.y-.1,s.z+.6),scale=(.5,3,.5),texture_scale=(1,2),collider=b)
+		Entity(model='cube',texture=f'{trn}bricks.png',name=s.name,position=(s.x,s.y+.8,s.z-.075),scale=(.5,2,.5),collider=b)
+		Entity(model='cube',texture=f'{trn}bricks.png',name=s.name,position=(s.x,s.y-.1,s.z+.6),scale=(.5,3,.5),texture_scale=(1,2),collider=b)
 		s.danger=True
 		s.or_pos=s.y
 		s.stat=0
