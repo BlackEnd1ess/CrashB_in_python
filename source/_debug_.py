@@ -1,8 +1,7 @@
+from ursina import Entity,EditorCamera,scene,color,Text,application,camera,time
 import gc,os,ui,settings,psutil,_loc,status,sys,sound,tracemalloc,item,types
 from collections import defaultdict
 from collections import Counter
-from ursina import application
-from ursina import *
 
 CV=camera.ui
 st=status
@@ -40,6 +39,10 @@ def complete_level():
 	st.show_gems=5
 	sound.ui_audio(ID=4)
 	invoke(lambda:setattr(LC.ACTOR,'position',LC.lv_fin_pos),delay=1)
+
+def editor_modus():
+	LC.ACTOR.freezed=True
+	EditorCamera()
 
 #check multible objects where in memory
 def chck_mem():

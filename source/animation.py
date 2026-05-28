@@ -72,6 +72,8 @@ class BoxAnimation(Entity):
 		s.frm_spd=.9
 		s.box=c
 		s.frm=0
+		if st.level_index == 8:
+			s.unlit=False
 		del c,s
 	def update(self):
 		if st.gproc():
@@ -456,8 +458,8 @@ def lmbjack_smash(m):
 def frog_jump(m):
 	m.frm+=time.dt*m.spd
 	if m.frm > m.max_frm:
-		m.frm=0
 		m.is_jmp=False
+		m.frm=0
 	if m.model != f'{frg}{int(m.frm)}.ply':
 		m.model=f'{frg}{int(m.frm)}.ply'
 

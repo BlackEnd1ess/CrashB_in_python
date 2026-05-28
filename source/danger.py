@@ -608,16 +608,28 @@ class Boulder(Entity):
 		s=self
 		super().__init__(model=f'{bldr}.ply',texture=f'{bldr}.png',position=pos,scale=.0016,rotation_x=-90,unlit=False)
 		s.imp_snd=Audio(sn.BLD_ROLL,loop=True,autoplay=False,volume=settings.SFX_VOLUME)
-		s.follow_speed=1.8
-		s.rs_delay=3.5
+		s.move_speed=1.8
 		s.ffly_drc=fldd
+		s.rs_delay=3.5
 		s.is_reset=False
 		s.is_done=False
 		s.active=False
 		s.p_snd=False
 		s.spawn_pos=pos
 		s.way_index=0
+		s.mode=0
 		del s,pos,fldd
+	def npc_pathfinding(self):
+		s=self
+		if s.way_index < len(s.ffly_drc):
+			ddrc=(Vec3(s.ffly_drc[s.way_index])-s.position).normalized()
+			s.position+=ddrc*(time.dt*s.move_speed)
+			if distance(Vec3(s.position),s.ffly_drc[s.way_index]) < .3:
+				s.way_index+=1
+			return
+		if not s.is_done:
+			s.is_done=True
+			s.path_fin()
 	def path_fin(self):
 		s=self
 		s.active=False
@@ -662,6 +674,11 @@ class Boulder(Entity):
 		if st.gproc():
 			return
 		s=self
+		if s.way_index >= len(s.ffly_drc):
+			if not s.is_done:
+				s.is_done=True
+				s.path_fin()
+				return
 		if s.is_done:
 			if st.death_event and st.checkpoint[2] > s.z:
 				s.is_done=False
@@ -682,7 +699,7 @@ class Boulder(Entity):
 				s.imp_snd.fade_in()
 				s.imp_snd.play()
 				return
-			cc.npc_pathfinding(s)
+			s.npc_pathfinding()
 			s.refr()
 			return
 		s.check_dst()

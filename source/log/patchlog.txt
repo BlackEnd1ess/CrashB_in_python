@@ -159,3 +159,10 @@
 
 #11.05.2026
 - pseudo box preloads box break and bounce animation to avoid first play lag
+
+#28.05.2026
+- New NPC: Frog
+- removed global pathfinding func and replaced by own class func in danger.Boulder and npc.Frog
+
+#29.05.2026
+- EditorCamera freeze player

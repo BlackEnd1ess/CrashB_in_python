@@ -911,17 +911,6 @@ def bash_enemie(e,h):
 	e.is_hitten=True
 	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)
 	sn.pc_audio(ID=17)
-def npc_pathfinding(m):
-	if m.way_index < len(m.ffly_drc):
-		ddrc=(Vec3(m.ffly_drc[m.way_index])-m.position).normalized()
-		m.position+=ddrc*(time.dt*m.follow_speed)
-		if distance(Vec3(m.position),m.ffly_drc[m.way_index]) < .3:
-			m.way_index+=1
-		return
-	if m.name == 'boulder':
-		if not m.is_done:
-			m.is_done=True
-			m.path_fin()
 def npc_jump_action(m):
 	if not (m.is_hitten or m.is_purge):
 		if m.vnum in (2,9,13) or (m.vnum == 5 and m.def_mode):

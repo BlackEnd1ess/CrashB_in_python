@@ -90,7 +90,7 @@ class ObjType_Movable(Entity):
 	def ptf_move(self):
 		s=self
 		if s.ptf_wait > 0:
-			s.ptf.wait-=time.dt
+			s.ptf_wait-=time.dt
 			return
 		tp=s.ptf_target_pos+s.ptf_range if s.turn == 0 else s.ptf_target_pos-s.ptf_range
 		if (abs(getattr(s,s.mv_drc)-tp)) < .01:
@@ -192,7 +192,6 @@ class ObjType_Scene(Entity):
 		s.model=omf+sds[s.vnum]+'.ply'
 		s.rotation_x=-90
 
-
 ######################
 ##level front walls ##
 smd={0:'l1/turtle_wall/turtle_wall',
@@ -217,7 +216,6 @@ class ObjType_Wall(Entity):
 			if ro_y in (180,0):
 				s.collider=BoxCollider(s,center=Vec3(-1,-4,5),size=Vec3(2,24,20))
 		del ID,pos,sca,ro_y,col
-
 
 ######################
 ##level decorations ##

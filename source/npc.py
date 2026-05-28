@@ -11,7 +11,7 @@ sn=sound
 cc=_core
 LC=_loc
 
-def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True,MTYP=0):
+def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True,MTYP=0,PTH=None):
 	{0:lambda:Amadillo(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
 	1:lambda:Turtle(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
 	2:lambda:SawTurtle(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
@@ -32,9 +32,9 @@ def spawn(ID,POS,DRC=0,RTYP=0,RNG=1,CMV=True,MTYP=0):
 	17:lambda:SpiderRobot(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV,typ=MTYP),
 	18:lambda:WalkerRobot(pos=POS,drc=DRC,rng=RNG,rtyp=RTYP,cmv=CMV),
 	19:lambda:LabAssistant(pos=POS,drc=DRC),
-	20:lambda:Frog(pos=POS,drc=DRC,rng=RNG,CMV=CMV)}[ID]()
+	20:lambda:Frog(pos=POS,cmv=CMV,ffld=PTH)}[ID]()
 	st.npc_in_level+=1
-	del ID,POS,DRC,RTYP,RNG,CMV,MTYP
+	del ID,POS,DRC,RTYP,RNG,CMV,MTYP,PTH
 
 ## Enemies
 class Amadillo(Entity):
@@ -120,7 +120,7 @@ class Penguin(Entity):
 		s.is_dizzy=False
 		s.is_spin=False
 		s.move_speed=1.1
-		s.rot_speed=300
+		s.rot_speed=800
 		s.new_anim_idx=0
 		s.anim_idx=0
 		s.spin_time=3
@@ -673,25 +673,75 @@ class LabAssistant(Entity):
 			cc.npc_destroy_event(s)
 
 class Frog(Entity):
-	def __init__(self,pos,drc,rng,cmv):
+	def __init__(self,pos,cmv,ffld):
 		s=self
 		s.vnum=20
 		super().__init__(position=pos)
 		s.collider=BoxCollider(s,size=Vec3(80,80,120),center=Vec3(0,0,0))
-		cc.set_val_npc(s,drc,rng,cmv)
-		s.new_position=None
-		s.is_jmp=False
-		s.p_snd=False
+		cc.set_val_npc(s,cmv)
+		s.can_move=bool(len(ffld) > 0)
+		s.mode,s.tme,s.tme_st,s.frm=0,0,0,0
+		s.lst_reverse=False
+		s.tg_position=None
 		s.max_frm=20.99
+		s.move_speed=2.5
+		s.mvo_drc=ffld
+		s.is_jmp=False
+		s.jmp_done=False
+		s.p_snd=False
+		s.way_index=0
 		s.scale=.005
-		s.mode=0
-		s.spd=20
-		s.frm=0
-		s.tme=1
-		del pos,drc,rng,cmv
-		#s.rotation_y=degrees(atan2(s.new_position[0]-s.x,s.new_position[2]-s.z))+180
+		s.spd=24
+		del pos,cmv,ffld
+	def frog_sound_effect(self):
+		if distance(self,LC.ACTOR) < LC.NPC_SND_DISTANCE:
+			dsd=max(0,1-(distance(self,LC.ACTOR)/10))
+			sn.npc_audio(ID=10,vol=dsd)
+	def next_way_index(self):
+		s=self
+		if not s.lst_reverse:
+			if s.way_index < len(s.mvo_drc)-1:
+				s.way_index+=1
+			else:
+				s.lst_reverse=True
+				s.way_index=max(len(s.mvo_drc)-2,0)
+			return
+		if s.way_index > 0:
+			s.way_index-=1
+		else:
+			s.lst_reverse=False
+			s.way_index=1 if len(s.mvo_drc) > 1 else 0
+	def refr_func(self):
+		s=self
+		if not s.p_snd:
+			s.p_snd=True
+			s.frog_sound_effect()
+			s.rotation_y=degrees(atan2(s.mvo_drc[s.way_index][0]-s.x,s.mvo_drc[s.way_index][2]-s.z))+180
+		if s.tme > 0:
+			if s.tme < s.tme_st/5:
+				s.is_jmp=True
+			s.tme-=time.dt
+			return
+		s.tg_position=s.mvo_drc[s.way_index]
+		s.position=lerp(s.position,s.tg_position,time.dt*s.move_speed)
+		if distance(Vec3(s.position),s.tg_position) <= .1:
+			s.next_way_index()
+			s.tme=random.uniform(.5,2)
+			s.tme_st=s.tme
+			s.p_snd=False
 	def update(self):
-		return
+		if st.gproc():
+			return
+		s=self
+		if s.is_hitten or s.is_purge:
+			cc.refresh_npc_function(s)
+			return
+		if not s.can_move:
+			return
+		if s.is_jmp:
+			an.frog_jump(s)
+		s.refr_func()
+
 
 ## passive NPC
 tpa1='res/npc/akuaku/aku'
@@ -881,6 +931,7 @@ class Firefly(Entity):
 		s.move_speed=8
 		s.glow_mode=0
 		s.mov_range=1
+		s.ro_mode=0
 		s.angle=0
 		del pos
 	def glow_light(self):
@@ -909,7 +960,7 @@ class Firefly(Entity):
 		s.position=st.checkpoint
 	def m_idle(self):
 		s=self
-		cc.circle_move_xz(s)
+		cc.circle_move(s)
 		s.mov_range=.3+abs(sin(time.time()))*.4
 		s.y=s.spawn_pos[1]+sin(time.time()*3)*.2
 	def update(self):
@@ -924,7 +975,7 @@ class Firefly(Entity):
 			s.respawn()
 			return
 		if s.active:
-			cc.rotate_to_target(s,LC.ACTOR)
+			cc.rotate_to_target(s,LC.ACTOR.position)
 			if st.bonus_round:
 				s.position=lerp(s.position,(LC.ACTOR.x+.2,LC.ACTOR.y+.5,LC.ACTOR.z),time.dt*2)
 			if st.death_route:

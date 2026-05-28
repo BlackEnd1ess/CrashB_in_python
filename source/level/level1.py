@@ -197,6 +197,7 @@ def load_npc():
 	n.Butterfly(pos=(-2,1.6,-.2),typ=1,rng=1)
 	n.Butterfly(pos=(200,.8,-2.5),typ=4,rng=1)
 	n.Butterfly(pos=(0,1.6,-4),typ=2,rng=1)
+	n.spawn(ID=20,POS=(-1.8,1,.9),PTH=[(-2.2,1,.9),(-1.8,1,0),(-2.2,1,-.9),(-1.8,1,-1.8),(-2.2,1,-2.7),(-2,1,-3.6)])
 
 ## bonus level / gem path
 def bonus_zone():

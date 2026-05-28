@@ -8,7 +8,7 @@ MUSIC={0:'wroom',
 	6:'digin',
 	7:'piston',
 	8:'dash',
-	9:'woods'}
+	9:'wroom0'}
 
 ##SFX
 INTERFACE={0:'ui_select',1:'ui_enter',2:'ui_wumpa',3:'ui_lives',4:'ui_reward',5:'ui_collect',6:'ui_clock'}
