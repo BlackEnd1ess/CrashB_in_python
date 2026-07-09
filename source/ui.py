@@ -1,17 +1,15 @@
-from ursina import Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,application
+from ursina import Entity,Audio,Text,camera,color,scene,invoke,lerp,distance,application,world_position_to_screen_position,load_texture
 import status,_core,_loc,sound,settings,warproom,level,time,random
-from objects import ObjType_Background,ObjType_Deco
 from ursina.ursinastuff import destroy
 from time import strftime,gmtime
+from crate import cr2
 
 cr_i='res/ui/icon/crystal/'
-icb='res/ui/misc/icon_box.png'
 w_pa='res/ui/icon/wumpa/w'
 wmpf='res/ui/digit_wumpa/'
 crtf='res/ui/digit_crate/'
 crti='res/ui/icon/crate/'
 lvtf='res/ui/digit_live/'
-ivy_='res/ui/misc/ivy'
 _fnt='res/ui/font.ttf'
 btxt='res/ui/bonus/'
 _icn='res/ui/icon/'
@@ -24,15 +22,15 @@ sn=sound
 cc=_core
 LC=_loc
 
-def load_interface():
+def load_interface(idx):
 	PauseMenu()
 	WumpaCounter()
 	BoxCounter()
 	LiveCounter()
-	UICrystal((0,-.4,0),2,st.level_index)
-	UINormalGem((-.07,-.41,0),2,st.level_index)
-	UIColorGem((.07,-.41,0),2,st.level_index)
-	UIRelic((.16,-.4125,0),2,2)
+	UICrystal((0,-.125,.5),2)
+	UINormalGem((-.03,-.1275,.5),2)
+	UIColorGem((.03,-.1275,.5),2,idx)
+	UIRelic((.06,-.1275,.5),2,2)
 
 ## Interface 2D Animations
 def wmp_anim(w):
@@ -113,57 +111,49 @@ class WumpaCounter(Entity):
 class BoxCounter(Entity):
 	def __init__(self):
 		s=self
-		s.tpd=crtf
-		super().__init__(model=q,texture=None,parent=CU,scale=.1,position=(-.2,.43,.2),fps=4,visible=False)
-		s.col_digit0=Entity(model=q,texture=None,scale=.06,position=(s.x+.08,s.y,s.z),parent=CU,visible=False)
-		s.col_digit1=Entity(model=q,texture=None,scale=.06,position=(s.x+.14,s.y,s.z),parent=CU,visible=False)
-		s.col_digit2=Entity(model=q,texture=None,scale=.06,position=(s.x+.2,s.y,s.z),parent=CU,visible=False)
-		s.seperator=Entity(model=q,texture=crtf+'seperator.png',scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
-		s.req_digit0=Entity(model=q,texture=None,scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
-		s.req_digit1=Entity(model=q,texture=None,scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
-		s.req_digit2=Entity(model=q,texture=None,scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
-		s.max_frm=len(LC.box_texture)-1+.99
-		s.spd=30
-		s.frm=0
-		del s
-	def crate_refr_ico(self):
-		s=self
-		cc.incr_frm(s,s.spd)
-		s.texture=LC.box_texture[int(s.frm)]
+		super().__init__(model=cr2,texture=LC.box_count_icon,scale=.035,parent=CU,position=(-.15,.43,.2),color=color.light_gray,unlit=False,visible=False)
+		s.col_digit0=Entity(model=q,texture=None,scale=.06,position=(s.x+.1,s.y,s.z),parent=CU,visible=False)
+		s.col_digit1=Entity(model=q,texture=None,scale=.06,position=(s.x+.16,s.y,s.z),parent=CU,visible=False)
+		s.col_digit2=Entity(model=q,texture=None,scale=.06,position=(s.x+.22,s.y,s.z),parent=CU,visible=False)
+		s.seperator=Entity(model=q,texture=f'{crtf}seperator.png',scale=.06,position=(s.x,s.y,s.z),parent=CU,visible=False)
+		s.req_digit0=Entity(model=q,texture=None,scale=.06,parent=CU,visible=False)
+		s.req_digit1=Entity(model=q,texture=None,scale=.06,parent=CU,visible=False)
+		s.req_digit2=Entity(model=q,texture=None,scale=.06,parent=CU,visible=False)
+		s.ui_is_hidden=False
 	def remv_ui(self):
 		s=self
 		s.visible,s.seperator.visible=False,False
 		s.col_digit0.visible,s.col_digit1.visible,s.col_digit2.visible=False,False,False
 		s.req_digit0.visible,s.req_digit1.visible,s.req_digit2.visible=False,False,False
-		del s
+		s.ui_is_hidden=True
 	def req_count_refr(self):
 		s=self
 		ccl=str(st.crates_in_level)
 		ssep=s.seperator
 		ssep.position=(s.col_digit0.x+.06*len(str(st.crate_count)),s.y,s.z)
 		s.req_digit0.position=(ssep.x+.06,ssep.y,ssep.z)
-		s.req_digit0.texture=s.tpd+ccl[0]+'.png'
+		s.req_digit0.texture=f'{crtf}{ccl[0]}.png'
 		s.req_digit0.visible=True
 		if st.crates_in_level > 9:
 			s.req_digit1.position=(ssep.x+.12,ssep.y,ssep.z)
-			s.req_digit1.texture=s.tpd+ccl[1]+'.png'
+			s.req_digit1.texture=f'{crtf}{ccl[1]}.png'
 			s.req_digit1.visible=True
 			if st.crates_in_level > 99:
 				s.req_digit2.position=(ssep.x+.18,ssep.y,ssep.z)
-				s.req_digit2.texture=s.tpd+ccl[2]+'.png'
+				s.req_digit2.texture=f'{crtf}{ccl[2]}.png'
 				s.req_digit2.visible=True
 	def col_count_refr(self):
 		s=self
 		ccv=str(st.crate_count)
 		s.col_digit0.visible,s.seperator.visible,s.visible=True,True,True
 		s.col_digit1.visible,s.col_digit2.visible=False,False
-		s.col_digit0.texture=s.tpd+ccv[0]+'.png'
+		s.col_digit0.texture=f'{crtf}{ccv[0]}.png'
 		if st.crate_count > 9:
-			s.col_digit1.texture=s.tpd+ccv[1]+'.png'
+			s.col_digit1.texture=f'{crtf}{ccv[1]}.png'
 			s.col_digit1.visible=True
 			s.col_digit2.visible=False
 			if st.crate_count > 99:
-				s.col_digit2.texture=s.tpd+ccv[2]+'.png'
+				s.col_digit2.texture=f'{crtf}{ccv[2]}.png'
 				s.col_digit2.visible=True
 	def update(self):
 		if st.gproc() or st.crates_in_level <= 0:
@@ -172,9 +162,11 @@ class BoxCounter(Entity):
 		if st.show_crates > 0:
 			st.show_crates=max(st.show_crates-time.dt,0)
 			if st.show_crates <= 0:
-				s.remv_ui()
+				if not s.ui_is_hidden:
+					s.remv_ui()
 				return
-			s.crate_refr_ico()
+			s.ui_is_hidden=False
+			s.rotation_y-=time.dt*120
 			s.col_count_refr()
 			s.req_count_refr()
 
@@ -252,43 +244,37 @@ class WumpaBonus(Entity):
 
 class BoxBonus(Entity):
 	def __init__(self):
-		s=self
-		super().__init__(model=q,texture=None,parent=CU,scale=.07,position=(0,-.4,0),visible=False)
-		s.c_text=Text(text=None,font=_fnt,x=s.x+.04,y=s.y+.025,scale=2,color=color.rgb32(90,70,0),visible=False,parent=CU)
-		s.max_frm=len(LC.box_texture)-1+.99
-		s.c_time=0
-		s.spd=30
-		s.frm=0
-		del s
-	def crate_refr_ico(self):
-		s=self
-		cc.incr_frm(s,s.spd)
-		s.texture=LC.box_texture[int(s.frm)]
+		super().__init__(model=cr2,texture=LC.box_count_icon,scale=.02,position=(0,-.4,.2),unlit=False,visible=False,parent=CU)
+		self.c_text=Text(text=None,font=_fnt,x=self.x+.04,y=self.y+.025,scale=2,color=color.rgb32(150,100,20),visible=False,parent=CU)
+		self.ct=0
 	def check_c(self):
-		if (st.bonus_solved and st.crate_bonus > 0):
-			return True
-		return False
+		return bool(st.bonus_solved and st.crate_bonus > 0)
 	def c_count(self):
 		s=self
-		s.c_time=max(s.c_time-time.dt,0)
-		if s.c_time <= 0:
-			s.c_time=.075
+		s.ct+=time.dt
+		if s.ct > .075:
+			s.ct=0
 			st.crate_bonus-=1
 			st.crate_count+=1
 			st.show_crates=1
+	def crate_refr_ico(self):
+		s=self
+		s.visible=True
+		s.rotation_y-=time.dt*120
 	def update(self):
-		if not st.gproc():
-			s=self
-			if st.bonus_round or s.check_c():
-				s.c_text.text=f'{st.crate_bonus}/{st.crates_in_bonus}'
-				s.crate_refr_ico()
-				s.c_text.visible=True
-				s.visible=True
-				if s.check_c() and not st.wait_screen:
-					s.c_count()
-				return
-			destroy(s.c_text)
-			destroy(s)
+		if st.gproc():
+			return
+		s=self
+		if st.bonus_round or s.check_c():
+			s.c_text.text=f'{st.crate_bonus}/{st.crates_in_bonus}'
+			s.c_text.visible=True
+			s.crate_refr_ico()
+			s.visible=True
+			if s.check_c() and not st.wait_screen:
+				s.c_count()
+			return
+		destroy(s.c_text)
+		destroy(s)
 
 class LiveBonus(Entity):
 	def __init__(self):
@@ -322,7 +308,6 @@ class LiveBonus(Entity):
 				return
 			destroy(s.l_text)
 			destroy(s)
-
 
 ## Game Over Screen
 class GameOverScreen(Entity):
@@ -440,82 +425,37 @@ class BlackScreen(Entity):
 					s.parent=None
 					destroy(s)
 
-#######################################################################
-## warp room interface UI
-def set_warproom_scene(n):
-	ivy_sc=.2
-	Entity(model=q,texture=f'{ivy_}_m.png',scale=ivy_sc,position=(-.8,.4,.1),parent=CU)
-	Entity(model=q,texture=f'{ivy_}_m.png',scale=ivy_sc,position=(-.8,-.4,.1),rotation_z=-90,parent=CU)
-	Entity(model=q,texture=f'{ivy_}.png',scale=ivy_sc,position=(.8,.4,.1),parent=CU)
-	Entity(model=q,texture=f'{ivy_}.png',scale=ivy_sc,position=(.8,-.4,.1),rotation_z=90,parent=CU)
-	if n == 0:
-		ObjType_Background(ID=0,sca=(40,20),pos=(0,0,4),col=color.rgb32(140,160,140),txa=(1,1))
-		return
-	Entity(model='sphere',texture='res/terrain/grass_flat.png',scale=(16,5,8),texture_scale=(4,4),position=(10,-8,2),color=color.green)
-	ObjType_Background(ID=2,sca=(38,24),pos=(0,0,5),col=color.rgb32(0,80,80),txa=(1,1),UL=True)
-	ObjType_Deco(ID=1,pos=(7,-3.6,2),sca=.06,rot=(-90,0,0))
-
-class LevelSelector(Entity):
-	def __init__(self,idx,pos):
-		s=self
+##Level names in selector
+class LevelName(Entity):
+	def __init__(self,pos,idx):
+		self.index=idx
 		super().__init__(position=pos,parent=CU)
-		s.lv_name=Text(LC.lv_name[idx],font=_fnt,position=(s.x,s.y+.04,s.z),scale=2.5,color=color.orange,parent=CU)
-		s.lvID=idx
-		for iwb in range(4):
-			Entity(model=q,texture=icb,position=(s.lv_name.x+.75+iwb/7,s.y,1),scale=.16,parent=CU,color=color.rgb32(100,110,100))
-		if idx in st.CRYSTAL:
-			UICrystal((s.lv_name.x+.895,s.lv_name.y-.035,0),0,idx)
-		if idx in st.CLEAR_GEM:
-			UINormalGem((s.lv_name.x+1.04,s.lv_name.y-.0375,0),0,idx)
-		if idx in st.COLOR_GEM:#set gem levelID
-			UIColorGem((s.lv_name.x+.75,s.lv_name.y-.0375,0),0,idx)
-		for lpr in st.RELIC:
-			if idx == lpr[0]:
-				UIRelic((s.lv_name.x+1.18,s.lv_name.y-.0375,0),0,lpr[1])
-		del idx,pos,iwb
+		self.lname=Text(LC.lv_name[self.index],font=_fnt,scale=2,color=color.orange,position=self.position,unlit=False,parent=CU)
+		self.tme=0
+	def is_selected(self):
+		return st.selected_level == self.index
 	def update(self):
 		s=self
-		if st.selected_level == s.lvID:
-			s.lv_name.color=color.white
+		if s.is_selected():
+			s.tme+=time.dt
+			if s.tme > .3:
+				s.tme=0
+				s.lname.color=color.white if s.lname.color == color.orange else color.orange
 			return
-		s.lv_name.color=color.orange
-
-class SpecialLevelSelector(Entity):
-	def __init__(self,idx,pos):
-		s=self
-		super().__init__(position=pos,parent=CU)
-		s.lv_name=Text(LC.lv_name[idx],font=_fnt,position=(s.x,s.y+.04,s.z),scale=2.5,color=color.orange,parent=CU)
-		s.lvID=idx
-		for iwb in range(3):
-			Entity(model=q,texture=icb,position=(s.lv_name.x+.75+iwb/7,s.y,1),scale=.16,parent=CU,color=color.rgb32(120,120,150))
-		if idx in st.CLEAR_GEM:
-			UINormalGem((s.lv_name.x+.75,s.lv_name.y-.0375,0),0,idx)
-		if idx > 5 and idx in st.COLOR_GEM:
-			UINormalGem((s.lv_name.x+.895,s.lv_name.y-.0375,0),0,idx)
-		for lpr in st.RELIC:
-			if idx == lpr[0]:
-				UIRelic((s.lv_name.x+1.04,s.lv_name.y-.0375,0),0,lpr[1])
-		del idx,pos,iwb
-	def update(self):
-		self.lv_name.color=color.white if (st.selected_level == self.lvID) else color.orange
+		s.lname.color=color.orange
 
 ##crystal, gem and relic interface
+cry_ui='res/item/crystal/crystal'
 class UICrystal(Entity):
-	def __init__(self,pos,typ,idx):
+	def __init__(self,pos,typ):
 		s=self
-		super().__init__(model=q,texture=LC.crystal_texture[0],position=pos,parent=CU,color=LC.ui_crystal_color,visible=bool(typ != 2))
-		{0:lambda:setattr(s,'scale',.13),1:lambda:setattr(s,'scale',.18),2:lambda:setattr(s,'scale',.14)}[typ]()
-		s.max_frm=len(LC.crystal_texture)-1
-		s.index=idx
+		if typ > 2:
+			typ=2
+		super().__init__(model=f'{cry_ui}.ply',texture=f'{cry_ui}.png',position=pos,color=LC.ui_crystal_color,visible=bool(typ != 2),always_on_top=bool(typ == 2),rotation_x=-90,unlit=False)
+		s.parent=camera if typ > 0 else scene
+		s.scale={0:.004,1:.000125,2:.0001}[typ]
 		s.typ=typ
-		s.spd=13
-		s.frm=0
-		del pos,idx,s,typ
-	def refr_frm(self):
-		s=self
-		cc.incr_frm(s,s.spd)
-		if s.texture != LC.crystal_texture[int(s.frm)]:
-			s.texture=LC.crystal_texture[int(s.frm)]
+		del pos,s,typ
 	def update(self):
 		if st.LEVEL_CLEAN or st.loading:
 			return
@@ -523,24 +463,21 @@ class UICrystal(Entity):
 		if s.typ > 0:
 			s.visible=(s.typ == 1 and st.pause) or (s.typ == 2 and st.level_crystal and st.show_gems > 0)
 		if s.visible:
-			s.refr_frm()
+			s.rotation_y+=time.dt*60
 
+cle_gem_ui='res/item/gemstone/gem'
 class UINormalGem(Entity):
-	def __init__(self,pos,typ,idx):
+	def __init__(self,pos,typ):
 		s=self
-		super().__init__(model=q,texture=LC.normal_gem_texture[0],position=pos,parent=CU,color=LC.ui_normal_gem_color,visible=bool(typ != 2))
-		{0:lambda:setattr(s,'scale',.11),1:lambda:setattr(s,'scale',.16),2:lambda:setattr(s,'scale',.12)}[typ]()
-		s.max_frm=len(LC.normal_gem_texture)-1
-		s.index=idx
+		if typ > 2:
+			typ=2
+		super().__init__(model=f'{cle_gem_ui}.ply',texture=f'{cle_gem_ui}.png',position=pos,color=LC.ui_normal_gem_color,visible=bool(typ != 2),rotation_x=-90,always_on_top=bool(typ == 2))
+		{0:lambda:setattr(s,'scale',.004),1:lambda:setattr(s,'scale',.000125),2:lambda:setattr(s,'scale',.0001)}[typ]()
+		s.parent=camera if typ > 0 else scene
 		s.typ=typ
-		s.spd=20
-		s.frm=0
-		del pos,idx,s,typ
-	def refr_frm(self):
-		s=self
-		cc.incr_frm(s,s.spd)
-		if s.texture != LC.normal_gem_texture[int(s.frm)]:
-			s.texture=LC.normal_gem_texture[int(s.frm)]
+		if typ == 2:
+			s.unlit=False
+		del pos,s,typ
 	def update(self):
 		if st.LEVEL_CLEAN or st.loading:
 			return
@@ -548,40 +485,42 @@ class UINormalGem(Entity):
 		if s.typ > 0:
 			s.visible=(s.typ == 1 and st.pause) or (s.typ == 2 and st.level_cle_gem and st.show_gems > 0)
 		if s.visible:
-			s.refr_frm()
+			s.rotation_y+=time.dt*60
 
-GEM_COLOR={1:LC.ui_blue_gem_color,2:LC.ui_red_gem_color,3:LC.ui_yellow_gem_color,4:LC.ui_green_gem_color,5:LC.ui_purple_gem_color}
-GEM_SCALE_Y={1:.06,3:.18}
+vq=.000075
+GEM_COLOR={1:LC.ui_blue_gem_color,2:LC.ui_red_gem_color,3:LC.ui_yellow_gem_color,4:LC.ui_green_gem_color,5:LC.ui_purple_gem_color,6:LC.ui_normal_gem_color,7:LC.ui_normal_gem_color,8:LC.ui_normal_gem_color,9:LC.ui_normal_gem_color}
+GEM_SCALE_ANIM={1:(vq,vq,vq/1.8),2:(vq,vq,vq),3:(vq,vq,vq*1.6),4:(vq,vq,vq),5:(vq,vq,vq)}
+shrink_scale=(.00001,.00001,.00001)
 class UIColorGem(Entity):
 	def __init__(self,pos,typ,idx):
 		s=self
-		GSC=.01 if (typ == 1) else .12
-		super().__init__(model=q,position=pos,parent=CU,scale=GSC,color=LC.ui_normal_gem_color,visible=(typ != 2))
+		if typ > 2:
+			typ=2
 		if idx in (4,5):
-			s.max_frm=len(LC.green_gem_texture)-1 if idx == 4 else len(LC.purple_gem_texture)-1
+			col_gem_ui={4:'res/item/gemstone/gem1',5:'res/item/gemstone/gem2'}[idx]
 		else:
-			s.max_frm=len(LC.normal_gem_texture)-1
+			col_gem_ui='res/item/gemstone/gem'
+		super().__init__(model=f'{col_gem_ui}.ply',texture=f'{col_gem_ui}.png',scale={0:.004,1:.00001,2:.0001}[typ],position=pos,color=GEM_COLOR[idx],visible=(typ != 2),rotation_x=-90,always_on_top=bool(typ == 2))
+		s.parent=camera if typ > 0 else scene
 		s.scale_anim_done=False
 		s.gem_scale_mode=0
 		s.gem_anim_wait=0
 		s.index=idx
 		s.typ=typ
-		s.spd=20
-		s.frm=0
-		del pos,idx,s,typ,GSC
+		s.refr_scale()
+		if typ == 2:
+			s.unlit=False
+		del pos,idx,typ
 	def refr_scale(self):
 		s=self
-		if s.typ == 1 and not s.index in st.COLOR_GEM:
-			s.gem_scale_animation()
+		if s.typ == 1:
+			if s.index in st.COLOR_GEM:
+				s.scale=GEM_SCALE_ANIM[s.index]
 			return
-		if s.scale_x != .12:
-			s.scale_x=.12
-		if s.index in GEM_SCALE_Y:
-			if s.scale_y != GEM_SCALE_Y[s.index]:
-				s.scale_y=GEM_SCALE_Y[s.index]
-			return
-		if s.scale_y != .12:
-			s.scale_y=.12
+		if s.index == 1:
+			s.scale_z/=1.8
+		if s.index == 3:
+			s.scale_z*=1.6
 	def gem_scale_animation(self):
 		s=self
 		if st.ui_gem_anim_index in st.COLOR_GEM:
@@ -597,41 +536,19 @@ class UIColorGem(Entity):
 				s.scale_anim_done=False
 				st.ui_gem_anim_index=random.randint(1,5)
 			return
-		tg=time.dt
+		tg=time.dt/1500
 		if s.gem_scale_mode == 0:
-			target_size=(.12,GEM_SCALE_Y[s.index],.12) if (s.index in GEM_SCALE_Y) else (.12,.12,.12)
+			target_size=GEM_SCALE_ANIM[s.index] if (s.index in GEM_SCALE_ANIM) else s.grow_scale
 			s.scale=min(s.scale+(tg,tg,tg),target_size)
 			if s.scale >= target_size:
 				s.gem_scale_mode=1
 			return
-		target_size=(.01,.01,.01)
-		s.scale=max(s.scale-(tg,tg,tg),target_size)
-		if s.scale <= target_size:
+		s.scale=max(s.scale-(tg,tg,tg),shrink_scale)
+		if s.scale <= shrink_scale:
 			if not s.scale_anim_done:
 				s.scale_anim_done=True
 				s.gem_anim_wait=2
 				s.gem_scale_mode=0
-	def refr_color(self):
-		s=self
-		if s.index in GEM_COLOR:
-			if s.color != GEM_COLOR[s.index]:
-				s.color=GEM_COLOR[s.index]
-			return
-		if s.color != LC.ui_normal_gem_color:
-			s.color=LC.ui_normal_gem_color
-	def refr_frm(self):
-		s=self
-		cc.incr_frm(s,s.spd)
-		if s.index == 4:
-			if s.texture != LC.green_gem_texture[int(s.frm)]:
-				s.texture=LC.green_gem_texture[int(s.frm)]
-			return
-		if s.index == 5:
-			if s.texture != LC.purple_gem_texture[int(s.frm)]:
-				s.texture=LC.purple_gem_texture[int(s.frm)]
-			return
-		if s.texture != LC.normal_gem_texture[int(s.frm)]:
-			s.texture=LC.normal_gem_texture[int(s.frm)]
 	def update(self):
 		if st.LEVEL_CLEAN or st.loading:
 			return
@@ -642,25 +559,23 @@ class UIColorGem(Entity):
 			s.index=st.color_gem_id
 			s.visible=(st.level_col_gem and st.show_gems > 0)
 		if s.visible:
-			s.refr_color()
-			s.refr_scale()
-			s.refr_frm()
+			if s.typ == 1 and not s.index in st.COLOR_GEM:
+				s.gem_scale_animation()
+			s.rotation_y+=time.dt*60
 
+relic_ui='res/item/relic/relic'
 class UIRelic(Entity):
 	def __init__(self,pos,typ,idx):
 		s=self
-		super().__init__(model=q,texture=LC.relic_texture[0],color=LC.relic_color[idx],position=pos,parent=CU)
-		s.scale=.14 if (typ != 1) else .12
-		s.max_frm=len(LC.relic_texture)-1
+		if typ > 2:
+			typ=2
+		super().__init__(model=f'{relic_ui}.ply',texture=f'{relic_ui}.png',scale={0:.012,1:.0003,2:.000325}[typ],color=LC.relic_color[idx],position=pos,rotation_x=-90,always_on_top=bool(typ == 2),double_sided=True)
+		s.parent=camera if typ > 0 else scene
 		s.index=idx
 		s.typ=typ
-		s.spd=12
-		s.frm=0
+		if typ == 2:
+			s.unlit=False
 		del pos,idx,s
-	def refr_frm(self):
-		s=self
-		cc.incr_frm(s,s.spd)
-		s.texture=LC.relic_texture[int(s.frm)]
 	def refr_func(self):
 		s=self
 		if s.typ == 1:
@@ -673,7 +588,7 @@ class UIRelic(Entity):
 		s=self
 		s.refr_func()
 		if s.visible:
-			s.refr_frm()
+			s.rotation_y+=time.dt*60
 
 #######################################################################################
 #######################################################################################
@@ -684,8 +599,8 @@ vF=0
 class PauseMenu(Entity):
 	def __init__(self):
 		s=self
-		super().__init__(parent=CU,model=q,texture=f'{e}c_pause1.png',scale=(1.05,.5),position=(-.375,-.25,.1),color=color.rgb32(130,140,130),visible=False)
-		s.ppt=Entity(parent=CU,model=q,texture=f'{e}c_pause2.png',scale=(.75,1),position=(.515,0,.1),color=color.rgb32(130,140,130),visible=False)
+		super().__init__(parent=camera,model=q,texture=f'{e}c_pause1.png',scale=(1.05,.5),position=(-.375,-.25,0),color=color.rgb32(130,140,130),visible=False)
+		s.ppt=Entity(parent=camera,model=q,texture=f'{e}c_pause2.png',scale=(.75,1),position=(.515,0,0),color=color.rgb32(130,140,130),visible=False)
 		##text
 		s.font_color=color.rgb32(230,100,0)
 		s.blink_time=0
@@ -707,14 +622,15 @@ class PauseMenu(Entity):
 		s.opt_menu=False
 		s.sel_opt=0
 		##gem animation
-		UICrystal((s.crystal_counter.x+.24,s.crystal_counter.y-.06,s.crystal_counter.z),1,st.level_index)
-		UIRelic((s.relic_counter.x+.14,s.relic_counter.y-.035,s.relic_counter.z),1,2)
-		UINormalGem((s.add_text.x+.2,s.add_text.y-.05,s.add_text.z),1,st.level_index)
-		UIColorGem((s.add_text.x-.05+.105,s.add_text.y+.065,s.add_text.z),1,2)#red
-		UIColorGem((s.add_text.x-.05+.21,s.add_text.y+.04,s.add_text.z),1,4)#green
-		UIColorGem((s.add_text.x-.05+.315,s.add_text.y+.065,s.add_text.z),1,5)#purple
-		UIColorGem((s.add_text.x-.05+.42,s.add_text.y+.04,s.add_text.z),1,1)#blue
-		UIColorGem((s.add_text.x-.05+.525,s.add_text.y+.065,s.add_text.z),1,3)#yellow
+		UICrystal((.19,.0825,.5),1)
+		UINormalGem((.14,-.01,.5),1)
+		UIRelic((.25,-.01,.5),1,2)
+		UIColorGem((.1,.035,.5),1,2)#red
+		UIColorGem((.13,.025,.5),1,4)#green
+		UIColorGem((.16,.035,.5),1,5)#purple
+		UIColorGem((.19,.0275,.5),1,1)#blue
+		UIColorGem((.22,.032,.5),1,3)#yellow
+
 		s.check_collected()
 	def select_btn(self,action):
 		s=self
@@ -802,6 +718,9 @@ class PauseMenu(Entity):
 	def refr_progress_text(self):
 		self.music_vol.text=f'MUSIC VOLUME {int(round(settings.MUSIC_VOLUME*100))}%'
 		self.sound_vol.text=f'SOUND VOLUME {int(round(settings.SFX_VOLUME*100))}%'
+	def refr_ui_distance(self):
+		self.z=1.5 if LC.ACTOR.indoor > 0 else 1.4
+		self.ppt.z=1.5 if LC.ACTOR.indoor > 0 else 1.4
 	def show_options(self):
 		self.opt_exit.visible=True
 		self.music_vol.visible=True
@@ -828,6 +747,7 @@ class PauseMenu(Entity):
 		s=self
 		s.refr_visible()
 		if st.pause:
+			s.refr_ui_distance()
 			if s.opt_menu:
 				s.show_options()
 				s.refr_progress_text()

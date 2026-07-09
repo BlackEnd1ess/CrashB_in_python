@@ -25,10 +25,10 @@ def map_setting():
 	LC.RCB=6
 
 def start_load():
-	#load_crate()
+	load_crate()
 	load_object()
 	#load_wumpa()
-	load_npc()
+	#load_npc()
 	map_setting()
 
 ##for youtube and git
@@ -77,19 +77,18 @@ def load_object():
 	o.StartRoom(pos=(0,0,-8.1))
 	o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
 def load_crate():
-	return
-	#CZ=0
-	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,1,1])
+	CZ=0
+	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.32),CNT=[3,2,2])
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.64),CNT=[3,1,3])
-	#mt.crate_block(ID=1,POS=(-6.5,.16,CZ),CNT=[6,6,2])
+	#mt.crate_block(ID=1,POS=(-6.5,.16,CZ),CNT=[2,5,5])
 	#mt.crate_block(ID=2,POS=(-5.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=3,POS=(-4.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=4,POS=(-3.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=5,POS=(-2.5,.16,CZ),CNT=[3,1,1])
 	#mt.crate_block(ID=6,POS=(-1.5+.32,.16,CZ),CNT=[1,1,1])
 	#mt.crate_block(ID=7,POS=(-.5,.16,CZ),CNT=[3,3,1])
-	#mt.crate_block(ID=8,POS=(.5,.16,CZ),CNT=[3,3,1])
+	mt.crate_block(ID=8,POS=(.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=9,POS=(1.5+.32,.16,CZ),CNT=[1,1,1])
 	#mt.crate_block(ID=10,POS=(2.5+.32,.16,CZ),CNT=[1,1,1])
 	#mt.crate_block(ID=11,POS=(3.5+.32,.16,CZ),CNT=[1,1,2])

@@ -1,7 +1,7 @@
 import item,status,_core,animation,sound,npc,settings,_loc,random,time,ui
 from ursina import Entity,Audio,color,scene,invoke,distance
+from effect import TrialTimeStopInfo,spawn_glitter
 from ursina.ursinastuff import destroy
-from effect import TrialTimeStopInfo
 
 an=animation
 cc=_core
@@ -16,13 +16,13 @@ cr2=f'{pp}cr_t1.obj'# double texture
 ## spawn func
 def spawn(p,ID,m=0,l=0,pse=False):
 	{0:lambda:Iron(pos=p,m=m,l=l,pse=pse),
-	1:lambda:Normal(pos=p,m=m,l=l,pse=pse),##t1
-	2:lambda:QuestionMark(pos=p,m=m,l=l,pse=pse),##t2
+	1:lambda:Normal(pos=p,m=m,l=l,pse=pse),
+	2:lambda:QuestionMark(pos=p,m=m,l=l,pse=pse),
 	3:lambda:Bounce(pos=p,m=m,l=l,pse=pse),
-	4:lambda:ExtraLife(pos=p,m=m,l=l,pse=pse),##t3
+	4:lambda:ExtraLife(pos=p,m=m,l=l,pse=pse),
 	5:lambda:AkuAku(pos=p,m=m,l=l,pse=pse),
-	6:lambda:Checkpoint(pos=p,m=m,l=l,pse=pse),##t2
-	7:lambda:SpringWood(pos=p,m=m,l=l,pse=pse),##t1
+	6:lambda:Checkpoint(pos=p,m=m,l=l,pse=pse),
+	7:lambda:SpringWood(pos=p,m=m,l=l,pse=pse),
 	8:lambda:SpringIron(pos=p,m=m,l=l,pse=pse),
 	9:lambda:SwitchEmpty(pos=p,m=m,l=l,pse=pse),
 	10:lambda:SwitchNitro(pos=p,m=m,l=l,pse=pse),
@@ -145,6 +145,7 @@ class AkuAku(Entity):
 					st.aku_inv_time=20
 		if not st.aku_exist:
 			npc.AkuAkuMask(s.position)
+		spawn_glitter(s.position,15)
 		cc.box_destroy_event(s)
 
 class Checkpoint(Entity):
@@ -154,8 +155,13 @@ class Checkpoint(Entity):
 		super().__init__(model=cr2)
 		cc.box_set_val(cR=s,Cpos=pos,Cpse=pse,Cmk=m,Ctl=l)
 		del pos,pse,m,l,s
+	def forget_iron_box(self):
+		for kb in scene.entities[:]:
+			if cc.is_box(kb) and (kb.vnum == 0 and kb.poly):
+				kb.poly=False
 	def destroy(self):
 		s=self
+		s.forget_iron_box()
 		st.checkpoint=(s.x,s.y+1.5,s.z)
 		sn.crate_audio(ID=6)
 		ui.CheckpointLetter(s.position)
@@ -184,7 +190,7 @@ class SpringIron(Entity):
 		s.p_snd=False
 		del pos,pse,m,l,s
 	def destroy(self):
-		cc.block_destroy(self)
+		return
 
 class SwitchEmpty(Entity):
 	def __init__(self,pos,m,l,pse):
@@ -213,7 +219,10 @@ class SwitchEmpty(Entity):
 	def destroy(self):
 		if not self.active:
 			self.active=True
+			an.BoxAnimation(self)
 			sn.crate_audio(ID=11)
+			return
+		cc.block_destroy(self)
 	def update(self):
 		if st.gproc():
 			return
@@ -245,7 +254,10 @@ class SwitchNitro(Entity):
 	def destroy(self):
 		if not self.active:
 			self.active=True
+			an.BoxAnimation(self)
 			sn.crate_audio(ID=11)
+			return
+		cc.block_destroy(self)
 	def c_action(self):
 		s=self
 		s.model=cr1

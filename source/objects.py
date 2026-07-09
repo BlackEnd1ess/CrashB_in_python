@@ -1,4 +1,4 @@
-from ursina import Entity,color,time,distance,distance_xz,invoke,BoxCollider,Vec2,Vec3,SpotLight,camera,Audio,Text,scene,load_texture
+from ursina import Entity,color,time,distance,distance_xz,invoke,BoxCollider,Vec2,Vec3,SpotLight,PointLight,camera,Audio,Text,scene,load_texture
 import _core,status,item,sound,animation,player,_loc,settings,npc,ui,danger,random
 from effect import WarpVortex,WaterDrips
 from ursina.ursinastuff import destroy
@@ -968,13 +968,45 @@ class HitBox(Entity):
 		del pos,sca
 
 class LightArea(SpotLight):
-	def __init__(self,pos):
-		super().__init__(position=pos,color=color.white)
-		self.ta=LC.ACTOR
+	def __init__(self,pos,col):
+		super().__init__(position=pos,color=col)
 		del pos
 	def update(self):
-		if not st.gproc():
-			self.position=(self.ta.x+.5,self.ta.y+1.5,self.ta.z+1)
+		if st.gproc():
+			return
+		self.position=(LC.ACTOR.x+.5,LC.ACTOR.y+1.5,LC.ACTOR.z+1)
+
+class ObjectLight(PointLight):
+	def __init__(self,target,col,pulse=False):
+		super().__init__(color=col,eternal=True)
+		self.target=target
+		self.pulse=pulse
+		self.glow_mode=0
+	def effect_pulse(self):
+		s=self
+		ttm=.0015
+		if s.glow_mode == 0:
+			if s.color[0] <= .7:
+				s.glow_mode=1
+				return
+			s.color=color.rgb(s.color[0]-ttm,s.color[1]-ttm,s.color[2]-ttm)
+			return
+		if s.color[0] >= 1:
+			s.glow_mode=0
+			return
+		s.color=color.rgb(s.color[0]+ttm,s.color[1]+ttm,s.color[2]+ttm)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if not s.target or st.LV_CLEAR_PROCESS:
+			s.color=color.black
+			s.enabled=False
+			destroy(s,force_destroy=True)
+			return
+		s.position=s.target.position
+		if s.pulse:
+			s.effect_pulse()
 
 class InvWall(Entity):
 	def __init__(self,pos,sca):

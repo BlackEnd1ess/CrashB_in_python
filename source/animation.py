@@ -40,6 +40,7 @@ qs=.5
 bT=50
 gp=20
 t=18
+
 ## animator classes
 class BoxBreak(Entity):
 	def __init__(self,pos,ID):
@@ -294,7 +295,7 @@ frm_info={0:(10,f'{af}idle/'),
 		2:(6,f'{af}slide_start/'),
 		3:(3,f'{af}slide_stop/'),
 		4:(2,f'{af}jump_up/'),
-		5:(11,f'{af}spin/'),##error
+		5:(11,f'{af}spin/'),
 		6:(12,f'{af}land/'),
 		7:(7,f'{af}fall/'),
 		8:(16,f'{af}flip/'),

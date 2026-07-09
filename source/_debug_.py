@@ -1,4 +1,4 @@
-from ursina import Entity,EditorCamera,scene,color,Text,application,camera,time
+from ursina import Entity,EditorCamera,scene,color,Text,application,camera,time,invoke
 import gc,os,ui,settings,psutil,_loc,status,sys,sound,tracemalloc,item,types
 from collections import defaultdict
 from collections import Counter
@@ -28,6 +28,8 @@ def pos_info(c):
 def complete_level():
 	print(f'COMPLETE ALL GEMS IN LEVEL: {st.level_index}')
 	st.RELIC_TRIAL_DONE=True
+	st.relic_rank=0
+	st.RELIC.append((st.level_index,st.relic_rank))
 	st.level_cle_gem=True
 	for collect_all in scene.entities[:]:
 		if not collect_all:
@@ -35,7 +37,6 @@ def complete_level():
 		if collect_all.name in LC.item_lst:
 			if not collect_all.name in ('wmpf','clock','exlf'):
 				collect_all.collect()
-	st.RELIC.append((st.level_index,0))
 	st.show_gems=5
 	sound.ui_audio(ID=4)
 	invoke(lambda:setattr(LC.ACTOR,'position',LC.lv_fin_pos),delay=1)

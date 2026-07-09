@@ -1,0 +1,146 @@
+# 10.03.2026 #
+- soundbank added + all wav files in one folder and renamed by type like "npc_" or "obj_".
+- warp ring effect count to 7 and animation runs faster
+- removed duplicate sounds, added missing sounds
+- implemented: crash_slide sound on ice_materials
+- lumberjack fixxed: movespeed, attack range, hammer smash
+- fixxed tnt, switch_empty+switch_nitro (active) landing sound
+- improved loop sounds for NPC's: universal function for soundvolume by player distance
+- fixxed water footstep
+
+#11.03.2026
+- transformed SpiderRobotFlat and SpiderRobotUp to one Entity as SpiderRobot with customizable mode
+- improved water_landing sound + water footstep sound functions.
+
+
+#13.03.2026
+- fixxed walking sound while player in air
+- implemented sound limit for breaking boxes and exploding mines
+- implemented footstep_snow into level 2 and level 8
+- fixxed gorilla respawn in level 5
+- improved box respawn function
+
+#14.03.2026
+- improved box fall physic
+
+#18.03.2026
+- fixxed nitro,nitro sound limit
+
+#23.03.2026
+- crates 3d model exported to .obj for better collision
+- improved box destroy & box respawn event
+- single wumpa on same position will change z_pos
+
+#25.03.2026
+- changed box parameters for incomming time trials
+
+#26.03.2026
+- improved npc destroy & respawn event
+- changed nitro stack function for idle boxes
+- fixxed vulture and hedgehog update function while these NPC's purged or hitten
+- all npcs can execute rotation move or NOMOVE
+- seperate animator for Gorilla and LabAssistant death_event
+- implemented TimeTrialClock
+
+#27.03.2026
+- fixxed AirSwitch continuing transform while death event by new AirBoxReplacer class
+
+#31.03.2026
+- fixxed crashs flip animation after attack and fall
+- bounce boxes play animation by CrateBounce Animator
+- remove update func in box ID 7 und box ID 8
+- godmode for debug in settings.debg_gm
+
+#01.04.2026
+- reduce memory usage by fixxing garbage code
+- stored rain, wumpa and eletric water texture in memory
+- remove update func from protected box and play animation by animator
+
+#03.04.2026
+- removed water from level 1 and replaced with new swamp textures from orginal game
+- stored water texture, lightfire textures in RAM by loading texture before level laods
+
+#04.04.2026
+- stored interface textures in RAM and preload by starting the game
+- waterfoam and waterfall and waterdrips updated to seperated classes
+- player attack fixxed attack range + cooldown
+- fixxed gamebreaking glitch, while player stuck on bonus platform
+- nitro box update jump positions after fall_down
+
+#05.04.2026
+- updated akuakumask function
+- gemstone glow
+- fixxed odd value in SOUND and MUSIC options in pause menu, updated functions
+
+#07.04.2026
+- improved idle wall collision
+- improved walking on slopes
+- improved Gorilla function: removed invoke sequences
+- removed non used textures from RAM after solved level
+
+#08.04.2026
+- Beta: time trial challange for relics
+- updated 2D animation in interface for gem, relics and crystals
+- time trial clock updated: sound effect while trial time stops
+
+#13.04.2026
+- updated menü icons
+- implmentented item relic
+- time relic color ui in collected interface, timer ui + icon on timer
+- savegame store relic list
+
+#15.04.2026
+- relic time in level 1-5
+- animation rain , animation water_flow changes texture_offset instead loading single frames
+
+#18.04.2026
+- UI 2d animation reduced frames and sprite scale
+
+#20.04.2026
+- new UI classes for gem, crystal and relic
+- gem colors for UI and mesh does not depending anymore from level ID
+- removed black slihuette from warp room
+- relic count to progress
+- pause menu relic counter
+- gem platforms updated: ID, funciton
+- gemstone alpha value
+- crash second hurt sound effect
+- crash akuaku dodge sound effect
+- restored bee buzz sound effect
+
+#21.04.2026
+- updated NPC hippo function
+
+#22.04.2026
+- updated thunderbolt function
+- music select in warproom track 1-4
+
+#23.04.2026
+- fixxed nitro stack on other nitro boxes
+- savegame store warp room music index
+- updated switch boxes: delay after trigger + fixxed sfx
+- fixxed crash landing without jumping
+
+#24.04.2026
+- new NPC: butterfly in 5 different types
+
+#26.04.2026
+- updated player death animator
+- updated npc loop_sounds reference
+- updated npc refresh actions
+- updated player jump function
+
+#27.04.2026
+- updated player animation function
+
+-29.04.2026
+- updated level 2 ice plank
+- upated sound SFX_DATABASE
+- updated Gorilla SFX
+- updated Rat SFX
+- updated level 5 ruin platform SFX
+- updated hive: type 0 small und type 1 large
+
+#30.04.2026
+- new passive npc: bird
+- updated npc: penguin spin + penguin dizzy animation

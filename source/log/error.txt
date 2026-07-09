@@ -1,0 +1,2 @@
+- frog reset path param
+- movable platforms direction limit

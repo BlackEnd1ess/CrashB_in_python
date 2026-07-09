@@ -1,16 +1,6 @@
-v 1.4
-- VIDEO!!
-
 v 1.5
-- box reset (airbox -> ironbox)
-- level 8 no lights when playing other levels before
-- upgrade level 1 -> blocks, tree
-- switch box animation
-- aku effect, a lot of stars
-- cb3 npc goat, wizard, knight
-- better 2d frames (light)
-- checkpoint texture 1 side
-- better 3d models: tree, mushrooms
-- add npcs, textures and sounds from CB3!
-- digin plant
+- better 3d models: tree + level 1 update assets
+- level 2 snow particles
+- 3d boxes in RAM, crash anim frames in RAM
+- add textures from CB3!
 - freemap

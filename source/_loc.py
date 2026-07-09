@@ -58,25 +58,13 @@ ge_inf={0:'this is a developer test level, place the gem where you want',
 		4:'green gem - unlock the yellow gem path',
 		5:'purple gem - unlock the green gem path'}
 
-#warp room bg
-wrbg='res/background/warp_room.png'
-
 #crash default texture
 ctx='res/pc/crash'
-
-#splash water entity
-splash_entity='splash_wtr'
 
 #render culling distance
 RCX=0#x pos
 RCZ=0#z pos
 RCB=0#back dst
-
-#2d gem animation
-relic='res/ui/icon/relic/'
-ge_0='res/ui/icon/gem0/'
-ge_1='res/ui/icon/gem1/'
-ge_2='res/ui/icon/gem2/'
 
 #relic color
 relic_color={0:color.light_gray,1:color.gold,2:color.azure}
@@ -117,7 +105,6 @@ gem_pod_position=(0,-120,0)
 lv_fin_pos=(0,0,0)
 
 NPC_SND_DISTANCE=8
-NPC_FLY_SPEED=40
 
 #lab taser height
 ltth=1.7
@@ -156,6 +143,8 @@ IGNORE=[]
 wmp_texture=[]
 box_texture=[]
 
+box_count_icon=None
+
 crystal_texture=[]
 normal_gem_texture=[]
 green_gem_texture=[]
@@ -168,3 +157,7 @@ wtf_texture=[]
 wff_texture=[]
 drp_texture=[]
 fre_texture=[]
+
+#box models 3d preload for single boxes
+BOX_MODEL_NORMAL=None
+BOX_MODEL_FACES=None

@@ -1,4 +1,4 @@
-from ursina import Entity,Text,Vec3,color,load_texture,scene
+from ursina import Entity,Text,Vec3,color,load_texture,scene,invoke
 from ursina.ursinastuff import destroy
 import status,_loc,time,random,_core
 from sound import pc_audio,obj_audio
@@ -11,6 +11,11 @@ q='quad'
 st=status
 cc=_core
 LC=_loc
+
+def spawn_glitter(pos,cnt):
+	for ggt in range(cnt):
+		invoke(lambda:GlitterStar(pos=(pos[0]+random.uniform(-.32,.32),pos[1]+random.uniform(-.08,.32),pos[2]+random.uniform(-.32,.32))),delay=ggt/15)
+	del ggt
 
 class WarpVortex(Entity):
 	def __init__(self,pos,sca,drc,col):
@@ -68,7 +73,7 @@ class ExclamationMark(Entity):
 		3:lambda:setattr(s,'z',s.z-tv),
 		4:lambda:setattr(s,'y',s.y+tv/4)}[s.vnum]()
 
-class Sparkle(Entity):
+class Sparkle(Entity):##aku typ 2 floating effect
 	def __init__(self,pos):
 		super().__init__(model=q,texture=f'{ef}sparkle.png',position=pos,scale=.04,color=color.gold,unlit=False)
 		self.mode=0
@@ -85,6 +90,36 @@ class Sparkle(Entity):
 		s.scale-=Vec3(time.dt/2,time.dt/2,0)
 		if s.scale_x <= 0:
 			destroy(s)
+
+class GlitterStar(Entity):##aku box break effect
+	def __init__(self,pos):
+		super().__init__(model=q,texture=f'{ef}sparkle.png',position=pos,scale=.01,color=color.yellow,unlit=False)
+		del pos
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.scale+=Vec3(time.dt/3,time.dt/3,0)
+		if s.scale_x > .25:
+			destroy(s)
+
+gfw='effects/firework/'
+class GemFirework(Entity):
+	def __init__(self,col):
+		super().__init__(model=f'{gfw}0.ply',texture=f'{gfw}0.png',scale=.00075,parent=camera,position=(0,-.075,.6),rotation=(-90,15,130),color=col,unlit=False)
+		self.spd=12
+		self.frm=0
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		s.visible=not st.pause
+		s.frm+=time.dt*s.spd
+		if s.frm > 15.99:
+			destroy(s)
+			return
+		if s.model != f'{gfw}/{int(s.frm)}.ply':
+			s.model=f'{gfw}/{int(s.frm)}.ply'
 
 class JumpDust(Entity):
 	def __init__(self,pos):

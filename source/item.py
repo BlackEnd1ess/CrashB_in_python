@@ -1,6 +1,7 @@
 from ursina import Entity,BoxCollider,Vec3,SpotLight,color,distance,lerp,scene
 import _core,status,sound,ui,_loc,random,time,crate
 from ursina.ursinastuff import destroy
+from effect import GemFirework
 
 lfic='res/ui/icon/crash_live.png'
 w_pa='res/ui/icon/wumpa/'
@@ -146,6 +147,7 @@ class GemStone(Entity):
 			st.level_col_gem=True
 		sn.ui_audio(ID=5)
 		st.show_gems=5
+		GemFirework(col=self.color)
 		self.purge()
 	def refr_func(self):
 		s=self
@@ -171,6 +173,7 @@ class EnergyCrystal(Entity):
 		st.level_crystal=True
 		sn.ui_audio(ID=5)
 		st.show_gems=5
+		GemFirework(col=color.magenta)
 		destroy(s.glow)
 		destroy(s)
 	def update(self):
@@ -229,6 +232,7 @@ class TimeRelic(Entity):
 		st.RELIC_TRIAL_DONE=True
 		st.relic_rank=self.rank
 		sn.ui_audio(ID=5)
+		GemFirework(col=self.color)
 		destroy(self)
 	def refr_function(self):
 		s=self

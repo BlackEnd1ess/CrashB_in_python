@@ -6,7 +6,7 @@ sn=sound
 st=status
 LC=_loc
 c=color
-def init_amb_light():#called 1 time
+def init_amb_light():
 	LC.AMBIENT_LIGHT=AmbientLight(color=c.gray)
 
 ##start environment

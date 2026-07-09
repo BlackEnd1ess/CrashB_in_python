@@ -1,4 +1,4 @@
-from ursina import Entity,camera,scene,invoke,Vec3,color,distance,distance_xz,boxcast,raycast,window,load_texture
+from ursina import Entity,camera,scene,invoke,Vec3,color,distance,distance_xz,boxcast,raycast,window,load_texture,load_model
 import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,time,random,json,math,objects
 from effect import JumpDust,PressureWave,Fireball,ExclamationMark
 from animation import NPCAnimator,BoxBreak,BoxAnimation
@@ -638,8 +638,7 @@ def block_destroy(c):
 			BoxAnimation(c)
 			sn.crate_audio(ID=1)
 		else:
-			if LC.ACTOR.is_attack:
-				sn.crate_audio(ID=0)
+			sn.crate_audio(ID=0)
 		invoke(lambda:setattr(c,'p_snd',False),delay=.5)
 def box_jump_action(c):
 	if (c.vnum in (9,10,11) and c.active) or c.vnum == 0:
@@ -798,7 +797,7 @@ def load_droute(c):
 def clear_gem_route():
 	for grd in scene.entities[:]:
 		if grd.parent == scene and grd.x > 180:
-			if not (is_box(grd) or grd in (LC.shdw,LC.ACTOR) or isinstance(grd,N.AkuAkuMask) or grd.name == 'firefly' or grd.name == 'point_light'):
+			if not (is_box(grd) or grd in (LC.shdw,LC.ACTOR) or isinstance(grd,N.AkuAkuMask) or grd.name == 'firefly' or grd.name == 'point_light' or grd.name == 'object_light'):
 				destroy(grd)
 	del grd
 
@@ -885,7 +884,7 @@ def rotate_to_target(m,target_pos):
 	m.rotation_y=atan2(rtp.x,rtp.z)*(180/pi)+180
 	m.rotation_x=-90
 def fly_away(n):
-	n.position+=n.fly_direc*(time.dt*LC.NPC_FLY_SPEED)
+	n.position+=n.fly_direc*(time.dt*40)
 	n.fly_time+=time.dt
 	npc_fly_hit(n)
 	if n.fly_time > .5:
@@ -980,12 +979,8 @@ def preload_animator():
 ##preload global texture
 def preload_ui_texture():
 	LC.wmp_texture=[load_texture(f'res/ui/icon/wumpa/w{cbx}.png') for cbx in range(13+1)]
-	LC.box_texture=[load_texture(f'res/ui/icon/box/anim_crt_{cbx}.png') for cbx in range(63+1)]
-	LC.crystal_texture=[load_texture(f'res/ui/icon/crystal/{cbx}.png') for cbx in range(32+1)]
-	LC.normal_gem_texture=[load_texture(f'res/ui/icon/gem0/{cbx}.png') for cbx in range(64+1)]
-	LC.green_gem_texture=[load_texture(f'res/ui/icon/gem1/{cbx}.png') for cbx in range(64+1)]
-	LC.purple_gem_texture=[load_texture(f'res/ui/icon/gem2/{cbx}.png') for cbx in range(64+1)]
-	LC.relic_texture=[load_texture(f'res/ui/icon/relic/{cbx}.png') for cbx in range(16+1)]
+	LC.box_count_icon=load_texture('res/crate/2.png')
+
 def preload_water_texture(ID):
 	if len(LC.wtr_texture) > 0:
 		LC.wtr_texture.clear()
@@ -995,6 +990,7 @@ def preload_water_texture(ID):
 		LC.wtr_texture=[load_texture(f'res/objects/l3/water_flow/water_flow{cbx}.png') for cbx in range(3+1)]
 	if ID == 2:
 		LC.wtr_texture='res/objects/l8/polar_water/0.png'
+
 def unload_textures(idx):
 	if settings.debg:
 		print('depending object textures unloaded')
@@ -1005,3 +1001,7 @@ def unload_textures(idx):
 		LC.drp_texture.clear()
 	if idx == 5:
 		LC.fre_texture.clear()
+
+def preload_models():
+	LC.BOX_MODEL_NORMAL=load_model('res/crate/cr_t0.obj')
+	LC.BOX_MODEL_FACES=load_model('res/crate/cr_t1.obj')

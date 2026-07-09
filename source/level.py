@@ -25,7 +25,7 @@ def free_level():
 	if idx == 3:
 		sound.AmbienceSound()
 		sound.WaterRiver()
-	ui.load_interface()
+	ui.load_interface(idx)
 	cc.level_ready=True
 	st.fails=0
 	if settings.debg:

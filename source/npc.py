@@ -1,5 +1,5 @@
-from ursina import BoxCollider,Vec3,Entity,Audio,distance,distance_xz,lerp,invoke,PointLight,color,scene
-import settings,_core,math,animation,status,sound,_loc,effect,time,random
+from ursina import BoxCollider,Vec3,Entity,Audio,distance,distance_xz,lerp,invoke,color,scene
+import settings,_core,math,animation,status,sound,_loc,effect,time,random,objects
 from math import radians,cos,sin,pi,degrees,atan2
 from ursina.ursinastuff import destroy
 from danger import LogDanger
@@ -715,7 +715,8 @@ class Frog(Entity):
 		s=self
 		if not s.p_snd:
 			s.p_snd=True
-			s.frog_sound_effect()
+			if settings.SFX_VOLUME > 0:
+				s.frog_sound_effect()
 			s.rotation_y=degrees(atan2(s.mvo_drc[s.way_index][0]-s.x,s.mvo_drc[s.way_index][2]-s.z))+180
 		if s.tme > 0:
 			if s.tme < s.tme_st/5:
@@ -923,8 +924,7 @@ tfd=.01
 class Firefly(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=f'{ffly}.ply',texture=f'{ffly}.png',position=pos,scale=.8/1200,rotation_x=-90,unlit=False)
-		s.lgt=PointLight(position=s.position,scale=.2,color=color.rgb32(255,200,180))
+		super().__init__(model=f'{ffly}.ply',texture=f'{ffly}.png',position=pos,scale=.00075,rotation_x=-90,unlit=False)
 		s.start_checkp=st.checkpoint
 		s.spawn_pos=pos
 		s.active=False
@@ -933,24 +933,8 @@ class Firefly(Entity):
 		s.mov_range=1
 		s.ro_mode=0
 		s.angle=0
+		objects.ObjectLight(target=s,col=color.rgb32(255,200,180),pulse=True)
 		del pos
-	def glow_light(self):
-		s=self
-		ttm=.0015
-		if st.LV_CLEAR_PROCESS:
-			s.lgt.color=color.black
-			s.lgt.enabled=False
-			return
-		if s.glow_mode == 0:
-			if s.lgt.color[0] <= .7:
-				s.glow_mode=1
-				return
-			s.lgt.color=color.rgb(s.lgt.color[0]-ttm,s.lgt.color[1]-ttm,s.lgt.color[2]-ttm)
-			return
-		if s.lgt.color[0] >= 1:
-			s.glow_mode=0
-			return
-		s.lgt.color=color.rgb(s.lgt.color[0]+ttm,s.lgt.color[1]+ttm,s.lgt.color[2]+ttm)
 	def respawn(self):
 		s=self
 		if st.checkpoint == s.start_checkp:
@@ -960,15 +944,13 @@ class Firefly(Entity):
 		s.position=st.checkpoint
 	def m_idle(self):
 		s=self
-		cc.circle_move(s)
+		#cc.circle_move(s)
 		s.mov_range=.3+abs(sin(time.time()))*.4
 		s.y=s.spawn_pos[1]+sin(time.time()*3)*.2
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		s.lgt.position=s.position
-		s.glow_light()
 		if distance(s,LC.ACTOR) < .8:
 			s.active=not st.death_event
 		if st.death_event:

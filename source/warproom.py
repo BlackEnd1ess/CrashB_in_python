@@ -1,13 +1,63 @@
 import status,_loc,level,sound,settings,ui,_core,objects,time,gc
 from ursina import Audio,Text,Entity,camera,scene,color,invoke
+from objects import ObjType_Background,ObjType_Deco
 from ursina.ursinastuff import destroy
+from ursina import window
+
 cu=camera.ui
 st=status
 sn=sound
+LC=_loc
 
+wrbg='res/background/warp_room.png'
+icb='res/ui/misc/icon_box.png'
 mc='res/ui/icon/memcard.png'
+ivy_='res/ui/misc/ivy'
 fn='res/ui/font.ttf'
 q='quad'
+
+ivc=.2
+
+class LevelSelector(Entity):
+	def __init__(self,typ):
+		super().__init__()
+		self.typ=typ
+		if typ == 0:
+			self.default_room()
+			return
+		self.special_room()
+	def default_room(self):
+		s=self
+		set_warproom_scene(s.typ)
+		for lvd in (1,2,3,4,5):
+			ui.LevelName(pos=(-.85,.45-lvd/7),idx=lvd)
+			if lvd in st.CRYSTAL:
+				ui.UICrystal((-1.4,6.6-lvd*2.2,2),0)
+			if lvd in st.CLEAR_GEM:
+				ui.UINormalGem((-3.85,6.6-lvd*2.2,2),0)
+			if lvd in st.COLOR_GEM:
+				ui.UIColorGem((1,6.6-lvd*2.2,2),0,lvd)
+			for lpr in st.RELIC:
+				if lvd == lpr[0]:
+					ui.UIRelic((3.5,6.6-lvd*2.2,2),0,lpr[1])
+		for iwx in range(4):
+			for iwy in range(5):
+				Entity(model=q,texture=icb,position=(-4+iwx*2.5,4.5-iwy*2.25,2.5),scale=2.5,color=color.rgb32(80,100,80),unlit=False)
+	def special_room(self):
+		s=self
+		set_warproom_scene(s.typ)
+		for lvd in (6,7,8):
+			ui.LevelName(pos=(-.85,1.1-lvd/7),idx=lvd)
+			if lvd in st.CLEAR_GEM:
+				ui.UINormalGem((-4.2,16.5-lvd*2.2,2),0)
+			if lvd in st.COLOR_GEM:
+				ui.UINormalGem((-1.75,16.5-lvd*2.2,2),0)
+			for lpr in st.RELIC:
+				if lvd == lpr[0]:
+					ui.UIRelic((.75,16.5-lvd*2.2,2),0,lpr[1])
+		for iwx in range(3):
+			for iwy in range(3):
+				Entity(model=q,texture=icb,position=(-4.3+iwx*2.5,3.5-iwy*2.25,2.5),scale=2.5,color=color.rgb32(80,100,80),unlit=False)
 
 class Memorycard(Entity):
 	def __init__(self):
@@ -53,7 +103,6 @@ class LvSelect(Entity):
 		objects.PseudoCrash()
 		Memorycard()
 		MusicInfo()
-		gc.collect()
 		self.index=0
 	def input(self,key):
 		if key in settings.BCK_KEY:
@@ -115,7 +164,7 @@ class Credits(Entity):
 	def __init__(self):
 		s=self
 		st.loading=False
-		super().__init__(model='quad',texture=_loc.wrbg,scale=(32,20),z=4,color=color.rgb32(100,150,100))
+		super().__init__(model='quad',texture=wrbg,scale=(32,20),z=4,color=color.rgb32(100,150,100))
 		s.bgm=Audio('res/music/credits.mp3',loop=True,volume=settings.MUSIC_VOLUME)
 		objects.PseudoCrash()
 		s.index=0
@@ -189,14 +238,29 @@ class Credits(Entity):
 		s.index=0
 		invoke(level_select,delay=16)
 
+def set_warproom_scene(n):
+	scene.fog_color=color.rgb32(70,100,70)
+	scene.fog_density=(20,60)
+	window.color=color.black
+	LC.AMBIENT_LIGHT.color=color.white
+	camera.position=(0,0,-20)
+	camera.rotation=(0,0,0)
+	camera.fov=65
+	Entity(model=q,texture=f'{ivy_}_m.png',scale=ivc,position=(-.8,.4,.1),parent=cu,unlit=False)
+	Entity(model=q,texture=f'{ivy_}_m.png',scale=ivc,position=(-.8,-.4,.1),rotation_z=-90,parent=cu,unlit=False)
+	Entity(model=q,texture=f'{ivy_}.png',scale=ivc,position=(.8,.4,.1),parent=cu,unlit=False)
+	Entity(model=q,texture=f'{ivy_}.png',scale=ivc,position=(.8,-.4,.1),rotation_z=90,parent=cu,unlit=False)
+	if n == 0:
+		ObjType_Background(ID=0,sca=(40,20),pos=(0,0,4),col=color.rgb32(80,100,80),txa=(1,1),UL=True)
+		return
+	Entity(model='sphere',texture='res/terrain/grass_flat.png',scale=(16,5,8),texture_scale=(4,4),position=(10,-8,2),color=color.rgb32(0,120,0),unlit=False)
+	ObjType_Background(ID=2,sca=(38,24),pos=(0,0,5),col=color.rgb32(0,50,50),txa=(1,1),UL=True)
+	ObjType_Deco(ID=1,pos=(7.5,-3.6,2),sca=.06,col=color.gray,rot=(-90,0,0),UL=True)
+
 def level_select():
 	scene.clear()
 	st.LV_CLEAR_PROCESS=False
 	st.level_index=0
-	camera.position=(0,0,-20)
-	camera.rotation=(0,0,0)
-	scene.fog_color=color.rgb32(70,100,70)
-	scene.fog_density=(20,60)
 	if len(st.CRYSTAL) >= 5:
 		if not st.crd_seen:
 			st.crd_seen=True
@@ -205,11 +269,7 @@ def level_select():
 		BonusRoomEntry()
 	LvSelect()
 	if st.bonus_warp_room:
-		ui.set_warproom_scene(1)
-		for lvs in (6,7,8):
-			ui.SpecialLevelSelector(idx=lvs,pos=(-.8,1.2-lvs/6))
+		LevelSelector(1)
 	else:
-		ui.set_warproom_scene(0)
-		for lvs in (1,2,3,4,5):
-			ui.LevelSelector(idx=lvs,pos=(-.8,.5-lvs/6))
+		LevelSelector(0)
 	st.loading=False

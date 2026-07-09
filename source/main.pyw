@@ -1,4 +1,4 @@
-from _core import preload_ui_texture,preload_animator
+from _core import preload_ui_texture,preload_animator,preload_models
 from panda3d.core import loadPrcFileData
 from ursina import Ursina
 import settings,ui,sys
@@ -12,6 +12,7 @@ def game():
 	settings.load()
 	preload_ui_texture()
 	preload_animator()
+	preload_models()
 	if settings.debg:
 		print('SELECT LEVEL: type level number')
 		iv=input('')
