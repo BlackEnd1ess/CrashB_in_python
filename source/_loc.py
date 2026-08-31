@@ -1,4 +1,4 @@
-## lists, arrays and list access
+## lists, arrays and value access
 from ursina import color
 c=color
 
@@ -106,8 +106,8 @@ lv_fin_pos=(0,0,0)
 
 NPC_SND_DISTANCE=8
 
-#lab taser height
-ltth=1.7
+#box scale
+BOX_SIZE=.16
 
 #lv6 mine position
 LDM_POS=[]
@@ -143,8 +143,6 @@ IGNORE=[]
 wmp_texture=[]
 box_texture=[]
 
-box_count_icon=None
-
 crystal_texture=[]
 normal_gem_texture=[]
 green_gem_texture=[]
@@ -157,7 +155,3 @@ wtf_texture=[]
 wff_texture=[]
 drp_texture=[]
 fre_texture=[]
-
-#box models 3d preload for single boxes
-BOX_MODEL_NORMAL=None
-BOX_MODEL_FACES=None

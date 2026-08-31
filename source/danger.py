@@ -1,6 +1,7 @@
 from ursina import Audio,Entity,color,time,distance,invoke,BoxCollider,Vec3,scene,Vec3,lerp,load_texture
-import _core,status,item,sound,animation,player,_loc,settings,effect,npc,random
+import _core,status,item,sound,animation,player,_loc,settings,effect,npc,random,math
 from ursina.ursinastuff import destroy
+from math import sin
 
 wfc='wireframe_cube'
 omf='res/objects/'
@@ -171,6 +172,26 @@ class EletricWater(Entity):
 				s.tme=random.uniform(.1,.2) if s.x > 180 else s.sw_delay
 				s.switch_state(1)
 
+class ToxicBarrel(Entity):
+	def __init__(self,pos):
+		s=self
+		s.glb_model=f'{omf}l4/barrel/barrel.glb'
+		super().__init__(position=(pos[0],pos[1]+.275,pos[2]),scale=.4,rotation=(0,90,90),collider=b)
+		an.set_glb_value(s,fps=0,sca=.0015)
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
+		s.active=False
+		s.danger=True
+		del pos,s
+	def explode(self):
+		if not self.active:
+			self.active=True
+			sn.crate_audio(ID=9,pit=1.25)
+			sn.crate_audio(ID=10,pit=2.25)
+			ef.Fireball(self)
+			cc.get_damage(LC.ACTOR,rsn=4)
+			destroy(self)
+
+
 swrp=f'{omf}l4/heat_pipe/heat_pipe'
 class HeatPipe(Entity):
 	def __init__(self,pos):
@@ -256,7 +277,7 @@ class LogDanger(Entity):
 		s.spawn_pos=s.position
 		s.stop_throw=False
 		s.is_purge=False
-		s.start_delay=.4
+		s.start_delay=0
 		s.life_time=3
 		s.fly_time=0
 		s.direc_y=0
@@ -265,10 +286,10 @@ class LogDanger(Entity):
 		del pos,ro_y
 	def fly(self):
 		s=self
-		{0:lambda:setattr(s,'z',s.z-time.dt*s.fsp),
-		90:lambda:setattr(s,'x',s.x-time.dt*s.fsp),
-		180:lambda:setattr(s,'z',s.z+time.dt*s.fsp),
-		-90:lambda:setattr(s,'x',s.x+time.dt*s.fsp)}[s.rotation_y]()
+		{180:lambda:setattr(s,'z',s.z-time.dt*s.fsp),
+		-90:lambda:setattr(s,'x',s.x-time.dt*s.fsp),
+		0:lambda:setattr(s,'z',s.z+time.dt*s.fsp),
+		90:lambda:setattr(s,'x',s.x+time.dt*s.fsp)}[s.rotation_y]()
 		s.rotation_x-=time.dt*s.rtf
 	def fly_away(self,di):
 		s=self
@@ -300,8 +321,8 @@ class LogDanger(Entity):
 				s.fly_away(di=Vec3(s.x-ac.x,0,s.z-ac.z))
 				return
 			s.fly()
-			s.start_delay=max(s.start_delay-time.dt,0)
-			if s.start_delay <= 0:
+			s.start_delay+=time.dt
+			if s.start_delay > .4:
 				s.hit_ground()
 				if s.intersects(ac):
 					s.collider=None
@@ -315,27 +336,30 @@ class LogDanger(Entity):
 class Hive(Entity):
 	def __init__(self,pos,bID,bMAX,typ):
 		s=self
-		s.m_path=f'{omf}l6/hive/{typ}/'
-		super().__init__(model=f'{s.m_path}0.ply',texture=f'{s.m_path}0.png',position=pos,scale=.1/150,rotation_x=-90)
+		s.glb_model=f'{omf}l6/hive/{typ}/hive.glb'
+		super().__init__(position=pos,scale=.3)
+		an.set_glb_value(s,fps=16,sca=.0024)
+		an.set_glb_color(s,col=color.white,UNLIT=False,brightness=3)
 		s.bMAX=bMAX if (typ == 1) else 1
 		s.locked=False
-		s.max_frm=8.99
 		s.bees_out=0
 		s.bID=bID
 		s.typ=typ
-		s.spd=12
 		s.tme=0
-		s.frm=0
 		del pos,bID,bMAX
 	def is_own_bee(self):
-		s=self
-		cnt_bee=[b for b in scene.entities if (isinstance(b,npc.Bee) and b.bID == s.bID)]
-		s.bees_out=len(cnt_bee)
-		print(s.bees_out)
-		s.locked=s.bees_out >= s.bMAX
+		cnt_bee=[b for b in scene.entities if (isinstance(b,npc.Bee) and b.bID == self.bID)]
+		self.bees_out=len(cnt_bee)
+		self.locked=self.bees_out >= self.bMAX
 	def spawn_bee(self):
+		npc.Bee(pos=self.position,bID=self.bID,typ=0)
+	def refr_anim(self):
 		s=self
-		npc.Bee(pos=s.position,bID=s.bID,typ=0)
+		s.new_index+=time.dt*s.fps
+		if s.new_index >= len(s.frames):
+			s.new_index=0
+			s.spawn_bee()
+		an.set_glb_frame(s)
 	def update(self):
 		if st.gproc() or st.death_event:
 			return
@@ -346,13 +370,15 @@ class Hive(Entity):
 			s.is_own_bee()
 		if (LC.ACTOR.z < s.z+10) and (LC.ACTOR.z > s.z-1.5):
 			if not s.locked:
-				an.hive_awake(s)
+				s.refr_anim()
 
-tk=f'{omf}l6/tikki/'
 class TikkiSculpture(Entity):
 	def __init__(self,pos,spd,rng):
 		s=self
-		super().__init__(model=f'{tk}0.ply',texture=f'{tk}0.png',position=pos,scale=.0004,rotation_x=-90,name='tksc',collider=b)
+		s.glb_model=f'{omf}l6/tikki/tikki.glb'
+		super().__init__(position=pos,scale=.5,name='tksc',collider=b)
+		an.set_glb_value(s,fps=20,sca=.001)
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=2)
 		s.is_moving=False
 		s.move_speed=spd
 		s.move_point=pos
@@ -361,7 +387,6 @@ class TikkiSculpture(Entity):
 		s.an_mode=0
 		s.danger=True
 		s.tme=1
-		s.frm=0
 		s.rng=rng
 		del pos,spd,rng
 	def move_to_point(self):
@@ -370,15 +395,30 @@ class TikkiSculpture(Entity):
 			s.is_moving=False
 			return
 		s.position=lerp(s.position,s.move_point,time.dt*s.move_speed)
+	def refr_anim(self):
+		s=self
+		if s.an_mode == 0:
+			s.new_index+=time.dt*s.fps
+			if s.new_index >= len(s.frames):
+				s.new_index=len(s.frames)-1
+				s.an_pause=0
+				s.an_mode=1
+			return
+		s.new_index-=time.dt*s.fps
+		if s.new_index <= 0:
+			s.new_index=0
+			s.an_pause=0
+			s.an_mode=0
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		s.an_pause=max(s.an_pause-time.dt,0)
 		if s.intersects(LC.ACTOR):
 			cc.get_damage(LC.ACTOR,rsn=2)
-		if s.an_pause <= 0:
-			an.tikki_rotate(s,sp=14)
+		s.an_pause+=time.dt
+		if s.an_pause > 1:
+			s.refr_anim()
+			an.set_glb_frame(s)
 		if s.is_moving:
 			s.move_to_point()
 			return
@@ -388,55 +428,105 @@ class TikkiSculpture(Entity):
 			ksp=s.spawn_pos
 			s.move_point=random.choice([(ksp[0]+s.rng,ksp[1],ksp[2]),(ksp[0]-s.rng,ksp[1],ksp[2]),(ksp[0],ksp[1],ksp[2]+s.rng),(ksp[0],ksp[1],ksp[2]-s.rng)])
 			s.is_moving=True
-			del ksp
 
-lm=f'{omf}l6/lmine/'
-class LandMine(Entity):
-	def __init__(self,pos):
+class WaterMine(Entity):
+	def __init__(self,pos,spd,drc=0):
 		s=self
-		super().__init__(model=f'{lm}0.ply',name='ldmn',texture=f'{lm}0.png',position=pos,rotation_x=-90,scale=.00065)
+		self.lst={0:f'{omf}l3/water_mine/idle.glb',1:f'{omf}l3/water_mine/explode.glb'}
+		super().__init__(name='wtmn',position=pos,scale=.4,collider=b)
+		an.set_switch_glb_value(s,fps=22,sca=.002,lst=s.lst)
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
+		s.danger=True
+		s.speed=spd
+		s.direc=drc
+		s.minetyp=1
+		s.status=0
+		del pos,spd,drc
+	def switch_model(self,n):
+		s=self
+		s.root.hide()
+		s.root=s.models[n]
+		s.frames=s.frames_all[n]
+		s.new_index=0
+		s.frame_index=0
+		for frame in s.frames:
+			frame.hide()
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
+		s.frames[0].show()
+		s.root.show()
+	def refr_function(self):
+		s=self
+		if distance(s,LC.ACTOR) < .4:
+			if s.status != 1:
+				s.status=1
+				s.switch_model(s.status)
+				sn.crate_audio(ID=9)
+				cc.get_damage(LC.ACTOR,rsn=4)
+				ef.Fireball(s)
+		if s.direc == 0:
+			s.x+=math.sin(time.time()*s.speed)*.015
+			return
+		s.z+=math.sin(time.time()*s.speed)*.015
+	def refr_anim(self):
+		s=self
+		s.new_index+=time.dt*s.fps
+		if s.new_index >= len(s.frames):
+			LC.LDM_POS.append((s.minetyp,s.position,s.speed,s.direc))
+			destroy(s)
+			return
+		an.set_glb_frame(s)
+	def update(self):
+		if st.gproc():
+			return
+		if self.status == 0:
+			self.refr_function()
+			return
+		self.refr_anim()
+
+class LandMine(Entity):
+	def __init__(self,pos):##mem
+		s=self
+		s.glb_model=f'{omf}l6/lmine/landmine_normal.glb'
+		s.second_glb_model=f'{omf}l6/lmine/landmine_explode.glb'
+		super().__init__(name='ldmn',position=pos,scale=.2)
+		an.set_glb_value(s,fps=20,sca=.003)
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
 		s.explode=False
 		s.danger=True
 		s.p_snd=False
-		s.frm=0
-		s.tme=1
+		s.minetyp=0
 		del pos
 	def purge(self):
+		LC.LDM_POS.append((self.minetyp,self.position))
+		destroy(self)
+	def refr_anim(self):
 		s=self
-		LC.LDM_POS.append(s.position)
-		destroy(s)
-	def m_audio(self):
-		s=self
-		s.tme=max(s.tme-time.dt,0)
-		if s.tme <= 0:
-			s.tme=random.randint(1,2)
+		s.new_index+=time.dt*s.fps
+		if s.new_index >= len(s.frames):
+			if s.explode:
+				s.purge()
+				return
+			s.new_index=0
 			sn.obj_audio(ID=10,pit=random.uniform(.8,1))
-	def explosion(self):
-		s=self
-		s.frm=0
+		an.set_glb_frame(s)
+	def switch_status(self):
+		self.glb_model=self.second_glb_model
+		an.set_glb_value(self,fps=20,sca=.004)
+		sn.crate_audio(ID=9)
+		ef.Fireball(self)
 		if st.aku_hit < 3:
-			LC.ACTOR.stun=True
-		s.explode=True
-		if not s.p_snd:
-			s.p_snd=True
-			ef.Fireball(s)
-			sn.crate_audio(ID=9)
+			LC.ACTOR.stun_time=2
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		if s.explode:
-			if st.aku_hit < 3:
-				LC.ACTOR.y=lerp(LC.ACTOR.y,s.y+1,time.dt*12)
-			an.mine_destroy(s,sp=12)
-			return
-		lmd=distance(s,LC.ACTOR)
-		an.land_mine(s,sp=13)
-		if lmd < .3:
-			s.explosion()
-			return
-		if lmd < 2:
-			s.m_audio()
+		dta=distance(s,LC.ACTOR)
+		if dta < 2:
+			s.refr_anim()
+			if dta < .3:
+				if not s.explode:
+					s.explode=True
+					s.switch_status()
 
 def multi_heat_tile(p,typ,ro_y,sca,CNT):
 	for mhx in range(CNT[0]):
@@ -478,116 +568,140 @@ class HeatTile(Entity):
 					s.refr=1
 					s.is_heat=True
 
-lbpi=f'{omf}l7/piston/piston'
 class Piston(Entity):
-	def __init__(self,pos,typ,spd):
+	def __init__(self,pos,spd,wait=1):##mem
 		s=self
-		super().__init__(model=f'{lbpi}.ply',texture=f'{lbpi}.png',position=(pos[0],pos[1],pos[2]),scale=(.1/110,.1/110,.1/100),rotation=(-90,0,0),collider=b)
-		s.collider=BoxCollider(s,center=Vec3(0,0,-1100),size=Vec3(900,900,1800))
-		s.danger=True
+		s.glb_model=f'{omf}l7/piston/piston.glb'
+		super().__init__(position=pos,scale=.4,rotation=(180,0,0))
+		s.collider=BoxCollider(s,size=Vec3(1.8,4,1.8),center=Vec3(0,3.1,0))
+		an.set_glb_value(s,fps=0,sca=.0025)
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.25)
 		s.spawn_y=s.y
 		s.mvspd=spd
-		s.tme=spd
-		s.typ=typ
+		s.wait=wait
+		s.tme=wait
 		s.mode=0
-		del pos,typ,spd
-	def stomp(self):
+		del pos,spd,wait
+	def switch_mode(self,m):
 		s=self
-		s.y=max(s.y-time.dt*s.mvspd,s.spawn_y-2.051)
-		if s.y <= s.spawn_y-2.05:
-			jg=s.intersects(LC.ACTOR)
-			if jg and s.danger:
-				if jg.normal == Vec3(0,-1,0):
+		if s.mode == m:
+			return
+		s.mode=m
+		s.tme=s.wait
+		if distance(s,LC.ACTOR) < 8:
+			sn.obj_audio(ID=11,pit=.85 if m == 1 else .6)
+	def refr_position(self):
+		s=self
+		if s.y > s.spawn_y-2:
+			vc=s.intersects()
+			if vc and vc.entity == LC.ACTOR:
+				if vc.normal == Vec3(0,1,0):
 					cc.get_damage(LC.ACTOR,rsn=2)
-			s.danger=False
-			if distance(s,LC.ACTOR) < 8:
-				sn.obj_audio(ID=11,pit=.8)
-			s.mode=1
-			s.tme=.5
-	def reset(self):
+			s.y-=time.dt*s.mvspd
+			return
+		s.switch_mode(1)
+	def reset_position(self):
 		s=self
-		s.y=min(s.y+time.dt*s.mvspd,s.spawn_y+.1)
-		if s.y >= s.spawn_y:
-			s.danger=True
-			if distance(s,LC.ACTOR) < 8 and st.aku_hit < 3:
-				sn.obj_audio(ID=11,pit=.5)
-			s.mode=0
-			s.tme=1-(1/s.mvspd)
+		if s.y < s.spawn_y:
+			s.y+=time.dt*s.mvspd
+			return
+		s.switch_mode(0)
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		if st.aku_hit > 2:
-			s.mode=1
-			s.reset()
+		if s.tme > 0:
+			s.tme-=time.dt
 			return
-		s.tme-=time.dt
-		if s.tme <= 0:
-			if pva == 0:
-				s.stomp()
-				return
-			s.reset()
+		if s.mode == 0:
+			s.refr_position()
+			return
+		s.reset_position()
 
-lpad=f'{omf}l7/e_pad/'
 class LabPad(Entity):
-	def __init__(self,pos,ID):
+	def __init__(self,pos,ID,ltth=1.75):
 		s=self
-		super().__init__(model=f'{lpad}0/0.ply',texture=f'{lpad}0/0.png',name='epad',position=pos,scale=.1/85,rotation_x=-90,collider=b)
+		s.lst={0:f'{omf}l7/e_pad/0.glb',1:f'{omf}l7/e_pad/1.glb'}
+		super().__init__(name='epad',position=pos,rotation_y=90,scale=.5,collider=b)
+		s.collider=BoxCollider(s,center=Vec3(0,-.1,0),size=Vec3(1.6,.2,1.6))
+		an.set_switch_glb_value(s,fps=20,sca=.002,lst=s.lst)
+		an.set_glb_color(s,col=color.white,UNLIT=False,brightness=1.5)
 		s.active=False
 		s.locked=False
 		s.matr='metal'
-		s.mode=0
-		s.frm=0
-		s.tme=1
+		s.tme=0
 		s.ID=ID
-		LabTaser(pos=(s.x,s.y+LC.ltth,s.z),ID=s.ID)
-		del pos,ID
+		LabTaser(pos=(s.x,s.y,s.z),ID=s.ID,height=ltth)
+		del pos,ID,ltth
+	def switch_model(self,n):
+		s=self
+		s.root.hide()
+		s.root=s.models[n]
+		s.frames=s.frames_all[n]
+		s.new_index=0
+		s.frame_index=0
+		for frame in s.frames:
+			frame.hide()
+		s.frames[0].show()
+		s.root.show()
+	def refr_pad(self,mode):
+		s=self
+		if mode == 0:
+			s.new_index+=time.dt*s.fps
+			if s.new_index >= len(s.frames):
+				if not s.locked:
+					s.locked=True
+					sn.obj_audio(ID=12)
+					s.trigger_taser()
+					s.switch_model(1)
+		else:
+			s.new_index-=time.dt*s.fps
+			if s.new_index <= 0:
+				s.new_index=0
+				if s.locked:
+					s.locked=False
+					s.active=False
+					s.tme=0
+					s.switch_model(0)
+				return
+		an.set_glb_frame(s)
 	def trigger_taser(self):
 		for lpo in scene.entities[:]:
 			if isinstance(lpo,LabTaser) and lpo.ID == self.ID:
 				lpo.shoot_laser()
-	def disable_pad(self):
-		s=self
-		s.mode=0
-		s.unlit,s.locked=True,False
-		s.texture=f'{lpad}0/0.png'
-	def enable_pad(self):
-		s=self
-		s.tme=.5
-		if not s.locked:
-			sn.obj_audio(ID=12,pit=.5)
-			s.locked=True
-			s.trigger_taser()
-		s.mode=1
-		s.texture=f'{lpad}1/0.png'
-		s.unlit=False
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		an.pad_refr(s)
-		s.tme=max(s.tme-time.dt,0)
-		if s.active:
-			s.active=False
-			s.enable_pad()
+		if not s.active:
 			return
-		if s.tme <= 0:
-			s.disable_pad()
+		if not s.locked:
+			s.refr_pad(mode=0)
+			return
+		s.tme+=time.dt
+		if s.tme >= 2:
+			s.refr_pad(mode=1)
 
-lbts=f'{omf}l7/lab_taser/'
 class LabTaser(Entity):
-	def __init__(self,pos,ID):
-		s=self
-		super().__init__(model=f'{lbts}0.ply',texture=f'{lbts}0.png',name='ltts',position=pos,scale=.1/150,rotation_x=-90)
-		s.frm=0
-		s.ID=ID
-		del pos,ID
+	def __init__(self,pos,ID,height):
+		self.glb_model=f'{omf}l7/lab_taser/lab_taser.glb'
+		super().__init__(name='ltts',position=(pos[0],pos[1]+height,pos[2]),scale=.1)
+		an.set_glb_value(self,fps=20,sca=.0075)
+		an.set_glb_color(self,col=color.white,UNLIT=True,brightness=1.5)
+		self.height=height
+		self.ID=ID
+		del pos,ID,height
 	def shoot_laser(self):
-		sn.obj_audio(ID=13)
-		ef.ElectroBall(pos=self.position)
+		sn.obj_audio(ID=13,pit=.5)
+		ef.ElectroBall(pos=self.position,height=self.height)
 	def update(self):
-		if not st.gproc():
-			an.taser_rotation(self)
+		if st.gproc():
+			return
+		s=self
+		s.new_index+=time.dt*s.fps
+		if s.new_index >= len(s.frames):
+			s.new_index=0
+		an.set_glb_frame(s)
 
 class WaterHit(Entity):## collider for water
 	def __init__(self,p,sc):
@@ -660,7 +774,7 @@ class Boulder(Entity):
 					if blh.vnum in (3,11):
 						blh.empty_destroy()
 					else:
-						blh.destroy()
+						blh.box_destroy()
 				if cc.is_enemie(blh):
 					if not (blh.is_purge or blh.is_hitten):
 						cc.bash_enemie(blh,LC.ACTOR)

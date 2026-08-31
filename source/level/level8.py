@@ -1,6 +1,6 @@
 import objects,map_tools,crate,npc,item,sys,os,_loc,status,danger,settings
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
-from ursina import *
+from ursina import Entity,color
 
 mt=map_tools
 st=status

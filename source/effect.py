@@ -1,10 +1,11 @@
-from ursina import Entity,Text,Vec3,color,load_texture,scene,invoke
+from animation import set_glb_value,set_glb_frame,set_glb_color,set_memory_glb_value,set_switch_glb_value
+from ursina import Entity,Text,Vec3,color,load_texture,scene,invoke,camera
+import status,_loc,time,random,_core,math
 from ursina.ursinastuff import destroy
-import status,_loc,time,random,_core
 from sound import pc_audio,obj_audio
+from math import sin
 
 trpv='res/objects/ev/teleport/warp_effect'
-wrv='res/objects/ev/warp_rings/'
 ef='res/effects/'
 q='quad'
 
@@ -48,9 +49,8 @@ class WaterDrips(Entity):
 		if st.gproc():
 			return
 		s=self
+		cc.set_instance_texture(s,LC.drp_texture[int(s.frm)])
 		cc.incr_frm(s,s.spd)
-		if s.texture != LC.drp_texture[int(s.frm)]:
-			s.texture=LC.drp_texture[int(s.frm)]
 
 class ExclamationMark(Entity):
 	def __init__(self,pos,ID):
@@ -73,7 +73,8 @@ class ExclamationMark(Entity):
 		3:lambda:setattr(s,'z',s.z-tv),
 		4:lambda:setattr(s,'y',s.y+tv/4)}[s.vnum]()
 
-class Sparkle(Entity):##aku typ 2 floating effect
+##aku typ 2 floating effect
+class Sparkle(Entity):
 	def __init__(self,pos):
 		super().__init__(model=q,texture=f'{ef}sparkle.png',position=pos,scale=.04,color=color.gold,unlit=False)
 		self.mode=0
@@ -91,7 +92,8 @@ class Sparkle(Entity):##aku typ 2 floating effect
 		if s.scale_x <= 0:
 			destroy(s)
 
-class GlitterStar(Entity):##aku box break effect
+##aku box break effect
+class GlitterStar(Entity):
 	def __init__(self,pos):
 		super().__init__(model=q,texture=f'{ef}sparkle.png',position=pos,scale=.01,color=color.yellow,unlit=False)
 		del pos
@@ -103,46 +105,67 @@ class GlitterStar(Entity):##aku box break effect
 		if s.scale_x > .25:
 			destroy(s)
 
-gfw='effects/firework/'
 class GemFirework(Entity):
-	def __init__(self,col):
-		super().__init__(model=f'{gfw}0.ply',texture=f'{gfw}0.png',scale=.00075,parent=camera,position=(0,-.075,.6),rotation=(-90,15,130),color=col,unlit=False)
-		self.spd=12
-		self.frm=0
+	def __init__(self,col,pos):
+		self.glb_model=f'{ef}firework/firework.glb'
+		super().__init__(scale=.5,rotation_y=60,position=pos,color=col,unlit=False)
+		set_glb_value(self,fps=20,sca=.0125)
+		set_glb_color(self,col=self.color,UNLIT=True,brightness=2)
+	def refr_anim(self):
+		s=self
+		s.new_index+=time.dt*s.fps
+		if s.new_index >= len(s.frames):
+			destroy(s)
+			return
+		set_glb_frame(s)
 	def update(self):
 		if st.gproc():
 			return
 		s=self
 		s.visible=not st.pause
-		s.frm+=time.dt*s.spd
-		if s.frm > 15.99:
-			destroy(s)
-			return
-		if s.model != f'{gfw}/{int(s.frm)}.ply':
-			s.model=f'{gfw}/{int(s.frm)}.ply'
+		s.refr_anim()
 
 class JumpDust(Entity):
 	def __init__(self,pos):
-		super().__init__(model=q,texture=f'{ef}fire_ball.png',position=pos,scale=.1,color=color.gray)
+		super().__init__(model=q,texture=LC.explode_anim_texture[4],position=pos,scale=.1,color=color.light_gray,unlit=False,alpha=.5)
 		del pos
 	def update(self):
 		if st.gproc():
 			return
-		s=self
-		s.scale+=(time.dt,time.dt)
-		if s.scale_x > .6:
-			destroy(s)
+		self.scale+=(time.dt,time.dt)
+		if self.scale_x > .6:
+			destroy(self)
 
 class WarpRingEffect(Entity):
 	def __init__(self):
 		s=self
-		super().__init__(model=f'{wrv}0.ply',texture=f'{wrv}0.png',scale=.0016/2,rotation_x=-90,position=LC.ACTOR.position,color=color.white,alpha=.9,unlit=False)
+		s.glb_model=f'{ef}warp_rings/warp_rings.glb'
+		super().__init__(position=LC.ACTOR.position,color=color.white,alpha=.9,unlit=False)
+		set_glb_value(s,fps=40,sca=.00125)
+		set_glb_color(s,col=s.color,UNLIT=False,brightness=2)
 		s.activ=False
-		s.max_rings=8
+		s.max_rings=7
 		s.rings=0
 		s.times=0
-		s.spd=48
 		del s
+	def cleanup(self):
+		s=self
+		if s.root:
+			s.root.removeNode()
+			s.root=None
+		destroy(s)
+	def refr_anim(self):
+		s=self
+		s.new_index+=time.dt*s.fps
+		if s.new_index >= len(s.frames):
+			s.new_index=0
+			s.rings+=1
+			pc_audio(ID=1,pit=.35)
+			if s.rings >= s.max_rings:
+				LC.ACTOR.warped=True
+				s.cleanup()
+				return
+		set_glb_frame(s)
 	def update(self):
 		if st.gproc() or not cc.level_ready:
 			return
@@ -150,15 +173,7 @@ class WarpRingEffect(Entity):
 		if not s.activ:
 			s.activ=True
 			obj_audio(ID=0)
-		s.rings+=time.dt*s.spd
-		if s.rings > 8.99:
-			s.rings=0
-			s.times+=1
-			pc_audio(ID=1,pit=.35)
-		s.model=f'{wrv}{int(s.rings)}.ply'
-		if s.times > s.max_rings:
-			LC.ACTOR.warped=True
-			destroy(s)
+		s.refr_anim()
 
 class TrialTimeStopInfo(Entity):
 	def __init__(self,pos,n):
@@ -179,34 +194,82 @@ class TrialTimeStopInfo(Entity):
 				destroy(s.text_info)
 				destroy(s)
 
-prsv='res/crate/anim/exp_wave/'
 class PressureWave(Entity):
 	def __init__(self,pos,col):
 		s=self
-		super().__init__(model=f'{prsv}0.ply',texture=f'{prsv}0.png',position=pos,scale=.0008,color=col,rotation_x=90,alpha=.8,unlit=False)
-		s.frm=0
+		super().__init__(position=pos)
+		set_memory_glb_value(s,fps=16,sca=.001,model=LC.explode_wave_anim)
+		set_glb_color(s,col=col,UNLIT=False,brightness=1.5)
+		s.y+=random.uniform(-.1,.1)
+		s.alpha=.75
 		del pos,col,s
+	def refr_anim(self):
+		s=self
+		s.new_index+=time.dt*s.fps
+		if s.new_index >= len(s.frames):
+			destroy(s)
+			return
+		set_glb_frame(s)
 	def update(self):
 		if st.gproc():
 			return
+		self.refr_anim()
+
+class JungleLeaf(Entity):
+	def __init__(self,pos,sca,typ,col=color.white):
+		if typ > 1:
+			typ=random.randint(0,1)
+		self.glb_model=f'res/objects/l1/leaf/{typ}.glb'
+		super().__init__(position=pos,scale=sca)
+		set_glb_value(self,fps=0,sca=.001)
+		set_glb_color(self,col=col,UNLIT=True,brightness=2)
+		self.fall_speed=.25
+		self.wait=random.uniform(.75,2)
+		self.ready=False
+		del pos,sca,typ,col
+	def fall_down(self):
 		s=self
-		s.frm=min(s.frm+time.dt*15,4.999)
-		if s.frm > 4.99:
-			s.frm=0
+		s.y-=time.dt*s.fall_speed
+		s.x+=math.sin(time.time()*1.7)*.015
+		if s.y < LC.ACTOR.y-5:
+			s.wait=random.uniform(.75,2)
+			s.rotation_x=random.randint(0,360)
+			s.rotation_y=random.randint(0,180)
+			s.ready=False
+	def check_player_position(self):
+		s=self
+		if s.wait > 0:
+			s.wait-=time.dt
+			return
+		if not s.ready:
+			s.ready=True
+			s.position=(LC.ACTOR.x+random.uniform(-1,1),LC.ACTOR.y+3,LC.ACTOR.z+random.uniform(1,2.5))
+	def update(self):
+		if st.gproc() or st.death_event:
+			return
+		s=self
+		if st.LEVEL_CLEAN:
 			destroy(s)
 			return
-		s.model=prsv+f'{int(s.frm)}.ply'
+		if not s.ready:
+			if LC.ACTOR.indoor > 0:
+				return
+			s.check_player_position()
+			return
+		s.fall_down()
 
-frb='res/crate/anim/exp_fire/'
 class Fireball(Entity):
 	def __init__(self,cr):
 		s=self
-		nC=color.red
-		if cr.name == 'ldmn':
+		if cr.name in ('ldmn','wtmn'):
 			nC=color.orange
-		if cc.is_box(cr) and cr.vnum == 12:
+		elif cr.name == 'toxic_barrel':
+			nC=color.blue
+		elif cc.is_box(cr) and cr.vnum == 12:
 			nC=color.green
-		super().__init__(model=q,texture=f'{frb}0.png',position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC,scale=.75,unlit=False)
+		else:
+			nC=color.red
+		super().__init__(model=q,texture=LC.explode_anim_texture[0],position=(cr.x,cr.y+.1,cr.z+random.uniform(-.1,.1)),color=nC,scale=.75,unlit=False)
 		PressureWave(pos=s.position,col=nC)
 		s.ex_step=0
 		del cr,nC,s
@@ -214,13 +277,12 @@ class Fireball(Entity):
 		if st.gproc():
 			return
 		s=self
+		cc.set_instance_texture(s,LC.explode_anim_texture[int(s.ex_step)])
 		s.ex_step=min(s.ex_step+time.dt*25,14.999)
-		s.texture=frb+f'{int(s.ex_step)}.png'
 		s.visible=bool(s.ex_step < 14.99)
 		if s.ex_step > 14.99:
 			destroy(s)
 
-llfr=ef+'fire/fire_'
 class LightFire(Entity):
 	def __init__(self,pos,lft=None):
 		s=self
@@ -242,12 +304,12 @@ class LightFire(Entity):
 				destroy(s)
 				return
 		cc.incr_frm(s,s.spd)
-		s.texture=LC.fre_texture[int(s.frm)]
+		cc.set_instance_texture(s,LC.fre_texture[int(s.frm)])
 
 class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
 		s=self
-		super().__init__(model=q,name='fthr',texture=f'{ef}fire_ball.png',position=(pos[0],pos[1]+.25,pos[2]),scale=.2,collider='box',unlit=False,color=random.choice([color.orange,color.red]))
+		super().__init__(model=q,name='fthr',texture=LC.explode_anim_texture[4],position=(pos[0],pos[1]+.25,pos[2]),scale=.2,collider='box',unlit=False,color=random.choice([color.orange,color.red]))
 		s.life_time=.4
 		s.direc=ro_y
 		s.mvs=4
@@ -274,10 +336,11 @@ class FireThrow(Entity):
 		s.fly_away()
 
 class ElectroBall(Entity):
-	def __init__(self,pos):
+	def __init__(self,pos,height):##mem
 		super().__init__(model=q,texture=f'{ef}sparkle.png',name='eball',position=pos,scale=.9,collider='box',color=color.rgb32(0,60,255),unlit=False,alpha=.75)
 		self.spawn_y=self.y
-		del pos
+		self.height=height
+		del pos,height
 	def update(self):
 		if st.gproc():
 			return
@@ -285,6 +348,29 @@ class ElectroBall(Entity):
 		s.rotation_z+=time.dt*500
 		s.y-=time.dt*2
 		if s.intersects(LC.ACTOR):
-			cc.get_damage(LC.ACTOR,rsn=9)
-		if s.y <= s.spawn_y-LC.ltth:
+			cc.get_damage(LC.ACTOR,rsn=6)
+		if s.y <= s.spawn_y-s.height:
 			destroy(s)
+
+class WeatherSnow(Entity):
+	def __init__(self,p_count,p_speed):
+		super().__init__()
+		self.particles=[Entity(model=q,texture=LC.snow_particle[0],scale=0,position=(LC.ACTOR.x+random.uniform(-5.5,5.5),camera.y+random.uniform(.7,1.4),LC.ACTOR.z+random.uniform(.5,4))) for _ in range(p_count)]
+		self.speed=1.25
+		for mpp in self.particles:
+			mpp.scale=0
+			mpp.lifetime=random.uniform(2,4)
+		del mpp,p_count,p_speed
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		for pptc in s.particles:
+			pptc.lifetime-=time.dt
+			pptc.y-=time.dt*s.speed
+			pptc.x+=time.dt/2
+			pptc.z-=time.dt
+			if pptc.lifetime <= 0:
+				pptc.lifetime=random.uniform(2,4)
+				pptc.scale=random.uniform(.025,.05)
+				pptc.position=(LC.ACTOR.x+random.uniform(-5.5,5.5),camera.y+random.uniform(.7,1.4),LC.ACTOR.z+random.uniform(.5,4))

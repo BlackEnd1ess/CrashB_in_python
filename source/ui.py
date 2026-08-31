@@ -35,8 +35,7 @@ def load_interface(idx):
 ## Interface 2D Animations
 def wmp_anim(w):
 	cc.incr_frm(w,w.spd)
-	if w.texture != LC.wmp_texture[int(w.frm)]:
-		w.texture=LC.wmp_texture[int(w.frm)]
+	cc.set_instance_texture(w,LC.wmp_texture[int(w.frm)])
 
 class LiveCollectAnim(Entity):
 	def __init__(self):
@@ -81,12 +80,12 @@ class WumpaCounter(Entity):
 	def digits(self):
 		s=self
 		n=f'{st.wumpa_fruits}'
-		s.digit_0.texture=f'{wmpf}{n[0]}.png'
+		cc.set_instance_texture(s.digit_0,f'{wmpf}{n[0]}.png')
 		s.digit_0.visible=True
 		s.visible=True
 		if st.wumpa_fruits >= 10:
 			s.digit_1.visible=True
-			s.digit_1.texture=f'{wmpf}{n[1]}.png'
+			cc.set_instance_texture(s.digit_1,f'{wmpf}{n[1]}.png')
 			return
 		s.digit_1.visible=False
 	def wumpa_max(self):
@@ -111,7 +110,7 @@ class WumpaCounter(Entity):
 class BoxCounter(Entity):
 	def __init__(self):
 		s=self
-		super().__init__(model=cr2,texture=LC.box_count_icon,scale=.035,parent=CU,position=(-.15,.43,.2),color=color.light_gray,unlit=False,visible=False)
+		super().__init__(model=cr2,texture=LC.box_texture_info[2],scale=.035,parent=CU,position=(-.15,.43,.2),color=color.light_gray,unlit=False,visible=False)
 		s.col_digit0=Entity(model=q,texture=None,scale=.06,position=(s.x+.1,s.y,s.z),parent=CU,visible=False)
 		s.col_digit1=Entity(model=q,texture=None,scale=.06,position=(s.x+.16,s.y,s.z),parent=CU,visible=False)
 		s.col_digit2=Entity(model=q,texture=None,scale=.06,position=(s.x+.22,s.y,s.z),parent=CU,visible=False)
@@ -132,28 +131,28 @@ class BoxCounter(Entity):
 		ssep=s.seperator
 		ssep.position=(s.col_digit0.x+.06*len(str(st.crate_count)),s.y,s.z)
 		s.req_digit0.position=(ssep.x+.06,ssep.y,ssep.z)
-		s.req_digit0.texture=f'{crtf}{ccl[0]}.png'
+		cc.set_instance_texture(s.req_digit0,f'{crtf}{ccl[0]}.png')
 		s.req_digit0.visible=True
 		if st.crates_in_level > 9:
 			s.req_digit1.position=(ssep.x+.12,ssep.y,ssep.z)
-			s.req_digit1.texture=f'{crtf}{ccl[1]}.png'
+			cc.set_instance_texture(s.req_digit1,f'{crtf}{ccl[1]}.png')
 			s.req_digit1.visible=True
 			if st.crates_in_level > 99:
 				s.req_digit2.position=(ssep.x+.18,ssep.y,ssep.z)
-				s.req_digit2.texture=f'{crtf}{ccl[2]}.png'
+				cc.set_instance_texture(s.req_digit2,f'{crtf}{ccl[2]}.png')
 				s.req_digit2.visible=True
 	def col_count_refr(self):
 		s=self
 		ccv=str(st.crate_count)
 		s.col_digit0.visible,s.seperator.visible,s.visible=True,True,True
 		s.col_digit1.visible,s.col_digit2.visible=False,False
-		s.col_digit0.texture=f'{crtf}{ccv[0]}.png'
+		cc.set_instance_texture(s.col_digit0,f'{crtf}{ccv[0]}.png')
 		if st.crate_count > 9:
-			s.col_digit1.texture=f'{crtf}{ccv[1]}.png'
+			cc.set_instance_texture(s.col_digit1,f'{crtf}{ccv[1]}.png')
 			s.col_digit1.visible=True
 			s.col_digit2.visible=False
 			if st.crate_count > 99:
-				s.col_digit2.texture=f'{crtf}{ccv[2]}.png'
+				cc.set_instance_texture(s.col_digit2,f'{crtf}{ccv[2]}.png')
 				s.col_digit2.visible=True
 	def update(self):
 		if st.gproc() or st.crates_in_level <= 0:
@@ -181,10 +180,10 @@ class LiveCounter(Entity):
 		s=self
 		s.visible=True
 		vd=str(st.extra_lives)
-		s.live_digit0.texture=f'{s.ptl}{vd[0]}.png'
+		cc.set_instance_texture(s.live_digit0,f'{s.ptl}{vd[0]}.png')
 		s.live_digit0.visible=True
 		if st.extra_lives > 9:
-			s.live_digit1.texture=f'{s.ptl}{vd[1]}.png'
+			cc.set_instance_texture(s.live_digit1,f'{s.ptl}{vd[1]}.png')
 			s.live_digit1.visible=True
 	def rmv_ui(self):
 		s=self
@@ -244,7 +243,7 @@ class WumpaBonus(Entity):
 
 class BoxBonus(Entity):
 	def __init__(self):
-		super().__init__(model=cr2,texture=LC.box_count_icon,scale=.02,position=(0,-.4,.2),unlit=False,visible=False,parent=CU)
+		super().__init__(model=cr2,texture=LC.box_texture_info[2],scale=.02,position=(0,-.4,.2),unlit=False,visible=False,parent=CU)
 		self.c_text=Text(text=None,font=_fnt,x=self.x+.04,y=self.y+.025,scale=2,color=color.rgb32(150,100,20),visible=False,parent=CU)
 		self.ct=0
 	def check_c(self):
@@ -600,7 +599,7 @@ class PauseMenu(Entity):
 	def __init__(self):
 		s=self
 		super().__init__(parent=camera,model=q,texture=f'{e}c_pause1.png',scale=(1.05,.5),position=(-.375,-.25,0),color=color.rgb32(130,140,130),visible=False)
-		s.ppt=Entity(parent=camera,model=q,texture=f'{e}c_pause2.png',scale=(.75,1),position=(.515,0,0),color=color.rgb32(130,140,130),visible=False)
+		s.ppt=Entity(parent=camera,model=q,texture=f'{e}c_pause2.png',scale=(.75,1),position=(.515,0,0),color=color.rgb32(130,140,130),always_on_top=True,visible=False)
 		##text
 		s.font_color=color.rgb32(230,100,0)
 		s.blink_time=0
@@ -630,7 +629,6 @@ class PauseMenu(Entity):
 		UIColorGem((.16,.035,.5),1,5)#purple
 		UIColorGem((.19,.0275,.5),1,1)#blue
 		UIColorGem((.22,.032,.5),1,3)#yellow
-
 		s.check_collected()
 	def select_btn(self,action):
 		s=self

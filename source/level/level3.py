@@ -1,8 +1,8 @@
 import objects,map_tools,status,crate,npc,sys,os,_loc,danger,settings
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
+from ursina import Entity,color
 from ursina.shaders import *
 from item import ExtraLive
-from ursina import *
 
 mt=map_tools
 o=objects
@@ -63,16 +63,18 @@ def load_object():
 	o.ObjType_Floor(ID=1,pos=(0,2,60),sca=.03,rot=(-90,90,0),col=color.rgb32(100,100,0))
 	#platforms
 	ptco=color.rgb32(200,200,200)
-	o.ObjType_Movable(ID=0,pos=(0,-.5,-24.8),ptm=2,drc='x',ptw=1.5,col=ptco)
-	o.ObjType_Movable(ID=0,pos=(0,-.5,-23.25),ptm=1,ptw=1.5,pts=3,col=ptco)
-	o.ObjType_Movable(ID=0,pos=(0,-.1,-1.3),ptm=0,col=ptco)
-	o.ObjType_Movable(ID=0,pos=(0,-.5,-7),ptm=0,col=ptco)
-	o.ObjType_Movable(ID=0,pos=(0,.5,0),ptm=0,col=ptco)
-	o.ObjType_Movable(ID=0,pos=(-.3,.5,11.5),ptm=2,ptw=1.5,col=ptco)
-	o.ObjType_Movable(ID=0,pos=(-.85,.5,52.5),ptm=2,ptw=1.5,drc='z',col=ptco)
-	o.ObjType_Movable(ID=0,pos=(.85,.5,52.5),ptm=0,col=ptco)
-	o.ObjType_Movable(ID=0,pos=(0,.75,56.5),ptm=0,col=ptco)
-	o.ObjType_Movable(ID=0,pos=(0,1.5,77.3),ptm=2,drc='z',ptw=1.5,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(0,0,-24.8),ptm=2,drc=0,ptw=1.5,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(0,0,-23.25),ptm=1,ptw=1.5,pts=3,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(0,.4,-1.3),ptm=0,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(0,0,-7),ptm=0,col=ptco)
+	
+	o.ObjType_Movable(ID=0,pos=(0,1,0),ptm=0,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(-.3,1,11.5),ptm=2,ptw=1.5,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(-.85,1,52.5),ptm=2,ptw=1.5,drc=1,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(.85,1,52.5),ptm=0,col=ptco)
+	
+	o.ObjType_Movable(ID=0,pos=(0,1.25,56.5),ptm=0,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(0,2,77.3),ptm=2,drc=1,ptw=1.5,col=ptco)
 	#blocks
 	tH=-.2
 	#e0
@@ -219,14 +221,14 @@ def load_npc():
 	n.spawn(ID=7,POS=(0,1.05,41.4))
 	n.spawn(ID=7,POS=(0,1.95,74.1))
 	n.spawn(ID=2,POS=(0,1.05,4.2))
-	n.Bird(pos=(.8,1,45.7))
 	n.Bird(pos=(0,.1,-14.5))
 	n.Bird(pos=(-.7,.1,-13.8))
-	n.Bird(pos=(.9,1,3.1))
-	n.Bird(pos=(-.1,1,6.6))
-	n.Bird(pos=(0,1,13.7))
-	n.Bird(pos=(0,1,16.9))
-	n.Bird(pos=(0,1,19))
+	n.Bird(pos=(.9,1.2,3.1))
+	n.Bird(pos=(.8,1.2,45.7))
+	n.Bird(pos=(-.1,1.2,6.6))
+	n.Bird(pos=(0,1.2,13.7))
+	n.Bird(pos=(0,1.2,16.9))
+	n.Bird(pos=(0,1.2,19))
 	n.Butterfly(pos=(0,.2,-26.5),typ=1,rng=1)
 	n.Butterfly(pos=(0,.3,-19.1),typ=2,rng=1)
 	n.Butterfly(pos=(-.8,.5,-6.1),typ=3,rng=1)
@@ -297,14 +299,14 @@ def gem_zone():
 		o.ObjType_Scene(ID=3,pos=(200+2.8,.3,11+vw*11),ro_y=90,sca=sr,col=sh)#grass side scene
 	o.spw_block(ID=2,p=(200,blh,-3),vx=[1,3])
 	o.spw_block(ID=2,p=(200,blh,1),vx=[1,3])
-	o.ObjType_Movable(ID=0,pos=(200,-.5,4),ptm=2,ptw=.5,col=ptco,tu=0)
-	o.ObjType_Movable(ID=0,pos=(200,-.5,5.5),ptm=2,ptw=.5,col=ptco,tu=1)
-	o.ObjType_Movable(ID=0,pos=(200,-.5,7),ptm=2,ptw=.5,col=ptco,tu=0)
+	o.ObjType_Movable(ID=0,pos=(200,0,4),ptm=2,ptw=.5,col=ptco,tu=0)
+	o.ObjType_Movable(ID=0,pos=(200,0,5.5),ptm=2,ptw=.5,col=ptco,tu=1)
+	o.ObjType_Movable(ID=0,pos=(200,0,7),ptm=2,ptw=.5,col=ptco,tu=0)
 	o.spw_block(ID=2,p=(200,blh,8),vx=[2,1])
 	o.spw_block(ID=2,p=(200,blh,8.85),vx=[1,4])
-	o.ObjType_Movable(ID=0,pos=(200,-.5,13),ptm=1,tu=0,ptw=1,col=ptco)
-	o.ObjType_Movable(ID=0,pos=(200,-.5,14.5),ptm=1,tu=1,ptw=1,col=ptco)
-	o.ObjType_Movable(ID=0,pos=(200,-.5,16),ptm=1,tu=0,ptw=1,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(200,0,13),ptm=1,tu=0,ptw=1,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(200,0,14.5),ptm=1,tu=1,ptw=1,col=ptco)
+	o.ObjType_Movable(ID=0,pos=(200,0,16),ptm=1,tu=0,ptw=1,col=ptco)
 	o.spw_block(ID=2,p=(200,blh,17.5),vx=[1,2])
 	mt.crate_plane(ID=1,POS=(200-.32,box_wtr,19.64),CNT=[1,2])
 	mt.crate_plane(ID=11,POS=(200-.32,box_wtr,20.5),CNT=[2,1])
@@ -345,7 +347,7 @@ def gem_zone():
 	o.spw_block(ID=2,p=(200,blh,54),vx=[1,1])
 	o.spw_block(ID=2,p=(200,blh,62),vx=[2,1])
 	o.spw_block(ID=2,p=(200,.2,69),vx=[2,1])
-	o.PlatformSpawner(ID=0,pos=(200-1,-.5,73),wait=2,speed=1,RNG=20)
+	o.PlatformSpawner(ID=0,pos=(200-1,0,73),wait=2,speed=1,RNG=20)
 	o.Waterfall(pos=(200,.2,70),sca=(5,1))
 	o.spw_block(ID=2,p=(200-.85*3,.65,70.25),vx=[7,3])
 	o.ObjType_Deco(ID=1,pos=(200-.1,1,71.8),sca=.02,rot=(-90,0,0))

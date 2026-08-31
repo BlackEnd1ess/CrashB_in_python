@@ -42,13 +42,13 @@ class WumpaFruit(Entity):
 		s.frm=0
 		s.unlit=bool(st.level_index == 8 and p[1] < -10)
 		del p,c_prg,s
-	def destroy(self):
+	def wumpa_destroy(self):
 		if not self.c_purge:
 			st.WMP_RESET.append(self.spawn_pos)
 		destroy(self)
 	def collect(self):
 		cc.wumpa_count(1)
-		self.destroy()
+		self.wumpa_destroy()
 	def update(self):
 		if st.gproc():
 			return
@@ -147,7 +147,7 @@ class GemStone(Entity):
 			st.level_col_gem=True
 		sn.ui_audio(ID=5)
 		st.show_gems=5
-		GemFirework(col=self.color)
+		GemFirework(col=self.color,pos=self.position)
 		self.purge()
 	def refr_func(self):
 		s=self
@@ -173,7 +173,7 @@ class EnergyCrystal(Entity):
 		st.level_crystal=True
 		sn.ui_audio(ID=5)
 		st.show_gems=5
-		GemFirework(col=color.magenta)
+		GemFirework(col=color.magenta,pos=s.position)
 		destroy(s.glow)
 		destroy(s)
 	def update(self):
@@ -232,7 +232,7 @@ class TimeRelic(Entity):
 		st.RELIC_TRIAL_DONE=True
 		st.relic_rank=self.rank
 		sn.ui_audio(ID=5)
-		GemFirework(col=self.color)
+		GemFirework(col=self.color,pos=self.position)
 		destroy(self)
 	def refr_function(self):
 		s=self

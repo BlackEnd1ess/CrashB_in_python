@@ -1,7 +1,7 @@
 import settings,objects,map_tools,crate,npc,status,item,random,sys,os,_loc,danger
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
+from ursina import Entity,color
 from effect import WaterDrips
-from ursina import *
 
 mtx='res/terrain/metal_01.png'
 b='box'
@@ -16,7 +16,6 @@ n=npc
 U=-3
 
 GEM_VNUM=3
-
 def map_setting():
 	LC.FOG_L_COLOR=color.rgb32(160,160,0)
 	LC.FOG_B_COLOR=color.rgb32(128,64,0)
@@ -82,6 +81,29 @@ def load_object():
 	o.ObjType_Scene(ID=8,pos=(5.2,2.75,8.7),ro_y=90,sca=2)
 	o.ObjType_Scene(ID=8,pos=(5,2.75,29.3),ro_y=90,sca=2)
 	o.ObjType_Scene(ID=8,pos=(14.5,4.75,49.7),ro_y=90,sca=2)
+	#barrels
+	dg.ToxicBarrel(pos=(-0.4,0.00,-54.8))
+	dg.ToxicBarrel(pos=(-0.5,0.00,-49.2))
+	dg.ToxicBarrel(pos=(0.3,0.35,-46.3))
+	dg.ToxicBarrel(pos=(-0.7,0.35,-44.5))
+	dg.ToxicBarrel(pos=(-0.5,0.00,-39.6))
+	dg.ToxicBarrel(pos=(0.7,0.00,-34.2))
+	dg.ToxicBarrel(pos=(-0.6,0.35,-30.7))
+	dg.ToxicBarrel(pos=(0.8,0.35,-28.1))
+	dg.ToxicBarrel(pos=(0.2,0.00,-20.1))
+	dg.ToxicBarrel(pos=(-0.9,0.00,-19.1))
+	dg.ToxicBarrel(pos=(1.1,0.00,-17.7))
+	dg.ToxicBarrel(pos=(-0.2,0.00,-8.6))
+	dg.ToxicBarrel(pos=(0.5,0.00,-2.0))
+	dg.ToxicBarrel(pos=(0.8,0.75,2.2))
+	dg.ToxicBarrel(pos=(4.2,1.68,43.8))
+	dg.ToxicBarrel(pos=(6.1,1.68,43.8))
+	dg.ToxicBarrel(pos=(14.5,3.75,54.1))
+	dg.ToxicBarrel(pos=(13.8,3.30,61.2))
+	dg.ToxicBarrel(pos=(15.4,3.30,63.6))
+	dg.ToxicBarrel(pos=(15.1,3.30,67.8))
+	dg.ToxicBarrel(pos=(14.0,3.30,68.9))
+	dg.ToxicBarrel(pos=(15.2,3.30,70.6))
 	#water drips
 	WaterDrips(pos=(.08,2,-59),sca=(.5,.3),rot=(0,0,90))
 	Entity(model='cube',scale=(16,1,96),position=(0,-.5,-48),collider=b,color=color.black)
@@ -307,7 +329,7 @@ def bonus_zone():
 	mt.wumpa_row(POS=(8.48,-35.3,U),CNT=4,WAY=2)
 	o.BonusPlatform(pos=(22.3,-34.2,U))
 def gem_zone():
-	Entity(model='cube',scale=(16,1,96),position=(200,-1.2,-16),collider='box',color=color.black)
+	Entity(model='cube',scale=(16,1,96),position=(200,-1.2,-16),collider=b,color=color.black)
 	o.InvWall(pos=(198,0,20),sca=(1,15,50))
 	o.InvWall(pos=(202,0,20),sca=(1,15,50))
 	o.InvWall(pos=(200,0,34),sca=(10,15,1))

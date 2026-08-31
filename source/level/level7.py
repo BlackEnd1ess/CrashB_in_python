@@ -1,6 +1,6 @@
 import objects,map_tools,crate,npc,item,status,sys,os,_loc,danger
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
-from ursina import *
+from ursina import Entity,color
 
 mt=map_tools
 st=status
@@ -36,6 +36,25 @@ def load_object():
 	o.StartRoom(pos=(0,0,-65))
 	dg.FallingZone(pos=(0,-2,0),s=(300,.3,128))
 	o.BonusPlatform(pos=(26,3.2,-37))
+	#barrel
+	dg.ToxicBarrel(pos=(5.7,0.56,-47.0))
+	dg.ToxicBarrel(pos=(19.4,2.11,-46.1))
+	dg.ToxicBarrel(pos=(41.6,3.11,-28.4))
+	dg.ToxicBarrel(pos=(42.3,3.11,-25.7))
+	dg.ToxicBarrel(pos=(41.6,3.11,-23.7))
+	dg.ToxicBarrel(pos=(42.8,3.11,-21.0))
+	dg.ToxicBarrel(pos=(51.3,3.41,-19.3))
+	dg.ToxicBarrel(pos=(50.7,3.71,-16.2))
+	dg.ToxicBarrel(pos=(73.0,2.11,-8.6))
+	dg.ToxicBarrel(pos=(77.1,2.11,-10.0))
+	dg.ToxicBarrel(pos=(79.1,2.11,-8.1))
+	dg.ToxicBarrel(pos=(79.1,2.11,-10.2))
+	dg.ToxicBarrel(pos=(68.7,3.01,-0.0))
+	dg.ToxicBarrel(pos=(84.6,3.41,1.3))
+	dg.ToxicBarrel(pos=(86.7,4.67,1.0))
+	dg.ToxicBarrel(pos=(100.3,4.67,0.7))
+	dg.ToxicBarrel(pos=(101.4,4.67,5.3))
+	dg.ToxicBarrel(pos=(99.7,4.67,6.0))
 	#pipes scene
 	o.ObjType_Deco(ID=11,pos=(25,2,-36),sca=.05,rot=(-90,90,0))
 	o.ObjType_Deco(ID=11,pos=(1,-1,-57),sca=.05,rot=(-90,90,0))
@@ -106,19 +125,19 @@ def load_object():
 	o.ObjType_Movable(ID=2,pos=(75,2,-9),ptm=2,ptw=1.5)
 	#pistons
 	o.ObjType_Block(ID=5,pos=(20.5,2,-36),sca=(.5,.8,.5),typ=1,ro_y=90)
-	dg.Piston(pos=(20.5,2.05+4.2,-36),typ=0,spd=2)
+	dg.Piston(pos=(20.5,2.05+4.2,-36),spd=2)
 	o.ObjType_Block(ID=5,pos=(29,3,-36),sca=(.5,.8,.5),typ=1,ro_y=90)
-	dg.Piston(pos=(29,3.05+4.2,-36),typ=0,spd=2)
+	dg.Piston(pos=(29,3.05+4.2,-36),spd=2)
 	o.ObjType_Block(ID=5,pos=(33,3,-36),sca=(.5,.8,.5),typ=1,ro_y=90)
-	dg.Piston(pos=(33,3.05+4.2,-36),typ=0,spd=2)
+	dg.Piston(pos=(33,3.05+4.2,-36),spd=2)
 	o.ObjType_Block(ID=5,pos=(59,3.6,-13),sca=(.5,.8,.5),typ=1,ro_y=90)
-	dg.Piston(pos=(59,3.65+4.2,-13),typ=0,spd=3)
+	dg.Piston(pos=(59,3.65+4.2,-13),spd=3)
 	o.ObjType_Block(ID=5,pos=(60,3.6,-13),sca=(.5,.8,.5),typ=1,ro_y=90)
-	dg.Piston(pos=(60,3.65+4.2,-13),typ=0,spd=3)
+	dg.Piston(pos=(60,3.65+4.2,-13),spd=3)
 	o.ObjType_Block(ID=5,pos=(95,4.5,1),sca=(.5,1.2,.5),typ=1,ro_y=90)
-	dg.Piston(pos=(95,4.65+4.2,1),typ=0,spd=4)
+	dg.Piston(pos=(95,4.65+4.2,1),spd=4)
 	o.ObjType_Block(ID=5,pos=(96,4.5,1),sca=(.5,1.2,.5),typ=1,ro_y=90)
-	dg.Piston(pos=(96,4.65+4.2,1),typ=0,spd=4)
+	dg.Piston(pos=(96,4.65+4.2,1),spd=4)
 	#e pads
 	dg.LabPad(pos=(74,3.4,1),ID=142)
 	dg.LabPad(pos=(75,3.4,1),ID=143)
@@ -280,8 +299,8 @@ def load_npc():
 	n.spawn(ID=18,POS=(7,.6,-46),DRC=0,RNG=1)
 	n.spawn(ID=18,POS=(19.5,2.1,-39),DRC=2,RNG=1.6)
 	n.spawn(ID=17,POS=(51,3.1,-25.6),DRC=2,RNG=3)
-	n.spawn(ID=19,POS=(44,3.1,-30),DRC=0)
-	n.spawn(ID=19,POS=(49,3.1,-30),DRC=0)
+	n.spawn(ID=19,POS=(44,3.1,-30),DRC=2)
+	n.spawn(ID=19,POS=(49,3.1,-30),DRC=2)
 
 ## bonus level / gem path
 def bonus_zone():
@@ -322,11 +341,11 @@ def bonus_zone():
 	o.spw_block(ID=5,p=(16,-37.2,U),vx=[1,1],ro_y=0)
 	o.spw_block(ID=5,p=(18,-36.2,U),vx=[4,1],ro_y=0)
 	o.ObjType_Block(ID=5,pos=(4,-36.7,U),sca=(.5,.8,.5),typ=1,ro_y=90)
-	dg.Piston(pos=(4,-36.65+4.2,U),typ=0,spd=3)
+	dg.Piston(pos=(4,-36.65+4.2,U),spd=3)
 	o.ObjType_Block(ID=5,pos=(6,-36.7,U),sca=(.5,.8,.5),typ=1,ro_y=90)
-	dg.Piston(pos=(6,-36.65+4.2,U),typ=0,spd=3)
+	dg.Piston(pos=(6,-36.65+4.2,U),spd=3)
 	o.ObjType_Block(ID=5,pos=(17,-36.7,U),sca=(.5,.8,.5),typ=1,ro_y=90)
-	dg.Piston(pos=(17,-36.65+4.2,U),typ=0,spd=3)
+	dg.Piston(pos=(17,-36.65+4.2,U),spd=3)
 	o.PistonPlatform(pos=(21.9,-36.4,U),spd=3,pa=1.5)
 	o.PistonPlatform(pos=(22.7,-36.4,U),spd=3,pa=1.5)
 	o.spw_block(ID=5,p=(23.65,-36.2,U),vx=[1,1],ro_y=0)

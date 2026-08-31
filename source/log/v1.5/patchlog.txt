@@ -1,0 +1,39 @@
+#06.07.2026
+- 2D gem,crystal and relic sprites in warp room, pause menu and inventory replaced by 3D billboards
+- fixxed background color and fog in warproom after finish level
+- fixxed camera fov in warproom
+
+#09.07.2026
+- effect: spawn glitter stars after breaking aku box
+- collecting gem,crystals and relics show sparkle effect
+- switch nitro and switch air animation by activating
+- new butterfly type (5) implemented
+- fixxed error: Switch-activated iron boxes no longer disappear after you activate a checkpoint and lose a life.
+- new map object meshes: mushroom
+- crash animation stored in RAM
+
+05.08.2026
+- all crash_b animations are stored in .glb files instead to load single .ply models.
+
+#15.08.2026
+- all animated level objects are stored in .glb files instead to load single .ply models.
+
+#16.08.2026
+- all animated boxes are stored in .glb files instead to load single .ply models
+- replaced all previous animations with original crash bandicoot box animations for bounce, springs, switches and protected box.
+
+#21.08.2026
+- original checkpoint box animation
+
+#24.08.2026
+- all npc animations are stored in .glb files instead to load single .ply models
+
+#26.08.2026
+- new scene effect: falling jungle leafes (2 types)
+- new objects: bush, mushroom, barrel and water Mine
+
+#28.08.2026
+- weather snow particle system in level 2
+
+#31.08.2026
+- toxic barrels in level 4 and level 7

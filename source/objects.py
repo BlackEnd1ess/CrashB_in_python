@@ -1,6 +1,6 @@
 from ursina import Entity,color,time,distance,distance_xz,invoke,BoxCollider,Vec2,Vec3,SpotLight,PointLight,camera,Audio,Text,scene,load_texture
 import _core,status,item,sound,animation,player,_loc,settings,npc,ui,danger,random
-from effect import WarpVortex,WaterDrips
+from effect import WarpVortex,WaterDrips,JungleLeaf
 from ursina.ursinastuff import destroy
 from ursina.shaders import *
 
@@ -19,7 +19,6 @@ b='box'
 
 ### OBJECT TYPES #########
 ##level block platforms ##
-
 block_sca_level={0:.5,1:.5,2:.35,3:.02,4:.03,5:(.5,.8,.5)}
 trhs={0:1,1:.985,2:.85,3:.501,4:.75,5:1}
 def spw_block(ID,p,vx,ro_y=0,typ=0,sca=None):
@@ -39,7 +38,7 @@ class ObjType_Block(Entity):
 	def __init__(self,pos,ID,sca=0,ro_y=0,typ=0):
 		s=self
 		s.vnum=ID
-		super().__init__(model=omf+mpk[ID]+'.obj',texture=mpk[ID]+'.png',position=pos,rotation_y=ro_y,scale=sca)
+		super().__init__(model=f'{omf}{mpk[ID]}.obj',texture=f'{omf}{mpk[ID]}.png',position=pos,rotation_y=ro_y,scale=sca)
 		s.double_sided=ID in (1,3,4)
 		bl_c={0:lambda:setattr(s,'collider',b),
 			1:lambda:setattr(s,'collider',BoxCollider(s,size=Vec3(2,4,2))),
@@ -52,7 +51,7 @@ class ObjType_Block(Entity):
 			s.scale=(.5,.5,.3)
 		if ID == 5:
 			if typ == 1:
-				s.texture=omf+mpk[ID]+'_e.png'
+				s.texture=f'{omf}{mpk[ID]}_e.png'
 			#temp collision landing fixx
 			if st.level_index == 7 and s.y > 4:
 				s.scale_y=1.2
@@ -62,15 +61,23 @@ class ObjType_Block(Entity):
 
 
 ##platforms with dyncamic move func
-mpt={0:'l1/p_moss/moss',
-	1:'l2/snow_platform/snow_platform',
-	2:'l7/space_ptf/space_ptf'}
+mpt={0:'res/objects/l1/moss_platform/moss_platform.glb',
+	1:'res/objects/l2/snow_platform/snow_platform.glb',
+	2:'res/objects/l7/space_platform/space_platform.glb'}
 class ObjType_Movable(Entity):
-	def __init__(self,pos,ptm,ID,pts=.5,ptw=3,rng=1,tu=0,drc='x',col=color.light_gray,UL=False):
+	def __init__(self,pos,ptm,ID,pts=.5,ptw=3,rng=1,tu=0,drc=0,col=color.light_gray,UL=False):
+		if drc > 1:
+			drc=1
 		s=self
-		super().__init__(model=wfc,collider=b,position=pos,scale=(.75,1,.75),name='mptf',visible=False)
-		s.opt_model=Entity(model=f'{omf}{mpt[ID]}.ply',texture=f'{omf}{mpt[ID]}.png',color=col,position=(pos[0],pos[1]+(.46 if ID == 0 else +.5),pos[2]),rotation_x=-90,scale=(.0075 if ID == 1 else .001))
-		s.ptf_target_pos={'x':pos[0],'z':pos[2]}[drc] if drc in ('x','z') else pos[0]
+		s.glb_model=mpt[ID]
+		super().__init__(position=pos,name='mptf',scale=(.75,1,.75),rotation_y=180)
+		s.collider=BoxCollider(s,center=Vec3(0,-.5,0))
+		an.set_glb_value(s,fps=0,sca=.001 if ID != 2 else (.001,.00075,.001))
+		an.set_glb_color(s,col=col,UNLIT=False,brightness=1.25)
+		s.target_pos=(s.x-rng,s.x+rng)
+		if drc == 1:
+			s.target_pos=(s.z-rng,s.z+rng)
+		s.way_direc='x' if drc == 0 else 'z'
 		s.is_sfc=bool(tu == 0)
 		s.spawn_pos=pos
 		s.ptf_speed=pts
@@ -81,10 +88,7 @@ class ObjType_Movable(Entity):
 		s.ptf_mv=ptm
 		s.turn=tu
 		s.vnum=ID
-		if UL:
-			s.opt_model.unlit=False
 		if ID == 2:
-			scale=.1/120
 			s.matr='metal'
 		del pos,ptm,ID,pts,ptw,rng,tu,col,UL,s,drc
 	def ptf_move(self):
@@ -92,15 +96,13 @@ class ObjType_Movable(Entity):
 		if s.ptf_wait > 0:
 			s.ptf_wait-=time.dt
 			return
-		tp=s.ptf_target_pos+s.ptf_range if s.turn == 0 else s.ptf_target_pos-s.ptf_range
-		if (abs(getattr(s,s.mv_drc)-tp)) < .01:
-			s.turn=0 if s.turn == 1 else 1
+		pxz=getattr(s,s.way_direc)
+		ddc=abs(pxz-s.target_pos[s.turn])
+		if ddc < .01:
+			s.turn=1 if s.turn == 0 else 0
 			s.ptf_wait=s.ptf_slp
-		if s.mv_drc == 'x':
-			s.x=s.x+time.dt*s.ptf_speed if (s.turn == 0) else s.x-time.dt*s.ptf_speed
-			return
-		if s.mv_drc == 'z':
-			s.z=s.z+time.dt*s.ptf_speed if (s.turn == 0) else s.z-time.dt*s.ptf_speed
+		tps=time.dt*s.ptf_speed
+		setattr(s,s.way_direc,max(pxz-tps,s.target_pos[0] if s.turn == 0 else min(pxz+tps,s.target_pos[1])))
 	def mv_player(self):
 		if self.ptf_mv < 2:
 			return
@@ -127,12 +129,9 @@ class ObjType_Movable(Entity):
 		s=self
 		spt=time.dt*s.ptf_speed
 		s.z-=spt
-		s.opt_model.z-=spt
 		if s.z <= s.spawn_pos[2]-s.ptf_range:
 			s.y-=time.dt
-			s.opt_model.y-=time.dt
 			if s.y <= s.spawn_pos[1]-1:
-				destroy(s.opt_model)
 				destroy(s)
 	def update(self):
 		if st.gproc() or self.ptf_mv == 0:
@@ -142,14 +141,11 @@ class ObjType_Movable(Entity):
 			s.ptf_oneshot()
 			return
 		if s.ptf_mv == 1:
-			s.opt_model.y=s.y+.46 if s.vnum == 0 else s.y+.5
 			s.ptf_wait=max(s.ptf_wait-time.dt,0)
 			if s.ptf_wait <= 0:
 				s.dive()
 			return
 		if s.ptf_mv == 2:
-			s.opt_model.x=s.x
-			s.opt_model.z=s.z
 			s.ptf_wait=max(s.ptf_wait-time.dt,0)
 			if s.ptf_wait <= 0:
 				s.ptf_move()
@@ -177,7 +173,7 @@ class ObjType_Scene(Entity):
 	def __init__(self,pos,sca,ID,ro_y=0,typ=0,col=color.gray):
 		s=self
 		s.vnum=ID
-		super().__init__(texture=omf+sds[ID]+'.png',position=pos,scale=sca,rotation_y=ro_y,double_sided=True,color=col)
+		super().__init__(texture=f'{omf}{sds[ID]}.png',position=pos,scale=sca,rotation_y=ro_y,double_sided=True,color=col)
 		if ID == 7 and typ == 1:
 			dg.SewerGlowIron(pos=(s.x,s.y+.2,s.z+2.5),sca=(10,.01,10))
 			s.color=color.rgb32(255,50,0)
@@ -187,9 +183,9 @@ class ObjType_Scene(Entity):
 	def check_obj(self):
 		s=self
 		if s.vnum in (3,10,11):
-			s.model=omf+sds[s.vnum]+'.obj'
+			s.model=f'{omf}{sds[s.vnum]}.obj'
 			return
-		s.model=omf+sds[s.vnum]+'.ply'
+		s.model=f'{omf}{sds[s.vnum]}.ply'
 		s.rotation_x=-90
 
 ######################
@@ -224,7 +220,7 @@ def pillar_twin(p):
 	ObjType_Deco(ID=2,sca=.2,col=color.cyan,rot=(-90,45,0),pos=(p[0]+1.5,p[1],p[2]))
 	del p
 
-dms={0:'l1/bush/bush',
+dms={0:'l1/bush/bush',#2D
 	1:'l1/tree_s/tree_s',
 	2:'l2/pillar/pillar',
 	3:'l2/ice_cry/ice_cry',
@@ -237,18 +233,29 @@ dms={0:'l1/bush/bush',
 	10:'l6/stone_board/stone_board',
 	11:'l7/lab_pipe/lab_pipe',
 	12:'l7/boiler/boiler',
-	13:'l8/polar_sky/polar_sky'}
+	13:'l8/polar_sky/polar_sky',#3D
+	14:'l1/mushroom/single_mushroom',
+	15:'l1/mushroom/multi_mushroom',
+	16:'l1/bush/bush'}#3D
 class ObjType_Deco(Entity):#UL=unlit Flag, htb=HitBox
 	def __init__(self,ID,pos,sca,rot,col=color.white,UL=False,htb=False):
 		s=self
 		s.vnum=ID
-		super().__init__(model=None,texture=f'{omf}{dms[ID]}.png',position=pos,scale=sca,rotation=rot,color=col)
+		super().__init__(position=pos,scale=sca,rotation=rot)
 		s.model='quad' if ID == 0 else f'{omf}{dms[ID]}.ply'
+		if ID in (14,15):
+			s.texture=f'{omf}l1/mushroom/0.png'
+		elif ID == 16:
+			s.texture=f'{omf}l1/bush/0.png'
+		else:
+			s.texture=f'{omf}{dms[ID]}.png'
+		s.color=col
 		if ID == 1:
 			HitBox(pos=pos,sca=(1,5,1))
 		if ID == 2:
-			ObjType_Deco(ID=3,pos=(s.x,s.y+1.1,s.z+.075),sca=(.025,.02,.03),rot=(-90,45,0),col=col)
-			HitBox(pos=(pos[0],pos[1]+4.9,pos[2]),sca=(.5,10,.5))
+			if st.level_index == 2:
+				HitBox(pos=(pos[0],pos[1]+4.9,pos[2]),sca=(.5,10,.5))
+				ObjType_Deco(ID=3,pos=(s.x,s.y+1.1,s.z+.075),sca=(.025,.02,.03),rot=(-90,45,0),col=col)
 		if ID in (8,9):
 			WaterDrips(pos=(s.x,s.y-{8:1,9:.2}[ID],s.z-{8:.25,9:.5}[ID]),sca=(.9,.4),rot=(0,0,90))
 		if ID == 13:
@@ -308,20 +315,19 @@ def multi_ice_floor(pos,cnt):
 flr={0:None,
 	1:'l3/wood_stage/wood_stage',
 	2:'l3/big_tile/big_tile',
-	3:'l3/wt_tree/wt_tree',#sca=.03,col=color.rgb32(180,180,180),rot=rotation=(-90,90,0),
-	4:'l4/floor/swr_floor',#sca=.5
-	5:'l5/ruin_tower/ruin_tower',#sca=.03,ro_y=-90
-	6:'l6/frozen_floor/frozen_floor',#
+	3:'l3/wt_tree/wt_tree',
+	4:'l4/floor/swr_floor',
+	5:'l5/ruin_tower/ruin_tower',
+	6:'l6/frozen_floor/frozen_floor',
 	7:'l6/dirt_floor/dirt_floor',
 	8:None,
 	9:'l6/stone_ground/stone_ground'}
-trx={0:'ice_ground.png',8:'bee_terra.png'}
 class ObjType_Floor(Entity):
 	def __init__(self,ID,pos,sca,rot=(0,0,0),txa=(1,1),al=1,col=color.white):
 		s=self
 		s.vnum=ID
 		super().__init__(position=pos,scale=sca,rotation=rot,color=col)
-		s.set_model(txa)
+		s.set_model()
 		if ID == 0:
 			s.alpha=al
 			s.texture_scale=txa
@@ -341,21 +347,20 @@ class ObjType_Floor(Entity):
 				HitBox(pos=(s.x-.9,s.y+.4,s.z),sca=(.3,.5,1.7))
 		if ID == 8:
 			s.texture_scale=(sca[0],sca[2])
-			#s.name='befl'
 		s.set_collider()
 		del ID,pos,sca,rot,col,al,txa,s
-	def set_model(self,txa):
+	def set_model(self):
 		s=self
 		if s.vnum in (0,8):
 			s.model='cube'
-			s.texture=trn+trx[s.vnum]
+			s.texture='ice_ground.png' if s.vnum == 0 else 'bee_terra.png'
 			return
 		if s.vnum in (2,4,5,6,7,9):
-			s.model=omf+flr[s.vnum]+'.obj'
+			s.model=f'{omf}{flr[s.vnum]}.obj'
 			s.double_sided=True
 		else:
-			s.model=omf+flr[s.vnum]+'.ply'
-		s.texture=omf+flr[s.vnum]+'.png'
+			s.model=f'{omf}{flr[s.vnum]}.ply'
+		s.texture=f'{omf}{flr[s.vnum]}.png'
 	def set_collider(self):
 		s=self
 		cdl={0:lambda:setattr(s,'collider',b),
@@ -421,7 +426,7 @@ class ObjType_Water(Entity):
 		del pos,sca,spd,rot,al,txs,col,rev,UL
 	def refr_texture(self):
 		s=self
-		s.texture=LC.wtr_texture[int(s.frm)]
+		cc.set_instance_texture(s,LC.wtr_texture[int(s.frm)])
 		if s.reverse:
 			s.frm=max(s.frm-time.dt*s.speed,0)
 			if s.frm <= 0:
@@ -508,6 +513,7 @@ class Ropes(Entity):
 		s.dup=Entity(model='cube',scale=s.scale,name=s.name,position=(s.x+.95,s.y,s.z),texture=rpt,texture_scale=(1,le*8),origin_z=s.origin_z)
 		del pos,le,s
 
+
 #####################
 ## leve 3 objects ###
 class WaterFlow(Entity):
@@ -538,9 +544,8 @@ class Waterfall(Entity):
 		if st.gproc():
 			return
 		s=self
+		cc.set_instance_texture(s,LC.wtf_texture[int(s.frm)])
 		cc.incr_frm(s,s.spd)
-		if s.texture != LC.wtf_texture[int(s.frm)]:
-			s.texture=LC.wtf_texture[int(s.frm)]
 
 class WaterFoam(Entity):
 	def __init__(self,pos,sc_x,al=1,rev=False):
@@ -561,15 +566,11 @@ class WaterFoam(Entity):
 		s.frm-=time.dt*s.spd
 		if s.frm <= 0:
 			s.frm=s.max_frm
-	def refr_texture(self):
-		s=self
-		if s.texture != LC.wff_texture[int(s.frm)]:
-			s.texture=LC.wff_texture[int(s.frm)]
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		s.refr_texture()
+		cc.set_instance_texture(s,LC.wff_texture[int(s.frm)])
 		if s.reverse:
 			s.decrase_frame()
 			return
@@ -578,17 +579,30 @@ class WaterFoam(Entity):
 
 #####################
 ## level 4 objects ##
-swmi=f'{omf}l4/swr_swim/swr_swim'
-class SwimPlatform(Entity):##box collider
-	def __init__(self,pos):
+class SwimPlatform(Entity):
+	def __init__(self,pos):##mem
 		s=self
-		super().__init__(model=f'{swmi}.obj',texture=f'{swmi}.png',name='swpt',scale=.00625,position=pos,color=color.rgb32(120,200,200),double_sided=True)
-		s.collider=BoxCollider(s,size=Vec3(100,30,100))
+		s.glb_model=f'{omf}l4/swr_platform/swr_platform.glb'
+		super().__init__(position=pos,name='swpt',scale=.5)
+		s.collider=BoxCollider(s,center=Vec3(0,0,0),size=(1.25,.5,1.25))
+		an.set_glb_value(s,fps=0,sca=.0012)
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
 		s.active=False
 		s.matr='metal'
 		s.spawn_y=s.y
 		s.f_time=0
+		s.d_time=0
 		del pos
+	def reset_pos(self):
+		s=self
+		s.d_time+=time.dt
+		if s.d_time >= 5:
+			s.d_time=0
+			if s.y < s.spawn_y:
+				s.y+=time.dt
+				if s.y >= s.spawn_y:
+					s.y=s.spawn_y
+					s.collider=b
 	def sink(self):
 		s=self
 		s.y-=time.dt
@@ -597,8 +611,6 @@ class SwimPlatform(Entity):##box collider
 			s.collider=None
 			s.active=False
 			s.f_time=0
-			invoke(lambda:setattr(s,'y',s.spawn_y),delay=5)
-			invoke(lambda:setattr(s,'collider',b),delay=5)
 	def update(self):
 		if not st.gproc():
 			s=self
@@ -606,64 +618,82 @@ class SwimPlatform(Entity):##box collider
 				s.f_time+=time.dt
 				if s.f_time >= .5:
 					s.sink()
+				return
+			s.reset_pos()
 
 
 #####################
 ## level 5 objects ##
-lpp=f'{omf}l5/loose_ptf/'
 class LoosePlatform(Entity):
 	def __init__(self,pos,t):
 		s=self
-		super().__init__(model=f'{lpp}{t}/lpf.obj',texture=f'{lpp}{t}/0.png',name='loos',scale=.01/15,position=pos,rotation_y=90,double_sided=True)
-		s.collider=BoxCollider(s,center=Vec3(0,-.5,0),size=(100*10,100,100*10))
+		if t > 1:
+			t=1
+		s.glb_model=f'{omf}l5/loose_ptf/{t}/loose_ptf.glb'
+		super().__init__(name='loos',scale=.6,position=pos,rotation_y=90)
+		an.set_glb_value(s,fps=16,sca=.0012)
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=3)
+		s.collider=BoxCollider(s,center=Vec3(0,-.5,0))
 		s.collapsed=False
 		s.active=False
 		s.tme=0
 		s.typ=t
 		del pos,t
-	def reset(self):
+	def refr_ptf(self,mode):
 		s=self
-		s.collapsed=False
-		s.collision=True
-		s.visible=True
-	def action(self):
+		if mode == 0:
+			s.new_index+=time.dt*s.fps
+			if s.new_index >= len(s.frames):
+				s.active=False
+				s.collapsed=True
+				return
+			an.set_glb_frame(s)
+			return
+		s.new_index-=time.dt*s.fps
+		if s.new_index <= 0:
+			s.new_index=0
+			s.collision=True
+			s.collapsed=False
+			s.tme=0
+		an.set_glb_frame(s)
+	def pl_touch(self):
+		if not self.active:
+			self.active=True
+			sn.obj_audio(ID=18)
+	def collapse_floor(self):
 		s=self
 		s.tme+=time.dt
 		if s.tme > 1:
 			s.tme=0
-			sn.obj_audio(ID=20)
-			s.collision=False
-			s.collapsed=True
-			s.active=False
-	def pl_touch(self):
-		s=self
-		if not s.active:
-			s.active=True
-			s.visible=False
-			an.CollapseFloor(t=s.typ,pos=s.position)
 			sn.obj_audio(ID=19)
+			s.collision=False
+		s.refr_ptf(0)
+	def repair_floor(self):
+		s=self
+		s.tme+=time.dt
+		if s.tme >= 3:
+			s.refr_ptf(1)
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		if s.collapsed:
-			s.tme+=time.dt
-			if s.tme > 8:
-				s.tme=0
-				s.reset()
+		if s.active and not s.collapsed:
+			s.collapse_floor()
 			return
-		if s.active:
-			s.action()
+		if s.collapsed:
+			s.repair_floor()
 
 
 #####################
 ## level 7 objects ##
-lbff=f'{omf}l7/piston_ptf/piston_ptf'
 class PistonPlatform(Entity):
 	def __init__(self,pos,spd,pa):
 		s=self
-		super().__init__(model=f'{lbff}.obj',texture=f'{lbff}.png',name='pipf',position=pos,scale=.1/100,double_sided=True)
-		s.collider=BoxCollider(s,size=Vec3(700,700,700),center=Vec3(0,1685,0))
+		s.glb_model=f'{omf}l7/piston/piston.glb'
+		super().__init__(name='pipf',position=pos,scale=.4,rotation_y=180)
+		s.collider=BoxCollider(s,size=Vec3(1.8,4,1.8),center=Vec3(0,3.1,0))
+		an.set_glb_value(s,fps=0,sca=.0025)
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.25)
 		s.matr='metal'
 		s.spw_y=s.y
 		s.mvsp=spd
@@ -700,13 +730,13 @@ class PistonPlatform(Entity):
 				return
 			s.mv_up()
 
+
 ###################
 ## logic objects ##
-ev='res/crate/'
 class CrateScore(Entity):## level reward
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=f'{ev}cr_t0.obj',texture=f'{ev}1.png',scale=.18,position=pos,origin_y=.5,unlit=False,color=color.light_gray,alpha=.4)
+		super().__init__(model='res/box/box0.obj',texture=LC.box_texture_info[1],scale=.18,position=pos,origin_y=.5,unlit=False,color=color.light_gray,alpha=.4)
 		s.cc_text=Text(parent=scene,position=(s.x-.2,s.y,s.z),name=s.name,text=None,font=ui._fnt,color=color.rgb32(255,255,100),scale=10,unlit=False)
 		del pos,s
 	def refr_function(self):
@@ -744,13 +774,15 @@ class StartRoom(Entity):## game spawn point
 		HitBox(pos=(s.x,s.y+2.6,s.z-.2),sca=(6,1,6))#curtain
 		Entity(model='plane',name=s.name,position=(s.x,s.y+0.01,s.z),color=color.black,scale=3)
 		Entity(model='quad',name=s.name,color=color.black,scale=(6,.5),position=(s.x,s.y+2.3,s.z+2.4))
-		RoomDoor(pos=(s.x,s.y+1.875,s.z+2.3))
+		RoomDoor(pos=(s.x,s.y+.2,s.z+2.3))
 		player.CrashB(pos=(s.x,s.y+.85,s.z-.1))
 		if st.aku_hit > 0:
 			npc.AkuAkuMask(pos=(s.x-.3,s.y+1,s.z+.5))
 		st.checkpoint=(s.x,s.y+2,s.z)
 		camera.position=(s.x,s.y+2,s.z-3)
 		IndoorZone(pos=(s.x,s.y+1.5,s.z),sca=(3,2,7))
+		if st.level_index in (1,3):
+			JungleLeaf(pos=(s.x,s.y+5,s.z),sca=.8,typ=1,col=color.green)
 		if st.level_index == 5:
 			s.color=color.rgb32(120,120,120)
 			s.unlit=False
@@ -775,7 +807,7 @@ class EndRoom(Entity):## finish level
 		HitBox(sca=(1.6,1,1),pos=(s.x-1.1,s.y-1.51,s.z+6.5))#pod3
 		IndoorZone(pos=(s.x-1,s.y-.15,s.z+1),sca=(5,2,12))
 		LevelFinish(p=(s.x-1.1,s.y-1.1,s.z+7))
-		RoomDoor(pos=(s.x-1.1,s.y+.25,s.z-4.78))
+		RoomDoor(pos=(s.x-1.1,s.y-1.5,s.z-4.78))
 		if s.x < 180:
 			LC.gem_pod_position=(s.x-1.1,s.y-.9,s.z)
 		if st.level_index != 5:
@@ -790,34 +822,55 @@ class EndRoom(Entity):## finish level
 class RoomDoor(Entity):## door for start and end room
 	def __init__(self,pos):
 		s=self
-		s.dPA=f'{omf}ev/door/'
 		s.idf='mo'
-		super().__init__(model=f'{s.dPA}u0.ply',texture=f'{s.dPA}u_door.png',name='rmdr',position=pos,scale=.001,rotation_x=90,collider=b)
-		s.door_part=Entity(model=f'{s.dPA}d0.ply',name=s.name,texture=f'{s.dPA}d_door.png',position=(s.x,s.y+.1,s.z),scale=.001,rotation_x=90,collider=b)
+		super().__init__(name='rmdr',position=pos,scale=.5,collider=b,color=color.light_gray)
+		s.door_part=Entity(position=(s.x,s.y+.1,s.z),scale=.5,collider=b)
+		s.door_part.glb_model=f'{omf}ev/level_gate/door1.glb'
+		s.glb_model=f'{omf}ev/level_gate/door0.glb'
+		an.set_glb_value(s,fps=20,sca=.002)
+		an.set_glb_value(s.door_part,fps=20,sca=.002)
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
+		an.set_glb_color(s.door_part,col=color.white,UNLIT=True,brightness=1.5)
 		s.active=False
-		s.d_opn=False
-		s.d_frm=0
-		if st.level_index in (5,8):
-			s.door_part.color=color.rgb32(60,60,60) if st.level_index == 8 else color.rgb32(120,120,120)
-			s.color=color.rgb32(60,60,60) if st.level_index == 8 else color.rgb32(120,120,120)
-			s.door_part.unlit=False
-			s.unlit=False
 		del pos
+	def door_close(self):
+		s=self
+		if s.new_index > 0:
+			s.new_index-=time.dt*s.fps
+			s.door_part.new_index=s.new_index
+			if s.new_index <= 0:
+				s.door_part.new_index=0
+				s.new_index=0
+				if s.active:
+					s.active=False
+					sn.obj_audio(ID=1,pit=.85)
+					s.door_part.collider=b
+					s.collider=b
+		an.set_glb_frame(s.door_part)
+		an.set_glb_frame(s)
+	def door_open(self):
+		s=self
+		s.new_index+=time.dt*s.fps
+		s.door_part.new_index=s.new_index
+		if s.new_index >= len(s.frames):
+			s.new_index=3
+			if not s.active:
+				s.active=True
+				s.door_part.collider=None
+				s.collider=None
+				sn.obj_audio(ID=1)
+			return
+		an.set_glb_frame(s.door_part)
+		an.set_glb_frame(s)
 	def update(self):
 		if st.gproc():
 			return
 		s=self
 		fvd=distance(s,LC.ACTOR)
+		if fvd < 2:
+			s.door_open()
 		if fvd > 4:
-			s.active=False
-		if fvd < 2.4:
-			s.active=True
-		if s.active:
-			if not s.d_opn:
-				an.door_open(s)
-			return
-		if s.d_opn:
-			an.door_close(s)
+			s.door_close()
 
 class BonusPlatform(Entity):## switch -> bonus round
 	def __init__(self,pos,ID=0):
@@ -1014,14 +1067,24 @@ class InvWall(Entity):
 		del pos,sca
 
 ## Pseudo CrashB in Warp Room
+class PseudoPodium(Entity):
+	def __init__(self,pos):
+		self.glb_model=f'res/objects/l1/moss_platform/moss_platform.glb'
+		super().__init__(scale=1,rotation_y=180,position=pos)
+		an.set_glb_value(self,fps=0,sca=.0035)
+		an.set_glb_color(self,col=color.light_gray,UNLIT=False,brightness=1.25)
+		del pos
+
 class PseudoCrash(Entity):
 	def __init__(self):
-		s=self
-		super().__init__(model=f'{LC.ctx}.ply',texture=f'{LC.ctx}.png',scale=.1/20,rotation=(-90,30,0),position=(9,-4,0),unlit=False)
-		Entity(model=f'{mpt[0]}.ply',texture=f'{mpt[0]}.png',scale=.00275,position=(s.x,s.y,s.z),double_sided=True,color=color.rgb32(170,190,180),rotation_x=-90,unlit=False)
-		s.new_anim_idx=0
-		s.anim_idx=0
-		s.frm=0
-		del s
+		self.glb_model=f'res/pc/idle.glb'
+		super().__init__(scale=1,position=(9,-4,0),rotation_y=210)
+		self.podium=Entity(scale=1,position=self.position)
+		an.set_glb_value(self,fps=22,sca=.005)
+		an.set_glb_color(self,col=color.light_gray,UNLIT=False,brightness=1.5)
+		PseudoPodium((self.x,self.y-.25,self.z))
 	def update(self):
-		animation.c_animation(self,0)
+		self.new_index+=time.dt*self.fps
+		if self.new_index > len(self.frames):
+			self.new_index=0
+		an.set_glb_frame(self)

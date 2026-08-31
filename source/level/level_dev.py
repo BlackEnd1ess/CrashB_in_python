@@ -1,7 +1,7 @@
 import sys,os,_loc,item,status,objects,map_tools,crate,npc,danger
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from ursina.ursinastuff import destroy
-from ursina import *
+from ursina import Entity,color
 
 mt=map_tools
 st=status
@@ -11,11 +11,13 @@ LC=_loc
 c=crate
 n=npc
 
+AM=200
+
 def map_setting():
 	LC.FOG_L_COLOR=color.rgb32(20,70,50)
 	LC.FOG_B_COLOR=color.rgb32(20,70,50)
-	LC.AMB_M_COLOR=color.rgb32(150,150,150)
-	LC.SKY_BG_COLOR=color.rgb32(20,20,20)
+	LC.AMB_M_COLOR=color.rgb32(AM,AM,AM)
+	LC.SKY_BG_COLOR=color.rgb32(40,40,40)
 	st.toggle_thunder=False
 	st.toggle_rain=False
 	LC.LV_DST=(15,20)
@@ -76,23 +78,28 @@ def load_object():
 	Entity(model='cube',scale=(16,1,16),y=-.5,texture_scale=(16,16),collider='box',texture='white_cube',alpha=1)
 	o.StartRoom(pos=(0,0,-8.1))
 	o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
+	#dg.Piston(pos=(0,3,0),spd=3,wait=1)
+	#dg.LabPad(pos=(0,.5,0),ID=142)
+	#dg.ToxicBarrel(pos=(0,0,0))
+	#dg.ToxicBarrel(pos=(1,0,0))
 def load_crate():
 	CZ=0
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.32),CNT=[3,2,2])
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.64),CNT=[3,1,3])
 	#mt.crate_block(ID=1,POS=(-6.5,.16,CZ),CNT=[2,5,5])
+	#mt.crate_block(ID=1,POS=(0,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=2,POS=(-5.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=3,POS=(-4.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=4,POS=(-3.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=5,POS=(-2.5,.16,CZ),CNT=[3,1,1])
-	#mt.crate_block(ID=6,POS=(-1.5+.32,.16,CZ),CNT=[1,1,1])
+	mt.crate_block(ID=6,POS=(-1.5+.32,.16,CZ),CNT=[3,1,1])
 	#mt.crate_block(ID=7,POS=(-.5,.16,CZ),CNT=[3,3,1])
-	mt.crate_block(ID=8,POS=(.5,.16,CZ),CNT=[3,3,1])
+	#mt.crate_block(ID=8,POS=(.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=9,POS=(1.5+.32,.16,CZ),CNT=[1,1,1])
 	#mt.crate_block(ID=10,POS=(2.5+.32,.16,CZ),CNT=[1,1,1])
-	#mt.crate_block(ID=11,POS=(3.5+.32,.16,CZ),CNT=[1,1,2])
-	#mt.crate_block(ID=12,POS=(4.5+.32,.16,CZ),CNT=[1,1,3])
+	#mt.crate_block(ID=11,POS=(3.5+.32,.16,CZ),CNT=[6,1,1])
+	#mt.crate_block(ID=12,POS=(4.5+.32,.16,CZ),CNT=[1,1,8])
 	#mt.crate_block(ID=13,POS=(5.5,.16,CZ),CNT=[3,3,3])
 	#mt.crate_block(ID=14,POS=(6.5,.16,CZ),CNT=[3,3,3])
 	#c.spawn(ID=15,p=(5,.16,CZ-3),m=-1,l=1)
@@ -101,7 +108,8 @@ def load_crate():
 def load_wumpa():
 	return
 def load_npc():
-	n.spawn(ID=20,POS=(0,0,0),CMV=True,PTH=[(-1,0,-2),(0,0,-2),(1,0,-2),(2,0,-2)])
+	n.spawn(ID=0,POS=(0,0,0),DRC=0,RTYP=2)
+	n.spawn(ID=0,POS=(2,0,0),DRC=1,RTYP=2)
 
 ## bonus level / gem path
 def bonus_zone():

@@ -4,7 +4,7 @@ import environment
 
 ## debug options
 debg_color=color.rgb32(180,180,180)
-debg_gm=False
+debg_gm=True#god mode
 debg=True
 
 ## keyboard bindings
@@ -27,7 +27,7 @@ DEV_TERM='j'#		#python terminal
 
 ## global volume
 MUSIC_VOLUME=0
-SFX_VOLUME=.5
+SFX_VOLUME=1
 
 ## window
 def load():

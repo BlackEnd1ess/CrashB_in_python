@@ -1,4 +1,4 @@
-from ursina import Entity,EditorCamera,scene,color,Text,application,camera,time,invoke
+from ursina import Entity,EditorCamera,scene,color,Text,application,camera,time,invoke,ModelDebug
 import gc,os,ui,settings,psutil,_loc,status,sys,sound,tracemalloc,item,types
 from collections import defaultdict
 from collections import Counter
@@ -21,7 +21,8 @@ def pos_info(c):
 	#print(f"mt.crate_plane(ID={random.randint(1,2)},POS=({sx},{syc},{sz}),CNT=[2,2])")
 	#print(f"c.spawn(ID=6,p=({sx},{syc},{sz}))")
 	#print(f"mt.crate_row(ID=2,POS=({sx},{syc},{sz}),WAY=2,CNT=1)")
-	print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=0)")
+	#print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=0)")
+	print(f"dg.ToxicBarrel(pos=({sx},{sym},{sz}))")
 	#print(f'n.spawn(ID={random.randint(4,6)},POS=({sx},{sym},{sz}),DRC=2,RNG=3)')
 
 #collect all gems in level and finish them
@@ -134,6 +135,35 @@ def show_sequences():
 		if seq.finished:
 			print(seq.funcs)
 	print('after remove: ',len(application.sequences))
+
+class COUNT_ENGINE_READ_FILE(Entity):
+	def __init__(self,typ=0):
+		super().__init__(eternal=True,parent=camera.ui)
+		self.info_0=Text('',scale=2,position=(.2,.2,0),color=color.cyan)
+		self.info_1=Text('',scale=2,position=(.2,.1,0),color=color.cyan)
+		self.info_2=Text('',scale=2,position=(.2,0,0),color=color.cyan)
+		self.info_3=Text('',scale=2,position=(.2,-.1,0),color=color.cyan)
+		self.info_4=Text('',scale=2,position=(.2,-.2,0),color=color.cyan)
+		self.typ=typ
+		self.tme=0
+#	def refr_texture_dbg(self):
+#		self.info_0.text=f'calls ::{TextureDebug.calls}'
+#		self.info_1.text=f'cache ::{TextureDebug.cache_hits}'
+#		self.info_2.text=f'disk ::{TextureDebug.disk_searches}'
+#		self.info_3.text=f'created ::{TextureDebug.created}'
+#		self.info_4.text=f'misses ::{TextureDebug.misses}'
+	def refr_model_dbg(self):
+		self.info_0.text=f'calls ::{ModelDebug.calls}'
+		self.info_1.text=f'cache ::{ModelDebug.cache_hits}'
+		self.info_2.text=f'disk ::{ModelDebug.disk_searches}'
+		self.info_3.text=f'created ::{ModelDebug.created}'
+		self.info_4.text=f'misses ::{ModelDebug.misses}'
+	def update(self):
+		s=self
+		s.tme+=time.dt
+		if s.tme > .5:
+			s.tme=0
+			s.refr_model_dbg()
 
 #player attr info
 class PlayerDBG(Entity):

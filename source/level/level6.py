@@ -1,6 +1,6 @@
 import objects,map_tools,crate,npc,item,sys,os,_loc,status,danger
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
-from ursina import *
+from ursina import Entity,color
 
 ccw=color.white
 mt=map_tools
@@ -52,11 +52,11 @@ def load_object():
 	o.HitBox(pos=(10.2,0,30),sca=(.3,10,24))
 	o.HitBox(pos=(7.8,0,32),sca=(.3,10,18))
 	#hives
-	dg.Hive(pos=(.5,.7,-29.7),bID=21,bMAX=2)
-	dg.Hive(pos=(.5,1.8,1),bID=22,bMAX=3)
-	dg.Hive(pos=(9.6,2.4,25.8),bID=23,bMAX=4)
+	dg.Hive(pos=(.5,.7,-29.7),typ=0,bID=21,bMAX=1)
+	dg.Hive(pos=(.5,1.8,1),typ=0,bID=22,bMAX=1)
+	dg.Hive(pos=(9.6,2.4,25.8),typ=1,bID=23,bMAX=3)
 	#mines
-	dg.LandMine(pos=(0,0,-56.3813))
+	dg.LandMine(pos=(0,.02,-56.3813))
 	dg.LandMine(pos=(-.45,.2,-41.7))
 	dg.LandMine(pos=(0,.7,-28.8))
 	dg.LandMine(pos=(0.56,.7,-25.9))
@@ -84,13 +84,13 @@ def load_object():
 	o.ObjType_Scene(ID=11,pos=(1.7,.4,-56.3),sca=.01,ro_y=-90,col=ccw)
 	o.ObjType_Scene(ID=10,pos=(-.5,.8,-45),ro_y=-90,sca=.14)
 	o.ObjType_Floor(ID=6,pos=(0,-1.8,-61.5),sca=.6,rot=(0,90,0))
-	o.ObjType_Movable(ID=1,pos=(0,-.5,-58.5),ptm=2,ptw=1,tu=0,rng=.6)
-	o.ObjType_Movable(ID=1,pos=(0,-.5,-56.4),ptm=0)
+	o.ObjType_Movable(ID=1,pos=(0,0,-58.5),ptm=2,ptw=1,tu=0,rng=.6)
+	o.ObjType_Movable(ID=1,pos=(0,0,-56.4),ptm=0)
 	o.ObjType_Floor(ID=6,pos=(0,-1.8,-54),sca=.6,rot=(0,90,0))
 	o.ObjType_Floor(ID=6,pos=(1,-1.8,-50),sca=.6,rot=(0,90,0))
 	o.ObjType_Floor(ID=6,pos=(-1,-1.8,-44),sca=.6,rot=(0,90,0))
 	o.ObjType_Floor(ID=6,pos=(0,-1.6,-41),sca=.6,rot=(0,90,0))
-	o.ObjType_Movable(ID=1,pos=(0,-.5,-47),ptm=0)
+	o.ObjType_Movable(ID=1,pos=(0,0,-47),ptm=0)
 	#e1
 	o.ObjType_Floor(ID=6,pos=(0,-1.2,-38.5),sca=.6,rot=(0,90,0))
 	o.ObjType_Floor(ID=6,pos=(0,-.8,-35.9),sca=.6,rot=(0,90,0))
@@ -236,5 +236,3 @@ def bonus_zone():
 	mt.wumpa_double_row(POS=(2.1,-36.37,U),CNT=3)
 	mt.wumpa_double_row(POS=(6.3,-36.87,U),CNT=2)
 	mt.wumpa_double_row(POS=(8,-36.87,U),CNT=2)
-def gem_zone():
-	return

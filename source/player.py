@@ -1,4 +1,4 @@
-from ursina import Entity,BoxCollider,invoke,Vec3,color,time,raycast,held_keys,math
+from ursina import Entity,BoxCollider,invoke,Vec3,color,time,raycast,held_keys,math,EditorCamera
 import _core,status,animation,sound,_loc,settings,_debug_
 from effect import WarpRingEffect
 from math import atan2
@@ -30,18 +30,19 @@ class pShadow(Entity):## shadow point
 class CrashB(Entity):
 	def __init__(self,pos):
 		s=self
-		super().__init__(model=f'{LC.ctx}.ply',texture=f'{LC.ctx}.png',scale=.1/115,rotation_x=-90,position=pos,unlit=False)
-		s.collider=BoxCollider(s,center=Vec3(s.x,s.y+50,s.z+500),size=Vec3(300,300,500))
+		super().__init__(scale=(.3,.5,.3),position=pos,collider='box',unlit=False)
+		s.collider=BoxCollider(s,center=Vec3(0,.625,0))
 		cc.set_val(s)
+		an.set_crash_animation(s,sca=.0028,fps=20)
 		WarpRingEffect()
 		pShadow()
 		s.KEY_ACT={sg.MNU_KEY:lambda:cc.game_pause(),sg.JMP_KEY:lambda:s.check_jump(),sg.IFC_KEY:lambda:cc.show_status_ui(),sg.ATK_KEY:lambda:s.spin_attack(),sg.BLY_KEY:lambda:s.belly_smash(),sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
 		if sg.debg:
 			debg.PlayerDBG()
-			s.dev_act={sg.DEV_WARP:lambda:setattr(s,'position',(.6,3,-16)),
+			s.dev_act={sg.DEV_WARP:lambda:setattr(s,'position',(0,3,-7)),
 						sg.DEV_INFO:lambda:_debug_.pos_info(s),
 						sg.DEV_COLL:_debug_.complete_level,
-						sg.DEV_INFO:lambda:_debug_.show_instance_count(),
+						sg.DEV_INFO:lambda:_debug_.pos_info(s),
 						sg.DEV_ECAM:lambda:_debug_.editor_modus(),
 						sg.DEV_TERM:lambda:_debug_.dev_console()}
 		LC.IGNORE.append(s)
@@ -141,13 +142,24 @@ class CrashB(Entity):
 		s.jmp_typ=0
 	def death_action(self):
 		s=self
-		if not s.dth_block:
-			s.dth_block=True
-			s.visible=False
-			if not s.dth_cause in (1,5):
-				an.PlayerDeathAnimator(pos=s.position,typ=s.dth_cause)
-				return
-			invoke(lambda:cc.reset_state(s),delay=5)
+		if s.rotation_y != 180:
+			s.rotation_y=180
+		if s.dth_cause == 2:
+			s.y+=time.dt/2
+		if not s.dth_cause in (1,5,9):
+			if not s.dth_block:
+				s.dth_block=True
+				dsn={2:lambda:sn.pc_audio(ID=15,pit=.35),
+					3:lambda:sn.pc_audio(ID=10,pit=.75),
+					4:lambda:sn.pc_audio(ID=19,pit=1.2),
+					6:lambda:sn.pc_audio(ID=20)}
+				if s.dth_cause in dsn:
+					dsn[s.dth_cause]()
+			an.c_animation({2:14,3:15,4:16,6:17,7:18,8:19}[s.dth_cause])
+		s.dth_reset+=time.dt
+		if s.dth_reset > 5:
+			s.dth_reset=0
+			cc.reset_state(s)
 	def hurt_visual(self):
 		for vkh in range(7):
 			invoke(lambda:cc.hurt_blink(self),delay=vkh/3)
@@ -190,4 +202,4 @@ class CrashB(Entity):
 		s.c_physic()
 		if not st.p_rst(s):
 			s.c_interact()
-		an.refr_animation(s)
+		an.refr_player_animation(s)

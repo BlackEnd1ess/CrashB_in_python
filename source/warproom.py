@@ -164,12 +164,19 @@ class Credits(Entity):
 	def __init__(self):
 		s=self
 		st.loading=False
+		s.set_scene_pos()
 		super().__init__(model='quad',texture=wrbg,scale=(32,20),z=4,color=color.rgb32(100,150,100))
 		s.bgm=Audio('res/music/credits.mp3',loop=True,volume=settings.MUSIC_VOLUME)
 		objects.PseudoCrash()
 		s.index=0
 		s.t0()
 		del s
+	def set_scene_pos(self):
+		camera.position=(0,0,-20)
+		camera.rotation=(0,0,0)
+		camera.fov=65
+		scene.fog_color=color.rgb32(70,100,70)
+		scene.fog_density=(20,60)
 	def input(self,key):
 		if key == settings.JMP_KEY:
 			level_select()
@@ -223,20 +230,12 @@ class Credits(Entity):
 		invoke(s.t3,delay=6)
 	def t3(self):
 		s=self
-		crd_text3=[
-		'in comming future i will work with a new',
-		'game engine. i will choose unity and i will',
-		'create more professional assets and resources.',
-		'all physics and dynamics will work cleaner and faster.',
-		'and we will have better mechanics like particle systems,',
-		'pathfinding, professional LOD and better collisions.'
-		'',
-		'crash will returning back!']
+		crd_text3=['crash will returning back!']
 		for v in crd_text3:
-			s.index+=1
 			ui.CreditText(t=v,d=s.index)
+			s.index+=1
 		s.index=0
-		invoke(level_select,delay=16)
+		invoke(level_select,delay=10)
 
 def set_warproom_scene(n):
 	scene.fog_color=color.rgb32(70,100,70)

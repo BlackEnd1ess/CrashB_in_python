@@ -1,13 +1,12 @@
-import objects,map_tools,crate,status,npc,sys,os,_loc,danger
+import objects,map_tools,crate,status,npc,sys,os,_loc,danger,effect,random
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
-from ursina import *
+from ursina import Entity,color
 
 mt=map_tools
 o=objects
 dg=danger
 st=status
 LC=_loc
-r=random
 c=crate
 n=npc
 U=-3
@@ -44,6 +43,7 @@ def load_object():
 	o.ObjType_Water(pos=(12,-.5,-32),sca=(32,128),al=1,rot=(0,0,0),txs=(32*2,64*2),col=color.cyan,spd=0)
 	o.ObjType_Water(pos=(51,4.5,23.5),sca=(64,40),al=1,rot=(0,0,0),txs=(64*2,40*2),col=color.cyan,spd=0)
 	Entity(model='quad',scale=(256,128,1),color=color.white,z=64)
+	effect.WeatherSnow(p_count=350,p_speed=2.5)
 	#invisible walls
 	o.InvWall(pos=(-2.3,3,-30),sca=(1,10,70))
 	o.InvWall(pos=(2.3,3,-30),sca=(1,10,60))
@@ -160,7 +160,7 @@ def load_object():
 	#ptf object
 	for ptf1 in range(4):
 		for ptf2 in range(3):
-			o.ObjType_Movable(ID=1,pos=(34+ptf1*1.5,5.3,27+ptf2*1.5),ptm=0)
+			o.ObjType_Movable(ID=1,pos=(34+ptf1*1.5,5.8,27+ptf2*1.5),ptm=0)
 	del ptf1,ptf2
 	#walls
 	snz=3

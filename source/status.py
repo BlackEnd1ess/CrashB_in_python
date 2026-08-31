@@ -1,6 +1,6 @@
 from ursina import Entity,window
 
-## one load level settings
+##level respawn
 checkpoint=None
 
 ## warp room music index
@@ -106,10 +106,6 @@ snap1=None
 snap2=None
 
 ## global funcs
-def game_is_fullresolution():
-	print('WINDOW_SIZE=',window.windowed_size[0],'x',window.windowed_size[1])
-	return (window.windowed_size[0] == 1920 and window.windowed_size[1] == 1080)
-
 def wtr_dist(w,p):
 	return ((p.z < w.z+(w.scale_z/2)+4) and (p.z > w.z-(w.scale_z/2)-4) and (p.x < w.x+(w.scale_x/2)+2) and (p.x > w.x-w.scale_x/2-2))
 

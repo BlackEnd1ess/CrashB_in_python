@@ -1,14 +1,15 @@
-from ursina import Entity,camera,scene,invoke,Vec3,color,distance,distance_xz,boxcast,raycast,window,load_texture,load_model
-import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,time,random,json,math,objects
+from ursina import Entity,camera,scene,invoke,Vec3,color,distance,distance_xz,boxcast,raycast,window,load_texture,time
+import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,json,math,objects
 from effect import JumpDust,PressureWave,Fireball,ExclamationMark
-from animation import NPCAnimator,BoxBreak,BoxAnimation
+from animation import BoxBreakAnimation,BoxBounceAnimation
 from math import atan2,sqrt,pi,sin,cos,radians,degrees
 from ursina.ursinastuff import destroy
-from danger import LandMine
+from danger import LandMine,WaterMine
+from panda3d.core import NodePath
+from copy import copy,deepcopy
+import gltf
 
 kmw={7:5,15:7,16:8,17:6}
-kpp=.3
-
 level_ready=False
 env=environment
 st=status
@@ -23,12 +24,13 @@ N=npc
 def set_val(c):
 	for _v in {'aq_bonus','walking','jumping','landed','frst_lnd','is_landing','is_attack','is_flip','is_spin','warped','freezed','injured','b_smash','standup','falling','stun','is_slp','pushed','in_water','dth_block'}:
 		setattr(c,_v,False)#flags
-	for _a in {'frm','anim_idx','wksn','fall_time','slide_fwd','dth_cause','jmp_typ','space_time','crt_wait','sld_wait','atk_cooldown','atk_duration','air_time'}:
+	for _a in {'frm','wksn','fall_time','slide_fwd','dth_cause','jmp_typ','space_time','crt_wait','sld_wait','atk_cooldown','atk_duration','air_time','stun_time','dth_reset'}:
 		setattr(c,_a,0)#values
-	c.jmp_hgt={0:0.8, 1:1.0, 2:1.2, 3:1.5}
-	c.jmp_pwr={0:4.0, 1:4.0, 2:6.0, 3:5.0}
-	c.gravity={0:3.0, 1:3.9, 2:3.0, 3:3.1}
+	c.jmp_hgt={0:0.8,1:1.0,2:1.2,3:1.5}
+	c.jmp_pwr={0:4.0,1:4.0,2:6.0,3:5.0}
+	c.gravity={0:3.0,1:3.9,2:3.0,3:3.1}
 	c.move_speed=LC.dfsp
+	c.anim_idx=123
 	c.direc=(0,0,0)
 	c.indoor=.5
 	c.vpos=c.y
@@ -100,7 +102,7 @@ def reset_state(c):
 	reset_crates()
 	reset_wumpas()
 	reset_npc()
-	if st.level_index == 6:
+	if len(LC.LDM_POS) > 0:
 		reset_mines()
 	c.position=status.checkpoint
 	env.set_fog()
@@ -111,7 +113,7 @@ def reset_state(c):
 	c.in_water=False
 	st.death_event=False
 	c.visible=True
-	c.stun=False
+	c.stun_time=0
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def c_anim_flag(n):
 	if n == 5:
@@ -126,12 +128,11 @@ def c_anim_flag(n):
 	if n == 11:
 		LC.ACTOR.is_landing=False
 		LC.ACTOR.standup=False
-	if n == 12:
-		LC.ACTOR.stun=False
 	if n == 13:
 		LC.ACTOR.pushed=False
 def various_val(c):
 	st.show_gems=max(st.show_gems-time.dt,0)
+	c.stun_time=max(c.stun_time-time.dt,0)
 	c.crt_wait=max(c.crt_wait-time.dt,0)
 	c.sld_wait=max(c.sld_wait-time.dt,0)
 	c.indoor=max(c.indoor-time.dt,0)
@@ -145,6 +146,9 @@ def various_val(c):
 	c.atk_duration=max(c.atk_duration-time.dt,0)
 	if c.atk_duration <= 0:
 		c.is_attack=False
+	if c.stun_time > 0:
+		c.y+=time.dt*1.5
+		c.z+=time.dt*1.25
 	if c.falling and c.fall_time > .3:
 		c.frst_lnd=True
 	if not c.is_slp:
@@ -179,7 +183,7 @@ def c_spin(c):
 				if qd.vnum in (3,11):
 					qd.empty_destroy()
 				else:
-					qd.destroy()
+					qd.box_destroy()
 			if is_enemie(qd):
 				if not (qd.is_purge or qd.is_hitten):
 					if qd.vnum in (1,11) or (qd.vnum == 5 and qd.def_mode):
@@ -202,7 +206,7 @@ def c_smash(c):
 				if sw.vnum == 14:
 					sw.c_destroy()
 				else:
-					sw.destroy()
+					sw.box_destroy()
 			if is_enemie(sw) and sw.vnum != 13:
 				sw.is_purge=True
 	del sw
@@ -212,10 +216,10 @@ def c_bounce(c):
 	LC.ACTOR.is_flip=False
 	LC.ACTOR.jump_typ(2 if (c.vnum == 3) else 3)
 	if c.vnum == 3:
-		c.destroy()
+		c.box_destroy()
 	else:
 		sn.crate_audio(ID=4)
-	BoxAnimation(c)
+	BoxBounceAnimation(c)
 def c_shield():
 	if st.aku_hit < 3:
 		return
@@ -231,7 +235,7 @@ def c_shield():
 					if rf.vnum == 14:
 						rf.c_destroy()
 					if not (rf.vnum in (9,10) and rf.active):
-						rf.destroy()
+						rf.box_destroy()
 					if rf.vnum in (3,11):
 						rf.empty_destroy()
 
@@ -326,7 +330,10 @@ def reset_wumpas():
 def reset_npc():
 	if len(st.NPC_RESET) > 0:
 		for NP in st.NPC_RESET[:]:
-			npc.spawn(ID=NP[0],POS=NP[1],DRC=NP[2],RNG=NP[3],RTYP=NP[4],CMV=NP[5])
+			if NP[0] == 20:
+				npc.spawn(ID=NP[0],POS=NP[1],DRC=NP[2],RNG=NP[3],RTYP=NP[4],CMV=NP[5],PTH=NP[6])
+			else:
+				npc.spawn(ID=NP[0],POS=NP[1],DRC=NP[2],RNG=NP[3],RTYP=NP[4],CMV=NP[5])
 		del NP
 	st.NPC_RESET.clear()
 def jmp_lv_fin():
@@ -418,7 +425,7 @@ def purge_wumpa():
 	for wf in scene.entities[:]:
 		if wf:
 			if (isinstance(wf,item.WumpaFruit) and wf.c_purge):
-				wf.destroy()
+				wf.wumpa_destroy()
 def gem_challange_fail(gemID):
 	if gemID == 1 and (st.level_index == 1 and st.crate_count > 0):#blue gem
 		return True
@@ -440,6 +447,13 @@ def check_best_relic(idx):
 			if lpr[1] == 0:
 				return True
 		return False
+def reset_mines():
+	for rsm in LC.LDM_POS[:]:
+		if rsm[0] == 0:
+			LandMine(pos=rsm[1])
+		else:
+			WaterMine(pos=rsm[1],spd=rsm[2],drc=rsm[3])
+	LC.LDM_POS.clear()
 
 ## collisions
 def check_ceiling(c):
@@ -451,9 +465,9 @@ def check_ceiling(c):
 				if is_box(ve):
 					if c.crt_wait <= 0:
 						c.crt_wait=.1
-						ve.destroy()
+						ve.box_destroy()
 						if ve.vnum == 3:
-							BoxAnimation(ve)
+							BoxBounceAnimation(ve)
 				c.y=c.y
 				c.jumping=False
 def check_floor(c):
@@ -471,10 +485,11 @@ def check_floor(c):
 			spc_floor(vj.entity)
 		c.fall_time=0
 		return
+	if c.stun_time > 0:
+		return
 	c.y=c.y-time.dt*6 if c.b_smash else c.y-time.dt*c.gravity[c.jmp_typ]
 	c.fall_time=min(c.fall_time+time.dt,1)
 def land_act(c,vp):
-	c.stun=False
 	c.space_time=0
 	sn.landing_sound(vp)
 	c.anim_land()
@@ -486,7 +501,7 @@ def land_act(c,vp):
 		npc_jump_action(vp)
 		return
 	if c.b_smash:
-		PressureWave(pos=c.position,col=color.light_gray)
+		PressureWave(pos=(c.position[0],c.position[1]+.03,c.position[2]),col=color.light_gray)
 def spc_floor(e):
 	if not e.name:
 		del e
@@ -516,22 +531,25 @@ def ptf_up(e,c):
 	if not c.freezed:
 		c.freezed=True
 		c.position=(e.x,c.y,e.z)
-		c.rotation_y=0
+		c.rotation_y=180
 	e.y+=time.dt/1.5
 	if e.y > e.start_y+3:
 		e.y=e.start_y
 		{'bnpt':lambda:load_bonus(c),'gmpt':lambda:load_gem_route(c)}[e.name]()
 def wall_hit_walk(c):
-	if c.stun or c.b_smash or c.pushed or st.p_rst(c):
+	if c.stun_time > 0 or c.b_smash or c.pushed or st.p_rst(c):
 		return
 	mc=raycast(c.world_position+(0,.2,0),c.direc,distance=.25,ignore=LC.IGNORE,debug=settings.debg)
-	c.rotation_y=atan2(-c.direc.x,-c.direc.z)*180/math.pi
+	c.rotation_y=atan2(c.direc.x,c.direc.z)*180/math.pi
 	st.p_last_direc=c.direc
 	c.walk_event()
 	if not mc or str(mc.entity) in LC.item_lst|LC.trigger_lst:
 		c.position+=c.direc*(time.dt*c.move_speed)
-	if mc and is_box(mc.entity) and mc.entity.vnum == 12:
-		mc.entity.destroy()
+	if str(mc.entity) == 'toxic_barrel':
+		mc.entity.explode()
+		return
+	if mc and (is_box(mc.entity) and mc.entity.vnum == 12):
+		mc.entity.box_destroy()
 def wall_hit_idle(c):
 	hT=c.intersects(ignore=LC.IGNORE,debug=settings.debg)
 	if hT:
@@ -547,7 +565,7 @@ def wall_hit_idle(c):
 			c.position+=hT.world_normal*(time.dt*c.move_speed)
 			if hT.entity.collider:
 				if is_box(hT.entity) and hT.entity.vnum == 12:
-					hT.entity.destroy()
+					hT.entity.box_destroy()
 					return
 				if is_enemie(hT.entity) and not (hT.entity.is_purge or hT.entity.is_hitten):
 					RS=kmw[hT.entity.vnum] if hT.entity.vnum in kmw else 2
@@ -587,22 +605,21 @@ def show_status_ui():
 	st.show_gems=5
 
 ## crate actions
-def box_set_val(cR,Cpos,Cpse,Cmk,Ctl):
+def box_set_val(cR,Cpse,Cmk,Ctl):
 	cR.idf='cr'
-	cR.texture=f'res/crate/15_t{cR.time_stop}.png' if (cR.vnum == 15) else f'res/crate/{cR.vnum}.png'
-	cR.org_tex=cR.texture if (cR.vnum in (9,10)) else None
-	cR.spawn_pos=Cpos
-	cR.position=Cpos
+	cR.texture=LC.box_texture_info[cR.vnum]
+	cR.org_tex=cR.texture if cR.vnum in (9,10) else None
+	cR.spawn_pos=cR.position
+	cR.scale=LC.BOX_SIZE
 	cR.collider='box'
 	cR.c_fall=False
 	cR.poly=Cpse
 	cR.c_ID=Ctl
 	cR.mark=Cmk
-	cR.scale=.16
 	if st.level_index == 8 and cR.vnum != 12:
 		cR.color=color.dark_gray
 		cR.unlit=False
-	del cR,Cpos,Cpse,Ctl,Cmk
+	del cR,Cpse,Ctl,Cmk
 def box_stack(c_pos):
 	sdi=0
 	for wm in scene.entities:
@@ -635,7 +652,7 @@ def block_destroy(c):
 	if not c.p_snd:
 		c.p_snd=True
 		if c.vnum == 14:
-			BoxAnimation(c)
+			BoxBounceAnimation(c)
 			sn.crate_audio(ID=1)
 		else:
 			sn.crate_audio(ID=0)
@@ -648,7 +665,7 @@ def box_jump_action(c):
 		return
 	if c.vnum != 14:
 		LC.ACTOR.jump_typ(1)
-	c.destroy()
+	c.box_destroy()
 def box_destroy_event(c):
 	if c.c_fall or not c:
 		return
@@ -660,7 +677,7 @@ def box_destroy_event(c):
 	if c.vnum != 13:
 		if c.visible:
 			sn.crate_audio(ID=2)
-			BoxBreak(c.position,c.vnum)
+			BoxBreakAnimation(c.position,c.vnum)
 		if st.bonus_round:
 			st.crate_bonus+=1
 		else:
@@ -678,7 +695,7 @@ def explosion(c):
 	if c.vnum == 11:
 		sn.crate_audio(ID=9)
 	if c.vnum == 12:
-		sn.crate_audio(ID=10,pit=2.05)
+		sn.crate_audio(ID=10,pit=2.1)
 		invoke(lambda:sn.crate_audio(ID=9),delay=.075)
 	for nbc in scene.entities[:]:
 		if not nbc or not nbc.collider:
@@ -688,7 +705,7 @@ def explosion(c):
 				if nbc.vnum in (3,11):
 					nbc.empty_destroy()
 				else:
-					nbc.destroy()
+					nbc.box_destroy()
 			if is_enemie(nbc) and not nbc.is_hitten:
 				bash_enemie(nbc,c)
 			if nbc == LC.ACTOR:
@@ -720,7 +737,7 @@ class AirBoxReplacer(Entity):
 				return
 			tbox=s.air_box_list[s.index]
 			if tbox and tbox.enabled:
-				tbox.destroy()
+				tbox.box_destroy()
 			s.index+=1
 	def update(self):
 		if st.gproc():
@@ -805,12 +822,12 @@ def clear_gem_route():
 di={0:'x',1:'y',2:'z'}
 npf='res/npc/'
 def set_val_npc(m,drc=None,rng=None,rtyp=0,cmv=True,typ=0):
+	m.collider.visible=settings.debg
 	m.idf='np'
 	m.anim_frame=0
 	m.fly_time=0
 	m.turn=0
 	m.is_hitten,m.is_purge=False,False
-	m.is_defeated=False
 	m.spawn_pos=m.position
 	m.fly_direc=None
 	m.mov_range=rng
@@ -820,16 +837,7 @@ def set_val_npc(m,drc=None,rng=None,rtyp=0,cmv=True,typ=0):
 	m.typ=typ
 	if rtyp > 0:
 		m.angle=rng
-	m.rotation_x=-90
-	m.scale=.8/1200
-	vnn=f'{m.name}/{typ}' if m.vnum == 17 else m.name
-	m.model=f'{npf}{vnn}/0.ply'
-	m.texture=f'{npf}{vnn}/0.png'
-	m.collider.visible=settings.debg
-	if st.level_index == 8:
-		m.color=color.dark_gray
-		m.unlit=False
-	del m,drc,rng,vnn,cmv,rtyp,typ
+	del m,drc,rng,cmv,rtyp,typ
 def npc_walk(m):
 	pdv={0:m.spawn_pos[0],1:m.spawn_pos[1],2:m.spawn_pos[2]}
 	mm=m.mov_direc
@@ -844,31 +852,40 @@ def npc_walk(m):
 		setattr(m,di[mm],kv-step)
 	if (mt == 0 and kv >= pdv[mm]+m.mov_range) or (mt == 1 and kv <= pdv[mm]-m.mov_range):
 		m.turn=1 if mt == 0 else 0
-	m.rotation_y=degrees(atan2(m.x-ox,m.z-oz))+180
+	m.rotation_y=degrees(atan2(m.x-ox,m.z-oz))
 def circle_move(m):
+	old_pos=Vec3(m.position)
 	if m.ro_mode == 1:
-		m.angle-=time.dt*m.move_speed
-		m.angle%=(2*math.pi)
+		if m.mov_direc == 0:
+			m.angle+=time.dt*m.move_speed
+		else:
+			m.angle-=time.dt*m.move_speed
+		m.angle%=2*math.pi
 		new_x=m.spawn_pos[0]-m.mov_range*math.cos(m.angle)
 		new_z=m.spawn_pos[2]-m.mov_range*math.sin(m.angle)
 		m.position=Vec3(new_x,m.y,new_z)
-		rot=math.degrees(math.atan2(new_z-m.spawn_pos[2],new_x-m.spawn_pos[0]))
-		m.rotation_y=-rot
+		dx=new_x-old_pos.x
+		dz=new_z-old_pos.z
+		m.rotation_y=math.degrees(math.atan2(dx,dz))
 		return
-	m.angle+=time.dt*m.move_speed
-	m.angle%=(2*math.pi)
+	if m.mov_direc == 0:
+		m.angle-=time.dt*m.move_speed
+	else:
+		m.angle+=time.dt*m.move_speed
+	m.angle%=2*math.pi
 	new_x=m.spawn_pos[0]+m.mov_range*math.cos(m.angle)
 	new_y=m.spawn_pos[1]+m.mov_range*math.sin(m.angle)
 	m.position=Vec3(new_x,new_y,m.z)
-	rot=math.degrees(math.atan2(new_y-m.spawn_pos[1],new_x-m.spawn_pos[0]))
-	m.rotation_x=rot
+	dx=new_x-old_pos.x
+	dy=new_y-old_pos.y
+	m.rotation_x=math.degrees(math.atan2(dy,dx))+180
 	m.rotation_y=-90
 def refresh_npc_function(m):
 	if m.is_hitten:
 		fly_away(m)
 		return
 	if m.is_purge:
-		JumpDust(m.position)
+		JumpDust(LC.ACTOR.position)
 		npc_destroy_event(m)
 		return
 	if not m.can_move:
@@ -880,9 +897,8 @@ def refresh_npc_function(m):
 		return
 	npc_walk(m)
 def rotate_to_target(m,target_pos):
-	rtp=(target_pos-m.position)
-	m.rotation_y=atan2(rtp.x,rtp.z)*(180/pi)+180
-	m.rotation_x=-90
+	rtp=target_pos-m.position
+	m.rotation_y=atan2(rtp.x,rtp.z)*(180/pi)
 def fly_away(n):
 	n.position+=n.fly_direc*(time.dt*40)
 	n.fly_time+=time.dt
@@ -898,7 +914,7 @@ def npc_fly_hit(n):
 				if nh.vnum in (3,11):
 					nh.empty_destroy()
 				else:
-					nh.destroy()
+					nh.box_destroy()
 		if is_enemie(nh) and not nh.is_hitten:
 			if distance(n,nh) < .3:
 				nh.is_purge=True
@@ -917,12 +933,13 @@ def npc_jump_action(m):
 		m.is_purge=bool(m.vnum != 13)
 		LC.ACTOR.jump_typ(1)
 def npc_destroy_event(m):
-	if m.vnum in (14,19):
-		NPCAnimator(ID=m.vnum,pos=m.position,sca=m.scale,rot=m.rotation,max_frm=m.max_frm,col=m.color)
 	m.collider=None
 	MW=True if getattr(m,'can_move',True) else False
 	RW=m.ro_mode if (hasattr(m,'ro_mode') and m.ro_mode > 0) else 0
-	st.NPC_RESET.append((m.vnum,m.spawn_pos,m.mov_direc,m.mov_range,RW,MW))
+	if m.vnum == 20:
+		st.NPC_RESET.append((m.vnum,m.spawn_pos,m.mov_direc,m.mov_range,RW,MW,m.mvo_drc))
+	else:
+		st.NPC_RESET.append((m.vnum,m.spawn_pos,m.mov_direc,m.mov_range,RW,MW))
 	m.visible=False
 	m.enabled=False
 	scene.entities.remove(m)
@@ -967,29 +984,31 @@ def incr_frm(o,sp):
 	if o.frm >= o.max_frm:
 		o.frm=0
 
-def reset_mines():
-	for rsm in LC.LDM_POS[:]:
-		LandMine(pos=rsm)
-	LC.LDM_POS.clear()
-
-##preload animation
-def preload_animator():
-	C.PseudoBox()
+def set_instance_texture(m,tex):
+	if getattr(m,'_tex_ref',None) == tex:
+		return
+	m._tex_ref=tex
+	m.texture=tex
 
 ##preload global texture
 def preload_ui_texture():
 	LC.wmp_texture=[load_texture(f'res/ui/icon/wumpa/w{cbx}.png') for cbx in range(13+1)]
-	LC.box_count_icon=load_texture('res/crate/2.png')
 
+##preload water
 def preload_water_texture(ID):
 	if len(LC.wtr_texture) > 0:
 		LC.wtr_texture.clear()
 	if ID == 0:
+		LC.wtr_texture=[load_texture(f'res/objects/l1/swamp/{cbx}.png') for cbx in range(3+1)]
+		return
+	if ID == 1:#drain water
 		LC.wtr_texture=[load_texture(f'res/objects/ev/wtr/{cbx}.png') for cbx in range(31+1)]
-	if ID == 1:
+		return
+	if ID == 2:#water flow
 		LC.wtr_texture=[load_texture(f'res/objects/l3/water_flow/water_flow{cbx}.png') for cbx in range(3+1)]
-	if ID == 2:
-		LC.wtr_texture='res/objects/l8/polar_water/0.png'
+		return
+	if ID == 3:
+		LC.wtr_texture=[load_texture('res/objects/l8/polar_water/0.png')]
 
 def unload_textures(idx):
 	if settings.debg:
@@ -1002,6 +1021,42 @@ def unload_textures(idx):
 	if idx == 5:
 		LC.fre_texture.clear()
 
-def preload_models():
-	LC.BOX_MODEL_NORMAL=load_model('res/crate/cr_t0.obj')
-	LC.BOX_MODEL_FACES=load_model('res/crate/cr_t1.obj')
+def preload_object_animation():
+	LC.explode_anim_texture=[load_texture(f'res/effects/fireball/{cbx}.png') for cbx in range(14+1)]
+	LC.explode_wave_anim=NodePath(gltf.load_model('res/effects/impact_wave/impact_wave.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+	LC.box_break_anim=NodePath(gltf.load_model('res/box/box_break.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+	LC.checkp_break_anim=NodePath(gltf.load_model('res/box/box_checkpoint.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+	LC.snow_particle=[load_texture(f'res/effects/snow.png')]
+	C.PseudoBox()
+
+def preload_player_animation():
+	ssp=glt_setting=gltf.GltfSettings(legacy_materials=True,no_srgb=True)
+	fpl='res/pc/'
+	LC.crash_animation={
+		0:NodePath(gltf.load_model(f'{fpl}idle.glb',ssp)),
+		1:NodePath(gltf.load_model(f'{fpl}run.glb',ssp)),
+		2:NodePath(gltf.load_model(f'{fpl}slide_start.glb',ssp)),
+		3:NodePath(gltf.load_model(f'{fpl}slide_stop.glb',ssp)),
+		4:NodePath(gltf.load_model(f'{fpl}jump_up.glb',ssp)),
+		5:NodePath(gltf.load_model(f'{fpl}spin.glb',ssp)),
+		6:NodePath(gltf.load_model(f'{fpl}land.glb',ssp)),
+		7:NodePath(gltf.load_model(f'{fpl}fall.glb',ssp)),
+		8:NodePath(gltf.load_model(f'{fpl}flip.glb',ssp)),
+		9:NodePath(gltf.load_model(f'{fpl}b_smash.glb',ssp)),
+		10:NodePath(gltf.load_model(f'{fpl}b_land.glb',ssp)),
+		11:NodePath(gltf.load_model(f'{fpl}stand_up.glb',ssp)),
+		12:NodePath(gltf.load_model(f'{fpl}stun.glb',ssp)),
+		13:NodePath(gltf.load_model(f'{fpl}push_back.glb',ssp)),
+		#death animation
+		14:NodePath(gltf.load_model(f'{fpl}death_angel.glb',ssp)),
+		15:NodePath(gltf.load_model(f'{fpl}death_water.glb',ssp)),
+		16:NodePath(gltf.load_model(f'{fpl}death_fire.glb',ssp)),
+		17:NodePath(gltf.load_model(f'{fpl}death_volt.glb',ssp)),
+		18:NodePath(gltf.load_model(f'{fpl}death_sting.glb',ssp)),
+		19:NodePath(gltf.load_model(f'{fpl}death_buried.glb',ssp))}
+
+def preload_box_texture():
+	cik='res/box/'
+	LC.box_tnt_texture={0:load_texture(f'{cik}crate_tnt_0.png'),1:load_texture(f'{cik}crate_tnt_1.png'),2:load_texture(f'{cik}crate_tnt_2.png'),3:load_texture(f'{cik}crate_tnt_3.png')}
+	LC.box_trial_texture={1:load_texture(f'{cik}15_t1.png'),2:load_texture(f'{cik}15_t2.png'),3:load_texture(f'{cik}15_t3.png')}
+	LC.box_texture_info=[load_texture(f'{cik}{cbx}.png') for cbx in range(16+1)]

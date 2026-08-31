@@ -1,6 +1,7 @@
-v 1.5
-- better 3d models: tree + level 1 update assets
-- level 2 snow particles
-- 3d boxes in RAM, crash anim frames in RAM
-- add textures from CB3!
-- freemap
+v 1.6
+- all skull ptf
+- death route l2 (snow)
+- add textures, few npcs and platforms from CB3!
+- fixx code
+- optimize memory model access
+- test all levels

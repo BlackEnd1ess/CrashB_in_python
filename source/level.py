@@ -36,19 +36,6 @@ def free_level():
 	del idx
 	gc.collect()
 
-##preload water
-def preload_water_texture(ID):
-	if len(LC.wtr_texture) > 0:
-		LC.wtr_texture.clear()
-	if ID == 0:
-		LC.wtr_texture=[load_texture(f'res/objects/l1/swamp/{cbx}.png') for cbx in range(3+1)]
-		return
-	if ID == 1:
-		LC.wtr_texture=[load_texture(f'res/objects/ev/wtr/{cbx}.png') for cbx in range(31+1)]
-		return
-	if ID == 3:
-		LC.wtr_texture=[load_texture(f'res/objects/l8/polar_water/{cbx}.png') for cbx in range(1+1)]
-
 ## level settings
 def load(idx):
 	sys.path.append(os.path.join(os.path.dirname(__file__),lv))
@@ -68,13 +55,13 @@ def test():# test level
 
 def level1():# rainy woods
 	import level1
-	preload_water_texture(0)
+	cc.preload_water_texture(0)
 	level1.start_load()
 	invoke(free_level,delay=flt)
 
 def level2():# road to nowhere
 	import level2
-	preload_water_texture(3)
+	cc.preload_water_texture(3)
 	st.gem_death=False
 	level2.start_load()
 	invoke(free_level,delay=flt)
@@ -86,7 +73,7 @@ def level3():# river stream
 
 def level4():# drain damage
 	import level4
-	preload_water_texture(1)
+	cc.preload_water_texture(1)
 	level4.start_load()
 	invoke(free_level,delay=flt)
 
@@ -107,6 +94,6 @@ def level7():# piston push
 
 def level8():# polar lights
 	import level8
-	preload_water_texture(3)
+	cc.preload_water_texture(3)
 	level8.start_load()
 	invoke(free_level,delay=flt)
