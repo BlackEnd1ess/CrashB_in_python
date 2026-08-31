@@ -39,8 +39,9 @@ Information: This Project is a lowpoly based Crash Bandicoot inspired game writt
 # temporary no Assets and Ressources aviable, will shortly aviable restricted! (some pcv files will put all Data together), a installations key will required to read the Game Data __ pack SFX and BGM Files in progress... #
 # HOW TO USE CRASH EDIT / CB-EXPORT: https://www.youtube.com/watch?v=ct_G9GAoAZU #
 
-# Functional Status: Modern PC's will run this Game with 190-280 (full loaded game with 200-250) MB RAM per level and 59-60 FPS
-# update in progress: v1.3.5
+info: all animations frames stored into .glb files. check the packer tool: https://github.com/BlackEnd1ess/CrashBandicoot_PLY_to_GLB_packer
+
+# update in progress: v 1.5-v1.6
 
 required Modules:
 - ursina
