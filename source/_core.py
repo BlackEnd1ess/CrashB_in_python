@@ -223,21 +223,33 @@ def c_bounce(c):
 def c_shield():
 	if st.aku_hit < 3:
 		return
-	for rf in scene.entities:
-		if rf and rf.collider:
-			if distance(rf,LC.ACTOR) < 1.5:
-				if rf.name in LC.item_lst:
-					rf.collect()
-					sn.pc_audio(ID=21)
-				if is_enemie(rf):
-					bash_enemie(rf,LC.ACTOR)
-				if is_box(rf) and not rf.vnum in (0,8,13):
-					if rf.vnum == 14:
-						rf.c_destroy()
-					if not (rf.vnum in (9,10) and rf.active):
-						rf.box_destroy()
-					if rf.vnum in (3,11):
-						rf.empty_destroy()
+	for rf in tuple(scene.entities):
+		if rf is None or rf.is_empty():
+			continue
+		if not rf.collider:
+			continue
+		if distance(rf,LC.ACTOR) >= 1.5:
+			continue
+		if rf.name in LC.item_lst:
+			rf.collect()
+			sn.pc_audio(ID=21)
+			continue
+		if is_enemie(rf):
+			bash_enemie(rf,LC.ACTOR)
+			continue
+		if str(rf) in LC.explosive_object:
+			rf.purge()
+			continue
+		if is_box(rf) and rf.vnum not in (0,8,13):
+			if rf.vnum == 14:
+				rf.c_destroy()
+				continue
+			if rf.vnum in (9,10) and rf.active:
+				continue
+			if rf.vnum in (3,11):
+				rf.empty_destroy()
+				continue
+			rf.box_destroy()
 
 ## camera actor
 def cam_indoor(c):
@@ -471,7 +483,7 @@ def check_ceiling(c):
 				c.y=c.y
 				c.jumping=False
 def check_floor(c):
-	fwd_drc=Vec3(-sin(radians(c.rotation_y))*.05,0,-cos(radians(c.rotation_y))*.05)
+	fwd_drc=Vec3(sin(radians(c.rotation_y))*.05,0,cos(radians(c.rotation_y))*.05)
 	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.12,.12),ignore=LC.IGNORE,debug=settings.debg)
 	stm=bool(vj.hit and vj.normal) and not (vj.entity.name in LC.item_lst|LC.dangers|LC.trigger_lst)
 	c.falling=bool(not stm)
@@ -510,6 +522,9 @@ def spc_floor(e):
 	if e.name in ('bnpt','gmpt'):
 		ptf_up(e,LC.ACTOR)
 		return
+	if e.name == LC.explosive_object[1]:
+		e.purge()
+		return
 	if e.name in ('swpt','HPP','epad'):
 		e.active=True
 		return
@@ -545,8 +560,8 @@ def wall_hit_walk(c):
 	c.walk_event()
 	if not mc or str(mc.entity) in LC.item_lst|LC.trigger_lst:
 		c.position+=c.direc*(time.dt*c.move_speed)
-	if str(mc.entity) == 'toxic_barrel':
-		mc.entity.explode()
+	if str(mc.entity) == LC.explosive_object[1]:
+		mc.entity.purge()
 		return
 	if mc and (is_box(mc.entity) and mc.entity.vnum == 12):
 		mc.entity.box_destroy()
@@ -993,6 +1008,7 @@ def set_instance_texture(m,tex):
 ##preload global texture
 def preload_ui_texture():
 	LC.wmp_texture=[load_texture(f'res/ui/icon/wumpa/w{cbx}.png') for cbx in range(13+1)]
+	LC.relic_icon=load_texture('res/ui/icon/relic.png')
 
 ##preload water
 def preload_water_texture(ID):

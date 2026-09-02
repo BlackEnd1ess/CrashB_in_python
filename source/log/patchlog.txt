@@ -1,0 +1,11 @@
+#01.09.2026
+- fixxed toxic barrel collision and destroy distance
+- fixxed missing last frame on loose platform
+- fixxed eating plant player visiblity
+- fixxed invisible cobblestone on level 3 by render culling distance
+
+#02.09.2026
+- new asset in level 4: metal stage
+- sewer drain color in level 4 changed
+- missing material sounds on single class: HitBox
+- monkey sculpture new function (3 types) + restored vertex colors for orginal look

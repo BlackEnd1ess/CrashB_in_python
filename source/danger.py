@@ -1,7 +1,6 @@
 from ursina import Audio,Entity,color,time,distance,invoke,BoxCollider,Vec3,scene,Vec3,lerp,load_texture
-import _core,status,item,sound,animation,player,_loc,settings,effect,npc,random,math
+import _core,status,item,sound,animation,player,_loc,settings,effect,npc,random,math,objects
 from ursina.ursinastuff import destroy
-from math import sin
 
 wfc='wireframe_cube'
 omf='res/objects/'
@@ -182,7 +181,7 @@ class ToxicBarrel(Entity):
 		s.active=False
 		s.danger=True
 		del pos,s
-	def explode(self):
+	def purge(self):
 		if not self.active:
 			self.active=True
 			sn.crate_audio(ID=9,pit=1.25)
@@ -190,7 +189,6 @@ class ToxicBarrel(Entity):
 			ef.Fireball(self)
 			cc.get_damage(LC.ACTOR,rsn=4)
 			destroy(self)
-
 
 swrp=f'{omf}l4/heat_pipe/heat_pipe'
 class HeatPipe(Entity):
@@ -206,60 +204,53 @@ class HeatPipe(Entity):
 		if self.intersects(LC.ACTOR):
 			cc.get_damage(LC.ACTOR,rsn=4)
 
-rmsc=f'{omf}l5/m_sculpt/m_sculpt'
 class MonkeySculpture(Entity):
-	def __init__(self,pos,r,d,ro_y=90):
+	def __init__(self,pos,ro_y,p_count=25,p_wait=1,typ=0,rotation_speed=1):
 		s=self
-		super().__init__(name='mnks',position=pos,scale=.003,rotation=(-90,ro_y,0))
-		s.model=f'{rmsc}1.ply'
-		if r:
-			s.model=f'{rmsc}.ply'
-			s.podium=Entity(model='cube',texture=f'{trn}moss.png',name=s.name,scale=(.5,1,.5),texture_scale=(1,2),position=(s.x,s.y-.5,s.z))
-		s.texture=f'{rmsc}.png'
-		s.f_pause=False
-		s.s_audio=False
-		s.snd_reset=0
-		s.danger=d
-		s.f_cnt=0
-		s.tme=.08
-		s.rot=r
-		del ro_y,pos,r,d,s
-	def f_reset(self):
-		s=self
-		s.f_pause=False
-		s.f_cnt=0
-	def fire_throw(self):
-		s=self
-		if (distance(s,LC.ACTOR) < 8 and not st.gproc()):
-			if s.f_cnt >= 30:
-				if not s.f_pause:
-					s.f_pause=True
-					invoke(s.f_reset,delay=5)
-				return
-			ef.FireThrow(pos=s.position,ro_y=s.rotation_y)
-			s.f_cnt+=1
-			if not s.s_audio:
-				s.s_audio=True
-				s.snd_reset=3
-				sn.obj_audio(ID=8,pit=1)
+		s.glb_model=f'res/objects/l5/m_sculpt/monkey_sculpture.glb'
+		super().__init__(name='mnks',position=pos,rotation_y=ro_y,scale=.4)
+		an.set_glb_value(s,fps=0,sca=.0018)
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=2.25)
+		s.rotation_speed=rotation_speed
+		s.p_count_reset=p_count
+		s.p_count=p_count
+		s.p_snd=False
+		s.wait=p_wait
+		s.tme=p_wait
+		s.typ=typ
+		objects.spw_block(ID=4,ro_y=-90,p=s.position,vx=[1,1])
+		del pos,ro_y,p_count,p_wait,typ,rotation_speed
 	def refr_function(self):
 		s=self
-		if s.danger:
-			s.tme=max(s.tme-time.dt,0)
-			if s.tme <= 0:
-				s.tme=.08
-				s.fire_throw()
-		if s.s_audio:
-			s.snd_reset-=time.dt
-			if s.snd_reset <= 0:
-				s.s_audio=False
-		if s.rot:
-			if distance(s,LC.ACTOR) < 2:
-				cc.rotate_to_target(s,LC.ACTOR.position)
-	def update(self):
-		if st.gproc():
+		if s.tme > 0:
+			s.tme-=time.dt
 			return
-		self.refr_function()
+		if not s.p_snd:
+			s.p_snd=True
+			if distance(s,LC.ACTOR) < 3:
+				sn.obj_audio(ID=8,pit=1)
+		ef.FireThrow(pos=s.position,ro_y=s.rotation_y)
+		if s.p_count > 0:
+			s.p_count-=1
+			s.tme=.075
+			return
+		s.tme=s.wait
+		s.p_count=s.p_count_reset
+		s.p_snd=False
+	def update(self):
+		if st.gproc() or self.typ == 0:
+			return
+		s=self
+		if s.typ == 1:
+			cc.rotate_to_target(s,LC.ACTOR.position)
+			return
+		if s.typ == 2:
+			if s.p_count_reset > 0:
+				s.refr_function()
+			return
+		s.rotation_y+=time.dt*s.rotation_speed
+		if s.p_count_reset > 0:
+			s.refr_function()
 
 ftf=f'{omf}l5/fire_trap/fire_trap'
 class FireTrap(Entity):
@@ -593,6 +584,8 @@ class Piston(Entity):
 	def refr_position(self):
 		s=self
 		if s.y > s.spawn_y-2:
+			if st.aku_hit > 2:
+				return
 			vc=s.intersects()
 			if vc and vc.entity == LC.ACTOR:
 				if vc.normal == Vec3(0,1,0):

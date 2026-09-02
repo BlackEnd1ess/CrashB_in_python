@@ -882,7 +882,7 @@ class RelicTimer(Entity):
 		st.relic_challange=True
 		super().__init__()
 		s.disp=Text('',font=_fnt,scale=3,position=(.7,-.4),parent=CU,color=color.rgb32(170,170,200))
-		s.icon=Entity(model=q,texture=LC.relic_texture[0],position=(s.x+.67,-.435),scale=.2,color=color.gray,parent=CU)
+		s.icon=Entity(model=q,texture=LC.relic_icon,position=(s.x+.67,-.435),scale=.16,color=color.gray,parent=CU)
 		s.is_pit=False
 		s.ttime=0
 		s.rank=0

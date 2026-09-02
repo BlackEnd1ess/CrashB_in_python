@@ -1,6 +1,13 @@
-v 1.6
+v1.6
+
+- l2 ice asset ceiling
+- l2 asset iceicle
+
 - all skull ptf
 - death route l2 (snow)
+
+v1.7
+- ruin + l6 + l7 death ptf path
 - add textures, few npcs and platforms from CB3!
 - fixx code
 - optimize memory model access

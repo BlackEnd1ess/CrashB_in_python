@@ -101,9 +101,11 @@ def load_object():
 	o.ObjType_Movable(ID=1,pos=(53,1.5,107),ptm=0,col=dgg,UL=True)
 	o.ObjType_Movable(ID=1,pos=(53.4,1.5,108.5),ptm=0,col=dgg,UL=True)
 	o.ObjType_Movable(ID=1,pos=(53,1.5,110),ptm=0,col=dgg,UL=True)
-	o.ObjType_Movable(ID=1,pos=(60.5,0,133.5),ptm=0,col=dgg,UL=True)
-	o.ObjType_Movable(ID=1,pos=(60.5,0,135),ptm=0,col=dgg,UL=True)
-	o.ObjType_Movable(ID=1,pos=(60.5,0,136.5),ptm=0,col=dgg,UL=True)
+	
+	o.ObjType_Movable(ID=1,pos=(60.5,.5,133.5),ptm=0,col=dgg,UL=True)
+	o.ObjType_Movable(ID=1,pos=(60.5,.5,135),ptm=0,col=dgg,UL=True)
+	o.ObjType_Movable(ID=1,pos=(60.5,.5,136.5),ptm=0,col=dgg,UL=True)
+	
 	o.ObjType_Movable(ID=1,pos=(21.6,.3,54.7),ptm=0,col=dgg,UL=True)
 	del dgg
 	#blocks

@@ -319,7 +319,7 @@ class EatingPlant(Entity):
 			return
 		if not LC.ACTOR.is_attack:
 			cc.get_damage(LC.ACTOR,rsn=5)
-		if st.aku_hit < 1:
+		if st.aku_hit == 0:
 			if not s.eat:
 				s.eat=True
 				s.switch_model(2)
@@ -358,7 +358,7 @@ class Rat(Entity):
 		s=self
 		s.vnum=8
 		s.glb_model=f'{npf}rat/walk.glb' if cmv else f'{npf}rat/idle.glb'
-		super().__init__(position=pos,scale=npc_scale)
+		super().__init__(position=pos,scale=npc_scale,rotation_y=180)
 		s.collider=BoxCollider(s,center=Vec3(0,.25,0),size=(.8,.5,1.25))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		an.set_glb_value(s,fps=22,sca=.0018)

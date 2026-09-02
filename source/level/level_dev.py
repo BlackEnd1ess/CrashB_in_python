@@ -79,7 +79,7 @@ def load_object():
 	o.StartRoom(pos=(0,0,-8.1))
 	o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
 	#dg.Piston(pos=(0,3,0),spd=3,wait=1)
-	#dg.LabPad(pos=(0,.5,0),ID=142)
+	dg.MonkeySculpture(typ=3,pos=(0,0,0),ro_y=90,p_count=25,p_wait=.5,rotation_speed=80)
 	#dg.ToxicBarrel(pos=(0,0,0))
 	#dg.ToxicBarrel(pos=(1,0,0))
 def load_crate():
@@ -108,8 +108,7 @@ def load_crate():
 def load_wumpa():
 	return
 def load_npc():
-	n.spawn(ID=0,POS=(0,0,0),DRC=0,RTYP=2)
-	n.spawn(ID=0,POS=(2,0,0),DRC=1,RTYP=2)
+	n.spawn(ID=7,POS=(0,0,0))
 
 ## bonus level / gem path
 def bonus_zone():

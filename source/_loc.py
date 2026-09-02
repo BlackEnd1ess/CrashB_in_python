@@ -118,6 +118,9 @@ trigger_lst={'indz','lvfi','elwt','fthr','eball'}
 #item/obj name list
 item_lst={'wmpf','exlf','gem','crys','clock','relic'}
 
+#landmine, toxic barrel
+explosive_object=('ldmn','toxic_barrel')
+
 #danger zone
 dangers={'wood_log','role','fllz','piston'}
 
@@ -141,13 +144,6 @@ IGNORE=[]
 
 #preloading textures
 wmp_texture=[]
-box_texture=[]
-
-crystal_texture=[]
-normal_gem_texture=[]
-green_gem_texture=[]
-purple_gem_texture=[]
-relic_texture=[]
 
 #water effect texture
 wtr_texture=[]

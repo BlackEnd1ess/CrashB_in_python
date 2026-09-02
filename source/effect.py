@@ -3,7 +3,7 @@ from ursina import Entity,Text,Vec3,color,load_texture,scene,invoke,camera
 import status,_loc,time,random,_core,math
 from ursina.ursinastuff import destroy
 from sound import pc_audio,obj_audio
-from math import sin
+from math import sin,radians,cos
 
 trpv='res/objects/ev/teleport/warp_effect'
 ef='res/effects/'
@@ -311,20 +311,16 @@ class FireThrow(Entity):
 		s=self
 		super().__init__(model=q,name='fthr',texture=LC.explode_anim_texture[4],position=(pos[0],pos[1]+.25,pos[2]),scale=.2,collider='box',unlit=False,color=random.choice([color.orange,color.red]))
 		s.life_time=.4
-		s.direc=ro_y
 		s.mvs=4
-		if ro_y in (90,-90):
-			s.z=s.z+random.uniform(-.1,.1)
-		del pos,ro_y,s
+		a=radians(ro_y)
+		s.direc=Vec3(sin(a),0,cos(a))
 	def fly_away(self):
 		s=self
-		mt=time.dt*s.mvs
-		{90:lambda:setattr(s,'x',s.x-mt),-90:lambda:setattr(s,'x',s.x+mt),
-		180:lambda:setattr(s,'z',s.z+mt),0:lambda:setattr(s,'z',s.z-mt)}[s.direc]()
+		s.position+=s.direc*(time.dt*s.mvs)
 	def update(self):
+		s=self
 		if st.gproc():
 			return
-		s=self
 		tdf=time.dt*1.1
 		s.life_time=max(s.life_time-time.dt,0)
 		if s.intersects(LC.ACTOR):

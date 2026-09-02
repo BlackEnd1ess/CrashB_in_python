@@ -321,7 +321,8 @@ flr={0:None,
 	6:'l6/frozen_floor/frozen_floor',
 	7:'l6/dirt_floor/dirt_floor',
 	8:None,
-	9:'l6/stone_ground/stone_ground'}
+	9:'l6/stone_ground/stone_ground',
+	10:'l4/sewer_stage/sewer_stage'}
 class ObjType_Floor(Entity):
 	def __init__(self,ID,pos,sca,rot=(0,0,0),txa=(1,1),al=1,col=color.white):
 		s=self
@@ -337,7 +338,7 @@ class ObjType_Floor(Entity):
 		if ID == 3:
 			HitBox(pos=(s.x-.1,s.y+2.15,s.z-1.1),sca=(1.3,.5,.5))
 			HitBox(pos=(s.x,s.y+3,s.z-.6),sca=(1,7,.5))
-		if ID == 4:
+		if ID in (4,10):
 			s.matr='metal'
 		if ID == 5:
 			HitBox(pos=(s.x,s.y+.4,s.z+.9),sca=(1.7,.5,.3))
@@ -355,7 +356,7 @@ class ObjType_Floor(Entity):
 			s.model='cube'
 			s.texture='ice_ground.png' if s.vnum == 0 else 'bee_terra.png'
 			return
-		if s.vnum in (2,4,5,6,7,9):
+		if s.vnum in (2,4,5,6,7,9,10):
 			s.model=f'{omf}{flr[s.vnum]}.obj'
 			s.double_sided=True
 		else:
@@ -621,7 +622,6 @@ class SwimPlatform(Entity):
 				return
 			s.reset_pos()
 
-
 #####################
 ## level 5 objects ##
 class LoosePlatform(Entity):
@@ -649,13 +649,16 @@ class LoosePlatform(Entity):
 				return
 			an.set_glb_frame(s)
 			return
-		s.new_index-=time.dt*s.fps
-		if s.new_index <= 0:
-			s.new_index=0
-			s.collision=True
-			s.collapsed=False
-			s.tme=0
-		an.set_glb_frame(s)
+		if s.new_index > 0:
+			s.new_index-=time.dt*s.fps
+			if s.new_index <= 0:
+				s.new_index=0
+			an.set_glb_frame(s)
+			return
+		s.new_index=0
+		s.collision=True
+		s.collapsed=False
+		s.tme=0
 	def pl_touch(self):
 		if not self.active:
 			self.active=True
@@ -762,7 +765,7 @@ class CrateScore(Entity):## level reward
 			s.refr_function()
 
 rmp=f'{omf}ev/s_room/room'
-class StartRoom(Entity):## game spawn point
+class StartRoom(Entity):##game spawn point
 	def __init__(self,pos):
 		s=self
 		super().__init__(model=f'{rmp}.ply',texture=f'{rmp}.png',name='strm',position=pos,scale=(.07,.07,.08),rotation=(270,90),color=color.white)
@@ -824,7 +827,7 @@ class RoomDoor(Entity):## door for start and end room
 		s=self
 		s.idf='mo'
 		super().__init__(name='rmdr',position=pos,scale=.5,collider=b,color=color.light_gray)
-		s.door_part=Entity(position=(s.x,s.y+.1,s.z),scale=.5,collider=b)
+		s.door_part=Entity(position=(s.x,s.y+.1,s.z),scale=.5,name=s.name,collider=b)
 		s.door_part.glb_model=f'{omf}ev/level_gate/door1.glb'
 		s.glb_model=f'{omf}ev/level_gate/door0.glb'
 		an.set_glb_value(s,fps=20,sca=.002)
@@ -1013,12 +1016,15 @@ class PlatformSpawner(Entity):
 ####################
 ## global objects ##
 class HitBox(Entity):
-	def __init__(self,pos,sca):
+	def __init__(self,pos,sca,matr=False):
 		super().__init__(model=wfc,position=pos,scale=sca,collider=b,name='htbx',visible=False)
 		##visible for development
 		#self.model='cube'
 		#self.visible=True
-		del pos,sca
+		if matr:
+			if st.level_index in (4,7):
+				self.matr='metal'
+		del pos,sca,matr
 
 class LightArea(SpotLight):
 	def __init__(self,pos,col):

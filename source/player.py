@@ -39,7 +39,7 @@ class CrashB(Entity):
 		s.KEY_ACT={sg.MNU_KEY:lambda:cc.game_pause(),sg.JMP_KEY:lambda:s.check_jump(),sg.IFC_KEY:lambda:cc.show_status_ui(),sg.ATK_KEY:lambda:s.spin_attack(),sg.BLY_KEY:lambda:s.belly_smash(),sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
 		if sg.debg:
 			debg.PlayerDBG()
-			s.dev_act={sg.DEV_WARP:lambda:setattr(s,'position',(0,3,-7)),
+			s.dev_act={sg.DEV_WARP:lambda:setattr(s,'position',(14.5,5,49.5)),
 						sg.DEV_INFO:lambda:_debug_.pos_info(s),
 						sg.DEV_COLL:_debug_.complete_level,
 						sg.DEV_INFO:lambda:_debug_.pos_info(s),
@@ -156,6 +156,8 @@ class CrashB(Entity):
 				if s.dth_cause in dsn:
 					dsn[s.dth_cause]()
 			an.c_animation({2:14,3:15,4:16,6:17,7:18,8:19}[s.dth_cause])
+		if s.dth_cause == 5:
+			s.visible=False
 		s.dth_reset+=time.dt
 		if s.dth_reset > 5:
 			s.dth_reset=0
