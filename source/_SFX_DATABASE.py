@@ -8,7 +8,7 @@ MUSIC={0:'wroom',
 	6:'digin',
 	7:'piston',
 	8:'dash',
-	9:'wroom0'}
+	9:'plant'}
 
 ##SFX
 INTERFACE={0:'ui_select',1:'ui_enter',2:'ui_wumpa',3:'ui_lives',4:'ui_reward',5:'ui_collect',6:'ui_clock'}
@@ -75,7 +75,9 @@ NPC={0:'npc_plant_bite',
 	17:'npc_monkey1',
 	18:'npc_monkey2',
 	19:'npc_bird_alert',
-	20:'npc_bird_fly'}
+	20:'npc_bird_fly',
+	21:'npc_penguin_spin',
+	22:'npc_penguin_shake'}
 
 OBJECT={0:'obj_teleport_spawn',
 		1:'obj_room_door',

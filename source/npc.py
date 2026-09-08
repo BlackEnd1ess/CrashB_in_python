@@ -162,7 +162,7 @@ class Penguin(Entity):
 		if s.wait_time <= 0:
 			s.wait_time=3
 			if distance(s,LC.ACTOR) < LC.NPC_SND_DISTANCE:
-				sn.pc_audio(ID=3,pit=1.2)
+				sn.npc_audio(ID=21)
 			s.is_spin=True
 			s.switch_model(1)
 	def spin_attack(self):
@@ -172,7 +172,8 @@ class Penguin(Entity):
 		if s.spin_time <= 0:
 			s.is_spin=False
 			s.is_dizzy=True
-			s.spin_time=.5
+			s.spin_time=1
+			sn.npc_audio(ID=22)
 			s.switch_model(2)
 	def dizzy_action(self):
 		s=self

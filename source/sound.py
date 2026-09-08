@@ -136,6 +136,8 @@ class BackgroundMusic(Audio):
 			kt=f'{MC}bonus/{sfx_db.MUSIC[ix]}.mp3'
 		if m == 2:
 			kt=f'{MC}special/{sfx_db.MUSIC[ix]}.mp3'
+		if not kt:
+			kt=f'{MC}level/{sfx_db.MUSIC[0]}.mp3'
 		super().__init__(kt,loop=True,volume=se.MUSIC_VOLUME)
 		s.mode=m
 		s.tm=.5

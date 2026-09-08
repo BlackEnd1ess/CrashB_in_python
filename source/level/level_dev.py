@@ -78,10 +78,11 @@ def load_object():
 	Entity(model='cube',scale=(16,1,16),y=-.5,texture_scale=(16,16),collider='box',texture='white_cube',alpha=1)
 	o.StartRoom(pos=(0,0,-8.1))
 	o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
-	#dg.Piston(pos=(0,3,0),spd=3,wait=1)
-	dg.MonkeySculpture(typ=3,pos=(0,0,0),ro_y=90,p_count=25,p_wait=.5,rotation_speed=80)
-	#dg.ToxicBarrel(pos=(0,0,0))
-	#dg.ToxicBarrel(pos=(1,0,0))
+	o.SkullPlatform(pos=(0,.2,0),typ=0)
+	#o.SkullPlatform(pos=(1,.2,0),typ=1)
+	#o.SkullPlatform(pos=(2,.2,0),typ=2)
+	#dg.IceIcle(pos=(1,2,0),fall_speed=4)
+
 def load_crate():
 	CZ=0
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,3,1])
@@ -93,7 +94,7 @@ def load_crate():
 	#mt.crate_block(ID=3,POS=(-4.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=4,POS=(-3.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=5,POS=(-2.5,.16,CZ),CNT=[3,1,1])
-	mt.crate_block(ID=6,POS=(-1.5+.32,.16,CZ),CNT=[3,1,1])
+	#mt.crate_block(ID=6,POS=(-1.5+.32,.16,CZ),CNT=[3,1,1])
 	#mt.crate_block(ID=7,POS=(-.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=8,POS=(.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=9,POS=(1.5+.32,.16,CZ),CNT=[1,1,1])
@@ -108,7 +109,7 @@ def load_crate():
 def load_wumpa():
 	return
 def load_npc():
-	n.spawn(ID=7,POS=(0,0,0))
+	n.spawn(ID=4,POS=(0,0,0))
 
 ## bonus level / gem path
 def bonus_zone():

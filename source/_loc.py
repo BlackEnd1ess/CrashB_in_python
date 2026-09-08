@@ -121,9 +121,6 @@ item_lst={'wmpf','exlf','gem','crys','clock','relic'}
 #landmine, toxic barrel
 explosive_object=('ldmn','toxic_barrel')
 
-#danger zone
-dangers={'wood_log','role','fllz','piston'}
-
 #default speed for move and gravity
 dfsp=2.6
 

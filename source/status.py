@@ -84,7 +84,9 @@ level_cle_gem=False
 bonus_solved=False
 bonus_round=False
 death_route=False
+skull_route=False
 
+skull_path_solved=False
 weather_thunder=False
 gem_path_solved=False
 

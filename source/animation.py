@@ -23,7 +23,7 @@ class BoxBreakAnimation(Entity):
 		if ID != 6:
 			col=color.orange if not (ID in vcol) else vcol[ID]
 			scr=.0005
-			mdl=LC.box_break_anim
+			mdl=LC.box_break_anim if ID not in (11,12) else LC.box_explode_anim
 		else:
 			col=color.light_gray
 			scr=.0008

@@ -1,9 +1,4 @@
 v1.6
-
-- l2 ice asset ceiling
-- l2 asset iceicle
-
-- all skull ptf
 - death route l2 (snow)
 
 v1.7

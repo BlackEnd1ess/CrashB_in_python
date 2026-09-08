@@ -73,6 +73,9 @@ def reset_state(c):
 		st.relic_challange=False
 		st.level_relic_time=0
 		item.TimeTrialClock(pos=LC.CLOCK_POSITION[st.level_index])
+	if st.skull_route:
+		st.skull_route=False
+		sn.BackgroundMusic(m=0)
 	if st.death_route and st.checkpoint[0] < 198.5:
 		st.death_route=False
 		sn.BackgroundMusic(m=0)
@@ -485,7 +488,7 @@ def check_ceiling(c):
 def check_floor(c):
 	fwd_drc=Vec3(sin(radians(c.rotation_y))*.05,0,cos(radians(c.rotation_y))*.05)
 	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.12,.12),ignore=LC.IGNORE,debug=settings.debg)
-	stm=bool(vj.hit and vj.normal) and not (vj.entity.name in LC.item_lst|LC.dangers|LC.trigger_lst)
+	stm=bool(vj.hit and vj.normal) and not (vj.entity.name in LC.item_lst|LC.trigger_lst or vj.entity.name == 'fllz')
 	c.falling=bool(not stm)
 	c.landed=stm
 	if stm:
@@ -519,7 +522,7 @@ def spc_floor(e):
 		del e
 		return
 	LC.ACTOR.is_slp=(e.name == 'obj_type__floor' and e.vnum == 0)
-	if e.name in ('bnpt','gmpt'):
+	if e.name in ('bnpt','gmpt','skptf'):
 		ptf_up(e,LC.ACTOR)
 		return
 	if e.name == LC.explosive_object[1]:
@@ -550,7 +553,7 @@ def ptf_up(e,c):
 	e.y+=time.dt/1.5
 	if e.y > e.start_y+3:
 		e.y=e.start_y
-		{'bnpt':lambda:load_bonus(c),'gmpt':lambda:load_gem_route(c)}[e.name]()
+		{'bnpt':lambda:load_bonus(c),'gmpt':lambda:load_gem_route(c),'skptf':lambda:load_skull_route(c)}[e.name]()
 def wall_hit_walk(c):
 	if c.stun_time > 0 or c.b_smash or c.pushed or st.p_rst(c):
 		return
@@ -785,16 +788,67 @@ def enter_bonus(c):
 	c.position=(0,-35,-3)
 	env.set_fog()
 	camera.y=-35
-	st.loading,c.freezed=False,False
+	st.loading=False
+	c.freezed=False
 def clear_bonus():
 	for brd in scene.entities[:]:
 		if brd and brd.y < -15:
 			if isinstance(brd,(o.ObjType_Block,o.ObjType_Wall,o.ObjType_Water)):
 				destroy(brd)
 	del brd
+
+## gem route
+def load_gem_route(c):
+	st.loading=True
+	if st.death_route:
+		invoke(lambda:back_to_level(c),delay=.5)
+		return
+	invoke(lambda:enter_death_route(c),delay=.5)
+def enter_death_route(c):
+	ui.BlackScreen()
+	st.death_route=True
+	c.position=(200,2.3,-3)
+	sn.BackgroundMusic(m=2)
+	camera.position=(200,.5,-3)
+	st.loading=False
+	c.freezed=False
+def clear_gem_route():
+	for grd in scene.entities[:]:
+		if grd.parent == scene and grd.x > 180:
+			if not (is_box(grd) or grd in (LC.shdw,LC.ACTOR) or isinstance(grd,N.AkuAkuMask) or grd.name == 'firefly' or grd.name == 'point_light' or grd.name == 'object_light'):
+				destroy(grd)
+	del grd
+
+##skull route
+def enter_skull_route(c):
+	ui.BlackScreen()
+	st.skull_route=True
+	c.position=(0,200,-3)
+	sn.BackgroundMusic(m=2)
+	camera.position=(200,.5,-3)
+	st.loading=False
+	c.freezed=False
+def load_skull_route(c):
+	st.loading=True
+	if st.skull_route:
+		invoke(lambda:back_to_level(c),delay=.5)
+		return
+	invoke(lambda:enter_skull_route(c),delay=.5)
+def clear_skull_route(self):
+	for skrp in scene.entities[:]:
+		if skrp.parent == scene and skrp.y > 190:
+			if not (is_box(skrp) or skrp in (LC.shdw,LC.ACTOR) or isinstance(skrp,N.AkuAkuMask) or skrp.name == 'firefly' or skrp.name == 'point_light' or skrp.name == 'object_light'):
+				destroy(skrp)
+	del skrp
+
+##back to normal level
 def back_to_level(c):
 	ui.BlackScreen()
 	c.position=st.checkpoint
+	if st.skull_route:
+		st.skull_route=False
+		st.skull_path_solved=True
+		clear_skull_route()
 	if st.death_route:
 		st.death_route=False
 		st.gem_path_solved=True
@@ -808,30 +862,6 @@ def back_to_level(c):
 	env.set_fog()
 	camera.y=c.y+.5
 	st.loading=False
-
-## gem route
-def load_gem_route(c):
-	st.loading=True
-	if st.death_route:
-		invoke(lambda:back_to_level(c),delay=.5)
-		return
-	invoke(lambda:load_droute(c),delay=.5)
-def load_droute(c):
-	ui.BlackScreen()
-	if st.death_route:
-		c.back_to_level(c)
-		return
-	st.death_route=True
-	c.position=(200,2.3,-3)
-	sn.BackgroundMusic(m=2)
-	camera.position=(200,.5,-3)
-	st.loading,c.freezed=False,False
-def clear_gem_route():
-	for grd in scene.entities[:]:
-		if grd.parent == scene and grd.x > 180:
-			if not (is_box(grd) or grd in (LC.shdw,LC.ACTOR) or isinstance(grd,N.AkuAkuMask) or grd.name == 'firefly' or grd.name == 'point_light' or grd.name == 'object_light'):
-				destroy(grd)
-	del grd
 
 ## npc
 di={0:'x',1:'y',2:'z'}
@@ -1042,6 +1072,7 @@ def preload_object_animation():
 	LC.explode_wave_anim=NodePath(gltf.load_model('res/effects/impact_wave/impact_wave.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 	LC.box_break_anim=NodePath(gltf.load_model('res/box/box_break.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 	LC.checkp_break_anim=NodePath(gltf.load_model('res/box/box_checkpoint.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+	LC.box_explode_anim=NodePath(gltf.load_model('res/box/box_explode.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 	LC.snow_particle=[load_texture(f'res/effects/snow.png')]
 	C.PseudoBox()
 

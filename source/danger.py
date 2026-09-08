@@ -1,4 +1,4 @@
-from ursina import Audio,Entity,color,time,distance,invoke,BoxCollider,Vec3,scene,Vec3,lerp,load_texture
+from ursina import Audio,Entity,color,time,distance,distance_xz,invoke,BoxCollider,Vec3,scene,Vec3,lerp,load_texture
 import _core,status,item,sound,animation,player,_loc,settings,effect,npc,random,math,objects
 from ursina.ursinastuff import destroy
 
@@ -15,31 +15,59 @@ cc=_core
 LC=_loc
 
 ## classes for dangerous objects ingame where causes player damage or death event ###
-inp=f'{omf}l2/wood_log/wood_log'
-class WoodLog(Entity):#level 2
-	def __init__(self,pos):
+dtsm={0:f'{omf}l2/wood_log/wood_log.glb',
+	1:f'{omf}l2/stone_log/stone_log.glb',
+	2:f'{omf}l7/piston/piston.glb'}
+class DeathSmasher(Entity):#level 2
+	def __init__(self,pos,typ,speed=1,wait=1,turn=0):
+		if typ > 2:
+			typ=2
 		s=self
-		super().__init__(model=f'{inp}.ply',texture=f'{inp}.png',name='wdlg',position=pos,scale=(.001,.001,.0015),rotation=(-90,0,0),collider=b)
-		Entity(model='cube',texture=f'{trn}bricks.png',name=s.name,position=(s.x,s.y+.8,s.z-.075),scale=(.5,2,.5),collider=b)
-		Entity(model='cube',texture=f'{trn}bricks.png',name=s.name,position=(s.x,s.y-.1,s.z+.6),scale=(.5,3,.5),texture_scale=(1,2),collider=b)
-		s.danger=True
-		s.or_pos=s.y
-		s.stat=0
-		del pos,s
-	def reset_pos(self):
+		s.glb_model=dtsm[typ]
+		super().__init__(name='wdlg',position=pos,scale=(.3,.4,.3),rotation=(0 if typ != 2 else 180,180 if typ != 2 else 0,0))
+		s.collider=BoxCollider(s,center=Vec3(0,-2.4,0) if typ != 2 else Vec3(0,2.4,0),size=Vec3(1,3,1))
+		an.set_glb_value(s,fps=0,sca=.002)
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
+		if typ != 2:
+			sbcx=.5 if typ == 0 else .7
+			sctt=f'{trn}bricks.png'
+			Entity(model='cube',texture=sctt,name=s.name,position=(s.x,s.y+.8,s.z-.075),scale=(sbcx,2,.5),texture_scale=(1,1))
+			Entity(model='cube',texture=sctt,name=s.name,position=(s.x,s.y-.1,s.z+.6),scale=(sbcx,3,.5),texture_scale=(1,2))
+			del sbcx,sctt
+		s.limit_y=s.y+1.5
+		s.spawn_y=s.y
+		s.speed=speed
+		s.reset_wait=wait
+		s.wait=wait
+		s.stat=turn
+		s.typ=typ
+		del pos,s,typ,speed,turn,wait
+	def refr_function(self):
 		s=self
-		s.y=min(s.y+time.dt,s.or_pos+1.31)
-		if s.y > (s.or_pos+1.3):
-			s.danger=True
-			s.stat=1
-	def stomp(self):
-		s=self
-		s.y=max(s.y-time.dt*4,s.or_pos)
-		if s.y <= s.or_pos:
-			if distance(s,LC.ACTOR) < 2:
-				sn.obj_audio(ID=3)
-			s.danger=False
+		if s.stat == 0:
+			if s.y > s.spawn_y:
+				if s.intersects(LC.ACTOR):
+					cc.get_damage(LC.ACTOR,rsn=2)
+				s.y-=time.dt*s.speed
+				return
+			if s.stat != 1:
+				s.stat=1
+				s.wait=s.reset_wait
+				if distance(s,LC.ACTOR) < 3:
+					if s.typ != 2:
+						sn.obj_audio(ID=3)
+					else:
+						sn.obj_audio(ID=11,pit=.85)
+			return
+		if s.y < s.limit_y:
+			s.y+=time.dt*s.speed
+			return
+		if s.stat != 0:
 			s.stat=0
+			s.wait=s.reset_wait
+			if s.typ == 2:
+				if distance(s,LC.ACTOR) < 5:
+					sn.obj_audio(ID=11,pit=.6)
 	def update(self):
 		s=self
 		if st.gproc():
@@ -48,9 +76,10 @@ class WoodLog(Entity):#level 2
 			s.stat=1
 			s.reset_pos()
 			return
-		if s.intersects(LC.ACTOR) and s.danger:
-			cc.get_damage(LC.ACTOR,rsn=2)
-		{0:s.reset_pos,1:s.stomp}[s.stat]()
+		if s.wait > 0:
+			s.wait-=time.dt
+			return
+		s.refr_function()
 
 rol=f'{omf}l2/role/role'
 class Role(Entity):
@@ -99,6 +128,55 @@ class Role(Entity):
 				return
 			s.is_rolling=False
 			s.danger=False
+
+class IceIcle(Entity):
+	def __init__(self,pos,fall_speed):
+		s=self
+		s.glb_model='res/objects/l2/iceicle/iceicle.glb'
+		super().__init__(position=pos,scale=.4,collider=b)
+		an.set_glb_value(s,fps=30,sca=.0018)
+		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
+		s.fall_speed=fall_speed
+		s.on_ground=False
+		s.falling=False
+		s.target_y=None
+		s.danger=True
+		s.spawn_pos=pos
+		del pos,fall_speed
+	def refr_animation(self):
+		s=self
+		s.new_index+=time.dt*s.fps
+		if s.new_index >= len(s.frames):
+			if s.on_ground:
+				destroy(s)
+				return
+			return
+		an.set_glb_frame(s)
+	def refr_function(self):
+		s=self
+		s.refr_animation()
+		if s.on_ground:
+			return
+		if s.y > s.target_y:
+			s.y-=time.dt*s.fall_speed
+			lps=s.intersects()
+			if lps.entity == LC.ACTOR:
+				cc.get_damage(LC.ACTOR,rsn=4)
+			return
+		if not s.on_ground:
+			s.on_ground=True
+			sn.crate_audio(ID=10,pit=1.1)
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if s.falling:
+			s.refr_function()
+			return
+		if distance_xz(s,LC.ACTOR) < 1:
+			s.falling=True
+			s.target_y=LC.ACTOR.y+.1
+			sn.pc_audio(ID=1,pit=2)
 
 class SewerGlowIron(Entity):
 	def __init__(self,pos,sca):

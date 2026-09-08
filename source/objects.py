@@ -236,7 +236,8 @@ dms={0:'l1/bush/bush',#2D
 	13:'l8/polar_sky/polar_sky',#3D
 	14:'l1/mushroom/single_mushroom',
 	15:'l1/mushroom/multi_mushroom',
-	16:'l1/bush/bush'}#3D
+	16:'l1/bush/bush',
+	17:'l2/ice_ceiling/ice_ceiling'}#3D
 class ObjType_Deco(Entity):#UL=unlit Flag, htb=HitBox
 	def __init__(self,ID,pos,sca,rot,col=color.white,UL=False,htb=False):
 		s=self
@@ -513,7 +514,6 @@ class Ropes(Entity):
 		super().__init__(model='cube',scale=(.03,.03,le),name='snrp',texture=rpt,position=pos,texture_scale=(1,le*8),origin_z=-.5)
 		s.dup=Entity(model='cube',scale=s.scale,name=s.name,position=(s.x+.95,s.y,s.z),texture=rpt,texture_scale=(1,le*8),origin_z=s.origin_z)
 		del pos,le,s
-
 
 #####################
 ## leve 3 objects ###
@@ -904,6 +904,36 @@ class BonusPlatform(Entity):## switch -> bonus round
 			return
 		if LC.ACTOR.freezed and LC.ACTOR.y < s.fixx_y and distance_xz(LC.ACTOR,s) < .3:
 			s.refr()
+
+class SkullPlatform(Entity):
+	def __init__(self,pos,typ):
+		if typ > 2:
+			typ=2
+		s=self
+		s.mesh_info=f'{omf}ev/skull_ptf/{typ}'
+		s.lock_mesh=f'{omf}ev/skull_ptf_e/0'
+		super().__init__(model=wfc,name='skptf',position=pos,scale=(1,.1,1),visible=False,collider=b)
+		s.opt_model=Entity(model=f'{s.mesh_info}.ply',texture=f'{s.mesh_info}.png',scale=.001,rotation_x=-90,position=s.position)
+		s.locked=False
+		s.start_y=s.y
+		s.typ=typ
+		del pos,typ
+	def switch_model(self):
+		s=self
+		s.collider=None
+		s.opt_model.model=f'{s.lock_mesh}.ply'
+		s.opt_model.texture=f'{s.lock_mesh}.png'
+		s.opt_model.color=color.white
+		s.opt_model.unlit=False
+	def update(self):
+		if st.gproc() or self.locked:
+			return
+		s=self
+		s.opt_model.y=s.y
+		if st.fails > 0:
+			if not s.locked:
+				s.locked=True
+				s.switch_model()
 
 class GemPlatform(Entity):## gem platform
 	def __init__(self,pos,t,na=False):
