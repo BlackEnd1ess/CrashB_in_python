@@ -11,6 +11,8 @@ c=crate
 n=npc
 U=-3
 
+SKULL_PTF=True
+
 def map_setting():
 	LC.FOG_L_COLOR=color.black
 	LC.FOG_B_COLOR=color.black

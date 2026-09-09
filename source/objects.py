@@ -914,6 +914,7 @@ class SkullPlatform(Entity):
 		s.lock_mesh=f'{omf}ev/skull_ptf_e/0'
 		super().__init__(model=wfc,name='skptf',position=pos,scale=(1,.1,1),visible=False,collider=b)
 		s.opt_model=Entity(model=f'{s.mesh_info}.ply',texture=f'{s.mesh_info}.png',scale=.001,rotation_x=-90,position=s.position)
+		s.enter_unlock=False
 		s.locked=False
 		s.start_y=s.y
 		s.typ=typ
@@ -929,11 +930,17 @@ class SkullPlatform(Entity):
 		if st.gproc() or self.locked:
 			return
 		s=self
+		if st.skull_path_solved and not st.skull_route:
+			destroy(s)
+			return
+		if st.skull_route:
+			s.enter_unlock=True
 		s.opt_model.y=s.y
-		if st.fails > 0:
-			if not s.locked:
-				s.locked=True
-				s.switch_model()
+		if s.enter_unlock or st.fails == 0:
+			return
+		if not s.locked:
+			s.locked=True
+			s.switch_model()
 
 class GemPlatform(Entity):## gem platform
 	def __init__(self,pos,t,na=False):

@@ -7,8 +7,8 @@ checkpoint=None
 WARP_ROOM_MUSIC=1
 
 ## game progress items
-COLOR_GEM=[]
-CLEAR_GEM=[]
+COLOR_GEM=[1,2,3,4,5]
+CLEAR_GEM=[1,2,3,4,5]
 CRYSTAL=[]
 RELIC=[]
 

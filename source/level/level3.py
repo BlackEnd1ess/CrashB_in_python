@@ -13,7 +13,8 @@ c=crate
 n=npc
 U=-3
 
-GEM_VNUM=4
+SKULL_PTF=False
+GEM_VNUM=5
 
 def map_setting():
 	LC.FOG_L_COLOR=color.rgb32(25,45,25)

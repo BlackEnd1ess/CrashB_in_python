@@ -7,7 +7,7 @@ sys.dont_write_bytecode=True
 loadPrcFileData('','model-cache-dir ')
 loadPrcFileData('','model-cache-textures 0')
 
-app=Ursina(title='Cresh B - Retro Treveler v1.5',icon='res/cb.ico')
+app=Ursina(title='Cresh B - Retro Treveler v1.6',icon='res/cb.ico')
 def game():
 	#_debug_.COUNT_ENGINE_READ_FILE(typ=1)
 	settings.load()

@@ -284,27 +284,20 @@ class Fireball(Entity):
 			destroy(s)
 
 class LightFire(Entity):
-	def __init__(self,pos,lft=None):
+	def __init__(self,pos):
 		s=self
 		if len(LC.fre_texture) <= 0:
 			LC.fre_texture=[load_texture(f'res/effects/fire/fire_{cbx}.png') for cbx in range(31+1)]
-		super().__init__(model=q,texture=LC.fre_texture[0],position=pos,scale=.4,unlit=False)
+		super().__init__(model=q,texture=LC.fre_texture[0],name='lgtfr',position=pos,scale=.4,unlit=False)
 		s.max_frm=len(LC.fre_texture)-1
-		s.life_time=lft
 		s.spd=12
 		s.frm=0
-		del pos,lft,s
+		del pos,s
 	def update(self):
 		if st.gproc():
 			return
-		s=self
-		if s.life_time:
-			s.life_time-=time.dt
-			if s.life_time <= 0:
-				destroy(s)
-				return
-		cc.incr_frm(s,s.spd)
-		cc.set_instance_texture(s,LC.fre_texture[int(s.frm)])
+		cc.incr_frm(self,self.spd)
+		cc.set_instance_texture(self,LC.fre_texture[int(self.frm)])
 
 class FireThrow(Entity):
 	def __init__(self,pos,ro_y):
@@ -350,8 +343,8 @@ class ElectroBall(Entity):
 
 class WeatherSnow(Entity):
 	def __init__(self,p_count,p_speed):
-		super().__init__()
-		self.particles=[Entity(model=q,texture=LC.snow_particle[0],scale=0,position=(LC.ACTOR.x+random.uniform(-5.5,5.5),camera.y+random.uniform(.7,1.4),LC.ACTOR.z+random.uniform(.5,4))) for _ in range(p_count)]
+		super().__init__(name='snw_ptc')
+		self.particles=[Entity(model=q,texture=LC.snow_particle[0],scale=0,name='snw_ptc',position=(LC.ACTOR.x+random.uniform(-5.5,5.5),camera.y+random.uniform(.7,1.4),LC.ACTOR.z+random.uniform(.5,4))) for _ in range(p_count)]
 		self.speed=1.25
 		for mpp in self.particles:
 			mpp.scale=0

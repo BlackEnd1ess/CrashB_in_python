@@ -78,13 +78,14 @@ def load_object():
 	Entity(model='cube',scale=(16,1,16),y=-.5,texture_scale=(16,16),collider='box',texture='white_cube',alpha=1)
 	o.StartRoom(pos=(0,0,-8.1))
 	o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
-	o.SkullPlatform(pos=(0,.2,0),typ=0)
+	#o.SkullPlatform(pos=(0,.2,0),typ=0)
 	#o.SkullPlatform(pos=(1,.2,0),typ=1)
 	#o.SkullPlatform(pos=(2,.2,0),typ=2)
 	#dg.IceIcle(pos=(1,2,0),fall_speed=4)
 
 def load_crate():
 	CZ=0
+	mt.box_wall_mixxed(POS=(0,.16,0),ID=(1,4))
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.32),CNT=[3,2,2])
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.64),CNT=[3,1,3])

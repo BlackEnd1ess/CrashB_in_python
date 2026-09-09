@@ -173,7 +173,8 @@ class Penguin(Entity):
 			s.is_spin=False
 			s.is_dizzy=True
 			s.spin_time=1
-			sn.npc_audio(ID=22)
+			if distance(s,LC.ACTOR) < LC.NPC_SND_DISTANCE:
+				sn.npc_audio(ID=22)
 			s.switch_model(2)
 	def dizzy_action(self):
 		s=self

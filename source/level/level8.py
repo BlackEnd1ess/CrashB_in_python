@@ -11,6 +11,7 @@ c=crate
 n=npc
 U=-3
 
+SKULL_PTF=False
 GEM_VNUM=5
 
 def map_setting():

@@ -72,7 +72,7 @@ def crate_audio(ID,pit=1):
 		return
 	st.br_sn=.1 if ID == 2 else 0
 	st.ex_sn=.1 if ID == 9 else 0
-	st.ni_sn=.01 if ID == 10 else 0
+	st.ni_sn=.001 if ID == 10 else 0
 	ca=Audio(f'{SF}{sfx_db.CRATE[ID]}.wav',pitch=pit,volume=se.SFX_VOLUME*2,add_to_scene_entities=False)
 	destroy(ca,delay=ca.length+vq)
 
@@ -134,7 +134,7 @@ class BackgroundMusic(Audio):
 		kt=f'{MC}level/{sfx_db.MUSIC[ix]}.mp3'
 		if m == 1:
 			kt=f'{MC}bonus/{sfx_db.MUSIC[ix]}.mp3'
-		if m == 2:
+		if m in (2,3):
 			kt=f'{MC}special/{sfx_db.MUSIC[ix]}.mp3'
 		if not kt:
 			kt=f'{MC}level/{sfx_db.MUSIC[0]}.mp3'
@@ -149,7 +149,7 @@ class BackgroundMusic(Audio):
 		destroy(s)
 	def check_scene(self):
 		s=self
-		if st.game_over or (s.mode == 0 and (st.bonus_round or st.death_route)) or (s.mode == 1 and (st.bonus_solved or not st.bonus_round)) or (s.mode == 2 and (not st.death_route or st.gem_path_solved)):
+		if st.game_over or (s.mode == 0 and (st.bonus_round or st.death_route or st.skull_route)) or (s.mode == 1 and (st.bonus_solved or not st.bonus_round)) or (s.mode == 2 and (not st.death_route or st.gem_path_solved)) or (s.mode == 3 and (not st.skull_route or st.skull_path_solved)):
 			s.rmv_music()
 	def update(self):
 		s=self

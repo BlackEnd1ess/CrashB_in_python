@@ -5,7 +5,7 @@ st=status
 cc=_core
 LC=_loc
 
-ANIMATED=('ldmn','wtmn','toxic_barrel','jungle_leaf','jungle_bush','bird','butterfly','wmpf','mptf','HPP','rmdr','mnks','loos')
+ANIMATED=('ldmn','wtmn','toxic_barrel','jungle_leaf','jungle_bush','bird','butterfly','wmpf','HPP','rmdr','mnks','loos','plnk','lgtfr')
 CORRIDOR='obj_type__corridor'
 BLOCK='obj_type__block'
 SCENE='obj_type__scene'
@@ -22,6 +22,9 @@ class ManageObjects(Entity):
 		s.is_done=False
 		s.default_dst_z=LC.RCZ/2
 		s.item_dst_z=16
+		s.block_dst=8
+		s.npc_dst=12
+		s.box_dst=10
 		s.tme=0
 		s.init_list()
 	def init_list(self):
@@ -37,14 +40,15 @@ class ManageObjects(Entity):
 		for v in s.culling_entity:
 			if not v:
 				continue
-			AZ=LC.ACTOR
-			dx=distance(AZ,v)
+			dx=distance(LC.ACTOR,v)
 			if cc.is_box(v):
-				v.visible=not((AZ.z > v.z+s.item_dst_z) or (AZ.z < v.z-s.default_dst_z))
+				v.visible=dx < s.box_dst
 			elif cc.is_enemie(v) and v.vnum != 15:
-				v.enabled=not((AZ.z > v.z+s.item_dst_z) or (AZ.z < v.z-s.default_dst_z))
-			elif (v.name == SCENE) or (v.name in ROOM) or (v.name in (CORRIDOR,BLOCK,FLOOR,WALL,DECO)):
+				v.enabled=dx < s.npc_dst
+			elif (v.name == SCENE) or (v.name in ROOM) or (v.name in (CORRIDOR,FLOOR,WALL,DECO)):
 				v.enabled=dx < LC.RCZ
+			elif v.name == BLOCK:
+				v.enabled=dx < s.block_dst
 			else:
 				v.enabled=dx < s.item_dst_z
 	def update(self):

@@ -11,7 +11,8 @@ c=crate
 n=npc
 U=-3
 
-GEM_VNUM=5
+SKULL_PTF=False
+GEM_VNUM=2
 
 def map_setting():
 	LC.FOG_L_COLOR=color.white
@@ -48,7 +49,7 @@ def load_object():
 	o.ObjType_Water(pos=(12,-.5,-32),sca=(32,128),al=1,rot=(0,0,0),txs=(32*2,64*2),col=color.cyan,spd=0)
 	o.ObjType_Water(pos=(51,4.5,23.5),sca=(64,40),al=1,rot=(0,0,0),txs=(64*2,40*2),col=color.cyan,spd=0)
 	Entity(model='quad',scale=(256,128,1),color=color.white,z=64)
-	effect.WeatherSnow(p_count=350,p_speed=2.5)
+	effect.WeatherSnow(p_count=340,p_speed=2.5)
 	#iceicle
 	dg.IceIcle(pos=(4,3.1,2.5),fall_speed=3)
 	dg.IceIcle(pos=(6.2,3.8,2.5),fall_speed=3)
@@ -232,7 +233,6 @@ def load_crate():
 	c.spawn(ID=8,p=(22,3.2+.16,2.5))
 	mt.crate_plane(ID=1,POS=(22,h3,5.5),CNT=[1,2])
 	c.spawn(ID=3,p=(23.2,5.45+.16,13))
-	c.spawn(ID=10,p=(42.8,6.4+.16,37.7))
 	c.spawn(ID=5,p=(5.3,2.2+.16,2.5))
 	c.spawn(ID=5,p=(23.9,h3,6.8))
 	if not st.level_index in st.COLOR_GEM:
@@ -242,12 +242,17 @@ def load_crate():
 	c.spawn(ID=6,p=(3.2,1.23+.16,2.5))
 	c.spawn(ID=6,p=(23,h3,4.2))
 	c.spawn(ID=6,p=(23.4,h3,26.6))
+	mt.box_wall_mixxed(POS=(0,.925+.16,-42.9),ID=(1,2))
+	mt.box_wall_mixxed(POS=(-1,.925+.16,-22.1),ID=(2,1))
+	mt.box_quad_mixxed(POS=(-.15,.7+.16,-32),ID=(1,12))
 	mt.crate_wall(ID=14,POS=(-1,1.23+.16,2.5),CNT=[1,2])
 	mt.crate_wall(ID=14,POS=(12,2.79,2.5),CNT=[1,1])
 	mt.crate_plane(ID=14,POS=(22.7,5.54,21.1),CNT=[2,2])
 	mt.crate_wall(ID=4,POS=(37,5.96,27),CNT=[1,1])
 	mt.crate_wall(ID=1,POS=(38.4,5.96,30),CNT=[1,1])
 	mt.crate_plane(ID=1,POS=(42.8,6+.16,29.9),CNT=[2,1])
+	mt.box_wall_mixxed(POS=(40.7,6.4+.16,37),ID=(2,1))
+	mt.box_wall_mixxed(POS=(42.8,6.4+.16,38.4),ID=(1,11))
 def load_wumpa():
 	whl=1.2
 	mt.wumpa_wall(POS=(-.2,.95,-53),CNT=[2,1])
@@ -259,11 +264,13 @@ def load_wumpa():
 	mt.wumpa_double_row(POS=(14,2.85,2.5),CNT=4)
 	mt.wumpa_double_row(POS=(26,5.6,27),CNT=5)
 	mt.wumpa_wall(POS=(22.7,5.55,18.9),CNT=[2,2])
+	mt.wumpa_row(POS=(41.5,6.1,33.8),CNT=6,WAY=1)
 def load_npc():
 	n.spawn(ID=4,POS=(23,5.375,24),RNG=.3)
 	n.spawn(ID=5,POS=(0,.92,1),DRC=2)
 	n.spawn(ID=6,POS=(14.5,2.65,2.4))
 	n.spawn(ID=5,POS=(30.5,5.35,26.9),RNG=.5)
+	n.spawn(ID=6,POS=(42,6.4,37.6),RNG=1)
 
 ## bonus level / gem path
 def bonus_zone():
@@ -295,9 +302,85 @@ def bonus_zone():
 
 def gem_zone():
 	cblu=color.rgb32(180,180,200)
-	o.ObjType_Deco(ID=17,sca=.5,pos=(199,2,-2.2),rot=(90,-90,0),col=cblu)
-	o.ObjType_Deco(ID=17,sca=.5,pos=(204.85,2,-2.2),rot=(90,-90,0),col=cblu)
+	o.ObjType_Deco(ID=17,sca=.5,pos=(199,2,-2.1),rot=(90,-90,0),col=cblu)
+	o.ObjType_Deco(ID=17,sca=.5,pos=(204.85,2,-2.1),rot=(90,-90,0),col=cblu)
+	o.ObjType_Deco(ID=17,sca=.5,pos=(204.85+5.85,2,-2.1),rot=(90,-90,0),col=cblu)
+	o.ObjType_Water(pos=(220,.65,40),sca=(64,100),al=1,rot=(0,0,0),txs=(64,100),col=color.cyan,spd=0)
+	o.GemPlatform(pos=(214.4,2.7,37.2),t=GEM_VNUM)
+	for wce in range(9):
+		o.ObjType_Deco(ID=17,sca=.5,pos=(213.3,5.2,.85+5.85*wce),rot=(90,180,0),col=cblu)
+		o.ObjType_Deco(ID=17,sca=.5,pos=(215.5,5.2,-.75+5.85*wce),rot=(90,0,0),col=cblu)
+		o.ObjType_Deco(ID=17,sca=.5,pos=(213.3,2.5,.85+5.85*wce),rot=(90,180,0),col=cblu)
+		o.ObjType_Deco(ID=17,sca=.5,pos=(215.5,2.5,-.75+5.85*wce),rot=(90,0,0),col=cblu)
+		o.ObjType_Deco(ID=17,sca=.5,pos=(213.3,-.2,.85+5.85*wce),rot=(90,180,0),col=cblu)
+		o.ObjType_Deco(ID=17,sca=.5,pos=(215.5,-.2,-.75+5.85*wce),rot=(90,0,0),col=cblu)
+	del wce
+	o.ObjType_Deco(ID=17,sca=.5,pos=(213,3,38),rot=(90,-90,0),col=cblu)
+	#inv wall
+	o.InvWall(pos=(200,3.5,-2.5),sca=(8,20,.4))
+	o.InvWall(pos=(205,4,-2.5),sca=(5,20,.4))
+	o.InvWall(pos=(209,4.7,-2.5),sca=(8,20,.4))
+	o.InvWall(pos=(213.3,4.7,17.5),sca=(.8,20,40))
+	o.InvWall(pos=(215.3,4.7,15),sca=(.3,20,40))
+	o.InvWall(pos=(213,4.7,38),sca=(10,20,.3))
+	#blocks
 	o.spw_block(ID=1,ro_y=180,p=(200,0,U),vx=[1,1])
-	#o.GemPlatform(pos=(1.1,1.1,-22.2),t=GEM_VNUM)
-	#o.InvWall(pos=(200-2.3,3,50),sca=(1,10,128))
 	o.multi_ice_floor(pos=(201,0,U),cnt=[3,1])
+	o.multi_ice_floor(pos=(204.5,.3,U),cnt=[1,1])
+	o.multi_ice_floor(pos=(206.5,.6,U),cnt=[1,1])
+	o.multi_ice_floor(pos=(208,.6,U),cnt=[8,1])
+	o.multi_ice_floor(pos=(214,.6,-2),cnt=[2,4])
+	o.ObjType_Movable(ID=1,pos=(214.3,1.5,2.5),ptm=0)
+	o.ObjType_Movable(ID=1,pos=(214.3,1.5,4),ptm=0)
+	o.multi_ice_floor(pos=(214,.6,5.5),cnt=[2,2])
+	o.multi_ice_floor(pos=(214,.6,8.5),cnt=[1,5])
+	o.multi_ice_floor(pos=(214,.6,14),cnt=[2,2])
+	o.multi_ice_floor(pos=(214.5,.9,17),cnt=[1,4])
+	o.multi_ice_floor(pos=(214.5,1.5,20.5),cnt=[1,8])
+	o.spw_block(ID=1,ro_y=180,p=(214.5,1.5,28.5),vx=[1,2])
+	o.spw_block(ID=1,ro_y=180,p=(214,1.5,34.5),vx=[2,4])
+	#danger
+	dg.DeathSmasher(pos=(204.7,1.3+1.65,-3.15),typ=0,turn=1,speed=3,wait=1)
+	dg.DeathSmasher(pos=(207.9,1.6+1.65,-3.15),typ=1,turn=1,speed=3,wait=.5)
+	#dg.DeathSmasher(pos=(208.7,1.6+1.65,-3.15),typ=1,turn=0,speed=3,wait=.5)
+	dg.DeathSmasher(pos=(209.5,1.6+1.65,-3.15),typ=1,turn=1,speed=3,wait=.5)
+	dg.DeathSmasher(pos=(212.8,1.6+1.65,-3.15),typ=0,turn=1,speed=4,wait=.3)
+	#crates
+	c.spawn(ID=3,p=(201.3,1+.16,U))
+	c.spawn(ID=5,p=(201.3,2.5,U))
+	c.spawn(ID=2,p=(204.2,1.3+.16,U))
+	c.spawn(ID=11,p=(206.7,1.6+.16,U))
+	c.spawn(ID=5,p=(214.5,1.6+.16,-1.8))
+	c.spawn(ID=3,p=(214.6,1.6+.16,.9))
+	c.spawn(ID=4,p=(214.2,1.6+.16,12.6))
+	c.spawn(ID=9,p=(214.5,2.5+.16,28.5),m=27)
+	mt.crate_row(ID=13,POS=(214.5,2.5,30.4),CNT=10,WAY=1,l=1,m=27)
+	mt.crate_row(ID=13,POS=(214.5,2.5-.32,30.4),CNT=10,WAY=1,l=12,m=27)
+	mt.box_quad_mixxed(POS=(202,1.16,-3.2),ID=(2,3))
+	mt.crate_row(ID=12,POS=(214,1.6+.16,-.6),CNT=5,WAY=0)
+	mt.crate_row(ID=1,POS=(214.7,1.6+.16,5.4),CNT=3,WAY=1)
+	c.spawn(ID=12,p=(214.7,1.6+.16,6.7))
+	c.spawn(ID=12,p=(214.2,1.6+.16,10))
+	c.spawn(ID=12,p=(214.7,1.6+.16,13.9))
+	c.spawn(ID=12,p=(214,1.6+.16,15.2))
+	mt.crate_row(ID=12,POS=(214.1,1.9+.16,19.8),CNT=4,WAY=0)
+	mt.crate_row(ID=12,POS=(214,2.5+.16,20.7),CNT=8,WAY=1)
+	mt.crate_row(ID=12,POS=(215,2.5+.16,20.7),CNT=8,WAY=1)
+	mt.crate_row(ID=3,POS=(214.3,2.5+.16,25),CNT=4,WAY=1)
+	mt.crate_row(ID=3,POS=(214.3,4.3,25),CNT=4,WAY=1)
+	mt.crate_row(ID=1,POS=(214.5,2.5+.16,21),CNT=5,WAY=1)
+	mt.box_quad_mixxed(POS=(214.3,1.6+16,.4),ID=(1,2))
+	mt.box_wall_mixxed(POS=(214.5,2.5+.16,36.2),ID=(1,4))
+	c.spawn(ID=10,p=(214.7,2.5+.16,35.3))
+	#wumpa
+	mt.wumpa_row(POS=(202.7,1.25,U),CNT=3,WAY=0)
+	mt.wumpa_row(POS=(210.1,1.8,U),CNT=8,WAY=0)
+	mt.wumpa_row(POS=(214.1,1.8,.1),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(214.1,1.8,5.4),CNT=5,WAY=1)
+	mt.wumpa_row(POS=(214.1,1.8,8.3),CNT=4,WAY=1)
+	mt.wumpa_row(POS=(214.1,1.8,10.7),CNT=4,WAY=1)
+	mt.wumpa_row(POS=(214.5,2.1,17),CNT=8,WAY=1)
+	mt.wumpa_row(POS=(214.5,2.1,26.4),CNT=8,WAY=1)
+	#npc
+	n.spawn(ID=6,POS=(214.1,1.6,-3.1),RNG=.5,DRC=0)
+	n.spawn(ID=6,POS=(214.7,2.5,25.6),RNG=1,DRC=2)

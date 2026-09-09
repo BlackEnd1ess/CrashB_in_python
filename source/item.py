@@ -67,24 +67,20 @@ class ExtraLive(Entity):
 		s=self
 		super().__init__(model='quad',texture=lfic,name='exlf',position=pos,scale=(.4,.3),collider=None,unlit=False)
 		s.collider=BoxCollider(s,size=Vec3(1.25,1.25,1.25))
-		s.follow=False
+		s.collected=False
 		del pos,s
 	def collect(self):
 		cc.give_extra_live()
 		destroy(self)
-	def p_follow(self):
-		s=self
-		if distance(s,LC.ACTOR) < .6:
-			s.follow=True
 	def update(self):
 		s=self
 		if st.death_event:
 			destroy(s)
 			return
-		if s.follow:
-			s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.2,LC.ACTOR.z),time.dt*20)
-			return
-		s.p_follow()
+		if not s.collected:
+			if distance(s,LC.ACTOR) < .5:
+				s.collected=True
+				s.collect()
 
 sh=f'{i_path}gemstone/gem_shine.png'
 class GemStone(Entity):

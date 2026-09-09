@@ -12,6 +12,7 @@ c=crate
 n=npc
 U=-3
 
+SKULL_PTF=True
 GEM_VNUM=4
 
 def map_setting():
@@ -32,6 +33,8 @@ def start_load():
 	bonus_zone()
 	if GEM_VNUM in st.COLOR_GEM or settings.debg:
 		gem_zone()
+	if SKULL_PTF:
+		skull_zone()
 	load_object()
 	load_wumpa()
 	load_npc()
@@ -42,6 +45,7 @@ def load_object():
 	o.StartRoom(pos=(0,0,-64.2))
 	o.BonusPlatform(pos=(9+.75*6,.5,-22))
 	o.GemPlatform(pos=(16.9,.4,-.1),t=GEM_VNUM)
+	o.SkullPlatform(pos=(35.5,1.1,4.7),typ=1)
 	dg.FallingZone(pos=(0,-2,0),s=(150,.3,128))
 	o.ObjType_Background(ID=3,sca=(800,120),pos=(50,-38,128),col=color.rgb32(160,160,170),txa=(2,1),UL=True)
 	o.ObjType_Floor(ID=5,pos=(0,blh,-56),sca=(.03,.03,.03),rot=(0,-90,0))
@@ -140,10 +144,6 @@ def load_object():
 	o.spw_block(ID=4,ro_y=-90,p=(53.2+.75*3,blk,15+.75*10),vx=[1,1])
 	o.spw_block(ID=4,ro_y=-90,p=(53.2+.75*3,blk,15+.75*12),vx=[1,4])
 	o.spw_block(ID=4,ro_y=-90,p=(53.2+.75*4,blk,15+.75*13),vx=[1,1])
-	#red gem path
-	o.spw_block(ID=4,ro_y=-90,p=(42.75,-.5,-1.4),vx=[3,3])
-	#all gem path
-	o.spw_block(ID=4,ro_y=-90,p=(59.5,blk,15.75),vx=[3,2])
 	#sculpts
 	dg.MonkeySculpture(typ=1,pos=(3.8,.2,-55),ro_y=90)
 	dg.MonkeySculpture(typ=2,p_wait=5,pos=(1.7,.3,-42.4),ro_y=90)
@@ -159,12 +159,6 @@ def load_object():
 	dg.MonkeySculpture(typ=2,p_wait=5,pos=(51.4,1.1,17.2),ro_y=90)
 	dg.MonkeySculpture(typ=2,p_wait=5,pos=(53.4,1.1,18.7),ro_y=-90)
 	dg.MonkeySculpture(typ=2,p_wait=5,pos=(51.4,1.1,20.2),ro_y=90)
-	#pseudo gem pltf
-	o.PseudoGemPlatform(pos=(43.5,-.52,3.5),t=2)
-	o.PseudoGemPlatform(pos=(43.5,-.52,2),t=2)
-	o.PseudoGemPlatform(pos=(55.1,1.1,15.7),t=5)
-	o.PseudoGemPlatform(pos=(56.6,1.1,15.7),t=5)
-	o.PseudoGemPlatform(pos=(58.1,1.1,15.7),t=5)
 	# background objects
 	ccw=color.white
 	sk=.03
@@ -194,7 +188,7 @@ def load_object():
 	o.ObjType_Wall(ID=3,pos=(13,-.8,2),ro_y=90,sca=sk)
 	o.ObjType_Wall(ID=3,pos=(16,-.7,4),ro_y=90,sca=sk)
 	o.ObjType_Wall(ID=3,pos=(19,-.8,2),ro_y=90,sca=sk)
-	o.ObjType_Scene(ID=9,pos=(23,-1,7),ro_y=-70,sca=.08)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(23,-1,7),ro_y=-70,sca=.08)
 	o.ObjType_Wall(ID=3,pos=(26,-.7,8),ro_y=90,sca=sk)
 	o.ObjType_Wall(ID=3,pos=(29,-.7,10),ro_y=90,sca=sk)
 	o.ObjType_Wall(ID=3,pos=(31,0,9),ro_y=90,sca=sk)
@@ -202,8 +196,8 @@ def load_object():
 	o.ObjType_Wall(ID=3,pos=(33,.3,12),ro_y=0,sca=sk)
 	o.ObjType_Wall(ID=3,pos=(36,-.5,7.3),ro_y=90,sca=sk)
 	####o.RuinRuins(pos=(37.5,-.6,7),ro_y=45,typ=1)
-	o.ObjType_Scene(ID=9,pos=(48,-.8,-4),ro_y=100,sca=.08)
-	o.ObjType_Scene(ID=9,pos=(40,-.8,-3.5),ro_y=-100,sca=.08)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(48,-.8,-4),ro_y=100,sca=.08)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(40,-.8,-3.5),ro_y=-100,sca=.08)
 	o.ObjType_Wall(ID=3,pos=(36,.6,12),ro_y=90,sca=sk)
 	o.ObjType_Wall(ID=3,pos=(39,.6,14),ro_y=90,sca=sk)
 	o.ObjType_Wall(ID=3,pos=(42,.6,10),ro_y=90,sca=sk)
@@ -262,12 +256,6 @@ def load_crate():
 	c.spawn(ID=11,p=(52.5,1.26,5.4))
 	c.spawn(ID=11,p=(27.7,.84,4.6))
 	c.spawn(ID=11,p=(26.6,.3+.16,4.6))
-	c.spawn(ID=7,p=(43,-.5+.16,-1))
-	c.spawn(ID=9,p=(43,1.6,-1),m=102)
-	for ffc_x in range(5):
-		for ffc_z in range(2):
-			c.spawn(ID=13,p=(59.6+.32*ffc_x,1.1+.16,16+.32*ffc_z),m=102,l=r.choice([1,2,7]))
-	mt.crate_plane(ID=2,POS=(44,-.5+.16,-1.5),CNT=[2,2])
 	#aku
 	c.spawn(ID=5,p=(4.8,.36,-56))
 	c.spawn(ID=5,p=(13.1,.36,-5.5))
@@ -331,7 +319,7 @@ def bonus_zone():
 	mt.crate_stair(ID=1,POS=(26.8+.32*9,-36.3+.32*3,U),CNT=4,WAY=1)
 	mt.bounce_twin(POS=(26.8+.32*4,-36.3+.32*4,U),CNT=5)
 	#
-	mt.crate_wall(ID=14,POS=(8.2,-35.34,U),CNT=[1,3])
+	mt.crate_wall(ID=14,POS=(8.2,-35.34,U),CNT=[1,2])
 	c.spawn(ID=12,p=(4.4,-35.84,U))
 	c.spawn(ID=12,p=(16.3,-36,U))
 	c.spawn(ID=12,p=(17.7,-36,U))
@@ -388,13 +376,19 @@ def gem_zone():
 	dg.FallingZone(pos=(200,-5,0),s=(40,1,80))
 	o.spw_block(ID=4,ro_y=-90,p=(200,bnh,U),vx=[1,1])
 	o.spw_block(ID=4,ro_y=-90,p=(200,bnh,U+1.5),vx=[2,1])
+	o.LoosePlatform(pos=(206.5,-2.5,1),t=0)
+	o.LoosePlatform(pos=(206.5,-2.5,2.5),t=1)
+	o.LoosePlatform(pos=(206.5,-2.5,4),t=0)
+	o.LoosePlatform(pos=(206.5,-2.5,5.5),t=1)
+	dg.MonkeySculpture(typ=2,p_wait=3,pos=(206.5-1,-2.5,1),ro_y=90)
+	dg.MonkeySculpture(typ=2,p_wait=6,pos=(206.5+1,-2.5,2.5),ro_y=-90)
+	dg.MonkeySculpture(typ=2,p_wait=3,pos=(206.5-1,-2.5,4),ro_y=90)
+	dg.MonkeySculpture(typ=2,p_wait=6,pos=(206.5+1,-2.5,5.5),ro_y=-90)
 	for rn_a in range(3):
 		o.spw_block(ID=4,ro_y=-90,p=(200+(.75*3+rn_a*1.5),bnh,U+1.5),vx=[1,1])
 	del rn_a
 	o.spw_block(ID=4,ro_y=-90,p=(206.5,bnh,U+1.5),vx=[2,1])
-	for rn_b in range(5):
-		o.spw_block(ID=4,ro_y=-90,p=(200.5+.75*8,bnh,U+(.75*3+rn_b*1.5)),vx=[1,1])
-	del rn_b
+	o.spw_block(ID=4,ro_y=-90,p=(200.5+.75*8,bnh,U+.75*3),vx=[1,1])
 	o.spw_block(ID=4,ro_y=-90,p=(206.4-.75,bnh,6.8),vx=[2,1])
 	for rn_c in range(7):
 		o.spw_block(ID=4,ro_y=-90,p=(202+(.75*3-rn_c*1.5),bnh,U+.75*13),vx=[1,1])
@@ -409,17 +403,24 @@ def gem_zone():
 		o.LoosePlatform(pos=(194,-2.6,19.5+llpf*1.5),t=0)
 	del llpf
 	o.spw_block(ID=4,ro_y=-90,p=(193.25,bnh,31.6),vx=[4,2])
-	dg.MonkeySculpture(typ=1,p_wait=5,pos=(194-1,-2.6,21),ro_y=90)
-	dg.MonkeySculpture(typ=1,p_wait=5,pos=(194+1,-2.6,24),ro_y=-90)
-	dg.MonkeySculpture(typ=1,p_wait=5,pos=(194-1,-2.6,27),ro_y=90)
+	dg.MonkeySculpture(typ=2,p_wait=5,pos=(194-1,-2.6,21),ro_y=90)
+	dg.MonkeySculpture(typ=2,p_wait=5,pos=(194+1,-2.6,24),ro_y=-90)
+	dg.MonkeySculpture(typ=2,p_wait=5,pos=(194-1,-2.6,27),ro_y=90)
 	# npc
-	n.spawn(ID=14,POS=(206.4,-2.5,7.1),DRC=0)
-	n.spawn(ID=14,POS=(195.2,-2.5,6.75),DRC=3)
-	n.spawn(ID=14,POS=(206.75,-2.5,-1.5),DRC=1)
-	n.spawn(ID=14,POS=(194,-2.5,15.6),DRC=0)
+	n.spawn(ID=14,POS=(207.3,-2.5,-1.5),DRC=3)
+	n.spawn(ID=14,POS=(194,-2.5,15.6),DRC=2)
+	n.spawn(ID=8,POS=(204.3,-2.5,6.8),CMV=False)
+	n.spawn(ID=8,POS=(201.2,-2.5,6.8),CMV=False)
+	n.spawn(ID=8,POS=(198.1,-2.5,6.8),CMV=False)
+	n.spawn(ID=8,POS=(195.2,-2.5,6.8),CMV=False)
+	n.spawn(ID=9,POS=(194,-2.5,7.5),DRC=2,RNG=1)
+	#box
+	mt.crate_wall(ID=12,POS=(202.5,-2.5+.16,7),CNT=[1,2])
+	mt.crate_plane(ID=12,POS=(200,-2.5+.16,6.5),CNT=[1,3])
+	mt.crate_wall(ID=12,POS=(196.5,-2.5+.16,6.5),CNT=[1,2])
 	#background
-	o.ObjType_Scene(ID=9,pos=(197.5,-4,0),ro_y=-60,sca=.08)
-	o.ObjType_Scene(ID=9,pos=(209,-4,2),ro_y=90,sca=.08)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(197.5,-4,0),ro_y=-60,sca=.08)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(209,-4,2),ro_y=90,sca=.08)
 	o.ObjType_Wall(ID=3,pos=(202,-3,4),ro_y=90,sca=sk)
 	o.ObjType_Wall(ID=3,pos=(204,-3.2,3),ro_y=90,sca=sk)
 	o.ObjType_Wall(ID=3,pos=(199,-3,5),ro_y=90,sca=sk)
@@ -431,9 +432,95 @@ def gem_zone():
 	o.ObjType_Wall(ID=3,pos=(206.5,-2.4,8.2),ro_y=90,sca=sk)
 	o.ObjType_Wall(ID=3,pos=(209,-2.6,9.2),ro_y=90,sca=sk)
 	o.ObjType_Wall(ID=3,pos=(192.3,-2.9,7.6),ro_y=0,sca=sk)
-	o.ObjType_Scene(ID=9,pos=(197,-4,16),ro_y=90,sca=.08)
-	o.ObjType_Scene(ID=9,pos=(191,-4,16),ro_y=-90,sca=.08)
-	o.ObjType_Scene(ID=9,pos=(198,-4,32),ro_y=90,sca=.08)
-	o.ObjType_Scene(ID=9,pos=(191,-4,32),ro_y=-90,sca=.08)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(197,-4,16),ro_y=90,sca=.08)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(191,-4,16),ro_y=-90,sca=.08)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(198,-4,32),ro_y=90,sca=.08)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(191,-4,32),ro_y=-90,sca=.08)
 	o.EndRoom(pos=(195.5,-1.01,37.7),c=color.rgb32(220,100,220))
 	del sk
+def skull_zone():
+	bcx=-200
+	bcp=1
+	o.SkullPlatform(pos=(-198.2,1.2,33.5),typ=1)
+	#danger
+	dg.FallingZone(pos=(bcx,-2,30),s=(50,1,100))
+	dg.MonkeySculpture(typ=2,p_wait=3,pos=(bcx-1,1,1),ro_y=90)
+	dg.MonkeySculpture(typ=2,p_wait=3,pos=(bcx+1,1,0),ro_y=-90)
+	dg.MonkeySculpture(typ=3,pos=(bcx,1,10.25),rotation_speed=25,p_wait=0,drc=1,p_count=30)
+	dg.MonkeySculpture(typ=3,pos=(bcx,1,13.25),rotation_speed=25,p_wait=0,p_count=30)
+	dg.MonkeySculpture(typ=3,pos=(bcx,1,16.25),rotation_speed=25,p_wait=0,drc=1,p_count=30)
+	dg.MonkeySculpture(typ=3,pos=(bcx,1,19.25),rotation_speed=25,p_wait=0,p_count=30)
+	#blocks
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,U),vx=[3,2])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx,bcp,U+.75*3),vx=[1,4])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,3),vx=[3,2])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx,bcp,5),vx=[1,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx,bcp,6.5),vx=[1,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx,bcp,8),vx=[1,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,9.5),vx=[3,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,9.5+.75*2),vx=[3,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,9.5+.75),vx=[1,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx+.75,bcp,9.5+.75),vx=[1,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,12.5),vx=[3,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,12.5+.75*2),vx=[3,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,12.5+.75),vx=[1,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx+.75,bcp,12.5+.75),vx=[1,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,15.5),vx=[3,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,15.5+.75*2),vx=[3,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,15.5+.75),vx=[1,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx+.75,bcp,15.5+.75),vx=[1,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,18.5),vx=[3,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,18.5+.75*2),vx=[3,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,18.5+.75),vx=[1,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx+.75,bcp,18.5+.75),vx=[1,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx,bcp,21.5),vx=[1,6])
+	o.ObjType_Corridor(ID=1,pos=(bcx,bcp-.5,28),rot=(0,0,0))
+	o.spw_block(ID=4,ro_y=-90,p=(bcx,bcp,30.5),vx=[1,5])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx-.75,bcp,30.5+.75*2),vx=[1,1])
+	o.spw_block(ID=4,ro_y=-90,p=(bcx+.75,bcp,30.5+.75*4),vx=[1,1])
+	#npc
+	n.spawn(ID=8,POS=(bcx,1,3),DRC=0,RNG=1)
+	n.spawn(ID=8,POS=(bcx,1,6.6),CMV=False)
+	n.spawn(ID=9,POS=(bcx,1,10.25),RNG=.8,RTYP=1)
+	n.spawn(ID=9,POS=(bcx,1,13.25),RNG=.8,RTYP=1)
+	n.spawn(ID=9,POS=(bcx,1,16.25),RNG=.8,RTYP=1)
+	n.spawn(ID=9,POS=(bcx,1,19.25),RNG=.8,RTYP=1)
+	n.spawn(ID=8,POS=(bcx,1,31.6),DRC=2,RNG=1)
+	#boxes
+	mt.bounce_twin(POS=(-199.2,1+.16,-2.2),CNT=1)
+	mt.box_double_mixxed(POS=(-200.6,1+.16,-2.3),ID=(1,2))
+	mt.box_double_mixxed(POS=(-199.3,1+.16,27.3),ID=(1,2))
+	mt.box_double_mixxed(POS=(-200.7,1+.16,32),ID=(4,2))
+	mt.box_double_mixxed(POS=(-199.3,1+.16,33.5),ID=(1,2))
+	c.spawn(ID=1,p=(-200.7,1+.16,18.5))
+	c.spawn(ID=1,p=(-200.7,1+.16,20))
+	c.spawn(ID=1,p=(-199.4,1+.16,18.5))
+	c.spawn(ID=1,p=(-199.4,1+.16,20))
+	mt.crate_wall(ID=1,POS=(-200.8,1+.16,9.6),CNT=[2,2])
+	mt.crate_wall(ID=1,POS=(-200.8,1+.16,14),CNT=[4,2])
+	mt.crate_block(ID=1,POS=(-200.6,1+.16,27.5),CNT=[3,3,3])
+	mt.crate_block(ID=2,POS=(-199.8,1+.16,28.7),CNT=[2,2,1])
+	mt.box_quad_mixxed(POS=(bcx-.16,1.16,23.1),ID=(2,3))
+	mt.box_quad_mixxed(POS=(-200.2,1.16,7.8),ID=(1,2))
+	mt.crate_row(ID=12,POS=(-200.8,1+.16,3.8),CNT=7,WAY=0)
+	#wumpa
+	mt.wumpa_row(POS=(bcx,1.25,-.8),CNT=8,WAY=1)
+	mt.wumpa_row(POS=(bcx,1.25,5),CNT=3,WAY=2)
+	mt.wumpa_row(POS=(bcx,1.25,21.5),CNT=4,WAY=1)
+	mt.wumpa_row(POS=(bcx,1.25,24),CNT=4,WAY=1)
+	mt.wumpa_row(POS=(bcx,1.25,30.5),CNT=8,WAY=1)
+	#deco
+	o.ObjType_Scene(ID=9,col=color.white,pos=(bcx-3.5,0,U),ro_y=100,sca=.0825)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(bcx+4,0,U),ro_y=-100,sca=.0825)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(bcx-3.5,0,5),ro_y=100,sca=.0825)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(bcx+4,0,5),ro_y=-100,sca=.0825)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(bcx-3.5,0,13),ro_y=100,sca=.0825)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(bcx+4,0,13),ro_y=-100,sca=.0825)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(bcx-3.5,0,21),ro_y=100,sca=.0825)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(bcx+4,0,21),ro_y=-100,sca=.0825)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(bcx-3.5,0,29),ro_y=100,sca=.0825)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(bcx+4,0,29),ro_y=-100,sca=.0825)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(bcx+4,0,37),ro_y=-100,sca=.0825)
+	o.ObjType_Scene(ID=9,col=color.white,pos=(bcx,0,46),ro_y=-100,sca=.0825)
+
+	del bcp,bcx

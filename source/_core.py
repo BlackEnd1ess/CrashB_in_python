@@ -88,7 +88,8 @@ def reset_state(c):
 	else:
 		if not (settings.debg_gm or st.relic_challange):
 			st.extra_lives-=1
-		st.fails+=1
+		if not st.skull_route:
+			st.fails+=1
 		if st.level_index == 2:
 			st.gem_death=True
 	if st.extra_lives < 0:
@@ -569,7 +570,12 @@ def wall_hit_walk(c):
 	if mc and (is_box(mc.entity) and mc.entity.vnum == 12):
 		mc.entity.box_destroy()
 def wall_hit_idle(c):
-	hT=c.intersects(ignore=LC.IGNORE,debug=settings.debg)
+	if c.is_slp:
+		if not st.p_last_direc or st.p_last_direc == None:
+			return
+		hT=raycast(c.world_position+(0,.2,0),st.p_last_direc,distance=.25,ignore=LC.IGNORE,debug=settings.debg)
+	else:
+		hT=c.intersects(ignore=LC.IGNORE,debug=settings.debg)
 	if hT:
 		if hT.entity.name in LC.item_lst:
 			hT.entity.collect()
@@ -580,8 +586,8 @@ def wall_hit_idle(c):
 		if hT.entity.name in LC.trigger_lst:
 			return
 		if not hT.normal in (Vec3(0,-1,0),Vec3(0,1,0)):
-			c.position+=hT.world_normal*(time.dt*c.move_speed)
 			if hT.entity.collider:
+				c.position+=hT.world_normal*(time.dt*c.move_speed)
 				if is_box(hT.entity) and hT.entity.vnum == 12:
 					hT.entity.box_destroy()
 					return
@@ -642,7 +648,7 @@ def box_stack(c_pos):
 	sdi=0
 	for wm in scene.entities:
 		if (is_box(wm) and not wm.vnum in (3,13)) and (wm.x == c_pos[0] and wm.z == c_pos[2]):
-			if (wm.y > c_pos[1]) and abs(wm.y-c_pos[1]) <= sdi*.32:
+			if (wm.y > c_pos[1]) and abs(wm.y-c_pos[1]) <= sdi*.32 and abs(c_pos[1]-wm.y) < .64:
 				if wm.vnum == 12:
 					wm.new_y-=.32
 				wm.c_fall=True
@@ -793,7 +799,7 @@ def enter_bonus(c):
 def clear_bonus():
 	for brd in scene.entities[:]:
 		if brd and brd.y < -15:
-			if isinstance(brd,(o.ObjType_Block,o.ObjType_Wall,o.ObjType_Water)):
+			if not ignore_instance(brd):
 				destroy(brd)
 	del brd
 
@@ -815,7 +821,7 @@ def enter_death_route(c):
 def clear_gem_route():
 	for grd in scene.entities[:]:
 		if grd.parent == scene and grd.x > 180:
-			if not (is_box(grd) or grd in (LC.shdw,LC.ACTOR) or isinstance(grd,N.AkuAkuMask) or grd.name == 'firefly' or grd.name == 'point_light' or grd.name == 'object_light'):
+			if not ignore_instance(grd):
 				destroy(grd)
 	del grd
 
@@ -823,9 +829,9 @@ def clear_gem_route():
 def enter_skull_route(c):
 	ui.BlackScreen()
 	st.skull_route=True
-	c.position=(0,200,-3)
-	sn.BackgroundMusic(m=2)
-	camera.position=(200,.5,-3)
+	c.position=(-200,3,-3)
+	sn.BackgroundMusic(m=3)
+	camera.position=(-200,3,-3)
 	st.loading=False
 	c.freezed=False
 def load_skull_route(c):
@@ -834,10 +840,10 @@ def load_skull_route(c):
 		invoke(lambda:back_to_level(c),delay=.5)
 		return
 	invoke(lambda:enter_skull_route(c),delay=.5)
-def clear_skull_route(self):
+def clear_skull_route():
 	for skrp in scene.entities[:]:
 		if skrp.parent == scene and skrp.y > 190:
-			if not (is_box(skrp) or skrp in (LC.shdw,LC.ACTOR) or isinstance(skrp,N.AkuAkuMask) or skrp.name == 'firefly' or skrp.name == 'point_light' or skrp.name == 'object_light'):
+			if not ignore_instance(skrp):
 				destroy(skrp)
 	del skrp
 
@@ -1101,6 +1107,9 @@ def preload_player_animation():
 		17:NodePath(gltf.load_model(f'{fpl}death_volt.glb',ssp)),
 		18:NodePath(gltf.load_model(f'{fpl}death_sting.glb',ssp)),
 		19:NodePath(gltf.load_model(f'{fpl}death_buried.glb',ssp))}
+
+def ignore_instance(iob):
+	return bool(is_box(iob) or iob in (LC.shdw,LC.ACTOR) or isinstance(iob,N.AkuAkuMask) or iob.name in ('point_light','firefly','object_light','snw_ptc','obj_type__background'))
 
 def preload_box_texture():
 	cik='res/box/'

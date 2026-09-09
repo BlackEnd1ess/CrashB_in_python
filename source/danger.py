@@ -74,7 +74,6 @@ class DeathSmasher(Entity):#level 2
 			return
 		if st.aku_hit > 2:
 			s.stat=1
-			s.reset_pos()
 			return
 		if s.wait > 0:
 			s.wait-=time.dt
@@ -283,7 +282,7 @@ class HeatPipe(Entity):
 			cc.get_damage(LC.ACTOR,rsn=4)
 
 class MonkeySculpture(Entity):
-	def __init__(self,pos,ro_y,p_count=25,p_wait=1,typ=0,rotation_speed=1):
+	def __init__(self,pos,ro_y=90,p_count=25,p_wait=1,typ=0,drc=0,rotation_speed=3):
 		s=self
 		s.glb_model=f'res/objects/l5/m_sculpt/monkey_sculpture.glb'
 		super().__init__(name='mnks',position=pos,rotation_y=ro_y,scale=.4)
@@ -292,12 +291,13 @@ class MonkeySculpture(Entity):
 		s.rotation_speed=rotation_speed
 		s.p_count_reset=p_count
 		s.p_count=p_count
+		s.rot_direc=drc
 		s.p_snd=False
 		s.wait=p_wait
 		s.tme=p_wait
 		s.typ=typ
 		objects.spw_block(ID=4,ro_y=-90,p=s.position,vx=[1,1])
-		del pos,ro_y,p_count,p_wait,typ,rotation_speed
+		del pos,ro_y,p_count,p_wait,typ,rotation_speed,drc
 	def refr_function(self):
 		s=self
 		if s.tme > 0:
@@ -326,7 +326,7 @@ class MonkeySculpture(Entity):
 			if s.p_count_reset > 0:
 				s.refr_function()
 			return
-		s.rotation_y+=time.dt*s.rotation_speed
+		s.rotation_y=s.rotation_y+time.dt*s.rotation_speed if s.rot_direc == 0 else s.rotation_y-time.dt*s.rotation_speed
 		if s.p_count_reset > 0:
 			s.refr_function()
 
