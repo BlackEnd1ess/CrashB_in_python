@@ -12,7 +12,7 @@ flt=7 if not settings.debg else 3
 def free_level():
 	idx=st.level_index
 	camera.rotation_x=15
-	LODsystem.ManageObjects()
+	LODsystem.load_manager()
 	sound.BackgroundMusic(m=0)
 	cc.check_nitro_stack()
 	st.loading=False

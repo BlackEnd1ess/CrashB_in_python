@@ -5,7 +5,7 @@ import environment
 ## debug options
 debg_color=color.rgb32(180,180,180)
 debg_gm=False#god mode
-debg=False
+debg=True
 
 ## keyboard bindings
 MNU_KEY='p'#		pause

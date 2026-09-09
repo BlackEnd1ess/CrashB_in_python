@@ -1,8 +1,12 @@
+#fixx
+- l5 ptf max frm out range
+- LODsystem box + npc distance, fixx pop in effect
+
+
 v1.7
 - l6 + l7 death ptf path
 - add textures, few npcs and platforms from CB3!
 - reduce mem usage
-- LODsystem box + npc distance, fixx pop in effect
 - optimize memory model access
 - fixx code
 - test all levels

@@ -646,15 +646,16 @@ def box_set_val(cR,Cpse,Cmk,Ctl):
 	del cR,Cpse,Ctl,Cmk
 def box_stack(c_pos):
 	sdi=0
-	for wm in scene.entities:
-		if (is_box(wm) and not wm.vnum in (3,13)) and (wm.x == c_pos[0] and wm.z == c_pos[2]):
-			if (wm.y > c_pos[1]) and abs(wm.y-c_pos[1]) <= sdi*.32 and abs(c_pos[1]-wm.y) < .64:
-				if wm.vnum == 12:
-					wm.new_y-=.32
-				wm.c_fall=True
-				box_move(wm)
-		sdi+=1
-	del wm
+	for wm in tuple(scene.entities):
+		if is_box(wm) and (wm.x == c_pos[0] and wm.z == c_pos[2] and wm.y > c_pos[1]):
+			kdi=abs(wm.y-c_pos[1])-.32*sdi
+			sdi+=1
+			if kdi > .34:
+				continue
+			if wm.vnum == 12:
+				wm.new_y-=.32
+			wm.c_fall=True
+			box_move(wm)
 def box_move(c):
 	c.animate_y(c.y-.32,duration=.2)
 	invoke(lambda:setattr(c,'c_fall',False),delay=.25)

@@ -29,7 +29,7 @@ def map_setting():
 def start_load():
 	load_crate()
 	load_object()
-	#load_wumpa()
+	load_wumpa()
 	#load_npc()
 	map_setting()
 
@@ -85,30 +85,34 @@ def load_object():
 
 def load_crate():
 	CZ=0
-	mt.box_wall_mixxed(POS=(0,.16,0),ID=(1,4))
+	#mt.box_wall_mixxed(POS=(0,.16,0),ID=(1,4))
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.32),CNT=[3,2,2])
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.64),CNT=[3,1,3])
-	#mt.crate_block(ID=1,POS=(-6.5,.16,CZ),CNT=[2,5,5])
-	#mt.crate_block(ID=1,POS=(0,.16,CZ),CNT=[3,3,1])
+	#mt.crate_block(ID=1,POS=(-6.5,.16,CZ),CNT=[3,1,1])
 	#mt.crate_block(ID=2,POS=(-5.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=3,POS=(-4.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=4,POS=(-3.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=5,POS=(-2.5,.16,CZ),CNT=[3,1,1])
-	#mt.crate_block(ID=6,POS=(-1.5+.32,.16,CZ),CNT=[3,1,1])
+	#mt.crate_block(ID=6,POS=(-1.5+.32,.16,CZ),CNT=[1,1,1])
 	#mt.crate_block(ID=7,POS=(-.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=8,POS=(.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=9,POS=(1.5+.32,.16,CZ),CNT=[1,1,1])
 	#mt.crate_block(ID=10,POS=(2.5+.32,.16,CZ),CNT=[1,1,1])
-	#mt.crate_block(ID=11,POS=(3.5+.32,.16,CZ),CNT=[6,1,1])
-	#mt.crate_block(ID=12,POS=(4.5+.32,.16,CZ),CNT=[1,1,8])
+	#mt.crate_block(ID=11,POS=(3.5+.32,.16,CZ),CNT=[1,1,1])
+	#mt.crate_block(ID=12,POS=(4.5+.32,.16,CZ),CNT=[1,1,2])
 	#mt.crate_block(ID=13,POS=(5.5,.16,CZ),CNT=[3,3,3])
 	#mt.crate_block(ID=14,POS=(6.5,.16,CZ),CNT=[3,3,3])
 	#c.spawn(ID=15,p=(5,.16,CZ-3),m=-1,l=1)
 	#c.spawn(ID=15,p=(5.5,.16,CZ-3),m=-1,l=2)
 	#c.spawn(ID=15,p=(6,.16,CZ-3),m=-1,l=3)
+	#mt.crate_block(ID=1,POS=(0,.16,CZ),CNT=[1,1,1])
+	#mt.crate_block(ID=1,POS=(0,1.16,CZ),CNT=[1,1,1])
+	#mt.crate_block(ID=1,POS=(.5,1.16,CZ),CNT=[1,1,8])
 def load_wumpa():
-	return
+	#mt.wumpa_plane(POS=(0,.25,-2),CNT=[3,3])
+	#mt.wumpa_plane(POS=(0,.25,5),CNT=[3,3])
+	mt.wumpa_plane(POS=(-5,.25,3),CNT=[3,3])
 def load_npc():
 	n.spawn(ID=4,POS=(0,0,0))
 

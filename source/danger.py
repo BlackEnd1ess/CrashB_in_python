@@ -160,7 +160,7 @@ class IceIcle(Entity):
 			s.y-=time.dt*s.fall_speed
 			lps=s.intersects()
 			if lps.entity == LC.ACTOR:
-				cc.get_damage(LC.ACTOR,rsn=4)
+				cc.get_damage(LC.ACTOR,rsn=2)
 			return
 		if not s.on_ground:
 			s.on_ground=True
@@ -172,7 +172,7 @@ class IceIcle(Entity):
 		if s.falling:
 			s.refr_function()
 			return
-		if distance_xz(s,LC.ACTOR) < 1:
+		if distance_xz(s,LC.ACTOR) < 1 and st.aku_hit < 3:
 			s.falling=True
 			s.target_y=LC.ACTOR.y+.1
 			sn.pc_audio(ID=1,pit=2)
