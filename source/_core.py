@@ -640,6 +640,8 @@ def box_set_val(cR,Cpse,Cmk,Ctl):
 	cR.poly=Cpse
 	cR.c_ID=Ctl
 	cR.mark=Cmk
+	#debug always_on_top
+	#cR.always_on_top=True
 	if st.level_index == 8 and cR.vnum != 12:
 		cR.color=color.dark_gray
 		cR.unlit=False

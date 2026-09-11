@@ -310,7 +310,7 @@ def gem_zone():
 	o.ObjType_Movable(ID=0,pos=(200,0,16),ptm=1,tu=0,ptw=1,col=ptco)
 	o.spw_block(ID=2,p=(200,blh,17.5),vx=[1,2])
 	mt.crate_plane(ID=1,POS=(200-.32,box_wtr,19.64),CNT=[1,2])
-	mt.crate_plane(ID=11,POS=(200-.32,box_wtr,20.5),CNT=[2,1])
+	mt.crate_plane(ID=11,POS=(200-.32,box_wtr,20.5),CNT=[1,1])
 	mt.crate_plane(ID=11,POS=(200,box_wtr,20.5),CNT=[1,14])
 	o.spw_block(ID=2,p=(200,blh,26),vx=[1,1])
 	mt.crate_plane(ID=2,POS=(200,box_wtr,28),CNT=[1,2])

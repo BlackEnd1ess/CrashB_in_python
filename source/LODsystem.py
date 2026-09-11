@@ -16,7 +16,7 @@ ROOM=('strm','enrm')
 
 def load_manager():
 	WumpaFruitRenderManager()
-	BoxRenderManager()
+	#BoxRenderManager()
 	NPCRenderManager()
 	LevelSceneRenderManager()
 	LevelObjectRenderManager()
@@ -108,8 +108,12 @@ class NPCRenderManager(Entity):
 				self.npcs.remove(np)
 				continue
 			udv=self.check_distance(np)
-			if np.enabled != udv:
-				np.enabled=udv
+			if hasattr(np,'vnum') and np.vnum == 14:
+				if np.visible != udv:
+					np.visible=udv
+			else:
+				if np.enabled != udv:
+					np.enabled=udv
 	def update(self):
 		if st.gproc():
 			return

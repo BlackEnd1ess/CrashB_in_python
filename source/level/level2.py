@@ -19,7 +19,7 @@ def map_setting():
 	LC.FOG_B_COLOR=color.white
 	LC.SKY_BG_COLOR=color.white
 	LC.AMB_M_COLOR=color.rgb32(200,160,210)
-	LC.LV_DST=(3,12)
+	LC.LV_DST=(300,1200)
 	LC.BN_DST=(4,4.5)
 	LC.RCZ=28
 	LC.RCX=12
@@ -367,7 +367,7 @@ def gem_zone():
 	mt.crate_row(ID=3,POS=(214.3,2.5+.16,25),CNT=4,WAY=1)
 	mt.crate_row(ID=3,POS=(214.3,4.3,25),CNT=4,WAY=1)
 	mt.crate_row(ID=1,POS=(214.5,2.5+.16,21),CNT=5,WAY=1)
-	mt.box_quad_mixxed(POS=(214.3,1.6+16,.4),ID=(1,2))
+	mt.box_quad_mixxed(POS=(214.3,1.6+.16,-.2),ID=(1,2))
 	mt.box_wall_mixxed(POS=(214.5,2.5+.16,36.2),ID=(1,4))
 	c.spawn(ID=10,p=(214.7,2.5+.16,35.3))
 	#wumpa

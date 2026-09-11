@@ -1,9 +1,10 @@
 v1.7
 - l6 + l7 skull ptf path
 - fixx checkpoint respawn distance y
-- missing boxes level 2
 - crash spin time fixx
-- l5 gorilla x distance
+- pause menu unlit + color
+- UI size, max window
+- UI warproom 2 + tree
 - l2 LOD planks
 - reduce mem usage
 - optimize memory model access
