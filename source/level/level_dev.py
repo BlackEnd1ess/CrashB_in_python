@@ -29,8 +29,8 @@ def map_setting():
 def start_load():
 	load_crate()
 	load_object()
-	load_wumpa()
-	#load_npc()
+	#load_wumpa()
+	load_npc()
 	map_setting()
 
 ##for youtube and git
@@ -114,7 +114,7 @@ def load_wumpa():
 	#mt.wumpa_plane(POS=(0,.25,5),CNT=[3,3])
 	mt.wumpa_plane(POS=(-5,.25,3),CNT=[3,3])
 def load_npc():
-	n.spawn(ID=4,POS=(0,0,0))
+	n.spawn(ID=4,POS=(0,0,0),CMV=False)
 
 ## bonus level / gem path
 def bonus_zone():

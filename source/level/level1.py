@@ -22,9 +22,9 @@ def map_setting():
 	st.toggle_rain=True
 	LC.LV_DST=(10,15)
 	LC.BN_DST=(6,12)
-	LC.RCZ=30
-	LC.RCX=16
-	LC.RCB=6
+	LC.RCZ=28
+	LC.RCX=10
+	LC.RCB=14
 
 def start_load():
 	load_crate()

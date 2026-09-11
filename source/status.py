@@ -4,12 +4,12 @@ from ursina import Entity,window
 checkpoint=None
 
 ## warp room music index
-WARP_ROOM_MUSIC=1
+WARP_ROOM_MUSIC=3
 
 ## game progress items
 COLOR_GEM=[1,2,3,4,5]
 CLEAR_GEM=[]
-CRYSTAL=[1,2,3,5]
+CRYSTAL=[1,2,3,4]
 RELIC=[]
 
 ## reset instances

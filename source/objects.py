@@ -644,6 +644,7 @@ class LoosePlatform(Entity):
 		if mode == 0:
 			s.new_index+=time.dt*s.fps
 			if s.new_index >= len(s.frames):
+				s.new_index=len(s.frames)-1
 				s.active=False
 				s.collapsed=True
 				return
@@ -653,6 +654,7 @@ class LoosePlatform(Entity):
 			s.new_index-=time.dt*s.fps
 			if s.new_index <= 0:
 				s.new_index=0
+				return
 			an.set_glb_frame(s)
 			return
 		s.new_index=0

@@ -1,11 +1,10 @@
-#fixx
-- l5 ptf max frm out range
-- LODsystem box + npc distance, fixx pop in effect
-
-
 v1.7
-- l6 + l7 death ptf path
-- add textures, few npcs and platforms from CB3!
+- l6 + l7 skull ptf path
+- fixx checkpoint respawn distance y
+- missing boxes level 2
+- crash spin time fixx
+- l5 gorilla x distance
+- l2 LOD planks
 - reduce mem usage
 - optimize memory model access
 - fixx code

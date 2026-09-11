@@ -21,9 +21,9 @@ def map_setting():
 	LC.AMB_M_COLOR=color.rgb32(200,160,210)
 	LC.LV_DST=(3,12)
 	LC.BN_DST=(4,4.5)
-	LC.RCX=12
-	LC.RCB=6
 	LC.RCZ=28
+	LC.RCX=12
+	LC.RCB=14
 	st.toggle_thunder=False
 	st.toggle_rain=False
 
@@ -340,9 +340,7 @@ def gem_zone():
 	o.spw_block(ID=1,ro_y=180,p=(214.5,1.5,28.5),vx=[1,2])
 	o.spw_block(ID=1,ro_y=180,p=(214,1.5,34.5),vx=[2,4])
 	#danger
-	dg.DeathSmasher(pos=(204.7,1.3+1.65,-3.15),typ=0,turn=1,speed=3,wait=1)
 	dg.DeathSmasher(pos=(207.9,1.6+1.65,-3.15),typ=1,turn=1,speed=3,wait=.5)
-	#dg.DeathSmasher(pos=(208.7,1.6+1.65,-3.15),typ=1,turn=0,speed=3,wait=.5)
 	dg.DeathSmasher(pos=(209.5,1.6+1.65,-3.15),typ=1,turn=1,speed=3,wait=.5)
 	dg.DeathSmasher(pos=(212.8,1.6+1.65,-3.15),typ=0,turn=1,speed=4,wait=.3)
 	#crates
