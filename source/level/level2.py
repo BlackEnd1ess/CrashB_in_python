@@ -19,9 +19,9 @@ def map_setting():
 	LC.FOG_B_COLOR=color.white
 	LC.SKY_BG_COLOR=color.white
 	LC.AMB_M_COLOR=color.rgb32(200,160,210)
-	LC.LV_DST=(300,1200)
+	LC.LV_DST=(3,12)
 	LC.BN_DST=(4,4.5)
-	LC.RCZ=28
+	LC.RCZ=30
 	LC.RCX=12
 	LC.RCB=14
 	st.toggle_thunder=False

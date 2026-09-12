@@ -1,12 +1,18 @@
 v1.7
-- l6 + l7 skull ptf path
-- fixx checkpoint respawn distance y
-- crash spin time fixx
-- pause menu unlit + color
-- UI size, max window
-- UI warproom 2 + tree
-- l2 LOD planks
-- reduce mem usage
+- sewerptf dosnt reset
+- npc rat typ + danger.deathsmasher anim lst
+- LOD startroom visible, mptf visible typ
+- fix landmine anim
+- fix gorilla anim
 - optimize memory model access
 - fixx code
+
+v1.8
+- l6 + l7 skull ptf path
+- UI size, max window (pause, gems)
 - test all levels
+
+v1.9
+- cb3 texture from level: underwater, knight, boneyard
+- creative mode / editor modus
+- asset encryption

@@ -470,7 +470,7 @@ class UINormalGem(Entity):
 		s=self
 		if typ > 2:
 			typ=2
-		super().__init__(model=f'{cle_gem_ui}.ply',texture=f'{cle_gem_ui}.png',position=pos,color=LC.ui_normal_gem_color,visible=bool(typ != 2),rotation_x=-90,always_on_top=bool(typ == 2))
+		super().__init__(model=f'{cle_gem_ui}.ply',texture=f'{cle_gem_ui}.png',position=pos,color=LC.ui_normal_gem_color,visible=bool(typ != 2),rotation_x=-90,always_on_top=bool(typ == 2),unlit=False)
 		{0:lambda:setattr(s,'scale',.004),1:lambda:setattr(s,'scale',.000125),2:lambda:setattr(s,'scale',.0001)}[typ]()
 		s.parent=camera if typ > 0 else scene
 		s.typ=typ
@@ -499,7 +499,7 @@ class UIColorGem(Entity):
 			col_gem_ui={4:'res/item/gemstone/gem1',5:'res/item/gemstone/gem2'}[idx]
 		else:
 			col_gem_ui='res/item/gemstone/gem'
-		super().__init__(model=f'{col_gem_ui}.ply',texture=f'{col_gem_ui}.png',scale={0:.004,1:.00001,2:.0001}[typ],position=pos,color=GEM_COLOR[idx],visible=(typ != 2),rotation_x=-90,always_on_top=bool(typ == 2))
+		super().__init__(model=f'{col_gem_ui}.ply',texture=f'{col_gem_ui}.png',scale={0:.004,1:.00001,2:.0001}[typ],position=pos,color=GEM_COLOR[idx],visible=(typ != 2),rotation_x=-90,always_on_top=bool(typ == 2),unlit=False)
 		s.parent=camera if typ > 0 else scene
 		s.scale_anim_done=False
 		s.gem_scale_mode=0
@@ -598,8 +598,8 @@ vF=0
 class PauseMenu(Entity):
 	def __init__(self):
 		s=self
-		super().__init__(parent=camera,model=q,texture=f'{e}c_pause1.png',scale=(1.05,.5),position=(-.375,-.25,0),color=color.rgb32(130,140,130),visible=False)
-		s.ppt=Entity(parent=camera,model=q,texture=f'{e}c_pause2.png',scale=(.75,1),position=(.515,0,0),color=color.rgb32(130,140,130),always_on_top=True,visible=False)
+		super().__init__(parent=camera,model=q,texture=f'{e}c_pause1.png',scale=(1.05,.5),position=(-.375,-.25,0),color=color.rgb32(130,140,130),visible=False,unlit=False)
+		s.ppt=Entity(parent=camera,model=q,texture=f'{e}c_pause2.png',scale=(.75,1),position=(.515,0,0),color=color.rgb32(130,140,130),always_on_top=True,visible=False,unlit=False)
 		##text
 		s.font_color=color.rgb32(230,100,0)
 		s.blink_time=0

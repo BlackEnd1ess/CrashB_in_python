@@ -16,7 +16,7 @@ ROOM=('strm','enrm')
 
 def load_manager():
 	WumpaFruitRenderManager()
-	#BoxRenderManager()
+	BoxRenderManager()
 	NPCRenderManager()
 	LevelSceneRenderManager()
 	LevelObjectRenderManager()

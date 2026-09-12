@@ -1,5 +1,5 @@
 from ursina import Entity,camera,scene,invoke,Vec3,color,distance,distance_xz,boxcast,raycast,window,load_texture,time
-import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,json,math,objects
+import ui,crate,item,status,sound,npc,settings,_loc,warproom,environment,json,math,objects,_debug_
 from effect import JumpDust,PressureWave,Fireball,ExclamationMark
 from animation import BoxBreakAnimation,BoxBounceAnimation
 from math import atan2,sqrt,pi,sin,cos,radians,degrees
@@ -22,7 +22,7 @@ N=npc
 
 ## player
 def set_val(c):
-	for _v in {'aq_bonus','walking','jumping','landed','frst_lnd','is_landing','is_attack','is_flip','is_spin','warped','freezed','injured','b_smash','standup','falling','stun','is_slp','pushed','in_water','dth_block'}:
+	for _v in {'aq_bonus','walking','jumping','landed','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','is_slp','pushed','in_water','dth_block'}:
 		setattr(c,_v,False)#flags
 	for _a in {'frm','wksn','fall_time','slide_fwd','dth_cause','jmp_typ','space_time','crt_wait','sld_wait','atk_cooldown','atk_duration','air_time','stun_time','dth_reset'}:
 		setattr(c,_a,0)#values
@@ -121,7 +121,7 @@ def reset_state(c):
 	invoke(lambda:setattr(c,'freezed',False),delay=3)
 def c_anim_flag(n):
 	if n == 5:
-		LC.ACTOR.is_spin=False
+		LC.ACTOR.is_attack=False
 	if n == 6:
 		LC.ACTOR.is_landing=False
 	if n == 8:
@@ -179,25 +179,29 @@ def c_slide(c):
 	if c.move_speed > 0:
 		c.slide_fwd=c.move_speed
 def c_spin(c):
-	for qd in scene.entities[:]:
+	for qd in tuple(scene.entities):
 		if not qd or not qd.collider:
 			continue
-		if distance_xz(c,qd) < .5 and abs(c.y-qd.y) < .4:
-			if is_box(qd) and qd.vnum != 13:
+		sbp=distance_xz(c,qd)
+		sba=abs(c.y-qd.y)
+		if is_box(qd) and qd.vnum != 13:
+			if sbp < .5 and sba < .4:
 				if qd.vnum in (3,11):
 					qd.empty_destroy()
 				else:
 					qd.box_destroy()
-			if is_enemie(qd):
-				if not (qd.is_purge or qd.is_hitten):
-					if qd.vnum in (1,11) or (qd.vnum == 5 and qd.def_mode):
-						get_damage(c,rsn=2)
-						return
-					if qd.vnum == 17 and qd.ro_mode == 0:
-						get_damage(c,rsn=6)
-						return
-					if qd.vnum != 13:
-						bash_enemie(qd,c)
+		if is_enemie(qd):
+			if sbp < .6 and sba < .5:
+				if qd.is_purge or qd.is_hitten:
+					continue
+				if qd.vnum in (1,11) or (qd.vnum == 5 and qd.def_mode):
+					get_damage(c,rsn=2)
+					return
+				if qd.vnum == 17 and (hasattr(qd,'typ') and qd.typ == 0):
+					get_damage(c,rsn=6)
+					return
+				if qd.vnum != 13:
+					bash_enemie(qd,c)
 	del qd
 def c_smash(c):
 	for sw in scene.entities:

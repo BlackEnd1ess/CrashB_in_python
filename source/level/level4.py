@@ -47,7 +47,7 @@ def load_object():
 	o.StartRoom(pos=(0,.3,-64.2))
 	dg.FallingZone(pos=(0,-1.5,0),s=(128,.3,128))
 	o.BonusPlatform(pos=(5.2,2,11))
-	o.GemPlatform(pos=(4.2,2,31.7),t=GEM_VNUM)
+	o.GemPlatform(pos=(4.2,2,31.7),t=GEM_VNUM,na=True)
 	dg.EletricWater(pos=(0,.2,-48),sca=(8,96))
 	dg.EletricWater(pos=(14.5,3.5,83),sca=(8,64))
 	o.ObjType_Water(pos=(10,1,40),sca=(20,23),txs=(20,23),col=color.rgb32(100,255,0),al=1,rot=(0,0,0),spd=8)
@@ -111,10 +111,8 @@ def load_object():
 	Entity(model='cube',scale=(16,1,96),position=(0,-.5,-48),collider=b,color=color.black)
 	o.ObjType_Floor(ID=10,pos=(.1,-.1,.3),sca=(.5,.4,.6),col=color.white,rot=(0,-90,0))
 	o.HitBox(pos=(0,-.05,.3),sca=(4,1.5,5),matr=True)
-	
 	o.ObjType_Floor(ID=10,pos=(14.5,2.85,52.25),sca=(.5,.4,.6),col=color.white,rot=(0,-90,0))
 	o.HitBox(pos=(14.5,2.9,52.25),sca=(4,1.5,5),matr=True)
-
 	Entity(model='cube',scale=(16,1,32),position=(14.5,2.8,68),collider=b,color=color.black)
 	#walls
 	Entity(model='quad',texture=mtx,scale=(10,20),texture_scale=(10,20),position=(-2,1,9),color=color.rgb32(160,150,150),collider=b)

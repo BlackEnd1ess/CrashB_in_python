@@ -1,4 +1,4 @@
-import sys,os,_loc,item,status,objects,map_tools,crate,npc,danger
+import sys,os,_loc,item,status,objects,map_tools,crate,npc,danger,_debug_
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from ursina.ursinastuff import destroy
 from ursina import Entity,color
@@ -27,10 +27,10 @@ def map_setting():
 	LC.RCB=6
 
 def start_load():
-	load_crate()
-	load_object()
+	#load_crate()
+	#load_object()
 	#load_wumpa()
-	load_npc()
+	#load_npc()
 	map_setting()
 
 ##for youtube and git
@@ -76,8 +76,8 @@ def presentation():
 
 def load_object():
 	Entity(model='cube',scale=(16,1,16),y=-.5,texture_scale=(16,16),collider='box',texture='white_cube',alpha=1)
-	o.StartRoom(pos=(0,0,-8.1))
-	o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
+	#o.StartRoom(pos=(0,0,-8.1))
+	#o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
 	#o.SkullPlatform(pos=(0,.2,0),typ=0)
 	#o.SkullPlatform(pos=(1,.2,0),typ=1)
 	#o.SkullPlatform(pos=(2,.2,0),typ=2)

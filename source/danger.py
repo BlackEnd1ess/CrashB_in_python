@@ -1,6 +1,8 @@
 from ursina import Audio,Entity,color,time,distance,distance_xz,invoke,BoxCollider,Vec3,scene,Vec3,lerp,load_texture
 import _core,status,item,sound,animation,player,_loc,settings,effect,npc,random,math,objects
 from ursina.ursinastuff import destroy
+from panda3d.core import NodePath
+import gltf
 
 wfc='wireframe_cube'
 omf='res/objects/'
@@ -23,10 +25,11 @@ class DeathSmasher(Entity):#level 2
 		if typ > 2:
 			typ=2
 		s=self
-		s.glb_model=dtsm[typ]
+		if not LC.piston_anim:
+			LC.piston_anim=NodePath(gltf.load_model(dtsm[typ],gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 		super().__init__(name='wdlg',position=pos,scale=(.3,.4,.3),rotation=(0 if typ != 2 else 180,180 if typ != 2 else 0,0))
 		s.collider=BoxCollider(s,center=Vec3(0,-2.4,0) if typ != 2 else Vec3(0,2.4,0),size=Vec3(1,3,1))
-		an.set_glb_value(s,fps=0,sca=.002)
+		an.set_memory_glb_value(s,fps=0,sca=.002,model=LC.piston_anim)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
 		if typ != 2:
 			sbcx=.5 if typ == 0 else .7
@@ -131,9 +134,10 @@ class Role(Entity):
 class IceIcle(Entity):
 	def __init__(self,pos,fall_speed):
 		s=self
-		s.glb_model='res/objects/l2/iceicle/iceicle.glb'
+		if not LC.iceicle_mesh:
+			LC.iceicle_mesh=NodePath(gltf.load_model(f'{omf}l2/iceicle/iceicle.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 		super().__init__(position=pos,scale=.4,collider=b)
-		an.set_glb_value(s,fps=30,sca=.0018)
+		an.set_memory_glb_value(s,fps=30,sca=.0018,model=LC.iceicle_mesh)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
 		s.fall_speed=fall_speed
 		s.on_ground=False
@@ -251,9 +255,10 @@ class EletricWater(Entity):
 class ToxicBarrel(Entity):
 	def __init__(self,pos):
 		s=self
-		s.glb_model=f'{omf}l4/barrel/barrel.glb'
+		if not LC.toxic_barell_mesh:
+			LC.toxic_barell_mesh=NodePath(gltf.load_model(f'{omf}l4/barrel/barrel.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 		super().__init__(position=(pos[0],pos[1]+.275,pos[2]),scale=.4,rotation=(0,90,90),collider=b)
-		an.set_glb_value(s,fps=0,sca=.0015)
+		an.set_memory_glb_value(s,fps=0,sca=.0015,model=LC.toxic_barell_mesh)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
 		s.active=False
 		s.danger=True
@@ -284,9 +289,10 @@ class HeatPipe(Entity):
 class MonkeySculpture(Entity):
 	def __init__(self,pos,ro_y=90,p_count=25,p_wait=1,typ=0,drc=0,rotation_speed=3):
 		s=self
-		s.glb_model=f'res/objects/l5/m_sculpt/monkey_sculpture.glb'
+		if not LC.msculpt_mesh:
+			LC.msculpt_mesh=NodePath(gltf.load_model(f'res/objects/l5/m_sculpt/monkey_sculpture.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 		super().__init__(name='mnks',position=pos,rotation_y=ro_y,scale=.4)
-		an.set_glb_value(s,fps=0,sca=.0018)
+		an.set_memory_glb_value(s,fps=0,sca=.0018,model=LC.msculpt_mesh)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=2.25)
 		s.rotation_speed=rotation_speed
 		s.p_count_reset=p_count
@@ -555,10 +561,11 @@ class WaterMine(Entity):
 class LandMine(Entity):
 	def __init__(self,pos):##mem
 		s=self
-		s.glb_model=f'{omf}l6/lmine/landmine_normal.glb'
-		s.second_glb_model=f'{omf}l6/lmine/landmine_explode.glb'
+		if not LC.land_mine_anim or LC.land_mine_anim == None:
+			LC.land_mine_anim={0:NodePath(gltf.load_model(f'{omf}l6/lmine/landmine_normal.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+							1:NodePath(gltf.load_model(f'{omf}l6/lmine/landmine_explode.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(name='ldmn',position=pos,scale=.2)
-		an.set_glb_value(s,fps=20,sca=.003)
+		an.load_glb_mem_list(s,fps=20,sca=.003,lst=LC.land_mine_anim)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
 		s.explode=False
 		s.danger=True

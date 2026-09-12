@@ -139,6 +139,34 @@ shdw=None
 #shadow and player collision
 IGNORE=[]
 
+toxic_barell_mesh=None
+sewer_mine_anim=None
+mouse_walk_anim=None
+sawturtle_anim=None
+butterfly_anim=None
+lumberjack_anim=None
+land_mine_anim=None
+eat_plant_anim=None
+swim_sewer_ptf=None
+loose_ptf_mesh=None
+scrubber_anim=None
+hedgehog_anim=None
+amadillo_anim=None
+gorilla_anim=None
+penguin_anim=None
+iceicle_mesh=None
+msculpt_mesh=None
+turtle_anim=None
+piston_anim=None
+lizard_anim=None
+hippo_anim=None
+seal_anim=None
+bird_anim=None
+frog_anim=None
+mptf_mesh=None
+eel_anim=None
+rat_anim=None
+
 #preloading textures
 wmp_texture=[]
 

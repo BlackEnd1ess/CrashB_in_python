@@ -100,7 +100,6 @@ class LvSelect(Entity):
 	def __init__(self):
 		super().__init__()
 		self.bgm=Audio(f'res/music/level/wroom{st.WARP_ROOM_MUSIC}.mp3',volume=settings.MUSIC_VOLUME,loop=True)
-		objects.PseudoCrash()
 		Memorycard()
 		MusicInfo()
 		self.index=0
@@ -245,6 +244,7 @@ def set_warproom_scene(n):
 	camera.position=(0,0,-20)
 	camera.rotation=(0,0,0)
 	camera.fov=65
+	objects.PseudoCrash()
 	Entity(model=q,texture=f'{ivy_}_m.png',scale=ivc,position=(-.8,.4,.1),parent=cu,unlit=False)
 	Entity(model=q,texture=f'{ivy_}_m.png',scale=ivc,position=(-.8,-.4,.1),rotation_z=-90,parent=cu,unlit=False)
 	Entity(model=q,texture=f'{ivy_}.png',scale=ivc,position=(.8,.4,.1),parent=cu,unlit=False)
@@ -252,9 +252,9 @@ def set_warproom_scene(n):
 	if n == 0:
 		ObjType_Background(ID=0,sca=(40,20),pos=(0,0,4),col=color.rgb32(80,100,80),txa=(1,1),UL=True)
 		return
-	Entity(model='sphere',texture='res/terrain/grass_flat.png',scale=(16,5,8),texture_scale=(4,4),position=(10,-8,2),color=color.rgb32(0,120,0),unlit=False)
+	Entity(model='sphere',texture='res/terrain/grass_flat.png',scale=(16,5,8),texture_scale=(4,4),position=(10,-7.7,2),color=color.rgb32(0,120,0),unlit=False)
 	ObjType_Background(ID=2,sca=(38,24),pos=(0,0,5),col=color.rgb32(0,50,50),txa=(1,1),UL=True)
-	ObjType_Deco(ID=1,pos=(7.5,-3.6,2),sca=.06,col=color.gray,rot=(-90,0,0),UL=True)
+	ObjType_Deco(ID=1,pos=(8.2,-3.1,2),sca=(.08,.08,.1),col=color.light_gray,rot=(-90,0,0),UL=True)
 
 def level_select():
 	scene.clear()

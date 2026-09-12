@@ -69,7 +69,6 @@ class CrashB(Entity):
 		s=self
 		if not s.is_attack and s.atk_cooldown <= 0:
 			s.is_attack=True
-			s.is_spin=True
 			s.atk_cooldown=.35
 			s.atk_duration=.25
 			s.is_flip=False

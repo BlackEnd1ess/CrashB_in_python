@@ -46,11 +46,12 @@ class Amadillo(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=0
-		s.glb_model=f'{npf}amadillo/walk.glb'
+		if not LC.amadillo_anim or LC.amadillo_anim == None:
+			LC.amadillo_anim={0:NodePath(gltf.load_model(f'{npf}amadillo/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.25,0),size=(.8,.5,1.5))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.amadillo_anim)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.25)
 		s.move_speed=1
 		del s,pos,drc,rng,rtyp,cmv
@@ -66,11 +67,12 @@ class Turtle(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=1
-		s.glb_model=f'{npf}turtle/walk.glb'
+		if not LC.turtle_anim or LC.turtle_anim == None:
+			LC.turtle_anim={0:NodePath(gltf.load_model(f'{npf}turtle/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.25,0),size=(1.3,.5,1.8))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.turtle_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.move_speed=.7
 		del s,pos,drc,rng,rtyp,cmv
@@ -86,11 +88,12 @@ class SawTurtle(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=2
-		s.glb_model=f'{npf}saw_turtle/walk.glb'
+		if not LC.sawturtle_anim or LC.sawturtle_anim == None:
+			LC.sawturtle_anim={0:NodePath(gltf.load_model(f'{npf}saw_turtle/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.25,0),size=(.8,.5,1.5))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.sawturtle_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.move_speed=1
 		del s,pos,drc,rng,rtyp,cmv
@@ -126,11 +129,14 @@ class Penguin(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=4
-		s.lst={0:f'{npf}penguin/walk.glb',1:f'{npf}penguin/attack.glb',2:f'{npf}penguin/idle.glb'}
+		if not LC.penguin_anim or LC.penguin_anim == None:
+			LC.penguin_anim={0:NodePath(gltf.load_model(f'{npf}penguin/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+							1:NodePath(gltf.load_model(f'{npf}penguin/attack.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+							2:NodePath(gltf.load_model(f'{npf}penguin/idle.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.25,0),size=(.75,1.5,.75))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		an.set_switch_glb_value(s,fps=22,sca=.0018,lst=s.lst)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.penguin_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.is_dizzy=False
 		s.is_spin=False
@@ -200,11 +206,13 @@ class Hedgehog(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=5
-		s.lst={0:f'{npf}hedgehog/walk.glb',1:f'{npf}hedgehog/attack.glb'}
+		if not LC.hedgehog_anim or LC.hedgehog_anim == None:
+			LC.hedgehog_anim={0:NodePath(gltf.load_model(f'{npf}hedgehog/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+							1:NodePath(gltf.load_model(f'{npf}hedgehog/attack.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.25,0),size=(.75,.75,.75))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		an.set_switch_glb_value(s,fps=22,sca=.001,lst=s.lst)
+		an.load_glb_mem_list(s,fps=22,sca=.001,lst=LC.hedgehog_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.def_mode=False
 		s.move_speed=1.1
@@ -253,11 +261,12 @@ class Seal(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=6
-		s.glb_model=f'{npf}seal/walk.glb'
+		if not LC.seal_anim or LC.seal_anim == None:
+			LC.seal_anim={0:NodePath(gltf.load_model(f'{npf}seal/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.25,0),size=(1,.8,1.5))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.seal_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.move_speed=1.1
 		s.n_snd=False
@@ -278,10 +287,13 @@ class EatingPlant(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=7
-		s.lst={0:f'{npf}eating_plant/idle.glb',1:f'{npf}eating_plant/attack.glb',2:f'{npf}eating_plant/eat.glb'}
+		if not LC.eat_plant_anim or LC.eat_plant_anim == None:
+			LC.eat_plant_anim={0:NodePath(gltf.load_model(f'{npf}eating_plant/idle.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+								1:NodePath(gltf.load_model(f'{npf}eating_plant/attack.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+								2:NodePath(gltf.load_model(f'{npf}eating_plant/eat.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale,rotation_y=180)
 		s.collider=BoxCollider(s,center=Vec3(0,.9,0),size=(1.3,1.8,1.3))
-		an.set_switch_glb_value(s,fps=22,sca=.0024,lst=s.lst)
+		an.load_glb_mem_list(s,fps=22,sca=.0024,lst=LC.eat_plant_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		cc.set_val_npc(s)
 		s.can_move=False
@@ -360,10 +372,12 @@ class Rat(Entity):
 		s=self
 		s.vnum=8
 		s.glb_model=f'{npf}rat/walk.glb' if cmv else f'{npf}rat/idle.glb'
+		if not LC.rat_anim or LC.rat_anim == None:
+			LC.rat_anim={0:NodePath(gltf.load_model(s.glb_model,gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale,rotation_y=180)
 		s.collider=BoxCollider(s,center=Vec3(0,.25,0),size=(.8,.5,1.25))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.rat_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.move_speed=1
 		s.snID=4
@@ -383,10 +397,11 @@ class Lizard(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=9
-		s.glb_model=f'{npf}lizard/walk.glb'
+		if not LC.lizard_anim or LC.lizard_anim == None:
+			LC.lizard_anim={0:NodePath(gltf.load_model(f'{npf}lizard/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.75,0),size=(1,1.5,1))
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.lizard_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		s.move_speed=1.2
@@ -410,11 +425,12 @@ class Scrubber(Entity):
 		if mtyp == 1:
 			s.inner_pipe=True
 		s.vnum=10
-		s.glb_model=f'{npf}scrubber/walk.glb'
+		if not LC.scrubber_anim:
+			LC.scrubber_anim=LC.bird_anim={0:NodePath(gltf.load_model(f'{npf}scrubber/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.5,0),size=(1.25,1,1.25))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.scrubber_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=1.5)
 		s.move_speed=1.2
 		s.angle=0
@@ -435,11 +451,12 @@ class Mouse(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=11
-		s.glb_model=f'{npf}mouse/walk.glb'
+		if not LC.mouse_walk_anim or LC.mouse_walk_anim == None:
+			LC.mouse_walk_anim={0:NodePath(gltf.load_model(f'{npf}mouse/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.25,0),size=(1.2,.5,1.5))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.mouse_walk_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=1.5)
 		s.move_speed=1.2
 		s.angle=0
@@ -460,11 +477,12 @@ class Eel(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=12
-		s.glb_model=f'{npf}eel/walk.glb'
+		if not LC.eel_anim or LC.eel_anim == None:
+			LC.eel_anim={0:NodePath(gltf.load_model(f'{npf}eel/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.3,0),size=(.5,.5,1.8))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.eel_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.move_speed=1
 		del s,pos,drc,rng,rtyp,cmv
@@ -480,11 +498,12 @@ class SewerMine(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=13
-		s.glb_model=f'{npf}sewer_mine/walk.glb'
+		if not LC.sewer_mine_anim or LC.sewer_mine_anim == None:
+			LC.sewer_mine_anim={0:NodePath(gltf.load_model(f'{npf}sewer_mine/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,0,0),size=(1,1,1))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.sewer_mine_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.move_speed=.75
 		del s,pos,drc,rng,rtyp,cmv
@@ -500,11 +519,13 @@ class Gorilla(Entity):
 	def __init__(self,pos,drc):
 		s=self
 		s.vnum=14
-		s.lst={0:f'{npf}gorilla/0.glb',1:f'{npf}gorilla/1.glb',2:f'{npf}gorilla/2.glb'}
+		if not LC.gorilla_anim or LC.gorilla_anim == None:
+			LC.gorilla_anim={0:NodePath(gltf.load_model(f'{npf}gorilla/0.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+							1:NodePath(gltf.load_model(f'{npf}gorilla/2.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,rotation_y={0:0,1:90,2:180,3:-90}[drc],scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,1,0),size=(1.25,2,1.25))
 		cc.set_val_npc(s,drc)
-		an.set_switch_glb_value(s,fps=22,sca=.0018,lst=s.lst)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.gorilla_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.wait_next=False
 		s.do_throw=False
@@ -648,11 +669,13 @@ class Lumberjack(Entity):
 	def __init__(self,pos):
 		s=self
 		s.vnum=16
-		s.lst={0:f'{npf}lumberjack/walk.glb',1:f'{npf}lumberjack/attack.glb'}
+		if not LC.lumberjack_anim or LC.lumberjack_anim == None:
+			LC.lumberjack_anim={0:NodePath(gltf.load_model(f'{npf}lumberjack/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+							1:NodePath(gltf.load_model(f'{npf}lumberjack/attack.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale,rotation_y=180)
 		s.collider=BoxCollider(s,center=Vec3(0,1,0),size=(.75,2,.75))
 		cc.set_val_npc(s)
-		an.set_switch_glb_value(s,fps=22,sca=.0018,lst=s.lst)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.lumberjack_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.move_speed=1.6
 		s.follow_range=3
@@ -735,6 +758,7 @@ class SpiderRobot(Entity):
 		an.set_glb_value(s,fps=22,sca=.0018)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.move_speed=1
+		s.typ=typ
 		s.snID=6
 		s.tme=1
 		del s,pos,drc,rng,rtyp,cmv,typ
@@ -861,11 +885,12 @@ class Frog(Entity):
 			s.mvo_drc=[(pos[0],pos[1],pos[2]-2),(pos[0],pos[1],pos[2]-1),(pos[0],pos[1],pos[2]),(pos[0],pos[1],pos[2]+1),(pos[0],pos[1],pos[2]+2)]
 		else:
 			s.mvo_drc=ffld
-		s.glb_model=f'{npf}frog/walk.glb'
+		if not LC.frog_anim or LC.frog_anim == None:
+			LC.frog_anim={0:NodePath(gltf.load_model(f'{npf}frog/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.25,0),size=(1,.5,1))
 		cc.set_val_npc(s,cmv)
-		an.set_glb_value(s,fps=22,sca=.01)
+		an.load_glb_mem_list(s,fps=22,sca=.01,lst=LC.frog_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.can_move=bool(len(s.mvo_drc) > 0)
 		s.mode,s.tme,s.tme_st,s.frm=0,0,0,0
@@ -1069,9 +1094,11 @@ class Hippo(Entity):
 class Bird(Entity):
 	def __init__(self,pos):
 		s=self
-		s.lst={0:f'{npf}bird/idle.glb',1:f'{npf}bird/fly.glb'}
+		if not LC.bird_anim or LC.bird_anim == None:
+			LC.bird_anim={0:NodePath(gltf.load_model(f'{npf}bird/idle.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+							1:NodePath(gltf.load_model(f'{npf}bird/fly.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=(pos[0],pos[1],pos[2]),scale=npc_scale,rotation_y=random.uniform(135,225))
-		an.set_switch_glb_value(s,fps=22,sca=.006,lst=s.lst)
+		an.load_glb_mem_list(s,fps=22,sca=.006,lst=LC.bird_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=1.5)
 		s.wait_min_max=(.5,2)
 		s.rand_wait=True

@@ -2,7 +2,9 @@ from ursina import Entity,color,time,distance,distance_xz,invoke,BoxCollider,Vec
 import _core,status,item,sound,animation,player,_loc,settings,npc,ui,danger,random
 from effect import WarpVortex,WaterDrips,JungleLeaf
 from ursina.ursinastuff import destroy
+from panda3d.core import NodePath
 from ursina.shaders import *
+import gltf
 
 an=animation
 dg=danger
@@ -69,10 +71,11 @@ class ObjType_Movable(Entity):
 		if drc > 1:
 			drc=1
 		s=self
-		s.glb_model=mpt[ID]
+		if not LC.mptf_mesh:
+			LC.mptf_mesh=NodePath(gltf.load_model(mpt[ID],gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 		super().__init__(position=pos,name='mptf',scale=(.75,1,.75),rotation_y=180)
 		s.collider=BoxCollider(s,center=Vec3(0,-.5,0))
-		an.set_glb_value(s,fps=0,sca=.001 if ID != 2 else (.001,.00075,.001))
+		an.set_memory_glb_value(s,fps=0,sca=.001 if ID != 2 else (.001,.00075,.001),model=LC.mptf_mesh)
 		an.set_glb_color(s,col=col,UNLIT=False,brightness=1.25)
 		s.target_pos=(s.x-rng,s.x+rng)
 		if drc == 1:
@@ -581,12 +584,13 @@ class WaterFoam(Entity):
 #####################
 ## level 4 objects ##
 class SwimPlatform(Entity):
-	def __init__(self,pos):##mem
+	def __init__(self,pos):
 		s=self
-		s.glb_model=f'{omf}l4/swr_platform/swr_platform.glb'
+		if not LC.swim_sewer_ptf:
+			LC.swim_sewer_ptf=NodePath(gltf.load_model(f'{omf}l4/swr_platform/swr_platform.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 		super().__init__(position=pos,name='swpt',scale=.5)
 		s.collider=BoxCollider(s,center=Vec3(0,0,0),size=(1.25,.5,1.25))
-		an.set_glb_value(s,fps=0,sca=.0012)
+		an.set_memory_glb_value(s,fps=0,sca=.0012,model=LC.swim_sewer_ptf)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
 		s.active=False
 		s.matr='metal'
@@ -629,9 +633,10 @@ class LoosePlatform(Entity):
 		s=self
 		if t > 1:
 			t=1
-		s.glb_model=f'{omf}l5/loose_ptf/{t}/loose_ptf.glb'
+		if not LC.loose_ptf_mesh:
+			LC.loose_ptf_mesh=NodePath(gltf.load_model(f'{omf}l5/loose_ptf/{t}/loose_ptf.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 		super().__init__(name='loos',scale=.6,position=pos,rotation_y=90)
-		an.set_glb_value(s,fps=16,sca=.0012)
+		an.set_memory_glb_value(s,fps=16,sca=.0012,model=LC.loose_ptf_mesh)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=3)
 		s.collider=BoxCollider(s,center=Vec3(0,-.5,0))
 		s.collapsed=False
@@ -687,7 +692,6 @@ class LoosePlatform(Entity):
 			return
 		if s.collapsed:
 			s.repair_floor()
-
 
 #####################
 ## level 7 objects ##

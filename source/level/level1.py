@@ -234,7 +234,6 @@ def load_npc():
 	n.spawn(ID=0,POS=(0,1.1,-52))
 	n.spawn(ID=1,POS=(0,1.1,-36.3),DRC=2)
 	n.spawn(ID=2,POS=(0,1.1,-15))
-	
 	bdh=1.2
 	n.Bird(pos=(-.2,bdh,-57.1))
 	n.Bird(pos=(-.6,bdh+.32,-48.7))
@@ -249,7 +248,6 @@ def load_npc():
 	n.Bird(pos=(.2,bdh,18.8))
 	n.Bird(pos=(0,bdh,19.2))
 	n.Bird(pos=(0,bdh,19.7))
-	
 	n.Butterfly(pos=(-.3,1,-59.1),typ=1,rng=1)
 	n.Butterfly(pos=(-2,1.6,-26.6),typ=3,rng=1)
 	n.Butterfly(pos=(-2,1.6,-.2),typ=5,rng=1)

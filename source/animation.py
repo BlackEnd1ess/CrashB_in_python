@@ -140,7 +140,7 @@ def refr_player_animation(c):
 	if c.is_flip:
 		c_animation(8)#flip
 		return
-	if c.is_spin:
+	if c.is_attack:
 		c_animation(5)#spin
 		return
 	if c.stun_time > 0:
@@ -195,6 +195,33 @@ def refr_npc_animation(n):
 
 ###################################################################
 ###################################################################
+
+def load_glb_mem_list(g,fps,sca,lst):
+	if hasattr(g,'models'):
+		for root in g.models.values():
+			root.removeNode()
+	g.models={}
+	g.frames_all={}
+	if not lst:
+		return
+	for n,src in lst.items():
+		root=src.copyTo(g)
+		root.setScale(sca)
+		root.hide()
+		frames=list(root.findAllMatches('**/frame_*'))
+		frames.sort(key=lambda node:node.getName())
+		for frame in frames:
+			frame.hide()
+		if frames:
+			frames[0].show()
+		g.models[n]=root
+		g.frames_all[n]=frames
+	g.root=g.models[0]
+	g.frames=g.frames_all[0]
+	g.root.show()
+	g.frame_index=0
+	g.new_index=0
+	g.fps=fps
 
 def set_glb_value(g,fps,sca):
 	if hasattr(g,'root'):

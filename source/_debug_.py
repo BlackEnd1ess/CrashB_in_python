@@ -165,6 +165,14 @@ class COUNT_ENGINE_READ_FILE(Entity):
 			s.tme=0
 			s.refr_model_dbg()
 
+def show_level_mem():
+	acv=psutil.Process(os.getpid())
+	print(acv.memory_info().rss/(1024*1024))
+
+def mem_info(tag=''):
+	p=psutil.Process(os.getpid())
+	print(f'RAM [{tag}]: {p.memory_info().rss/1024/1024:.1f} MB')
+
 #player attr info
 class PlayerDBG(Entity):
 	def __init__(self):

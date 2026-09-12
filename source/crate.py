@@ -162,7 +162,7 @@ class Checkpoint(Entity):
 	def box_destroy(self):
 		s=self
 		s.forget_iron_box()
-		st.checkpoint=(s.x,s.y+1.5,s.z)
+		st.checkpoint=(s.x,s.y+2,s.z)
 		sn.crate_audio(ID=6)
 		ui.CheckpointLetter(s.position)
 		cc.box_destroy_event(s)

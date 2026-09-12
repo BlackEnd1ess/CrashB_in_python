@@ -1,0 +1,2 @@
+#12.09.2026
+- reduced memory usage by store mesh data once
