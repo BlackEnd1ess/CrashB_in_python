@@ -7,9 +7,9 @@ checkpoint=None
 WARP_ROOM_MUSIC=3
 
 ## game progress items
-COLOR_GEM=[1,2,3,4,5]
+COLOR_GEM=[]
 CLEAR_GEM=[]
-CRYSTAL=[1,2,3,4]
+CRYSTAL=[]
 RELIC=[]
 
 ## reset instances

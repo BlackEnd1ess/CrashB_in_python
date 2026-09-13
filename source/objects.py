@@ -63,19 +63,23 @@ class ObjType_Block(Entity):
 
 
 ##platforms with dyncamic move func
-mpt={0:'res/objects/l1/moss_platform/moss_platform.glb',
-	1:'res/objects/l2/snow_platform/snow_platform.glb',
-	2:'res/objects/l7/space_platform/space_platform.glb'}
 class ObjType_Movable(Entity):
 	def __init__(self,pos,ptm,ID,pts=.5,ptw=3,rng=1,tu=0,drc=0,col=color.light_gray,UL=False):
 		if drc > 1:
 			drc=1
 		s=self
-		if not LC.mptf_mesh:
-			LC.mptf_mesh=NodePath(gltf.load_model(mpt[ID],gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+		if ID == 0:
+			if not LC.mptf_mesh_0:
+				LC.mptf_mesh_0=NodePath(gltf.load_model(f'{omf}l1/moss_platform/moss_platform.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+		elif ID == 1:
+			if not LC.mptf_mesh_1:
+				LC.mptf_mesh_1=NodePath(gltf.load_model(f'{omf}l2/snow_platform/snow_platform.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+		elif ID == 2:
+			if not LC.mptf_mesh_2:
+				LC.mptf_mesh_2=NodePath(gltf.load_model(f'{omf}l7/space_platform/space_platform.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 		super().__init__(position=pos,name='mptf',scale=(.75,1,.75),rotation_y=180)
 		s.collider=BoxCollider(s,center=Vec3(0,-.5,0))
-		an.set_memory_glb_value(s,fps=0,sca=.001 if ID != 2 else (.001,.00075,.001),model=LC.mptf_mesh)
+		an.set_memory_glb_value(s,fps=0,sca=.001 if ID != 2 else (.001,.00075,.001),model={0:LC.mptf_mesh_0,1:LC.mptf_mesh_1,2:LC.mptf_mesh_2}[ID])
 		an.set_glb_color(s,col=col,UNLIT=False,brightness=1.25)
 		s.target_pos=(s.x-rng,s.x+rng)
 		if drc == 1:
@@ -593,38 +597,47 @@ class SwimPlatform(Entity):
 		an.set_memory_glb_value(s,fps=0,sca=.0012,model=LC.swim_sewer_ptf)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
 		s.active=False
+		s.p_snd=False
 		s.matr='metal'
 		s.spawn_y=s.y
-		s.f_time=0
-		s.d_time=0
+		s.tme=0
 		del pos
+	def refr_func(self):
+		s=self
+		if s.y > s.spawn_y-.3:
+			s.y-=time.dt
+			return
+		if s.active:
+			s.active=False
+			s.tme=0
 	def reset_pos(self):
 		s=self
-		s.d_time+=time.dt
-		if s.d_time >= 5:
-			s.d_time=0
-			if s.y < s.spawn_y:
-				s.y+=time.dt
-				if s.y >= s.spawn_y:
-					s.y=s.spawn_y
-					s.collider=b
-	def sink(self):
-		s=self
-		s.y-=time.dt
-		if s.y <= s.spawn_y-.3:
-			sn.pc_audio(ID=10)
-			s.collider=None
-			s.active=False
-			s.f_time=0
-	def update(self):
-		if not st.gproc():
-			s=self
-			if s.active:
-				s.f_time+=time.dt
-				if s.f_time >= .5:
-					s.sink()
+		if s.y < s.spawn_y:
+			if s.tme < 2:
+				s.tme+=time.dt
 				return
-			s.reset_pos()
+			s.y+=time.dt
+			return
+		if s.tme > 0 and not s.active:
+			s.tme=0
+			s.collider=BoxCollider(s,center=Vec3(0,0,0),size=(1.25,.5,1.25))
+			s.p_snd=False
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if s.active:
+			s.tme+=time.dt
+			if s.tme > 1:
+				if not s.p_snd:
+					s.p_snd=True
+					s.collider=None
+					sn.pc_audio(ID=10)
+					return
+				s.refr_func()
+			return
+		s.reset_pos()
+
 
 #####################
 ## level 5 objects ##

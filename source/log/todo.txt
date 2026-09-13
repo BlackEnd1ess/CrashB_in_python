@@ -1,18 +1,11 @@
 v1.7
-- sewerptf dosnt reset
-- npc rat typ + danger.deathsmasher anim lst
-- LOD startroom visible, mptf visible typ
-- fix landmine anim
-- fix gorilla anim
+- l6 + l7 skull ptf path
+- UI size, max window (pause, gems)
 - optimize memory model access
+- test all levels
 - fixx code
 
 v1.8
-- l6 + l7 skull ptf path
-- UI size, max window (pause, gems)
-- test all levels
-
-v1.9
 - cb3 texture from level: underwater, knight, boneyard
 - creative mode / editor modus
 - asset encryption

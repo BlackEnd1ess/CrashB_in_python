@@ -134,7 +134,7 @@ class LevelSceneRenderManager(Entity):
 		self.dst_b=LC.RCB
 		self.tme=0
 		for mop in tuple(scene.entities):
-			if mop.name in (CORRIDOR,SCENE,FLOOR,WALL,BLOCK,ROOM) or (mop.name == DECO and mop.vnum != 6):
+			if mop.name in (CORRIDOR,SCENE,FLOOR,WALL,BLOCK) or (mop.name == DECO and mop.vnum != 6) or mop.name in ROOM:
 				self.map_objects.append(mop)
 	def check_distance(self,mop):
 		return bool(abs(LC.ACTOR.x-mop.x) < self.dst_x and LC.ACTOR.z < mop.z+self.dst_b and mop.z < LC.ACTOR.z+self.dst_z)

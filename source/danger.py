@@ -17,19 +17,23 @@ cc=_core
 LC=_loc
 
 ## classes for dangerous objects ingame where causes player damage or death event ###
-dtsm={0:f'{omf}l2/wood_log/wood_log.glb',
-	1:f'{omf}l2/stone_log/stone_log.glb',
-	2:f'{omf}l7/piston/piston.glb'}
-class DeathSmasher(Entity):#level 2
+class DeathSmasher(Entity):#pistons
 	def __init__(self,pos,typ,speed=1,wait=1,turn=0):
 		if typ > 2:
 			typ=2
 		s=self
-		if not LC.piston_anim:
-			LC.piston_anim=NodePath(gltf.load_model(dtsm[typ],gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+		if typ == 0:
+			if not LC.piston_anim_0:
+				LC.piston_anim_0=NodePath(gltf.load_model(f'{omf}l2/wood_log/wood_log.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+		elif typ == 1:
+			if not LC.piston_anim_1:
+				LC.piston_anim_1=NodePath(gltf.load_model(f'{omf}l2/stone_log/stone_log.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+		elif typ == 2:
+			if not LC.piston_anim_2:
+				LC.piston_anim_2=NodePath(gltf.load_model(f'{omf}l7/piston/piston.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 		super().__init__(name='wdlg',position=pos,scale=(.3,.4,.3),rotation=(0 if typ != 2 else 180,180 if typ != 2 else 0,0))
-		s.collider=BoxCollider(s,center=Vec3(0,-2.4,0) if typ != 2 else Vec3(0,2.4,0),size=Vec3(1,3,1))
-		an.set_memory_glb_value(s,fps=0,sca=.002,model=LC.piston_anim)
+		s.collider=BoxCollider(s,center=Vec3(0,-2.4,0) if typ != 2 else Vec3(0,2.5,0),size=Vec3(1,3,1) if typ != 2 else (2,5,2))
+		an.set_memory_glb_value(s,fps=0,sca=.002 if typ != 2 else (.003,.0025,.003),model={0:LC.piston_anim_0,1:LC.piston_anim_1,2:LC.piston_anim_2}[typ])
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
 		if typ != 2:
 			sbcx=.5 if typ == 0 else .7
@@ -76,7 +80,10 @@ class DeathSmasher(Entity):#level 2
 		if st.gproc():
 			return
 		if st.aku_hit > 2:
-			s.stat=1
+			if s.stat != 1:
+				s.stat=1
+			if s.y != s.limit_y:
+				s.y=s.limit_y
 			return
 		if s.wait > 0:
 			s.wait-=time.dt
@@ -411,9 +418,13 @@ class LogDanger(Entity):
 class Hive(Entity):
 	def __init__(self,pos,bID,bMAX,typ):
 		s=self
-		s.glb_model=f'{omf}l6/hive/{typ}/hive.glb'
+		if typ > 1:
+			typ=1
+		if not LC.bee_hive_anim:
+			LC.bee_hive_anim={0:NodePath(gltf.load_model(f'{omf}l6/hive/0.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+							1:NodePath(gltf.load_model(f'{omf}l6/hive/1.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=.3)
-		an.set_glb_value(s,fps=16,sca=.0024)
+		an.load_glb_mem_list(s,fps=20,sca=.003,lst=LC.bee_hive_anim)
 		an.set_glb_color(s,col=color.white,UNLIT=False,brightness=3)
 		s.bMAX=bMAX if (typ == 1) else 1
 		s.locked=False
@@ -421,7 +432,19 @@ class Hive(Entity):
 		s.bID=bID
 		s.typ=typ
 		s.tme=0
+		s.switch_model(typ)
 		del pos,bID,bMAX
+	def switch_model(self,n):
+		s=self
+		s.root.hide()
+		s.root=s.models[n]
+		s.frames=s.frames_all[n]
+		s.new_index=0
+		s.frame_index=0
+		for frame in s.frames:
+			frame.hide()
+		s.frames[0].show()
+		s.root.show()
 	def is_own_bee(self):
 		cnt_bee=[b for b in scene.entities if (isinstance(b,npc.Bee) and b.bID == self.bID)]
 		self.bees_out=len(cnt_bee)
@@ -450,9 +473,10 @@ class Hive(Entity):
 class TikkiSculpture(Entity):
 	def __init__(self,pos,spd,rng):
 		s=self
-		s.glb_model=f'{omf}l6/tikki/tikki.glb'
+		if not LC.tikki_sculpt_anim:
+			LC.tikki_sculpt_anim=NodePath(gltf.load_model(f'{omf}l6/tikki/tikki.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 		super().__init__(position=pos,scale=.5,name='tksc',collider=b)
-		an.set_glb_value(s,fps=20,sca=.001)
+		an.set_memory_glb_value(s,fps=20,sca=.001,model=LC.tikki_sculpt_anim)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=2)
 		s.is_moving=False
 		s.move_speed=spd
@@ -585,13 +609,21 @@ class LandMine(Entity):
 			s.new_index=0
 			sn.obj_audio(ID=10,pit=random.uniform(.8,1))
 		an.set_glb_frame(s)
-	def switch_status(self):
-		self.glb_model=self.second_glb_model
-		an.set_glb_value(self,fps=20,sca=.004)
-		sn.crate_audio(ID=9)
+	def switch_status(self,n):
+		s=self
 		ef.Fireball(self)
+		sn.crate_audio(ID=9)
 		if st.aku_hit < 3:
 			LC.ACTOR.stun_time=2
+		s.root.hide()
+		s.root=s.models[n]
+		s.frames=s.frames_all[n]
+		s.new_index=0
+		s.frame_index=0
+		for frame in s.frames:
+			frame.hide()
+		s.frames[0].show()
+		s.root.show()
 	def update(self):
 		if st.gproc():
 			return
@@ -602,7 +634,7 @@ class LandMine(Entity):
 			if dta < .3:
 				if not s.explode:
 					s.explode=True
-					s.switch_status()
+					s.switch_status(1)
 
 def multi_heat_tile(p,typ,ro_y,sca,CNT):
 	for mhx in range(CNT[0]):
@@ -644,65 +676,15 @@ class HeatTile(Entity):
 					s.refr=1
 					s.is_heat=True
 
-class Piston(Entity):
-	def __init__(self,pos,spd,wait=1):##mem
-		s=self
-		s.glb_model=f'{omf}l7/piston/piston.glb'
-		super().__init__(position=pos,scale=.4,rotation=(180,0,0))
-		s.collider=BoxCollider(s,size=Vec3(1.8,4,1.8),center=Vec3(0,3.1,0))
-		an.set_glb_value(s,fps=0,sca=.0025)
-		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.25)
-		s.spawn_y=s.y
-		s.mvspd=spd
-		s.wait=wait
-		s.tme=wait
-		s.mode=0
-		del pos,spd,wait
-	def switch_mode(self,m):
-		s=self
-		if s.mode == m:
-			return
-		s.mode=m
-		s.tme=s.wait
-		if distance(s,LC.ACTOR) < 8:
-			sn.obj_audio(ID=11,pit=.85 if m == 1 else .6)
-	def refr_position(self):
-		s=self
-		if s.y > s.spawn_y-2:
-			if st.aku_hit > 2:
-				return
-			vc=s.intersects()
-			if vc and vc.entity == LC.ACTOR:
-				if vc.normal == Vec3(0,1,0):
-					cc.get_damage(LC.ACTOR,rsn=2)
-			s.y-=time.dt*s.mvspd
-			return
-		s.switch_mode(1)
-	def reset_position(self):
-		s=self
-		if s.y < s.spawn_y:
-			s.y+=time.dt*s.mvspd
-			return
-		s.switch_mode(0)
-	def update(self):
-		if st.gproc():
-			return
-		s=self
-		if s.tme > 0:
-			s.tme-=time.dt
-			return
-		if s.mode == 0:
-			s.refr_position()
-			return
-		s.reset_position()
-
 class LabPad(Entity):
 	def __init__(self,pos,ID,ltth=1.75):
 		s=self
-		s.lst={0:f'{omf}l7/e_pad/0.glb',1:f'{omf}l7/e_pad/1.glb'}
+		if not LC.lab_pad_anim:
+			LC.lab_pad_anim={0:NodePath(gltf.load_model(f'{omf}l7/e_pad/0.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+							1:NodePath(gltf.load_model(f'{omf}l7/e_pad/1.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(name='epad',position=pos,rotation_y=90,scale=.5,collider=b)
 		s.collider=BoxCollider(s,center=Vec3(0,-.1,0),size=Vec3(1.6,.2,1.6))
-		an.set_switch_glb_value(s,fps=20,sca=.002,lst=s.lst)
+		an.load_glb_mem_list(s,fps=24,sca=.002,lst=LC.lab_pad_anim)
 		an.set_glb_color(s,col=color.white,UNLIT=False,brightness=1.5)
 		s.active=False
 		s.locked=False
@@ -762,10 +744,11 @@ class LabPad(Entity):
 
 class LabTaser(Entity):
 	def __init__(self,pos,ID,height):
-		self.glb_model=f'{omf}l7/lab_taser/lab_taser.glb'
+		if not LC.lab_taser_anim:
+			LC.lab_taser_anim={0:NodePath(gltf.load_model(f'{omf}l7/lab_taser/lab_taser.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(name='ltts',position=(pos[0],pos[1]+height,pos[2]),scale=.1)
-		an.set_glb_value(self,fps=20,sca=.0075)
-		an.set_glb_color(self,col=color.white,UNLIT=True,brightness=1.5)
+		an.load_glb_mem_list(self,fps=22,sca=.0075,lst=LC.lab_taser_anim)
+		an.set_glb_color(self,col=color.white,UNLIT=False,brightness=1.5)
 		self.height=height
 		self.ID=ID
 		del pos,ID,height

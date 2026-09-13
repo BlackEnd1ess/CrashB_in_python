@@ -137,12 +137,12 @@ class AkuAku(Entity):
 		sn.crate_audio(ID=12,pit=1.2)
 		if st.aku_hit < 3:
 			st.aku_hit+=1
-			if st.aku_hit > 2:
-				if not st.is_invincible:
-					st.is_invincible=True
-					sn.AkuMusic()
-				else:
-					st.aku_inv_time=20
+		if st.aku_hit > 2:
+			if not st.is_invincible:
+				st.is_invincible=True
+				sn.AkuMusic()
+			else:
+				st.aku_inv_time=20
 		if not st.aku_exist:
 			npc.AkuAkuMask(s.position)
 		spawn_glitter(s.position,15)

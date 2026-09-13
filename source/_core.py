@@ -229,35 +229,41 @@ def c_bounce(c):
 		sn.crate_audio(ID=4)
 	BoxBounceAnimation(c)
 def c_shield():
+	item_hitten=False
+	npc_hitten=False
+	box_hitten=False
 	if st.aku_hit < 3:
 		return
 	for rf in tuple(scene.entities):
 		if rf is None or rf.is_empty():
 			continue
-		if not rf.collider:
+		if not rf or not rf.collider:
 			continue
-		if distance(rf,LC.ACTOR) >= 1.5:
-			continue
-		if rf.name in LC.item_lst:
-			rf.collect()
-			sn.pc_audio(ID=21)
-			continue
-		if is_enemie(rf):
-			bash_enemie(rf,LC.ACTOR)
-			continue
-		if str(rf) in LC.explosive_object:
-			rf.purge()
-			continue
-		if is_box(rf) and rf.vnum not in (0,8,13):
-			if rf.vnum == 14:
-				rf.c_destroy()
-				continue
-			if rf.vnum in (9,10) and rf.active:
-				continue
-			if rf.vnum in (3,11):
-				rf.empty_destroy()
-				continue
-			rf.box_destroy()
+		if distance(rf,LC.ACTOR) < 1.5:
+			if rf.name in LC.item_lst:
+				if not item_hitten:
+					item_hitten=True
+					rf.collect()
+					sn.pc_audio(ID=21)
+				return
+			if is_enemie(rf):
+				if not npc_hitten:
+					npc_hitten=True
+					bash_enemie(rf,LC.ACTOR)
+				return
+			if rf.name in LC.explosive_object:
+				rf.purge()
+				return
+			if is_box(rf) and rf.vnum not in (0,8,13):
+				if rf.vnum == 14:
+					rf.c_destroy()
+					return
+				if rf.vnum in (9,10) and rf.active:
+					return
+				if rf.vnum in (3,11):
+					rf.empty_destroy()
+					return
+				rf.box_destroy()
 
 ## camera actor
 def cam_indoor(c):
@@ -381,6 +387,7 @@ def delete_states():
 	st.level_relic_time=0
 	st.wumpas_in_level=0
 	st.npc_in_level=0
+	relic_time_stop=0
 	st.crate_bonus=0
 	st.crate_count=0
 	st.crate_to_sv=0
@@ -408,6 +415,7 @@ def delete_states():
 	st.pause=False
 	level_ready=False
 	LC.IGNORE.clear()
+	clear_mem_animation()
 def collect_rewards():
 	cdx=st.level_index
 	if st.level_crystal:
@@ -982,8 +990,8 @@ def is_enemie(n):
 	return bool(hasattr(n,'idf') and n.idf == 'np')
 def bash_enemie(e,h):
 	e.is_hitten=True
-	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)
 	sn.pc_audio(ID=17)
+	e.fly_direc=Vec3(e.x-h.x,0,e.z-h.z)
 def npc_jump_action(m):
 	if not (m.is_hitten or m.is_purge):
 		if m.vnum in (2,9,13) or (m.vnum == 5 and m.def_mode):
@@ -1123,3 +1131,24 @@ def preload_box_texture():
 	LC.box_tnt_texture={0:load_texture(f'{cik}crate_tnt_0.png'),1:load_texture(f'{cik}crate_tnt_1.png'),2:load_texture(f'{cik}crate_tnt_2.png'),3:load_texture(f'{cik}crate_tnt_3.png')}
 	LC.box_trial_texture={1:load_texture(f'{cik}15_t1.png'),2:load_texture(f'{cik}15_t2.png'),3:load_texture(f'{cik}15_t3.png')}
 	LC.box_texture_info=[load_texture(f'{cik}{cbx}.png') for cbx in range(16+1)]
+
+def clear_mem_animation():
+	for mdmm in (LC.toxic_barell_mesh,LC.tikki_sculpt_anim,LC.sawturtle_anim,LC.butterfly_anim,
+		LC.land_mine_anim,LC.eat_plant_anim,LC.swim_sewer_ptf,LC.loose_ptf_mesh,LC.lab_pad_anim,
+		LC.sewer_mine_anim,LC.mouse_walk_anim,LC.lumberjack_anim,LC.piston_anim_0,
+		LC.piston_anim_1,LC.piston_anim_2,LC.scrubber_anim,LC.hedgehog_anim,LC.walker_robot_anim,
+		LC.amadillo_anim,LC.bee_hive_anim,LC.gorilla_anim,LC.penguin_anim,LC.spider_robot_anim,
+		LC.iceicle_mesh,LC.msculpt_mesh,LC.turtle_anim,LC.lizard_anim,LC.lab_assist_anim,
+		LC.mptf_mesh_0,LC.mptf_mesh_1,LC.mptf_mesh_2,LC.hippo_anim,LC.lab_taser_anim,
+		LC.seal_anim,LC.bird_anim,LC.frog_anim,LC.eel_anim,LC.rat_anim):
+		if not mdmm:
+			continue
+		if isinstance(mdmm,dict):
+			for root in mdmm.values():
+				if root and not root.isEmpty():
+					root.removeNode()
+			mdmm.clear()
+		elif isinstance(mdmm,NodePath):
+			if not mdmm.isEmpty():
+				mdmm.removeNode()
+	del mdmm

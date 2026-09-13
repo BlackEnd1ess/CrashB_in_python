@@ -28,9 +28,9 @@ def map_setting():
 
 def start_load():
 	#load_crate()
-	#load_object()
-	#load_wumpa()
-	#load_npc()
+	load_object()
+	load_wumpa()
+	load_npc()
 	map_setting()
 
 ##for youtube and git
@@ -76,12 +76,10 @@ def presentation():
 
 def load_object():
 	Entity(model='cube',scale=(16,1,16),y=-.5,texture_scale=(16,16),collider='box',texture='white_cube',alpha=1)
-	#o.StartRoom(pos=(0,0,-8.1))
-	#o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
-	#o.SkullPlatform(pos=(0,.2,0),typ=0)
-	#o.SkullPlatform(pos=(1,.2,0),typ=1)
-	#o.SkullPlatform(pos=(2,.2,0),typ=2)
-	#dg.IceIcle(pos=(1,2,0),fall_speed=4)
+	o.StartRoom(pos=(0,0,-8.1))
+	o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
+	#dg.Hive(pos=(0,0,0),bMAX=4,bID=12,typ=0)
+	#dg.Hive(pos=(2,0,0),bMAX=4,bID=12,typ=1)
 
 def load_crate():
 	CZ=0
@@ -89,7 +87,7 @@ def load_crate():
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.32),CNT=[3,2,2])
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ+.64),CNT=[3,1,3])
-	#mt.crate_block(ID=1,POS=(-6.5,.16,CZ),CNT=[3,1,1])
+	mt.crate_block(ID=1,POS=(-6.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=2,POS=(-5.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=3,POS=(-4.5,.16,CZ),CNT=[3,3,1])
 	#mt.crate_block(ID=4,POS=(-3.5,.16,CZ),CNT=[3,3,1])
@@ -110,11 +108,9 @@ def load_crate():
 	#mt.crate_block(ID=1,POS=(0,1.16,CZ),CNT=[1,1,1])
 	#mt.crate_block(ID=1,POS=(.5,1.16,CZ),CNT=[1,1,8])
 def load_wumpa():
-	#mt.wumpa_plane(POS=(0,.25,-2),CNT=[3,3])
-	#mt.wumpa_plane(POS=(0,.25,5),CNT=[3,3])
-	mt.wumpa_plane(POS=(-5,.25,3),CNT=[3,3])
+	mt.wumpa_plane(POS=(2,.25,0),CNT=[3,3])
 def load_npc():
-	n.spawn(ID=4,POS=(0,0,0),CMV=False)
+	n.spawn(ID=1,POS=(0,0,0))
 
 ## bonus level / gem path
 def bonus_zone():

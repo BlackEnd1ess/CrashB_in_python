@@ -371,9 +371,10 @@ class Rat(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=8
-		s.glb_model=f'{npf}rat/walk.glb' if cmv else f'{npf}rat/idle.glb'
+		s.glb_model=0 if cmv else 1
 		if not LC.rat_anim or LC.rat_anim == None:
-			LC.rat_anim={0:NodePath(gltf.load_model(s.glb_model,gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
+			LC.rat_anim={0:NodePath(gltf.load_model(f'{npf}rat/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+						1:NodePath(gltf.load_model(f'{npf}rat/idle.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale,rotation_y=180)
 		s.collider=BoxCollider(s,center=Vec3(0,.25,0),size=(.8,.5,1.25))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
@@ -382,7 +383,22 @@ class Rat(Entity):
 		s.move_speed=1
 		s.snID=4
 		s.tme=1
+		if cmv:
+			s.switch_model(0)
+			return
+		s.switch_model(1)
 		del s,pos,drc,rng,rtyp,cmv
+	def switch_model(self,n):
+		s=self
+		s.root.hide()
+		s.root=s.models[n]
+		s.frames=s.frames_all[n]
+		s.new_index=0
+		s.frame_index=0
+		for frame in s.frames:
+			frame.hide()
+		s.frames[0].show()
+		s.root.show()
 	def update(self):
 		if st.gproc():
 			return
@@ -426,7 +442,7 @@ class Scrubber(Entity):
 			s.inner_pipe=True
 		s.vnum=10
 		if not LC.scrubber_anim:
-			LC.scrubber_anim=LC.bird_anim={0:NodePath(gltf.load_model(f'{npf}scrubber/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
+			LC.scrubber_anim={0:NodePath(gltf.load_model(f'{npf}scrubber/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.5,0),size=(1.25,1,1.25))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
@@ -521,7 +537,8 @@ class Gorilla(Entity):
 		s.vnum=14
 		if not LC.gorilla_anim or LC.gorilla_anim == None:
 			LC.gorilla_anim={0:NodePath(gltf.load_model(f'{npf}gorilla/0.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
-							1:NodePath(gltf.load_model(f'{npf}gorilla/2.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
+							1:NodePath(gltf.load_model(f'{npf}gorilla/1.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+							2:NodePath(gltf.load_model(f'{npf}gorilla/2.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,rotation_y={0:0,1:90,2:180,3:-90}[drc],scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,1,0),size=(1.25,2,1.25))
 		cc.set_val_npc(s,drc)
@@ -751,17 +768,31 @@ class SpiderRobot(Entity):
 		s.vnum=17
 		if typ > 1:
 			typ=1
-		s.glb_model=f'{npf}robot_spider/{typ}.glb'
+		if not LC.spider_robot_anim:
+			LC.spider_robot_anim={0:NodePath(gltf.load_model(f'{npf}robot_spider/0.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+								1:NodePath(gltf.load_model(f'{npf}robot_spider/1.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.3,0) if typ == 0 else Vec3(0,.5,0),size=(1.2,.6,1.5) if typ == 0 else (1.2,1,1.2))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv,typ)
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.spider_robot_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.move_speed=1
 		s.typ=typ
 		s.snID=6
 		s.tme=1
+		s.switch_model(typ)
 		del s,pos,drc,rng,rtyp,cmv,typ
+	def switch_model(self,n):
+		s=self
+		s.root.hide()
+		s.root=s.models[n]
+		s.frames=s.frames_all[n]
+		s.new_index=0
+		s.frame_index=0
+		for frame in s.frames:
+			frame.hide()
+		s.frames[0].show()
+		s.root.show()
 	def update(self):
 		if st.gproc():
 			return
@@ -776,11 +807,12 @@ class WalkerRobot(Entity):
 	def __init__(self,pos,drc,rng,rtyp,cmv):
 		s=self
 		s.vnum=18
-		s.glb_model=f'{npf}robot_walker/walk.glb'
+		if not LC.walker_robot_anim:
+			LC.walker_robot_anim={0:NodePath(gltf.load_model(f'{npf}robot_walker/walk.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,.8,0),size=(1.2,1.6,1.2))
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.walker_robot_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.move_speed=1.8
 		s.p_snd=False
@@ -811,11 +843,13 @@ class LabAssistant(Entity):
 	def __init__(self,pos,drc):
 		s=self
 		s.vnum=19
-		s.lst={0:f'{npf}lab_assistant/idle.glb',1:f'{npf}lab_assistant/fall.glb'}
+		if not LC.lab_assist_anim:
+			LC.lab_assist_anim={0:NodePath(gltf.load_model(f'{npf}lab_assistant/idle.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
+								1:NodePath(gltf.load_model(f'{npf}lab_assistant/fall.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,rotation_y={0:90,1:180,2:270,3:0}[drc],scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,1,0),size=(1,2,.75))
 		cc.set_val_npc(s,drc)
-		an.set_switch_glb_value(s,fps=22,sca=.0018,lst=s.lst)
+		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.lab_assist_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.is_fall=False
 		s.do_push=False
@@ -854,6 +888,8 @@ class LabAssistant(Entity):
 		s=self
 		s.is_fall=(s.is_hitten or s.is_purge)
 		if s.is_fall:
+			if s.collider:
+				s.collider=None
 			if not s.p_snd:
 				s.p_snd=True
 				s.collision=False
