@@ -1,4 +1,5 @@
-from ursina import Entity,BoxCollider,invoke,Vec3,color,time,raycast,held_keys,math,EditorCamera
+from ursina import Entity,BoxCollider,invoke,Vec3,color,time,raycast,held_keys,math,EditorCamera,Circle
+from panda3d.core import DepthTestAttrib,TransparencyAttrib,Texture,CullFaceAttrib,RenderState
 import _core,status,animation,sound,_loc,settings,_debug_
 from effect import WarpRingEffect
 from math import atan2
@@ -13,21 +14,31 @@ LC=_loc
 
 class pShadow(Entity):## shadow point
 	def __init__(self):
-		super().__init__(model='quad',texture='res/pc/shdw.png',color=color.black,rotation_x=90,scale=.25,origin_z=.01,alpha=.9)
-		LC.IGNORE.append(self)
-		_loc.shdw=self
+		s=self
+		super().__init__(model=Circle(32,thickness=.25,radius=.1),rotation_x=90,color=color.black)
+		LC.IGNORE.append(s)
+		s.box_cover_y=.165
+		_loc.shdw=s
+		del s
+	def refr_function(self):
+		s=self
+		s.x=LC.ACTOR.x
+		s.z=LC.ACTOR.z
+		krf=raycast(LC.ACTOR.world_position,Vec3(0,-1,0),distance=3,ignore=LC.IGNORE,debug=False)
+		if krf:
+			kx=krf.entity
+			if not kx.name in LC.item_lst|LC.trigger_lst:
+				if cc.is_box(kx):
+					if s.y != kx.y+s.box_cover_y:
+						s.y=kx.y+s.box_cover_y
+					return
+				s.y=krf.world_point.y+.01
 	def update(self):
 		if st.gproc():
 			return
-		s=self
-		krf=raycast(LC.ACTOR.world_position,-Vec3(0,1,0),distance=2,ignore=LC.IGNORE,debug=False)
-		s.visible=not(LC.ACTOR.freezed)
-		s.x,s.z=LC.ACTOR.x,LC.ACTOR.z
-		if krf.hit:
-			if not str(krf.entity) in LC.item_lst|LC.trigger_lst:
-				s.y=krf.world_point.y+.1/10
+		self.refr_function()
 
-class CrashB(Entity):
+class CrashB(Entity):##player
 	def __init__(self,pos):
 		s=self
 		super().__init__(scale=(.3,.5,.3),position=pos,collider='box',unlit=False)
@@ -39,8 +50,8 @@ class CrashB(Entity):
 		s.KEY_ACT={sg.MNU_KEY:lambda:cc.game_pause(),sg.JMP_KEY:lambda:s.check_jump(),sg.IFC_KEY:lambda:cc.show_status_ui(),sg.ATK_KEY:lambda:s.spin_attack(),sg.BLY_KEY:lambda:s.belly_smash(),sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
 		if sg.debg:
 			debg.PlayerDBG()
-			s.dev_act={sg.DEV_WARP:lambda:setattr(s,'position',(19.8,4,-36)),
-						sg.DEV_INFO:lambda:_debug_.pos_info(s),
+			s.dev_act={sg.DEV_WARP:lambda:setattr(s,'position',(9,4,19.25)),
+						sg.DEV_INFO:lambda:_debug_.show_box_pos(),
 						sg.DEV_COLL:_debug_.complete_level,
 						sg.DEV_INFO:lambda:_debug_.pos_info(s),
 						sg.DEV_ECAM:lambda:_debug_.editor_modus(),

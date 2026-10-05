@@ -4,6 +4,8 @@ import environment
 
 ## debug options
 debg_color=color.rgb32(180,180,180)
+debg_hitbox=False#show hitbox
+debg_xray=False#show boxes and npc's through walls
 debg_gm=False#god mode
 debg=True
 

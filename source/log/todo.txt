@@ -1,11 +1,11 @@
 v1.7
-- l6 + l7 skull ptf path
-- UI size, max window (pause, gems)
+- UI (pause, gems) pos /outdoor indoor
 - optimize memory model access
-- test all levels
-- fixx code
+- l6 + l7 skull ptf path
 
 v1.8
 - cb3 texture from level: underwater, knight, boneyard
 - creative mode / editor modus
+- fixx code
+- test all levels
 - asset encryption

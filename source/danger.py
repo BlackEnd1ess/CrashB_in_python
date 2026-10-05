@@ -466,67 +466,60 @@ class Hive(Entity):
 		if s.tme > .3:
 			s.tme=0
 			s.is_own_bee()
-		if (LC.ACTOR.z < s.z+10) and (LC.ACTOR.z > s.z-1.5):
+		if (LC.ACTOR.z < s.z+10) and (LC.ACTOR.z > s.z-1.5) and abs(LC.ACTOR.x-s.x) < 4:
 			if not s.locked:
 				s.refr_anim()
 
 class TikkiSculpture(Entity):
-	def __init__(self,pos,spd,rng):
+	def __init__(self,pos,spd=1,wait=1,lst=[]):
 		s=self
 		if not LC.tikki_sculpt_anim:
 			LC.tikki_sculpt_anim=NodePath(gltf.load_model(f'{omf}l6/tikki/tikki.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+		if len(lst) <= 0:
+			s.target_pos=[(pos[0]-1,pos[1],pos[2]),(pos[0],pos[1],pos[2]-1),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1],pos[2]+1)]
+		else:
+			s.target_pos=lst
 		super().__init__(position=pos,scale=.5,name='tksc',collider=b)
-		an.set_memory_glb_value(s,fps=20,sca=.001,model=LC.tikki_sculpt_anim)
+		an.set_memory_glb_value(s,fps=22,sca=.001,model=LC.tikki_sculpt_anim)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=2)
-		s.is_moving=False
-		s.move_speed=spd
-		s.move_point=pos
-		s.spawn_pos=pos
-		s.an_pause=0
-		s.an_mode=0
-		s.danger=True
-		s.tme=1
-		s.rng=rng
-		del pos,spd,rng
-	def move_to_point(self):
-		s=self
-		if distance(s.position,s.move_point) < .1:
-			s.is_moving=False
-			return
-		s.position=lerp(s.position,s.move_point,time.dt*s.move_speed)
+		s.collider.visible=settings.debg_hitbox
+		s.anim_pause=False
+		s.reset_wait=wait
+		s.pos_index=0
+		s.speed=spd
+		s.tme=wait
+		del pos,spd,lst
 	def refr_anim(self):
 		s=self
-		if s.an_mode == 0:
-			s.new_index+=time.dt*s.fps
-			if s.new_index >= len(s.frames):
-				s.new_index=len(s.frames)-1
-				s.an_pause=0
-				s.an_mode=1
-			return
-		s.new_index-=time.dt*s.fps
-		if s.new_index <= 0:
+		s.new_index+=time.dt*s.fps
+		if s.new_index >= len(s.frames):
+			s.anim_pause=True
 			s.new_index=0
-			s.an_pause=0
-			s.an_mode=0
+			return
+		an.set_glb_frame(s)
+	def move_to_point(self):
+		s=self
+		if distance(s.position,s.target_pos[s.pos_index]) < .1:
+			if s.pos_index != s.pos_index+1:
+				s.tme=s.reset_wait
+				s.anim_pause=False
+				if s.pos_index < len(s.target_pos)-1:
+					s.pos_index+=1
+				else:
+					s.pos_index=0
+			return
+		s.position=lerp(s.position,s.target_pos[s.pos_index],time.dt*s.speed)
 	def update(self):
 		if st.gproc():
 			return
 		s=self
-		if s.intersects(LC.ACTOR):
-			cc.get_damage(LC.ACTOR,rsn=2)
-		s.an_pause+=time.dt
-		if s.an_pause > 1:
-			s.refr_anim()
-			an.set_glb_frame(s)
-		if s.is_moving:
-			s.move_to_point()
+		if s.tme > 0:
+			s.tme-=time.dt
 			return
-		s.tme=max(s.tme-time.dt,0)
-		if s.tme <= 0:
-			s.tme=1/s.move_speed
-			ksp=s.spawn_pos
-			s.move_point=random.choice([(ksp[0]+s.rng,ksp[1],ksp[2]),(ksp[0]-s.rng,ksp[1],ksp[2]),(ksp[0],ksp[1],ksp[2]+s.rng),(ksp[0],ksp[1],ksp[2]-s.rng)])
-			s.is_moving=True
+		if not s.anim_pause:
+			s.refr_anim()
+		s.move_to_point()
+
 
 class WaterMine(Entity):
 	def __init__(self,pos,spd,drc=0):

@@ -1,8 +1,9 @@
 from ursina import Entity,EditorCamera,scene,color,Text,application,camera,time,invoke,ModelDebug
-import gc,os,ui,settings,psutil,_loc,status,sys,sound,tracemalloc,item,types
+import gc,os,ui,settings,psutil,_loc,status,sys,sound,tracemalloc,item,types,_core
 from collections import defaultdict
 from collections import Counter
 
+cc=_core
 CV=camera.ui
 st=status
 LC=_loc
@@ -24,6 +25,13 @@ def pos_info(c):
 	#print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=0)")
 	print(f"dg.ToxicBarrel(pos=({sx},{sym},{sz}))")
 	#print(f'n.spawn(ID={random.randint(4,6)},POS=({sx},{sym},{sz}),DRC=2,RNG=3)')
+
+
+def show_box_pos():
+	for ab in tuple(scene.entities):
+		if cc.is_box(ab):
+			ab.alway_on_top=True
+			ptint(ab.position)
 
 #collect all gems in level and finish them
 def complete_level():

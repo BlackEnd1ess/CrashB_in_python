@@ -384,17 +384,36 @@ class LoadingScreen(Entity):
 		super().__init__(model=q,color=color.black,scale=(16,10),visible=False,parent=CU,z=-1,eternal=True)
 		s.ltext=Text('LOADING...',font=_fnt,scale=3.5,position=(-.15,.1,-1.1),color=color.orange,visible=False,parent=CU,eternal=True)
 		s.lname=Text('',font=_fnt,scale=2,position=(-.25,-.05,-1.1),color=color.azure,visible=False,parent=CU,eternal=True)
+		s.licon=Entity(model=q,texture='res/ui/icon/CTTR.png',color=color.white,scale=.25,position=(s.x-.775,s.y-.4),z=-1.5,eternal=True,visible=False,parent=CU)
 		s.uds={0:(-.21),1:(-.23),2:(-.25),3:(-.25),4:(-.25),5:(-.175),6:(-.23),7:(-.225),8:(-.225),9:(-.2)}
+		s.sfx_pit=1
 		del s
+	def input(self,key):
+		if not (self.visible or st.loading):
+			return
+		if key == 'space':
+			sn.ui_loading_sfx(ID=random.randint(0,4),pit=self.sfx_pit)
+			return
+		if key == 'alt':
+			sn.ui_loading_sfx(ID=random.randint(5,8),pit=self.sfx_pit)
+			return
+		if key == 'up arrow':
+			if self.sfx_pit < 1.5:
+				self.sfx_pit+=.125
+			return
+		if key == 'down arrow':
+			if self.sfx_pit > 0:
+				self.sfx_pit-=.125
 	def update(self):
 		s=self
-		si=st.level_index
-		sl=st.loading
-		s.lname.text=LC.lv_name[si]
-		s.lname.x=s.uds[si]
-		s.ltext.visible=(sl)
-		s.lname.visible=(sl)
-		s.visible=(sl)
+		if s.lname.text != LC.lv_name[st.level_index]:
+			s.lname.text=LC.lv_name[st.level_index]
+		if s.lname.x != s.uds[st.level_index]:
+			s.lname.x=s.uds[st.level_index]
+		s.ltext.visible=(st.loading)
+		s.lname.visible=(st.loading)
+		s.licon.visible=(st.loading)
+		s.visible=(st.loading)
 
 class WhiteScreen(Entity):
 	def __init__(self):

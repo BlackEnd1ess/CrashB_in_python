@@ -24,7 +24,7 @@ def map_setting():
 	LC.BN_DST=(6,12)
 	LC.RCZ=28
 	LC.RCX=10
-	LC.RCB=14
+	LC.RCB=16
 
 def start_load():
 	load_crate()

@@ -12,7 +12,7 @@ SCENE='obj_type__scene'
 FLOOR='obj_type__floor'
 WALL='obj_type__wall'
 DECO='obj_type__deco'
-ROOM=('strm','enrm')
+ROOM='strm'
 
 def load_manager():
 	WumpaFruitRenderManager()
@@ -72,7 +72,7 @@ class BoxRenderManager(Entity):
 				self.boxes.remove(bx)
 				continue
 			udv=self.check_distance(bx)
-			if bx.vnum in (0,8,10,14):
+			if bx.vnum in (0,8,14):
 				if bx.enabled != udv:
 					bx.enabled=udv
 			else:
@@ -134,7 +134,7 @@ class LevelSceneRenderManager(Entity):
 		self.dst_b=LC.RCB
 		self.tme=0
 		for mop in tuple(scene.entities):
-			if mop.name in (CORRIDOR,SCENE,FLOOR,WALL,BLOCK) or (mop.name == DECO and mop.vnum != 6) or mop.name in ROOM:
+			if mop.name in (CORRIDOR,SCENE,FLOOR,WALL) or (mop.name == DECO and mop.vnum != 6) or mop.name == ROOM:
 				self.map_objects.append(mop)
 	def check_distance(self,mop):
 		return bool(abs(LC.ACTOR.x-mop.x) < self.dst_x and LC.ACTOR.z < mop.z+self.dst_b and mop.z < LC.ACTOR.z+self.dst_z)
@@ -166,7 +166,7 @@ class LevelObjectRenderManager(Entity):
 		self.dst_b=3
 		self.tme=0
 		for mop in tuple(scene.entities):
-			if mop.name in ANIMATED or (mop.name == 'mptf' and mop.ptf_mv == 0):
+			if mop.name in ANIMATED or (mop.name == 'mptf' and mop.ptf_mv == 0) or mop.name == BLOCK:
 				self.map_objects.append(mop)
 	def check_distance(self,mop):
 		return bool(abs(LC.ACTOR.x-mop.x) < self.dst_x and LC.ACTOR.z < mop.z+self.dst_b and mop.z < LC.ACTOR.z+self.dst_z)

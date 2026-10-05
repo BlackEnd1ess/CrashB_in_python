@@ -10,6 +10,16 @@ MUSIC={0:'wroom',
 	8:'dash',
 	9:'plant'}
 
+UI_LOADING={0:'ui_loading_fart0',
+			1:'ui_loading_fart1',
+			2:'ui_loading_fart2',
+			3:'ui_loading_fart3',
+			4:'ui_loading_fart4',
+			5:'ui_loading_burp0',
+			6:'ui_loading_burp1',
+			7:'ui_loading_burp2',
+			8:'ui_loading_burp3'}
+
 ##SFX
 INTERFACE={0:'ui_select',1:'ui_enter',2:'ui_wumpa',3:'ui_lives',4:'ui_reward',5:'ui_collect',6:'ui_clock'}
 

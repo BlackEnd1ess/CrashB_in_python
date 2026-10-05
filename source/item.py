@@ -1,5 +1,5 @@
 from ursina import Entity,BoxCollider,Vec3,SpotLight,color,distance,lerp,scene
-import _core,status,sound,ui,_loc,random,time,crate
+import _core,status,sound,ui,_loc,random,time,crate,settings
 from ursina.ursinastuff import destroy
 from effect import GemFirework
 
@@ -34,6 +34,7 @@ class WumpaFruit(Entity):
 		s=self
 		super().__init__(model='quad',texture=f'{w_pa}w0.png',name='wmpf',position=(p[0],p[1],p[2]),scale=.22)
 		s.collider=BoxCollider(s,size=Vec3(1.25,1.25,1.25))
+		s.collider.visible=settings.debg_hitbox
 		s.max_frm=len(LC.wmp_texture)-1+.99
 		s.follow=False
 		s.c_purge=c_prg
@@ -67,6 +68,7 @@ class ExtraLive(Entity):
 		s=self
 		super().__init__(model='quad',texture=lfic,name='exlf',position=pos,scale=(.4,.3),collider=None,unlit=False)
 		s.collider=BoxCollider(s,size=Vec3(1.25,1.25,1.25))
+		s.collider.visible=settings.debg_hitbox
 		s.collected=False
 		del pos,s
 	def collect(self):
@@ -94,6 +96,7 @@ class GemStone(Entity):
 			ge=f'{i_path}gemstone/gem2'
 		gem_tex=f'{ge}.png' if not na else f'{ge}_a.png' #no alpha
 		super().__init__(model=f'{ge}.ply',texture=gem_tex,name='gem',scale=.0011,position=pos,rotation_x=-90,collider=b)
+		s.collider.visible=settings.debg_hitbox
 		s.gem_visual()
 		if st.level_index == 8:
 			s.unlit=False
@@ -163,6 +166,7 @@ class EnergyCrystal(Entity):
 		super().__init__(model=f'{i_path}{CRY}.ply',texture=f'{i_path}{CRY}.png',name='crys',scale=.0013,rotation_x=-90,position=pos,double_sided=True,color=color.magenta)
 		s.glow=Entity(model='quad',texture=f'{i_path}{CRY}_shine.png',scale=(.5,.8),position=s.position,color=color.magenta,unlit=False)
 		s.collider=b
+		s.collider.visible=settings.debg_hitbox
 		del pos,s
 	def collect(self):
 		s=self
@@ -183,6 +187,7 @@ class EnergyCrystal(Entity):
 class TimeTrialClock(Entity):
 	def __init__(self,pos):
 		super().__init__(model=f'{CLK}.ply',texture=f'{CLK}.png',position=pos,scale=.0035,color=color.rgb32(240,230,0),double_sided=True,rotation_x=-90,name='clock',collider=b)
+		self.collider.visible=settings.debg_hitbox
 		self.rsp=90
 		if st.level_index == 8:
 			self.unlit=False

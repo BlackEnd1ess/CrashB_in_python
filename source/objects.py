@@ -59,6 +59,7 @@ class ObjType_Block(Entity):
 				s.scale_y=1.2
 		if ID in (3,5):
 			s.matr='metal'
+		s.collider.visible=settings.debg_hitbox
 		del pos,sca,ro_y,typ,ID,bl_c,s
 
 
@@ -79,6 +80,7 @@ class ObjType_Movable(Entity):
 				LC.mptf_mesh_2=NodePath(gltf.load_model(f'{omf}l7/space_platform/space_platform.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 		super().__init__(position=pos,name='mptf',scale=(.75,1,.75),rotation_y=180)
 		s.collider=BoxCollider(s,center=Vec3(0,-.5,0))
+		s.collider.visible=settings.debg_hitbox
 		an.set_memory_glb_value(s,fps=0,sca=.001 if ID != 2 else (.001,.00075,.001),model={0:LC.mptf_mesh_0,1:LC.mptf_mesh_1,2:LC.mptf_mesh_2}[ID])
 		an.set_glb_color(s,col=col,UNLIT=False,brightness=1.25)
 		s.target_pos=(s.x-rng,s.x+rng)
@@ -336,6 +338,7 @@ class ObjType_Floor(Entity):
 		s=self
 		s.vnum=ID
 		super().__init__(position=pos,scale=sca,rotation=rot,color=col)
+		s.collider.visible=settings.debg_hitbox
 		s.set_model()
 		if ID == 0:
 			s.alpha=al
@@ -464,6 +467,7 @@ class Plank(Entity):
 	def __init__(self,pos,typ,ro_y):
 		s=self
 		super().__init__(model=f'{plob}.ply',texture=f'{plob}.png',name='plnk',scale=(.0012,.001,.0012),position=pos,collider=b,rotation=(-90,ro_y+90,0),color=color.orange)
+		s.collider.visible=settings.debg_hitbox
 		s.spawn_pos=s.position
 		s.typ=typ
 		if typ == 1:
@@ -596,6 +600,7 @@ class SwimPlatform(Entity):
 		s.collider=BoxCollider(s,center=Vec3(0,0,0),size=(1.25,.5,1.25))
 		an.set_memory_glb_value(s,fps=0,sca=.0012,model=LC.swim_sewer_ptf)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
+		s.collider.visible=settings.debg_hitbox
 		s.active=False
 		s.p_snd=False
 		s.matr='metal'
@@ -646,12 +651,18 @@ class LoosePlatform(Entity):
 		s=self
 		if t > 1:
 			t=1
-		if not LC.loose_ptf_mesh:
-			LC.loose_ptf_mesh=NodePath(gltf.load_model(f'{omf}l5/loose_ptf/{t}/loose_ptf.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+		if t == 0:
+			if not LC.loose_ptf_mesh_0:
+				LC.loose_ptf_mesh_0=NodePath(gltf.load_model(f'{omf}l5/loose_ptf/0/loose_ptf.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+		if t == 1:
+			if not LC.loose_ptf_mesh_1:
+				LC.loose_ptf_mesh_1=NodePath(gltf.load_model(f'{omf}l5/loose_ptf/1/loose_ptf.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+		s.mdl={0:LC.loose_ptf_mesh_0,1:LC.loose_ptf_mesh_1}[t]
 		super().__init__(name='loos',scale=.6,position=pos,rotation_y=90)
-		an.set_memory_glb_value(s,fps=16,sca=.0012,model=LC.loose_ptf_mesh)
+		an.set_memory_glb_value(s,fps=16,sca=.0012,model=s.mdl)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=3)
 		s.collider=BoxCollider(s,center=Vec3(0,-.5,0))
+		s.collider.visible=settings.debg_hitbox
 		s.collapsed=False
 		s.active=False
 		s.tme=0
@@ -716,6 +727,7 @@ class PistonPlatform(Entity):
 		s.collider=BoxCollider(s,size=Vec3(1.8,4,1.8),center=Vec3(0,3.1,0))
 		an.set_glb_value(s,fps=0,sca=.0025)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.25)
+		s.collider.visible=settings.debg_hitbox
 		s.matr='metal'
 		s.spw_y=s.y
 		s.mvsp=spd
@@ -901,6 +913,7 @@ class BonusPlatform(Entity):## switch -> bonus round
 		sIN=f'{omf}ev/bonus/bonus_e' if k else f'{omf}ev/bonus/bonus'
 		s.matr='metal' if k else None
 		super().__init__(model=f'{sIN}.ply',texture=f'{sIN}.png',name='bnpt',collider=b,scale=-.001,rotation_x=90,position=pos,unlit=False)
+		s.collider.visible=settings.debg_hitbox
 		s.fixx_y=s.y+.25
 		s.start_y=s.y
 		s.w_time=0
@@ -933,6 +946,7 @@ class SkullPlatform(Entity):
 		s.lock_mesh=f'{omf}ev/skull_ptf_e/0'
 		super().__init__(model=wfc,name='skptf',position=pos,scale=(1,.1,1),visible=False,collider=b)
 		s.opt_model=Entity(model=f'{s.mesh_info}.ply',texture=f'{s.mesh_info}.png',scale=.001,rotation_x=-90,position=s.position)
+		s.collider.visible=settings.debg_hitbox
 		s.enter_unlock=False
 		s.locked=False
 		s.start_y=s.y
@@ -981,6 +995,7 @@ class GemPlatform(Entity):## gem platform
 		if s.active:
 			if not s.collider:
 				s.collider=b
+				s.collider.visible=settings.debg_hitbox
 	def update(self):
 		if st.gproc():
 			return
@@ -1075,8 +1090,7 @@ class HitBox(Entity):
 	def __init__(self,pos,sca,matr=False):
 		super().__init__(model=wfc,position=pos,scale=sca,collider=b,name='htbx',visible=False)
 		##visible for development
-		#self.model='cube'
-		#self.visible=True
+		self.visible=settings.debg_hitbox
 		if matr:
 			if st.level_index in (4,7):
 				self.matr='metal'
@@ -1149,4 +1163,5 @@ class PseudoCrash(Entity):
 		self.new_index+=time.dt*self.fps
 		if self.new_index > len(self.frames):
 			self.new_index=0
+			return
 		an.set_glb_frame(self)

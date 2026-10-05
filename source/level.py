@@ -7,7 +7,7 @@ st=status
 cc=_core
 LC=_loc
 
-flt=7 if not settings.debg else 3
+flt=7 if not settings.debg else 0
 ## start level
 def free_level():
 	idx=st.level_index
@@ -15,7 +15,6 @@ def free_level():
 	LODsystem.load_manager()
 	sound.BackgroundMusic(m=0)
 	cc.check_nitro_stack()
-	st.loading=False
 	if not idx in st.CRYSTAL:
 		cc.spawn_level_crystal(idx)
 	if idx != 3 and not idx in st.COLOR_GEM:
@@ -33,6 +32,7 @@ def free_level():
 		print(f'<info> level {idx} wumpa: {st.wumpas_in_level}')
 		print(f'<info> level {idx} npc: {st.npc_in_level}')
 		print(f'<info> Level {idx} successfully loaded')
+	st.loading=False
 	del idx
 	gc.collect()
 

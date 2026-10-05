@@ -285,8 +285,9 @@ def set_glb_color(g,col,UNLIT,brightness=1):
 	g.setColorScale(col.r*brightness,col.g*brightness,col.b*brightness,col.a)
 
 def set_glb_frame(g):
-	if g.new_index == g.frame_index:
+	if int(g.new_index) == g.frame_index:
 		return
+	#print(g.new_index,'#',g.frame_index)
 	g.frames[int(g.frame_index)].hide()
 	g.frames[int(g.new_index)].show()
 	g.frame_index=int(g.new_index)

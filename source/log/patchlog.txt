@@ -1,2 +1,12 @@
 #12.09.2026
 - reduced memory usage by store mesh data once
+
+#14.09.2026
+- debug: xray mode for boxes and npc's in settings.debg_xray=bool
+
+#25.09.2026
+- loading screen sfx effect from "Crash Tag Team Racing", fart and burp SFX by pressing attack and jump key
+
+#05.10.2026
+- new setting in settings.py debg.hitbox for show/hide hitboxes for npc's, items and platforms
+- tiki sculpture: updated function and implemented pathfinding

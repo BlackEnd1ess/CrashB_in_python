@@ -98,6 +98,10 @@ def obj_audio(ID,pit=1):
 	ob=Audio(f'{SF}{sfx_db.OBJECT[ID]}.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
 	destroy(ob,delay=ob.length+vq)
 
+def ui_loading_sfx(ID,pit):
+	sfc=Audio(f'{SF}{sfx_db.UI_LOADING[ID]}.wav',pitch=pit,volume=se.SFX_VOLUME,add_to_scene_entities=False)
+	destroy(sfc,delay=sfc.length+vq)
+
 ## Background Sounds
 class WaterRiver(Audio):
 	def __init__(self):

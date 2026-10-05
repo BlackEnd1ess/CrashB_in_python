@@ -500,7 +500,7 @@ def check_ceiling(c):
 				c.jumping=False
 def check_floor(c):
 	fwd_drc=Vec3(sin(radians(c.rotation_y))*.05,0,cos(radians(c.rotation_y))*.05)
-	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.12,.12),ignore=LC.IGNORE,debug=settings.debg)
+	vj=boxcast(Vec3(c.x,c.y,c.z)+fwd_drc,Vec3(0,1,0),distance=.01,thickness=(.12,.12),ignore=LC.IGNORE,debug=settings.debg_hitbox)
 	stm=bool(vj.hit and vj.normal) and not (vj.entity.name in LC.item_lst|LC.trigger_lst or vj.entity.name == 'fllz')
 	c.falling=bool(not stm)
 	c.landed=stm
@@ -570,7 +570,7 @@ def ptf_up(e,c):
 def wall_hit_walk(c):
 	if c.stun_time > 0 or c.b_smash or c.pushed or st.p_rst(c):
 		return
-	mc=raycast(c.world_position+(0,.2,0),c.direc,distance=.25,ignore=LC.IGNORE,debug=settings.debg)
+	mc=raycast(c.world_position+(0,.2,0),c.direc,distance=.25,ignore=LC.IGNORE,debug=settings.debg_hitbox)
 	c.rotation_y=atan2(c.direc.x,c.direc.z)*180/math.pi
 	st.p_last_direc=c.direc
 	c.walk_event()
@@ -585,9 +585,9 @@ def wall_hit_idle(c):
 	if c.is_slp:
 		if not st.p_last_direc or st.p_last_direc == None:
 			return
-		hT=raycast(c.world_position+(0,.2,0),st.p_last_direc,distance=.25,ignore=LC.IGNORE,debug=settings.debg)
+		hT=raycast(c.world_position+(0,.2,0),st.p_last_direc,distance=.25,ignore=LC.IGNORE,debug=settings.debg_hitbox)
 	else:
-		hT=c.intersects(ignore=LC.IGNORE,debug=settings.debg)
+		hT=c.intersects(ignore=LC.IGNORE,debug=settings.debg_hitbox)
 	if hT:
 		if hT.entity.name in LC.item_lst:
 			hT.entity.collect()
@@ -653,7 +653,9 @@ def box_set_val(cR,Cpse,Cmk,Ctl):
 	cR.c_ID=Ctl
 	cR.mark=Cmk
 	#debug always_on_top
-	#cR.always_on_top=True
+	#cR.alpha=.25
+	cR.always_on_top=settings.debg_xray
+	cR.collider.visible=settings.debg_hitbox
 	if st.level_index == 8 and cR.vnum != 12:
 		cR.color=color.dark_gray
 		cR.unlit=False
@@ -888,7 +890,6 @@ def back_to_level(c):
 di={0:'x',1:'y',2:'z'}
 npf='res/npc/'
 def set_val_npc(m,drc=None,rng=None,rtyp=0,cmv=True,typ=0):
-	m.collider.visible=settings.debg
 	m.idf='np'
 	m.anim_frame=0
 	m.fly_time=0
@@ -900,6 +901,8 @@ def set_val_npc(m,drc=None,rng=None,rtyp=0,cmv=True,typ=0):
 	m.mov_direc=drc
 	m.can_move=cmv
 	m.ro_mode=rtyp
+	m.always_on_top=settings.debg_xray
+	m.collider.visible=settings.debg_hitbox
 	m.typ=typ
 	if rtyp > 0:
 		m.angle=rng
@@ -1134,8 +1137,8 @@ def preload_box_texture():
 
 def clear_mem_animation():
 	for mdmm in (LC.toxic_barell_mesh,LC.tikki_sculpt_anim,LC.sawturtle_anim,LC.butterfly_anim,
-		LC.land_mine_anim,LC.eat_plant_anim,LC.swim_sewer_ptf,LC.loose_ptf_mesh,LC.lab_pad_anim,
-		LC.sewer_mine_anim,LC.mouse_walk_anim,LC.lumberjack_anim,LC.piston_anim_0,
+		LC.land_mine_anim,LC.eat_plant_anim,LC.swim_sewer_ptf,LC.loose_ptf_mesh_0,LC.loose_ptf_mesh_1,
+		LC.sewer_mine_anim,LC.mouse_walk_anim,LC.lumberjack_anim,LC.piston_anim_0,LC.lab_pad_anim,
 		LC.piston_anim_1,LC.piston_anim_2,LC.scrubber_anim,LC.hedgehog_anim,LC.walker_robot_anim,
 		LC.amadillo_anim,LC.bee_hive_anim,LC.gorilla_anim,LC.penguin_anim,LC.spider_robot_anim,
 		LC.iceicle_mesh,LC.msculpt_mesh,LC.turtle_anim,LC.lizard_anim,LC.lab_assist_anim,

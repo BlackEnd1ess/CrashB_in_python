@@ -31,6 +31,8 @@ def map_setting():
 def start_load():
 	load_crate()
 	bonus_zone()
+	if SKULL_PTF:
+		skull_zone()
 	load_object()
 	load_wumpa()
 	load_npc()
@@ -38,7 +40,8 @@ def start_load():
 
 def load_object():
 	o.StartRoom(pos=(0,0,-65))
-	o.BonusPlatform(pos=(9,2.7,19.25))
+	o.BonusPlatform(pos=(-1.6,1.1,-7.2))
+	o.SkullPlatform(pos=(9,2.7,19.25),typ=0)
 	dg.FallingZone(pos=(0,-1,-40),s=(32,.1,300),v=True)
 	#tikki sculpt
 	dg.TikkiSculpture(pos=(0,0,-54),spd=2,rng=.8)
@@ -238,3 +241,13 @@ def bonus_zone():
 	mt.wumpa_double_row(POS=(2.1,-36.37,U),CNT=3)
 	mt.wumpa_double_row(POS=(6.3,-36.87,U),CNT=2)
 	mt.wumpa_double_row(POS=(8,-36.87,U),CNT=2)
+
+def skull_zone():
+	bcx=-200
+	for bf in range(4):
+		o.ObjType_Floor(ID=6,pos=(bcx,1,U+2*bf),sca=.6,rot=(0,90,0))
+	o.ObjType_Movable(ID=1,pos=(-199.5,3,5),ptm=0)
+	o.ObjType_Movable(ID=1,pos=(bcx-.5,3,6.5),ptm=0)
+	o.ObjType_Movable(ID=1,pos=(-199.5,3,8),ptm=0)
+	#npc
+	n.spawn(ID=15,POS=(bcx,3,.7),MTYP=1)

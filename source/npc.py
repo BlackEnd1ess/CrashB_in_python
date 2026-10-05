@@ -601,14 +601,14 @@ class Bee(Entity):
 		s.glb_model=f'{npf}bee/bee.glb'
 		super().__init__(position=pos,scale=npc_scale)
 		s.collider=BoxCollider(s,center=Vec3(0,0,0),size=(.5,.5,.5))
-		s.buzz_snd=Audio(sn.BE,pitch=random.uniform(1,2),loop=True,volume=settings.SFX_VOLUME)
+		s.buzz_snd=Audio(sn.BE,pitch=random.uniform(1,2),loop=True,volume=0)
 		if typ == 0:
 			cc.set_val_npc(s)
 		else:
 			cc.set_val_npc(s,drc,rng,cmv,typ=typ)
 		an.set_glb_value(s,fps=22,sca=.0016)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
-		s.play_sfx()
+		s.sfx_play=False
 		s.is_hunt=False
 		s.is_home=False
 		s.move_speed=2
@@ -630,7 +630,6 @@ class Bee(Entity):
 		self.buzz_snd.fade_out()
 	def fly_event(self):
 		s=self
-		s.manage_sfx()
 		if (LC.ACTOR.z < s.spawn_pos[2]+8 and LC.ACTOR.z > s.spawn_pos[2]-2) and abs(LC.ACTOR.x-s.x) < 4:
 			if not s.purge or not s.is_hitten:
 				s.hunt_p()
@@ -676,6 +675,11 @@ class Bee(Entity):
 			s.stop_sfx()
 			cc.refresh_npc_function(s)
 			return
+		if distance(LC.ACTOR,s) < 8:
+			if not s.sfx_play:
+				s.sfx_play=True
+				s.play_sfx()
+			s.manage_sfx()
 		an.refr_npc_animation(s)
 		if s.typ == 0:
 			s.depending_home()
@@ -1002,9 +1006,10 @@ class Frog(Entity):
 class AkuAkuMask(Entity):
 	def __init__(self,pos):
 		s=self
-		s.glb_model=f'{npf}akuaku/idle.glb'
+		if not LC.aku_mask_mesh:
+			LC.aku_mask_mesh={0:NodePath(gltf.load_model(f'{npf}akuaku/idle.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))}
 		super().__init__(position=pos,scale=npc_scale)
-		an.set_glb_value(s,fps=22,sca=.0018)
+		an.load_glb_mem_list(s,fps=0,sca=.0018,lst=LC.aku_mask_mesh)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
 		s.status_changed=0
 		st.aku_exist=True
