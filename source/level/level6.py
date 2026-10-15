@@ -44,9 +44,9 @@ def load_object():
 	o.SkullPlatform(pos=(9,2.7,19.25),typ=0)
 	dg.FallingZone(pos=(0,-1,-40),s=(32,.1,300),v=True)
 	#tikki sculpt
-	dg.TikkiSculpture(pos=(0,0,-54),spd=2,rng=.8)
-	dg.TikkiSculpture(pos=(0,1.8,7.35),spd=3,rng=.8)
-	dg.TikkiSculpture(pos=(9,2.5,23.9),spd=4,rng=1)
+	dg.TikkiSculpture(pos=(0,0,-54),spd=2,wait=1)
+	dg.TikkiSculpture(pos=(0,1.8,7.35),spd=3,wait=1)
+	dg.TikkiSculpture(pos=(9,2.5,23.9),spd=4,wait=.5)
 	#invisible wall
 	o.HitBox(pos=(-1.3,0,-39.5),sca=(.3,10,60))
 	o.HitBox(pos=(1.3,0,-39.5),sca=(.3,10,60))
@@ -244,10 +244,42 @@ def bonus_zone():
 
 def skull_zone():
 	bcx=-200
+	o.ObjType_Wall(ID=5,pos=(-198,3,40),sca=.015,ro_y=90,col=color.rgb32(180,170,180))
+	dg.FallingZone(pos=(bcx,0,50),s=(64,.1,128),v=True)
+	o.SkullPlatform(pos=(-188,3.6,51.7),typ=0)
 	for bf in range(4):
 		o.ObjType_Floor(ID=6,pos=(bcx,1,U+2*bf),sca=.6,rot=(0,90,0))
+		o.ObjType_Floor(ID=6,pos=(bcx,1,10.5+2*bf),sca=.6,rot=(0,90,0))
+		o.ObjType_Floor(ID=6,pos=(bcx,1,24.5+2*bf),sca=.6,rot=(0,90,0))
+	o.ObjType_Floor(ID=6,pos=(bcx,1.5,36),sca=.6,rot=(0,90,0))
+	o.ObjType_Floor(ID=6,pos=(bcx,1.5,38),sca=.6,rot=(0,90,0))
 	o.ObjType_Movable(ID=1,pos=(-199.5,3,5),ptm=0)
 	o.ObjType_Movable(ID=1,pos=(bcx-.5,3,6.5),ptm=0)
 	o.ObjType_Movable(ID=1,pos=(-199.5,3,8),ptm=0)
+	o.ObjType_Movable(ID=1,pos=(-199.5,3,18.5),ptm=0)
+	o.ObjType_Movable(ID=1,pos=(bcx-.5,3,20),ptm=0)
+	o.ObjType_Movable(ID=1,pos=(-199.5,3,21.5),ptm=0)
+	o.ObjType_Movable(ID=1,pos=(bcx,3.5,32.5),ptm=0)
+	o.ObjType_Floor(ID=9,pos=(-196,2.5,38.5),sca=(.5,.5,.3),col=color.rgb32(190,180,190))
+	o.ObjType_Floor(ID=9,pos=(-193,2.5,38.5),sca=(.5,.5,.3),col=color.rgb32(190,180,190))
+	o.ObjType_Floor(ID=9,pos=(-190,2.5,38.5),sca=(.5,.5,.3),col=color.rgb32(190,180,190))
+	o.ObjType_Floor(ID=6,pos=(-188,1.5,38),sca=.6,rot=(0,90,0))
+	o.ObjType_Floor(ID=6,pos=(-188,1.5,40),sca=.6,rot=(0,90,0))
+	o.ObjType_Floor(ID=6,pos=(-188,1.5,42),sca=.6,rot=(0,90,0))
+	o.ObjType_Floor(ID=6,pos=(-188,1.5,44),sca=.6,rot=(0,90,0))
+	o.ObjType_Floor(ID=6,pos=(-188,1.5,47.5),sca=.6,rot=(0,90,0))
+	o.ObjType_Floor(ID=6,pos=(-188,1.5,49.5),sca=.6,rot=(0,90,0))
+	o.ObjType_Floor(ID=6,pos=(-188,1.5,51.5),sca=.6,rot=(0,90,0))
+	#scene
+	for jh in range(7):
+		o.ObjType_Scene(ID=11,pos=(bcx-1.7,3.3,1+3.7*jh),sca=(-.01,.01,.01),ro_y=90,col=ccw)
+		o.ObjType_Scene(ID=11,pos=(bcx+1.7,3.3,1+3.7*jh),sca=.01,ro_y=-90,col=ccw)
+	o.ObjType_Scene(ID=10,pos=(bcx-.5,3.6,U),sca=.14,ro_y=-90)
+	o.ObjType_Scene(ID=10,pos=(bcx-.5,3.6,33),sca=.14,ro_y=-90)
+	o.ObjType_Scene(ID=11,pos=(bcx-1.7,3.7,37.5),sca=(-.01,.01,.01),ro_y=90,col=ccw)
 	#npc
 	n.spawn(ID=15,POS=(bcx,3,.7),MTYP=1)
+	dg.TikkiSculpture(pos=(0,0,-54),spd=3,wait=.5,lst=[(-200.5,2.8,17),(-199.5,2.8,15),(-200.5,2.8,13),(-199.5,2.8,11),(-200.5,2.8,10),(-199.5,2.8,11),(-200.5,2.8,13),(-199.5,2.8,15),(-200.5,2.8,17)])
+	dg.Hive(pos=(-200.7,2.8,23.7),typ=1,bID=51,bMAX=2)
+	#mines
+	#dg.LandMine(pos=(0,.02,-56.3813))

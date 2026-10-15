@@ -471,14 +471,26 @@ class UICrystal(Entity):
 			typ=2
 		super().__init__(model=f'{cry_ui}.ply',texture=f'{cry_ui}.png',position=pos,color=LC.ui_crystal_color,visible=bool(typ != 2),always_on_top=bool(typ == 2),rotation_x=-90,unlit=False)
 		s.parent=camera if typ > 0 else scene
+		s.outdoor_pos=(pos[0]+.01,pos[1]+.01,pos[2])
+		s.indoor_pos=(pos[0]-.01,pos[1]-.005,pos[2])
 		s.scale={0:.004,1:.000125,2:.0001}[typ]
 		s.typ=typ
 		del pos,s,typ
+	def align_position(self):
+		s=self
+		if LC.ACTOR.indoor > 0:
+			if s.position != s.indoor_pos:
+				s.position=s.indoor_pos
+			return
+		if s.position != s.outdoor_pos:
+			s.position=s.outdoor_pos
 	def update(self):
 		if st.LEVEL_CLEAN or st.loading:
 			return
 		s=self
 		if s.typ > 0:
+			if s.typ == 1 and s.visible:
+				s.align_position()
 			s.visible=(s.typ == 1 and st.pause) or (s.typ == 2 and st.level_crystal and st.show_gems > 0)
 		if s.visible:
 			s.rotation_y+=time.dt*60
@@ -588,15 +600,26 @@ class UIRelic(Entity):
 		if typ > 2:
 			typ=2
 		super().__init__(model=f'{relic_ui}.ply',texture=f'{relic_ui}.png',scale={0:.012,1:.0003,2:.000325}[typ],color=LC.relic_color[idx],position=pos,rotation_x=-90,always_on_top=bool(typ == 2),double_sided=True)
+		s.outdoor_pos=(pos[0]+.01,pos[1],pos[2])
+		s.indoor_pos=(pos[0]-.02,pos[1]+.0025,pos[2])
 		s.parent=camera if typ > 0 else scene
 		s.index=idx
 		s.typ=typ
 		if typ == 2:
 			s.unlit=False
 		del pos,idx,s
+	def align_position(self):
+		s=self
+		if LC.ACTOR.indoor > 0:
+			if s.position != s.indoor_pos:
+				s.position=s.indoor_pos
+			return
+		if s.position != s.outdoor_pos:
+			s.position=s.outdoor_pos
 	def refr_func(self):
 		s=self
 		if s.typ == 1:
+			s.align_position()
 			s.visible=st.pause
 			return
 		if s.typ == 2:

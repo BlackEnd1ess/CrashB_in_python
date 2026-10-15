@@ -108,7 +108,7 @@ class NPCRenderManager(Entity):
 				self.npcs.remove(np)
 				continue
 			udv=self.check_distance(np)
-			if hasattr(np,'vnum') and np.vnum == 14:
+			if hasattr(np,'vnum') and np.vnum in (14,15):
 				if np.visible != udv:
 					np.visible=udv
 			else:

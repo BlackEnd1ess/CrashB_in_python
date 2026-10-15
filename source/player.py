@@ -26,6 +26,8 @@ class pShadow(Entity):## shadow point
 		s.z=LC.ACTOR.z
 		krf=raycast(LC.ACTOR.world_position,Vec3(0,-1,0),distance=3,ignore=LC.IGNORE,debug=False)
 		if krf:
+			if not s.visible:
+				s.visible=True
 			kx=krf.entity
 			if not kx.name in LC.item_lst|LC.trigger_lst:
 				if cc.is_box(kx):
@@ -33,6 +35,9 @@ class pShadow(Entity):## shadow point
 						s.y=kx.y+s.box_cover_y
 					return
 				s.y=krf.world_point.y+.01
+		else:
+			if s.visible:
+				s.visible=False
 	def update(self):
 		if st.gproc():
 			return

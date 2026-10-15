@@ -214,7 +214,7 @@ class SwitchEmpty(Entity):
 		s.model=cr1
 		s.texture=f'{pp}0.png'
 		cc.spawn_ico(s.position)
-		cc.AirBoxReplacer(mark=s.mark)
+		AirBoxReplacer(s.mark)
 		st.SWI_RESET.append(s)
 	def box_destroy(self):
 		if not self.active:
@@ -442,3 +442,35 @@ class PseudoBox(Entity):#preload animations
 		self.vnum=99
 		an.BoxBounceAnimation(self)
 		an.BoxBreakAnimation(pos=self.position,ID=1)
+
+class AirBoxReplacer(Entity):
+	def __init__(self,mark):
+		s=self
+		s.AB_ID=mark
+		super().__init__()
+		s.air_box_list=[abx for abx in scene.entities if (isinstance(abx,Air) and abx.mark == s.AB_ID)]
+		s.index=0
+		s.tme=0
+		if len(s.air_box_list) <= 0:
+			destroy(s)
+	def switch_boxes(self):
+		s=self
+		s.tme+=time.dt
+		if s.tme >= .2:
+			s.tme=0
+			if s.index >= len(s.air_box_list):
+				s.air_box_list.clear()
+				destroy(s)
+				return
+			tbox=s.air_box_list[s.index]
+			if tbox and tbox.enabled:
+				tbox.box_destroy()
+			s.index+=1
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if st.death_event:
+			destroy(s)
+			return
+		s.switch_boxes()

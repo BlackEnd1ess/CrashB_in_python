@@ -614,6 +614,7 @@ class Bee(Entity):
 		s.move_speed=2
 		s.snd_pit=1
 		s.bID=bID
+		s.typ=typ
 		s.pgt=0
 		s.tme=0
 		del s,pos,drc,rng,rtyp,cmv,bID,typ
@@ -622,9 +623,16 @@ class Bee(Entity):
 		self.buzz_snd.play()
 	def manage_sfx(self):
 		s=self
-		nvv=max(0,1-(distance(s,LC.ACTOR)/10))
-		s.buzz_snd.volume=min(1,nvv*settings.SFX_VOLUME)
-		s.buzz_snd.pitch=1.5 if s.is_hunt else 1.4
+		if distance(LC.ACTOR,s) < 8 and s.visible:
+			if not s.sfx_play:
+				s.sfx_play=True
+				s.play_sfx()
+			nvv=max(0,1-(distance(s,LC.ACTOR)/10))
+			s.buzz_snd.volume=min(1,nvv*settings.SFX_VOLUME)
+			s.buzz_snd.pitch=1.5 if s.is_hunt else 1.4
+			return
+		if s.buzz_snd.volume != 0:
+			s.buzz_snd.volume=0
 	def stop_sfx(self):
 		self.buzz_snd.stop()
 		self.buzz_snd.fade_out()
@@ -648,7 +656,7 @@ class Bee(Entity):
 			s.is_home=s.pgt > .5
 	def hunt_p(self):
 		s=self
-		s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.35,LC.ACTOR.z),time.dt*2.3)
+		s.position=lerp(s.position,(LC.ACTOR.x,LC.ACTOR.y+.2,LC.ACTOR.z),time.dt*2.3)
 		cc.rotate_to_target(s,LC.ACTOR.position)
 	def purge(self):
 		self.stop_sfx()
@@ -675,11 +683,7 @@ class Bee(Entity):
 			s.stop_sfx()
 			cc.refresh_npc_function(s)
 			return
-		if distance(LC.ACTOR,s) < 8:
-			if not s.sfx_play:
-				s.sfx_play=True
-				s.play_sfx()
-			s.manage_sfx()
+		s.manage_sfx()
 		an.refr_npc_animation(s)
 		if s.typ == 0:
 			s.depending_home()
@@ -1141,8 +1145,6 @@ class Bird(Entity):
 		super().__init__(position=(pos[0],pos[1],pos[2]),scale=npc_scale,rotation_y=random.uniform(135,225))
 		an.load_glb_mem_list(s,fps=22,sca=.006,lst=LC.bird_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=1.5)
-		s.wait_min_max=(.5,2)
-		s.rand_wait=True
 		s.spawn_pos=pos
 		s.active=False
 		s.p_snd=False
@@ -1175,6 +1177,14 @@ class Bird(Entity):
 			frame.hide()
 		s.frames[0].show()
 		s.root.show()
+	def refr_anim(self):
+		s=self
+		s.new_index+=time.dt*s.fps
+		if s.new_index >= len(s.frames):
+			s.new_index=0
+			s.tme=random.uniform(.5,2)
+			return
+		an.set_glb_frame(s)
 	def update(self):
 		if st.gproc():
 			return
@@ -1186,7 +1196,7 @@ class Bird(Entity):
 		if s.tme > 0:
 			s.tme-=time.dt
 			return
-		an.refr_npc_animation(s)
+		s.refr_anim()
 
 class Butterfly(Entity):
 	def __init__(self,pos,typ=0,rng=1):

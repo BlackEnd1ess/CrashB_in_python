@@ -9,6 +9,7 @@ from panda3d.core import NodePath
 from copy import copy,deepcopy
 import gltf
 
+toxic_barell_name='toxic_barrel'
 kmw={7:5,15:7,16:8,17:6}
 level_ready=False
 env=environment
@@ -151,8 +152,8 @@ def various_val(c):
 	if c.atk_duration <= 0:
 		c.is_attack=False
 	if c.stun_time > 0:
-		c.y+=time.dt*1.5
-		c.z+=time.dt*1.25
+		c.y+=time.dt*3
+		c.z+=time.dt*2
 	if c.falling and c.fall_time > .3:
 		c.frst_lnd=True
 	if not c.is_slp:
@@ -251,7 +252,7 @@ def c_shield():
 					npc_hitten=True
 					bash_enemie(rf,LC.ACTOR)
 				return
-			if rf.name in LC.explosive_object:
+			if rf.name == toxic_barell_name:
 				rf.purge()
 				return
 			if is_box(rf) and rf.vnum not in (0,8,13):
@@ -358,6 +359,8 @@ def reset_npc():
 		for NP in st.NPC_RESET[:]:
 			if NP[0] == 20:
 				npc.spawn(ID=NP[0],POS=NP[1],DRC=NP[2],RNG=NP[3],RTYP=NP[4],CMV=NP[5],PTH=NP[6])
+			elif NP[0] == 15:
+				npc.spawn(ID=NP[0],POS=NP[1],DRC=NP[2],RNG=NP[3],RTYP=NP[4],CMV=NP[5],MTYP=NP[6])
 			else:
 				npc.spawn(ID=NP[0],POS=NP[1],DRC=NP[2],RNG=NP[3],RTYP=NP[4],CMV=NP[5])
 		del NP
@@ -538,7 +541,7 @@ def spc_floor(e):
 	if e.name in ('bnpt','gmpt','skptf'):
 		ptf_up(e,LC.ACTOR)
 		return
-	if e.name == LC.explosive_object[1]:
+	if e.name == toxic_barell_name:
 		e.purge()
 		return
 	if e.name in ('swpt','HPP','epad'):
@@ -576,7 +579,7 @@ def wall_hit_walk(c):
 	c.walk_event()
 	if not mc or str(mc.entity) in LC.item_lst|LC.trigger_lst:
 		c.position+=c.direc*(time.dt*c.move_speed)
-	if str(mc.entity) == LC.explosive_object[1]:
+	if str(mc.entity) == toxic_barell_name:
 		mc.entity.purge()
 		return
 	if mc and (is_box(mc.entity) and mc.entity.vnum == 12):
@@ -756,38 +759,6 @@ def spawn_ico(cr_pos):
 	for exm in range(5):
 		ExclamationMark(pos=cr_pos,ID=exm)
 	del exm,cr_pos
-
-class AirBoxReplacer(Entity):
-	def __init__(self,mark):
-		s=self
-		s.AB_ID=mark
-		super().__init__()
-		s.air_box_list=[abx for abx in scene.entities if (isinstance(abx,C.Air) and abx.mark == s.AB_ID)]
-		s.index=0
-		s.tme=0
-		if len(s.air_box_list) <= 0:
-			destroy(s)
-	def switch_boxes(self):
-		s=self
-		s.tme+=time.dt
-		if s.tme >= .2:
-			s.tme=0
-			if s.index >= len(s.air_box_list):
-				s.air_box_list.clear()
-				destroy(s)
-				return
-			tbox=s.air_box_list[s.index]
-			if tbox and tbox.enabled:
-				tbox.box_destroy()
-			s.index+=1
-	def update(self):
-		if st.gproc():
-			return
-		s=self
-		if st.death_event:
-			destroy(s)
-			return
-		s.switch_boxes()
 
 ## bonus level
 def load_b_ui():
@@ -975,7 +946,7 @@ def fly_away(n):
 	if n.fly_time > .5:
 		npc_destroy_event(n)
 def npc_fly_hit(n):
-	for nh in scene.entities:
+	for nh in tuple(scene.entities):
 		if not nh or not nh.collider or n is nh:
 			continue
 		if is_box(nh) and nh.vnum != 6:
@@ -1007,6 +978,8 @@ def npc_destroy_event(m):
 	RW=m.ro_mode if (hasattr(m,'ro_mode') and m.ro_mode > 0) else 0
 	if m.vnum == 20:
 		st.NPC_RESET.append((m.vnum,m.spawn_pos,m.mov_direc,m.mov_range,RW,MW,m.mvo_drc))
+	elif m.vnum == 15 and m.typ == 1:
+		st.NPC_RESET.append((m.vnum,m.spawn_pos,m.mov_direc,m.mov_range,RW,MW,m.typ))
 	else:
 		st.NPC_RESET.append((m.vnum,m.spawn_pos,m.mov_direc,m.mov_range,RW,MW))
 	m.visible=False

@@ -189,8 +189,7 @@ def refr_npc_animation(n):
 	n.new_index+=time.dt*n.fps
 	if n.new_index >= len(n.frames):
 		n.new_index=0
-		if hasattr(n,'rand_wait') and getattr(n,'rand_wait',True):
-			n.tme=random.uniform(n.wait_min_max[0],n.wait_min_max[1])
+		return
 	set_glb_frame(n)
 
 ###################################################################

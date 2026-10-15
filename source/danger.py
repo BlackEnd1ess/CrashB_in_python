@@ -520,7 +520,6 @@ class TikkiSculpture(Entity):
 			s.refr_anim()
 		s.move_to_point()
 
-
 class WaterMine(Entity):
 	def __init__(self,pos,spd,drc=0):
 		s=self
@@ -588,6 +587,7 @@ class LandMine(Entity):
 		s.danger=True
 		s.p_snd=False
 		s.minetyp=0
+		s.tme=0
 		del pos
 	def purge(self):
 		LC.LDM_POS.append((self.minetyp,self.position))
@@ -600,6 +600,7 @@ class LandMine(Entity):
 				s.purge()
 				return
 			s.new_index=0
+			s.tme=random.uniform(.5,2)
 			sn.obj_audio(ID=10,pit=random.uniform(.8,1))
 		an.set_glb_frame(s)
 	def switch_status(self,n):
@@ -607,7 +608,7 @@ class LandMine(Entity):
 		ef.Fireball(self)
 		sn.crate_audio(ID=9)
 		if st.aku_hit < 3:
-			LC.ACTOR.stun_time=2
+			LC.ACTOR.stun_time=1
 		s.root.hide()
 		s.root=s.models[n]
 		s.frames=s.frames_all[n]
@@ -623,11 +624,16 @@ class LandMine(Entity):
 		s=self
 		dta=distance(s,LC.ACTOR)
 		if dta < 2:
-			s.refr_anim()
-			if dta < .3:
+			if (dta < .35 and st.aku_hit < 3) or (dta < 1 and st.aku_hit > 2):
 				if not s.explode:
 					s.explode=True
 					s.switch_status(1)
+				s.refr_anim()
+				return
+			if s.tme > 0 and not s.explode:
+				s.tme-=time.dt
+				return
+			s.refr_anim()
 
 def multi_heat_tile(p,typ,ro_y,sca,CNT):
 	for mhx in range(CNT[0]):

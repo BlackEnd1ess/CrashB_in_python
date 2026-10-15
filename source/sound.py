@@ -151,16 +151,29 @@ class BackgroundMusic(Audio):
 		s.stop()
 		s.fade_out()
 		destroy(s)
+	def is_special_level(self):
+		return bool(st.bonus_round or st.death_route or st.skull_route)
 	def check_scene(self):
 		s=self
-		if st.game_over or (s.mode == 0 and (st.bonus_round or st.death_route or st.skull_route)) or (s.mode == 1 and (st.bonus_solved or not st.bonus_round)) or (s.mode == 2 and (not st.death_route or st.gem_path_solved)) or (s.mode == 3 and (not st.skull_route or st.skull_path_solved)):
+		if s.mode == 0 and s.is_special_level():
+			if s.volume > 0:
+				s.volume=max(s.volume-time.dt*10,0)
+			else:
+				s.rmv_music()
+			return
+		if s.volume != se.MUSIC_VOLUME:
+			s.volume=se.MUSIC_VOLUME
+		if st.game_over or (s.mode == 1 and (st.bonus_solved or not st.bonus_round)) or (s.mode == 2 and (not st.death_route or st.gem_path_solved)) or (s.mode == 3 and (not st.skull_route or st.skull_path_solved)):
 			s.rmv_music()
 	def update(self):
 		s=self
 		s.tm=max(s.tm-time.dt,0)
 		if s.tm <= 0:
 			s.tm=.5
-			s.volume=0 if st.aku_hit > 2 else se.MUSIC_VOLUME
+			if st.aku_hit > 2:
+				if s.volume > 0:
+					s.volume=0
+				return
 			s.check_scene()
 
 class AkuMusic(Audio):

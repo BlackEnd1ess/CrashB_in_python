@@ -78,7 +78,7 @@ def load_object():
 	Entity(model='cube',scale=(16,1,16),y=-.5,texture_scale=(16,16),collider='box',texture='white_cube',alpha=1)
 	o.StartRoom(pos=(0,0,-8.1))
 	o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
-	dg.TikkiSculpture(pos=(0,0,0))
+	dg.TikkiSculpture(pos=(0,0,0),spd=3,wait=.5)
 	#o.LoosePlatform(pos=(0,.5,0),t=0)
 	#o.LoosePlatform(pos=(1,.5,0),t=1)
 	#dg.Hive(pos=(0,0,0),bMAX=4,bID=12,typ=0)

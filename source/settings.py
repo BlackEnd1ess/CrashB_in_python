@@ -5,7 +5,7 @@ import environment
 ## debug options
 debg_color=color.rgb32(180,180,180)
 debg_hitbox=False#show hitbox
-debg_xray=False#show boxes and npc's through walls
+debg_xray=False#show boxes and npc's through walls (alway_on_top)
 debg_gm=False#god mode
 debg=True
 
@@ -27,7 +27,7 @@ DEV_ECAM='e'#		edior camera
 DEV_TERM='j'#		#python terminal
 
 ## global volume
-MUSIC_VOLUME=0
+MUSIC_VOLUME=1
 SFX_VOLUME=1
 
 ## window

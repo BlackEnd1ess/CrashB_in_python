@@ -1,9 +1,14 @@
 v1.7
-- UI (pause, gems) pos /outdoor indoor
-- optimize memory model access
-- l6 + l7 skull ptf path
+- aku bridge walk
+- l6 skull path
 
 v1.8
+- falling box destroy on player
+- bouncing box iron-trampoline effect for boxes
+- l7 skull ptf path
+- fall animation (fall -y)
+
+v1.9
 - cb3 texture from level: underwater, knight, boneyard
 - creative mode / editor modus
 - fixx code

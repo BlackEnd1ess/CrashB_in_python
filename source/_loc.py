@@ -10,7 +10,7 @@ bonus_checkp={
 	3:(0,2.5,.85*8),#	#level 3
 	4:(0,2,3),#			#level 4
 	5:(12,1.3,-22),#	#level 5
-	6:(9,5,20),#		#level 6
+	6:(0,3,-8.6),#		#level 6
 	7:(26,5,-36),#		#level 7
 	8:(34,6,60.5)}#		#level 8
 
@@ -117,9 +117,6 @@ trigger_lst={'indz','lvfi','elwt','fthr','eball'}
 
 #item/obj name list
 item_lst={'wmpf','exlf','gem','crys','clock','relic'}
-
-#landmine, toxic barrel
-explosive_object=('ldmn','toxic_barrel')
 
 #default speed for move and gravity
 dfsp=2.6

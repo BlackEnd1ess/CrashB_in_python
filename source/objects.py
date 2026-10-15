@@ -1,9 +1,9 @@
 from ursina import Entity,color,time,distance,distance_xz,invoke,BoxCollider,Vec2,Vec3,SpotLight,PointLight,camera,Audio,Text,scene,load_texture
 import _core,status,item,sound,animation,player,_loc,settings,npc,ui,danger,random
 from effect import WarpVortex,WaterDrips,JungleLeaf
+from ursina.shaders import unlit_shader
 from ursina.ursinastuff import destroy
 from panda3d.core import NodePath
-from ursina.shaders import *
 import gltf
 
 an=animation
@@ -338,7 +338,6 @@ class ObjType_Floor(Entity):
 		s=self
 		s.vnum=ID
 		super().__init__(position=pos,scale=sca,rotation=rot,color=col)
-		s.collider.visible=settings.debg_hitbox
 		s.set_model()
 		if ID == 0:
 			s.alpha=al
@@ -385,6 +384,7 @@ class ObjType_Floor(Entity):
 			9:lambda:setattr(s,'collider',b)}
 		if s.vnum in cdl:
 			cdl[s.vnum]()
+			s.collider.visible=settings.debg_hitbox
 		del cdl
 
 
@@ -1161,7 +1161,7 @@ class PseudoCrash(Entity):
 		PseudoPodium((self.x,self.y-.25,self.z))
 	def update(self):
 		self.new_index+=time.dt*self.fps
-		if self.new_index > len(self.frames):
+		if self.new_index >= len(self.frames):
 			self.new_index=0
 			return
 		an.set_glb_frame(self)
