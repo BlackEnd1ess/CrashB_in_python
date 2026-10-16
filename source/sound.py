@@ -157,7 +157,7 @@ class BackgroundMusic(Audio):
 		s=self
 		if s.mode == 0 and s.is_special_level():
 			if s.volume > 0:
-				s.volume=max(s.volume-time.dt*10,0)
+				s.volume=max(s.volume-time.dt*12,0)
 			else:
 				s.rmv_music()
 			return

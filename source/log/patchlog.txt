@@ -10,3 +10,6 @@
 #05.10.2026
 - new setting in settings.py debg.hitbox for show/hide hitboxes for npc's, items and platforms
 - tiki sculpture: updated function and implemented pathfinding
+
+#16.10.2026
+- akuaku mask breaks boxes below crash with delay to keep bridges alive

@@ -55,7 +55,7 @@ class CrashB(Entity):##player
 		s.KEY_ACT={sg.MNU_KEY:lambda:cc.game_pause(),sg.JMP_KEY:lambda:s.check_jump(),sg.IFC_KEY:lambda:cc.show_status_ui(),sg.ATK_KEY:lambda:s.spin_attack(),sg.BLY_KEY:lambda:s.belly_smash(),sg.FWD_KEY:lambda:setattr(s,'CMS',2.9),sg.BCK_KEY:lambda:setattr(s,'CMS',3.6)}
 		if sg.debg:
 			debg.PlayerDBG()
-			s.dev_act={sg.DEV_WARP:lambda:setattr(s,'position',(9,4,19.25)),
+			s.dev_act={sg.DEV_WARP:lambda:setattr(s,'position',(-188,5,38.5)),
 						sg.DEV_INFO:lambda:_debug_.show_box_pos(),
 						sg.DEV_COLL:_debug_.complete_level,
 						sg.DEV_INFO:lambda:_debug_.pos_info(s),
@@ -159,8 +159,6 @@ class CrashB(Entity):##player
 		s=self
 		if s.rotation_y != 180:
 			s.rotation_y=180
-		if s.dth_cause == 2:
-			s.y+=time.dt/2
 		if not s.dth_cause in (1,5,9):
 			if not s.dth_block:
 				s.dth_block=True
@@ -173,6 +171,10 @@ class CrashB(Entity):##player
 			an.c_animation({2:14,3:15,4:16,6:17,7:18,8:19}[s.dth_cause])
 		if s.dth_cause == 5:
 			s.visible=False
+		if s.dth_cause == 2:
+			s.y+=time.dt/2
+		if s.dth_cause == 1:
+			s.y-=time.dt*3
 		s.dth_reset+=time.dt
 		if s.dth_reset > 5:
 			s.dth_reset=0

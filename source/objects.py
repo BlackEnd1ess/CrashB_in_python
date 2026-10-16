@@ -1088,9 +1088,8 @@ class PlatformSpawner(Entity):
 ## global objects ##
 class HitBox(Entity):
 	def __init__(self,pos,sca,matr=False):
-		super().__init__(model=wfc,position=pos,scale=sca,collider=b,name='htbx',visible=False)
+		super().__init__(model=wfc,position=pos,scale=sca,collider=b,name='htbx',visible=settings.debg_hitbox)
 		##visible for development
-		self.visible=settings.debg_hitbox
 		if matr:
 			if st.level_index in (4,7):
 				self.matr='metal'
@@ -1139,7 +1138,7 @@ class ObjectLight(PointLight):
 
 class InvWall(Entity):
 	def __init__(self,pos,sca):
-		super().__init__(model=wfc,position=pos,scale=sca,visible=False,collider=b)
+		super().__init__(model=wfc if not settings.debg else 'cube',position=pos,scale=sca,visible=settings.debg_hitbox,collider=b)
 		del pos,sca
 
 ## Pseudo CrashB in Warp Room

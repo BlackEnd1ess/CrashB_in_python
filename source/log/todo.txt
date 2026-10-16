@@ -1,12 +1,11 @@
 v1.7
-- aku bridge walk
 - l6 skull path
+- bee reset list n6
 
 v1.8
 - falling box destroy on player
 - bouncing box iron-trampoline effect for boxes
 - l7 skull ptf path
-- fall animation (fall -y)
 
 v1.9
 - cb3 texture from level: underwater, knight, boneyard

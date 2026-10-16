@@ -78,7 +78,7 @@ def load_object():
 	Entity(model='cube',scale=(16,1,16),y=-.5,texture_scale=(16,16),collider='box',texture='white_cube',alpha=1)
 	o.StartRoom(pos=(0,0,-8.1))
 	o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
-	dg.TikkiSculpture(pos=(0,0,0),spd=3,wait=.5)
+	#dg.TikkiSculpture(pos=(0,0,0),spd=3,wait=.5)
 	#o.LoosePlatform(pos=(0,.5,0),t=0)
 	#o.LoosePlatform(pos=(1,.5,0),t=1)
 	#dg.Hive(pos=(0,0,0),bMAX=4,bID=12,typ=0)
@@ -86,7 +86,13 @@ def load_object():
 
 def load_crate():
 	CZ=0
-	mt.crate_block(ID=0,POS=(0,.16,0),CNT=[3,3,1])
+	mt.crate_block(ID=0,POS=(-3,.16,-2),CNT=[20,4,1])
+	mt.crate_block(ID=0,POS=(-3,.16,6),CNT=[20,4,1])
+	
+	
+	mt.crate_block(ID=1,POS=(0,.16,-2+.32*4),CNT=[1,21,1])
+	mt.crate_block(ID=5,POS=(0,.16,-3.5),CNT=[1,1,1])
+	mt.crate_block(ID=2,POS=(-.5,.16+.32,-2+.32),CNT=[2,2,2])
 	
 	#mt.box_wall_mixxed(POS=(0,.16,0),ID=(1,4))
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,3,1])

@@ -244,9 +244,9 @@ def bonus_zone():
 
 def skull_zone():
 	bcx=-200
-	o.ObjType_Wall(ID=5,pos=(-198,3,40),sca=.015,ro_y=90,col=color.rgb32(180,170,180))
-	dg.FallingZone(pos=(bcx,0,50),s=(64,.1,128),v=True)
-	o.SkullPlatform(pos=(-188,3.6,51.7),typ=0)
+	o.ObjType_Wall(ID=5,pos=(-198,3.4,38.75),sca=.015,ro_y=90,col=color.rgb32(180,170,180))
+	dg.FallingZone(pos=(bcx,1.8,50),s=(64,.1,128),v=True)
+	o.SkullPlatform(pos=(-188,3.6,51.2),typ=0)
 	for bf in range(4):
 		o.ObjType_Floor(ID=6,pos=(bcx,1,U+2*bf),sca=.6,rot=(0,90,0))
 		o.ObjType_Floor(ID=6,pos=(bcx,1,10.5+2*bf),sca=.6,rot=(0,90,0))
@@ -259,10 +259,14 @@ def skull_zone():
 	o.ObjType_Movable(ID=1,pos=(-199.5,3,18.5),ptm=0)
 	o.ObjType_Movable(ID=1,pos=(bcx-.5,3,20),ptm=0)
 	o.ObjType_Movable(ID=1,pos=(-199.5,3,21.5),ptm=0)
-	o.ObjType_Movable(ID=1,pos=(bcx,3.5,32.5),ptm=0)
-	o.ObjType_Floor(ID=9,pos=(-196,2.5,38.5),sca=(.5,.5,.3),col=color.rgb32(190,180,190))
-	o.ObjType_Floor(ID=9,pos=(-193,2.5,38.5),sca=(.5,.5,.3),col=color.rgb32(190,180,190))
-	o.ObjType_Floor(ID=9,pos=(-190,2.5,38.5),sca=(.5,.5,.3),col=color.rgb32(190,180,190))
+	o.ObjType_Movable(ID=1,pos=(bcx,3.3,32.8),ptm=0)
+	o.ObjType_Floor(ID=9,pos=(-197.5,2.5,38),sca=(.5,.5,.4),col=color.rgb32(190,180,190))
+	
+	o.ObjType_Floor(ID=9,pos=(-195,2.5,38),sca=(.5,.5,.4),col=color.rgb32(190,180,190))
+	
+	o.ObjType_Floor(ID=9,pos=(-190.45,2.5,38),sca=(.5,.5,.6),col=color.rgb32(190,180,190))
+	o.ObjType_Floor(ID=9,pos=(-189.8,7,38.65),sca=(.25,1,.6),col=color.rgb32(170,180,170))
+	o.ObjType_Floor(ID=9,pos=(-189.8,3,38.65),sca=(.25,1,.6),col=color.rgb32(170,180,170))
 	o.ObjType_Floor(ID=6,pos=(-188,1.5,38),sca=.6,rot=(0,90,0))
 	o.ObjType_Floor(ID=6,pos=(-188,1.5,40),sca=.6,rot=(0,90,0))
 	o.ObjType_Floor(ID=6,pos=(-188,1.5,42),sca=.6,rot=(0,90,0))
@@ -270,10 +274,19 @@ def skull_zone():
 	o.ObjType_Floor(ID=6,pos=(-188,1.5,47.5),sca=.6,rot=(0,90,0))
 	o.ObjType_Floor(ID=6,pos=(-188,1.5,49.5),sca=.6,rot=(0,90,0))
 	o.ObjType_Floor(ID=6,pos=(-188,1.5,51.5),sca=.6,rot=(0,90,0))
+	o.ObjType_Floor(ID=9,pos=(-188,3.3,52.75),sca=(1,1,.5),col=color.rgb32(170,180,170))
 	#scene
 	for jh in range(7):
 		o.ObjType_Scene(ID=11,pos=(bcx-1.7,3.3,1+3.7*jh),sca=(-.01,.01,.01),ro_y=90,col=ccw)
 		o.ObjType_Scene(ID=11,pos=(bcx+1.7,3.3,1+3.7*jh),sca=.01,ro_y=-90,col=ccw)
+	del jh
+	o.ObjType_Scene(ID=11,pos=(-188+1.7,3.5,41-3.7),sca=.01,ro_y=-90,col=ccw)
+	for jl in range(3):
+		o.ObjType_Scene(ID=11,pos=(-188-1.7,3.5,41+3.7*jl),sca=(-.01,.01,.01),ro_y=90,col=ccw)
+		o.ObjType_Scene(ID=11,pos=(-188+1.7,3.5,41+3.7*jl),sca=.01,ro_y=-90,col=ccw)
+	o.ObjType_Scene(ID=11,pos=(-188+1.7,3.5,41-3.7),sca=.01,ro_y=-90,col=ccw)
+	o.ObjType_Scene(ID=10,pos=(-188-.5,3.6,54),sca=.14,ro_y=-90)
+	del jl
 	o.ObjType_Scene(ID=10,pos=(bcx-.5,3.6,U),sca=.14,ro_y=-90)
 	o.ObjType_Scene(ID=10,pos=(bcx-.5,3.6,33),sca=.14,ro_y=-90)
 	o.ObjType_Scene(ID=11,pos=(bcx-1.7,3.7,37.5),sca=(-.01,.01,.01),ro_y=90,col=ccw)
@@ -281,5 +294,12 @@ def skull_zone():
 	n.spawn(ID=15,POS=(bcx,3,.7),MTYP=1)
 	dg.TikkiSculpture(pos=(0,0,-54),spd=3,wait=.5,lst=[(-200.5,2.8,17),(-199.5,2.8,15),(-200.5,2.8,13),(-199.5,2.8,11),(-200.5,2.8,10),(-199.5,2.8,11),(-200.5,2.8,13),(-199.5,2.8,15),(-200.5,2.8,17)])
 	dg.Hive(pos=(-200.7,2.8,23.7),typ=1,bID=51,bMAX=2)
+	#invisible walls
+	o.HitBox(pos=(bcx-1.3,0,U),sca=(.3,20,120))
+	o.HitBox(pos=(bcx+1.3,0,7),sca=(.3,20,60))
+	o.HitBox(pos=(-188+1.3,0,30),sca=(.3,20,60))
+	o.HitBox(pos=(-188-1.3,0,48.3),sca=(.3,20,20))
+	
+	o.HitBox(pos=(-197.5,0,38.8),sca=(16,20,.5))
 	#mines
 	#dg.LandMine(pos=(0,.02,-56.3813))

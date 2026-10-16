@@ -233,6 +233,7 @@ def c_shield():
 	item_hitten=False
 	npc_hitten=False
 	box_hitten=False
+	delay_box=False
 	if st.aku_hit < 3:
 		return
 	for rf in tuple(scene.entities):
@@ -256,15 +257,15 @@ def c_shield():
 				rf.purge()
 				return
 			if is_box(rf) and rf.vnum not in (0,8,13):
-				if rf.vnum == 14:
-					rf.c_destroy()
-					return
-				if rf.vnum in (9,10) and rf.active:
-					return
-				if rf.vnum in (3,11):
-					rf.empty_destroy()
-					return
-				rf.box_destroy()
+				if (LC.ACTOR.walking and (rf.z < LC.ACTOR.z-.34 and rf.y < LC.ACTOR.y)):
+					if not delay_box:
+						delay_box=True
+						rf.collider=None
+						invoke(lambda:handle_cshield_box(rf),delay=1)
+						return
+				if not LC.ACTOR.walking or (rf.z < LC.ACTOR.z+1.45 and rf.y > LC.ACTOR.y):
+					handle_cshield_box(rf)
+
 
 ## camera actor
 def cam_indoor(c):
@@ -755,6 +756,16 @@ def explosion(c):
 			if nbc == LC.ACTOR:
 				get_damage(LC.ACTOR,rsn=4)
 	del c,nbc
+def handle_cshield_box(rf):
+	if rf.vnum == 14:
+		rf.c_destroy()
+		return
+	if rf.vnum in (9,10) and rf.active:
+		return
+	if rf.vnum in (3,11):
+		rf.empty_destroy()
+		return
+	rf.box_destroy()
 def spawn_ico(cr_pos):
 	for exm in range(5):
 		ExclamationMark(pos=cr_pos,ID=exm)
