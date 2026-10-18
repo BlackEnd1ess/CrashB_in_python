@@ -2,7 +2,7 @@ from ursina import Entity,EditorCamera,scene,color,Text,application,camera,time,
 import gc,os,ui,settings,psutil,_loc,status,sys,sound,tracemalloc,item,types,_core
 from collections import defaultdict
 from collections import Counter
-
+import random
 cc=_core
 CV=camera.ui
 st=status
@@ -20,10 +20,11 @@ def pos_info(c):
 	sym=f"{c.y:.2f}"#npc
 	sz=f"{c.z:.1f}"
 	#print(f"mt.crate_plane(ID={random.randint(1,2)},POS=({sx},{syc},{sz}),CNT=[2,2])")
-	#print(f"c.spawn(ID=6,p=({sx},{syc},{sz}))")
+	#print(f"c.spawn(ID=2,p=({sx},{syc},{sz}))")
 	#print(f"mt.crate_row(ID=2,POS=({sx},{syc},{sz}),WAY=2,CNT=1)")
 	#print(f"mt.wumpa_row(POS=({sx},{syw},{sz}),CNT=4,WAY=0)")
-	print(f"dg.ToxicBarrel(pos=({sx},{sym},{sz}))")
+	print(f"mt.wumpa_plane(POS=({sx},{syw},{sz}),CNT=[3,3])")
+	#print(f"dg.ToxicBarrel(pos=({sx},{sym},{sz}))")
 	#print(f'n.spawn(ID={random.randint(4,6)},POS=({sx},{sym},{sz}),DRC=2,RNG=3)')
 
 

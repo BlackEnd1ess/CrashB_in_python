@@ -28,8 +28,10 @@ p_last_direc=None
 selected_level=1
 aku_inv_time=20
 level_index=0
-aku_hit=2
+aku_hit=0
 fails=0
+
+DEV_LEVEL_INDEX=9
 
 ##npc count
 npc_in_level=0
@@ -70,7 +72,6 @@ ni_sn=0
 ## level processing
 LV_CLEAR_PROCESS=False
 RELIC_TRIAL_DONE=False
-DEV_LEVEL_INDEX=9
 LEVEL_CLEAN=False
 game_over=False
 

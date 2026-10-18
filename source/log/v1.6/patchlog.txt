@@ -29,3 +29,23 @@
 - gem platform order changed in level 2 to red and level 3 to violet
 - maptools: new function single_mixxed_double box and box+y
 - l5 replaced second gem routes route by skull route
+
+#12.09.2026
+- reduced memory usage by store mesh data once
+
+#14.09.2026
+- debug: xray mode for boxes and npc's in settings.debg_xray=bool
+
+#25.09.2026
+- loading screen sfx effect from "Crash Tag Team Racing", fart and burp SFX by pressing attack and jump key
+
+#05.10.2026
+- new setting in settings.py debg.hitbox for show/hide hitboxes for npc's, items and platforms
+- tiki sculpture: updated function and implemented pathfinding
+
+#16.10.2026
+- akuaku mask breaks boxes below crash with delay to keep bridges alive
+
+#18.10.2026
+- extra life boxes can only collect one time per level, respawn will set ID=2 as new box
+- level 6: skull route added

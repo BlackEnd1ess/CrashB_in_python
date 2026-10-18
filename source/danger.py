@@ -495,10 +495,11 @@ class TikkiSculpture(Entity):
 		if s.new_index >= len(s.frames):
 			s.anim_pause=True
 			s.new_index=0
-			return
 		an.set_glb_frame(s)
 	def move_to_point(self):
 		s=self
+		if s.intersects(LC.ACTOR):
+			cc.get_damage(LC.ACTOR,rsn=2)
 		if distance(s.position,s.target_pos[s.pos_index]) < .1:
 			if s.pos_index != s.pos_index+1:
 				s.tme=s.reset_wait

@@ -4,7 +4,7 @@ o=objects
 I=item
 
 ## multible crate spawn
-def bounce_twin(POS,CNT,trs=1.65):
+def bounce_twin(POS,CNT=1,trs=1.65):
 	for cbt in range(CNT):
 		pO=.32*cbt
 		c.spawn(ID=3,p=(POS[0]+pO,POS[1],POS[2]))

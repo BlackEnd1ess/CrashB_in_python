@@ -701,7 +701,7 @@ class Lumberjack(Entity):
 		s.collider=BoxCollider(s,center=Vec3(0,1,0),size=(.75,2,.75))
 		cc.set_val_npc(s)
 		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.lumberjack_anim)
-		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
+		an.set_glb_color(s,col=color.white,UNLIT=False,brightness=1.75)
 		s.move_speed=1.6
 		s.follow_range=3
 		s.is_back=True

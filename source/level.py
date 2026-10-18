@@ -7,7 +7,7 @@ st=status
 cc=_core
 LC=_loc
 
-flt=7 if not settings.debg else 0
+flt=7 if not settings.debg else 7
 ## start level
 def free_level():
 	idx=st.level_index

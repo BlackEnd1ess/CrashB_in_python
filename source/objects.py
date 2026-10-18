@@ -950,8 +950,16 @@ class SkullPlatform(Entity):
 		s.enter_unlock=False
 		s.locked=False
 		s.start_y=s.y
+		s.w_time=0
 		s.typ=typ
 		del pos,typ
+	def refr(self):
+		s=self
+		s.w_time+=time.dt
+		if s.w_time > .5:
+			s.w_time=0
+			LC.ACTOR.y=s.fixx_y
+			LC.ACTOR.freezed=False
 	def switch_model(self):
 		s=self
 		s.collider=None
@@ -974,6 +982,8 @@ class SkullPlatform(Entity):
 		if not s.locked:
 			s.locked=True
 			s.switch_model()
+		if LC.ACTOR.freezed and LC.ACTOR.y < s.fixx_y and distance_xz(LC.ACTOR,s) < .3:
+			s.refr()
 
 class GemPlatform(Entity):## gem platform
 	def __init__(self,pos,t,na=False):

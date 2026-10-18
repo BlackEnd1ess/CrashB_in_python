@@ -1,15 +1,16 @@
-v1.7
-- l6 skull path
-- bee reset list n6
-
 v1.8
+- skull ptf new checkpoint after finish
+- lumberjack dth anim -> npc_y
 - falling box destroy on player
 - bouncing box iron-trampoline effect for boxes
 - l7 skull ptf path
 
 v1.9
 - cb3 texture from level: underwater, knight, boneyard
+- gem gloss
+
 - creative mode / editor modus
 - fixx code
+- optimize game
 - test all levels
 - asset encryption

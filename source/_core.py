@@ -41,19 +41,18 @@ def set_val(c):
 		c.color=color.dark_gray
 	del _a,_v
 def get_damage(c,rsn):
-	if st.aku_hit > 2 or settings.debg_gm:
+	if st.aku_hit > 2 or settings.debg_gm or c.injured or st.death_event:
 		return
-	if not (c.injured or st.death_event):
-		if st.aku_hit > 0:
-			st.aku_hit-=1
-			c.injured=True
-			c.hurt_visual()
-			sn.pc_audio(ID=21)
-			sn.pc_audio(ID=6,pit=.8)
-			invoke(lambda:setattr(c,'injured',False),delay=2)
-			invoke(lambda:setattr(c,'alpha',1),delay=2)
-			return
-		dth_event(c,rsn=rsn)
+	if st.aku_hit > 0:
+		st.aku_hit-=1
+		c.injured=True
+		c.hurt_visual()
+		sn.pc_audio(ID=21)
+		sn.pc_audio(ID=6,pit=.8)
+		invoke(lambda:setattr(c,'injured',False),delay=2)
+		invoke(lambda:setattr(c,'alpha',1),delay=2)
+		return
+	dth_event(c,rsn=rsn)
 def hurt_blink(c):
 	c.visible=False
 	invoke(lambda:setattr(c,'visible',True),delay=.2)
@@ -345,7 +344,8 @@ def reset_crates():
 		for cv in st.BOX_RESET:
 			if not (cv[0] == 13 and cv[4] == 0) and not (cv[0] == 16):
 				c_subtract(cY=cv[1][1])
-			C.spawn(ID=cv[0],p=cv[1],pse=cv[2],m=cv[3],l=cv[4])
+			jms=2 if cv[0] == 4 else cv[0]
+			C.spawn(ID=jms,p=cv[1],pse=cv[2],m=cv[3],l=cv[4])
 		del cv
 	st.BOX_RESET.clear()
 	st.SWI_RESET.clear()
@@ -355,17 +355,6 @@ def reset_wumpas():
 	for wres in st.WMP_RESET[:]:
 		item.WumpaFruit(p=wres,c_prg=False)
 	st.WMP_RESET.clear()
-def reset_npc():
-	if len(st.NPC_RESET) > 0:
-		for NP in st.NPC_RESET[:]:
-			if NP[0] == 20:
-				npc.spawn(ID=NP[0],POS=NP[1],DRC=NP[2],RNG=NP[3],RTYP=NP[4],CMV=NP[5],PTH=NP[6])
-			elif NP[0] == 15:
-				npc.spawn(ID=NP[0],POS=NP[1],DRC=NP[2],RNG=NP[3],RTYP=NP[4],CMV=NP[5],MTYP=NP[6])
-			else:
-				npc.spawn(ID=NP[0],POS=NP[1],DRC=NP[2],RNG=NP[3],RTYP=NP[4],CMV=NP[5])
-		del NP
-	st.NPC_RESET.clear()
 def jmp_lv_fin():
 	if not st.LEVEL_CLEAN:
 		destroy(LC.ACTOR)
@@ -983,14 +972,27 @@ def npc_jump_action(m):
 			get_damage(LC.ACTOR,rsn=2)
 		m.is_purge=bool(m.vnum != 13)
 		LC.ACTOR.jump_typ(1)
+def reset_npc():
+	if len(st.NPC_RESET) > 0:
+		for NP in tuple(st.NPC_RESET):
+			if NP[0] == 20:
+				npc.spawn(ID=NP[0],POS=NP[1],DRC=NP[2],RNG=NP[3],RTYP=NP[4],CMV=NP[5],PTH=NP[6])
+			elif NP[0] == 15:
+				if NP[6] == 1:
+					npc.spawn(ID=NP[0],POS=NP[1],DRC=NP[2],RNG=NP[3],RTYP=NP[4],CMV=NP[5],MTYP=NP[6])
+			else:
+				npc.spawn(ID=NP[0],POS=NP[1],DRC=NP[2],RNG=NP[3],RTYP=NP[4],CMV=NP[5])
+		del NP
+	st.NPC_RESET.clear()
 def npc_destroy_event(m):
 	m.collider=None
 	MW=True if getattr(m,'can_move',True) else False
 	RW=m.ro_mode if (hasattr(m,'ro_mode') and m.ro_mode > 0) else 0
 	if m.vnum == 20:
 		st.NPC_RESET.append((m.vnum,m.spawn_pos,m.mov_direc,m.mov_range,RW,MW,m.mvo_drc))
-	elif m.vnum == 15 and m.typ == 1:
-		st.NPC_RESET.append((m.vnum,m.spawn_pos,m.mov_direc,m.mov_range,RW,MW,m.typ))
+	elif m.vnum == 15:
+		if m.typ == 1:
+			st.NPC_RESET.append((m.vnum,m.spawn_pos,m.mov_direc,m.mov_range,RW,MW,m.typ))
 	else:
 		st.NPC_RESET.append((m.vnum,m.spawn_pos,m.mov_direc,m.mov_range,RW,MW))
 	m.visible=False
