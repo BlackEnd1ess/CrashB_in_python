@@ -1,0 +1,6 @@
+#19.10.2026
+- limited crash stun fly diretion
+- falling boxes on player breaks without dalay
+- lumberjack player_death_animation fixxed to NPC_Y
+- LandMine class new paremeters: push_y=NUMBER, push_z=NUMBER
+- added level 7 skull route structure
