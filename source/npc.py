@@ -823,7 +823,7 @@ class WalkerRobot(Entity):
 		cc.set_val_npc(s,drc,rng,rtyp,cmv)
 		an.load_glb_mem_list(s,fps=22,sca=.0018,lst=LC.walker_robot_anim)
 		an.set_glb_color(s,col=color.light_gray,UNLIT=False,brightness=2)
-		s.move_speed=1.8
+		s.move_speed=1.8 if s.x > -120 else 2.5
 		s.p_snd=False
 		s.tme=0
 		del s,pos,drc,rng,rtyp,cmv

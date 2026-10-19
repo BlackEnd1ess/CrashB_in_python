@@ -32,12 +32,15 @@ def start_load():
 	load_wumpa()
 	load_npc()
 	bonus_zone()
+	if SKULL_PTF:
+		skull_zone()
 	map_setting()
 
 def load_object():
 	o.StartRoom(pos=(0,0,-65))
 	dg.FallingZone(pos=(0,-2,0),s=(300,.3,128))
 	o.BonusPlatform(pos=(26,3.2,-37))
+	o.SkullPlatform(pos=(-1,.4,-59),typ=2)
 	#barrel
 	dg.ToxicBarrel(pos=(5.7,0.56,-47.0))
 	dg.ToxicBarrel(pos=(19.4,2.11,-46.1))
@@ -372,3 +375,7 @@ def bonus_zone():
 	o.BonusPlatform(pos=(37,-36,U))
 def gem_zone():
 	return
+def skull_zone():
+	bcx=-200
+	n.spawn(ID=18,POS=(-200,.1,-2),DRC=0,RNG=1.6)
+	o.spw_block(ID=5,p=(bcx-1,0,-4),vx=[3,5],ro_y=90)

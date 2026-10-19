@@ -78,6 +78,7 @@ def load_object():
 	Entity(model='cube',scale=(16,1,16),y=-.5,texture_scale=(16,16),collider='box',texture='white_cube',alpha=1)
 	o.StartRoom(pos=(0,0,-8.1))
 	o.EndRoom(pos=(2,2,12.),c=color.rgb32(180,200,200))
+	#dg.LandMine(pos=(0,0,-2),push_y=1,push_z=-1)
 	#dg.TikkiSculpture(pos=(0,0,0),spd=3,wait=.5)
 	#o.LoosePlatform(pos=(0,.5,0),t=0)
 	#o.LoosePlatform(pos=(1,.5,0),t=1)
@@ -92,9 +93,7 @@ def load_crate():
 	#mt.crate_block(ID=5,POS=(0,.16,-3.5),CNT=[1,1,1])
 	#mt.crate_block(ID=2,POS=(-.5,.16+.32,-2+.32),CNT=[2,2,2])
 	
-	mt.crate_block(ID=1,POS=(0,.35,0),CNT=[1,1,20])
-	mt.crate_block(ID=2,POS=(.32,.35,0),CNT=[1,1,20])
-	mt.crate_block(ID=4,POS=(.64,.35,0),CNT=[1,1,20])
+	mt.box_double_mixxed(POS=(0,.16,0),ID=(1,0))
 	
 	
 	

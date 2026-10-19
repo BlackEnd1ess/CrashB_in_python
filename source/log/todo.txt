@@ -1,11 +1,15 @@
 v1.8
+- l6 skull route boxes
+- l4 bonus boxes
+- l5 protected boxes height
+
 - bouncing box iron-trampoline effect for boxes
-- crash stun fly Y limit
+- breaking boxes fall delay by non walking spin 
 - l7 skull ptf path
+- gem gloss
 
 v1.9
 - cb3 texture from level: underwater, knight, boneyard
-- gem gloss
 - creative mode / editor modus
 - fixx code
 - optimize game

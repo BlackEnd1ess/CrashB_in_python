@@ -30,6 +30,7 @@ def set_val(c):
 	c.jmp_hgt={0:0.8,1:1.0,2:1.2,3:1.5}
 	c.jmp_pwr={0:4.0,1:4.0,2:6.0,3:5.0}
 	c.gravity={0:3.0,1:3.9,2:3.0,3:3.1}
+	c.stun_direc=(0,0)
 	c.move_speed=LC.dfsp
 	c.anim_idx=123
 	c.direc=(0,0,0)
@@ -151,8 +152,13 @@ def various_val(c):
 	if c.atk_duration <= 0:
 		c.is_attack=False
 	if c.stun_time > 0:
-		c.y+=time.dt*3
-		c.z+=time.dt*2
+		if c.y < c.stun_direc[0]:
+			c.y+=time.dt*3
+		tz=c.stun_direc[1]
+		if c.z > tz:
+			c.z=max(c.z-time.dt*2,tz)
+		elif c.z < tz:
+			c.z=min(c.z+time.dt*2,tz)
 	if c.falling and c.fall_time > .3:
 		c.frst_lnd=True
 	if not c.is_slp:

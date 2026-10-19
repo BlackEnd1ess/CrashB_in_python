@@ -576,7 +576,7 @@ class WaterMine(Entity):
 		self.refr_anim()
 
 class LandMine(Entity):
-	def __init__(self,pos):##mem
+	def __init__(self,pos,push_y=1,push_z=1):
 		s=self
 		if not LC.land_mine_anim or LC.land_mine_anim == None:
 			LC.land_mine_anim={0:NodePath(gltf.load_model(f'{omf}l6/lmine/landmine_normal.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True))),
@@ -584,12 +584,14 @@ class LandMine(Entity):
 		super().__init__(name='ldmn',position=pos,scale=.2)
 		an.load_glb_mem_list(s,fps=20,sca=.003,lst=LC.land_mine_anim)
 		an.set_glb_color(s,col=color.white,UNLIT=True,brightness=1.5)
+		s.push_y=push_y
+		s.push_z=push_z
 		s.explode=False
 		s.danger=True
 		s.p_snd=False
 		s.minetyp=0
 		s.tme=0
-		del pos
+		del pos,push_y,push_z
 	def purge(self):
 		LC.LDM_POS.append((self.minetyp,self.position))
 		destroy(self)
@@ -609,7 +611,8 @@ class LandMine(Entity):
 		ef.Fireball(self)
 		sn.crate_audio(ID=9)
 		if st.aku_hit < 3:
-			LC.ACTOR.stun_time=1
+			LC.ACTOR.stun_direc=(s.y+s.push_y,s.z+s.push_z)
+			LC.ACTOR.stun_time=1.5
 		s.root.hide()
 		s.root=s.models[n]
 		s.frames=s.frames_all[n]
