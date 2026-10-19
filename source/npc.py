@@ -760,6 +760,7 @@ class Lumberjack(Entity):
 						s.atk=True
 						s.switch_model(1)
 						if not LC.ACTOR.is_attack:
+							LC.ACTOR.burr_y=s.y-.25
 							cc.get_damage(LC.ACTOR,rsn=8)
 	def update(self):
 		if st.gproc():

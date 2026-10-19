@@ -86,13 +86,17 @@ def load_object():
 
 def load_crate():
 	CZ=0
-	mt.crate_block(ID=0,POS=(-3,.16,-2),CNT=[20,4,1])
-	mt.crate_block(ID=0,POS=(-3,.16,6),CNT=[20,4,1])
+	#mt.crate_block(ID=0,POS=(-3,.16,-2),CNT=[20,4,1])
+	#mt.crate_block(ID=0,POS=(-3,.16,6),CNT=[20,4,1])
+	#mt.crate_block(ID=1,POS=(0,.16,-2+.32*4),CNT=[1,21,1])
+	#mt.crate_block(ID=5,POS=(0,.16,-3.5),CNT=[1,1,1])
+	#mt.crate_block(ID=2,POS=(-.5,.16+.32,-2+.32),CNT=[2,2,2])
+	
+	mt.crate_block(ID=1,POS=(0,.35,0),CNT=[1,1,20])
+	mt.crate_block(ID=2,POS=(.32,.35,0),CNT=[1,1,20])
+	mt.crate_block(ID=4,POS=(.64,.35,0),CNT=[1,1,20])
 	
 	
-	mt.crate_block(ID=1,POS=(0,.16,-2+.32*4),CNT=[1,21,1])
-	mt.crate_block(ID=5,POS=(0,.16,-3.5),CNT=[1,1,1])
-	mt.crate_block(ID=2,POS=(-.5,.16+.32,-2+.32),CNT=[2,2,2])
 	
 	#mt.box_wall_mixxed(POS=(0,.16,0),ID=(1,4))
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,3,1])
@@ -121,7 +125,7 @@ def load_crate():
 def load_wumpa():
 	mt.wumpa_plane(POS=(2,.25,0),CNT=[3,3])
 def load_npc():
-	n.spawn(ID=1,POS=(0,0,0))
+	n.spawn(ID=16,POS=(0,0,0))
 
 ## bonus level / gem path
 def bonus_zone():

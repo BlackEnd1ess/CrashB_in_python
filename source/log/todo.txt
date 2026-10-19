@@ -1,14 +1,11 @@
 v1.8
-- skull ptf new checkpoint after finish
-- lumberjack dth anim -> npc_y
-- falling box destroy on player
 - bouncing box iron-trampoline effect for boxes
+- crash stun fly Y limit
 - l7 skull ptf path
 
 v1.9
 - cb3 texture from level: underwater, knight, boneyard
 - gem gloss
-
 - creative mode / editor modus
 - fixx code
 - optimize game

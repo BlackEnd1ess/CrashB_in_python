@@ -61,7 +61,7 @@ def load_object():
 	dg.Hive(pos=(.5,1.8,1),typ=0,bID=22,bMAX=1)
 	dg.Hive(pos=(9.6,2.4,25.8),typ=1,bID=23,bMAX=3)
 	#mines
-	dg.LandMine(pos=(0,.02,-56.3813))
+	dg.LandMine(pos=(-.075,.02,-56.3813))
 	dg.LandMine(pos=(-.45,.2,-41.7))
 	dg.LandMine(pos=(0,.7,-28.8))
 	dg.LandMine(pos=(0.56,.7,-25.9))

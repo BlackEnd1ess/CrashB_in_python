@@ -25,7 +25,7 @@ N=npc
 def set_val(c):
 	for _v in {'aq_bonus','walking','jumping','landed','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','is_slp','pushed','in_water','dth_block'}:
 		setattr(c,_v,False)#flags
-	for _a in {'frm','wksn','fall_time','slide_fwd','dth_cause','jmp_typ','space_time','crt_wait','sld_wait','atk_cooldown','atk_duration','air_time','stun_time','dth_reset'}:
+	for _a in {'frm','wksn','fall_time','slide_fwd','dth_cause','jmp_typ','space_time','crt_wait','sld_wait','atk_cooldown','atk_duration','air_time','stun_time','dth_reset','burr_y'}:
 		setattr(c,_a,0)#values
 	c.jmp_hgt={0:0.8,1:1.0,2:1.2,3:1.5}
 	c.jmp_pwr={0:4.0,1:4.0,2:6.0,3:5.0}
@@ -185,6 +185,8 @@ def c_spin(c):
 		sbp=distance_xz(c,qd)
 		sba=abs(c.y-qd.y)
 		if is_box(qd) and qd.vnum != 13:
+			if qd.c_fall:
+				continue
 			if sbp < .5 and sba < .4:
 				if qd.vnum in (3,11):
 					qd.empty_destroy()
@@ -326,31 +328,6 @@ def c_subtract(cY):
 	if cY < -20:
 		st.crates_in_bonus-=1
 	st.crates_in_level-=1
-def reset_crates():
-	for sr in scene.entities[:]:
-		if not sr:
-			continue
-		if is_box(sr):
-			sr.position=sr.spawn_pos
-			if sr.poly or sr.vnum == 15:
-				sr.enabled=False
-				destroy(sr)
-	del sr
-	if len(st.SWI_RESET) > 0:
-		for ssw in st.SWI_RESET:
-			ssw.c_reset()
-		del ssw
-	if len(st.BOX_RESET) > 0:
-		for cv in st.BOX_RESET:
-			if not (cv[0] == 13 and cv[4] == 0) and not (cv[0] == 16):
-				c_subtract(cY=cv[1][1])
-			jms=2 if cv[0] == 4 else cv[0]
-			C.spawn(ID=jms,p=cv[1],pse=cv[2],m=cv[3],l=cv[4])
-		del cv
-	st.BOX_RESET.clear()
-	st.SWI_RESET.clear()
-	check_nitro_stack()
-	st.crate_to_sv=0
 def reset_wumpas():
 	for wres in st.WMP_RESET[:]:
 		item.WumpaFruit(p=wres,c_prg=False)
@@ -443,9 +420,11 @@ def game_over():
 def is_obj_scene(o):
 	return (hasattr(o,'idf') and o.idf == 'mo')
 def purge_wumpa():
-	for wf in scene.entities[:]:
-		if wf:
-			if (isinstance(wf,item.WumpaFruit) and wf.c_purge):
+	for wf in tuple(scene.entities):
+		if not wf or not wf.collider:
+			continue
+		if isinstance(wf,item.WumpaFruit):
+			if wf.c_purge:
 				wf.wumpa_destroy()
 def gem_challange_fail(gemID):
 	if gemID == 1 and (st.level_index == 1 and st.crate_count > 0):#blue gem
@@ -701,8 +680,6 @@ def box_jump_action(c):
 		LC.ACTOR.jump_typ(1)
 	c.box_destroy()
 def box_destroy_event(c):
-	if c.c_fall or not c:
-		return
 	c.collider=None
 	if c.vnum in (11,12):
 		explosion(c)
@@ -745,6 +722,31 @@ def explosion(c):
 			if nbc == LC.ACTOR:
 				get_damage(LC.ACTOR,rsn=4)
 	del c,nbc
+def reset_crates():
+	for sr in tuple(scene.entities):
+		if not sr:
+			continue
+		if is_box(sr):
+			sr.position=sr.spawn_pos
+			if sr.poly or sr.vnum == 15:
+				sr.enabled=False
+				destroy(sr)
+	del sr
+	if len(st.SWI_RESET) > 0:
+		for ssw in st.SWI_RESET:
+			ssw.c_reset()
+		del ssw
+	if len(st.BOX_RESET) > 0:
+		for cv in st.BOX_RESET:
+			if not (cv[0] == 13 and cv[4] == 0) and not (cv[0] == 16):
+				c_subtract(cY=cv[1][1])
+			jms=2 if cv[0] == 4 else cv[0]
+			C.spawn(ID=jms,p=cv[1],pse=cv[2],m=cv[3],l=cv[4])
+		del cv
+	st.BOX_RESET.clear()
+	st.SWI_RESET.clear()
+	check_nitro_stack()
+	st.crate_to_sv=0
 def handle_cshield_box(rf):
 	if rf.vnum == 14:
 		rf.c_destroy()
@@ -785,7 +787,7 @@ def enter_bonus(c):
 	st.loading=False
 	c.freezed=False
 def clear_bonus():
-	for brd in scene.entities[:]:
+	for brd in tuple(scene.entities):
 		if brd and brd.y < -15:
 			if not ignore_instance(brd):
 				destroy(brd)
@@ -795,6 +797,7 @@ def clear_bonus():
 def load_gem_route(c):
 	st.loading=True
 	if st.death_route:
+		collect_reset()
 		invoke(lambda:back_to_level(c),delay=.5)
 		return
 	invoke(lambda:enter_death_route(c),delay=.5)
@@ -807,7 +810,7 @@ def enter_death_route(c):
 	st.loading=False
 	c.freezed=False
 def clear_gem_route():
-	for grd in scene.entities[:]:
+	for grd in tuple(scene.entities):
 		if grd.parent == scene and grd.x > 180:
 			if not ignore_instance(grd):
 				destroy(grd)
@@ -825,11 +828,12 @@ def enter_skull_route(c):
 def load_skull_route(c):
 	st.loading=True
 	if st.skull_route:
+		collect_reset()
 		invoke(lambda:back_to_level(c),delay=.5)
 		return
 	invoke(lambda:enter_skull_route(c),delay=.5)
 def clear_skull_route():
-	for skrp in scene.entities[:]:
+	for skrp in tuple(scene.entities):
 		if skrp.parent == scene and skrp.y > 190:
 			if not ignore_instance(skrp):
 				destroy(skrp)

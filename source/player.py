@@ -162,12 +162,12 @@ class CrashB(Entity):##player
 		if not s.dth_cause in (1,5,9):
 			if not s.dth_block:
 				s.dth_block=True
-				dsn={2:lambda:sn.pc_audio(ID=15,pit=.35),
-					3:lambda:sn.pc_audio(ID=10,pit=.75),
-					4:lambda:sn.pc_audio(ID=19,pit=1.2),
-					6:lambda:sn.pc_audio(ID=20)}
+				dsn={2:lambda:sn.pc_audio(ID=15,pit=.35),3:lambda:sn.pc_audio(ID=10,pit=.75),4:lambda:sn.pc_audio(ID=19,pit=1.2),6:lambda:sn.pc_audio(ID=20)}
 				if s.dth_cause in dsn:
 					dsn[s.dth_cause]()
+			if s.dth_cause == 8:
+				s.y=s.burr_y
+				print(s.y,'#',s.burr_y)
 			an.c_animation({2:14,3:15,4:16,6:17,7:18,8:19}[s.dth_cause])
 		if s.dth_cause == 5:
 			s.visible=False

@@ -949,6 +949,7 @@ class SkullPlatform(Entity):
 		s.collider.visible=settings.debg_hitbox
 		s.enter_unlock=False
 		s.locked=False
+		s.fixx_y=s.y+.25
 		s.start_y=s.y
 		s.w_time=0
 		s.typ=typ
@@ -982,6 +983,8 @@ class SkullPlatform(Entity):
 		if not s.locked:
 			s.locked=True
 			s.switch_model()
+		if st.death_event:
+			return
 		if LC.ACTOR.freezed and LC.ACTOR.y < s.fixx_y and distance_xz(LC.ACTOR,s) < .3:
 			s.refr()
 
