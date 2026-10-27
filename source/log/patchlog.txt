@@ -4,3 +4,9 @@
 - lumberjack player_death_animation fixxed to NPC_Y
 - LandMine class new paremeters: push_y=NUMBER, push_z=NUMBER
 - added level 7 skull route structure
+
+#26.10.2026
+- box destroy delay will not set if player destroy boxes while walking
+
+#27.10.2026
+- iron boxes can now bounce on iron bounce boxes

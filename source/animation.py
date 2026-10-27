@@ -173,6 +173,7 @@ def refr_player_animation(c):
 			if c.is_slp:
 				c_animation(2)#slippery walk
 				return
+			#c_animation(1)#walk normal
 			c_animation(1)#walk normal
 			return
 		if c.is_landing and not c.jumping:

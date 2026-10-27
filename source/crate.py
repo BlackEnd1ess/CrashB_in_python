@@ -1,5 +1,5 @@
 import item,status,_core,animation,sound,npc,settings,_loc,random,time,ui
-from ursina import Entity,Audio,color,scene,invoke,distance
+from ursina import Entity,Audio,color,scene,invoke,distance,raycast,Vec3
 from effect import TrialTimeStopInfo,spawn_glitter
 from ursina.ursinastuff import destroy
 
@@ -46,10 +46,65 @@ class Iron(Entity):
 		self.vnum=0
 		super().__init__(model=cr1,position=pos)
 		cc.box_set_val(cR=self,Cpse=pse,Cmk=m,Ctl=l)
+		self.can_bounce=True
+		self.bouncing=False
+		self.jumping=False
+		self.wait_y=True
 		self.p_snd=False
+		self.check_box_below()
 		del pos,pse,m,l,self
+	def check_box_below(self):
+		s=self
+		bnc=False
+		for bbt in tuple(scene.entities):
+			if not bbt or not bbt.collider:
+				continue
+			if cc.is_box(bbt):
+				if bbt.vnum == 8:
+					if bbt.x == s.x and bbt.z == s.z and abs(s.y-bbt.y) <= .33:
+						if not bnc:
+							bnc=True
+							an.BoxBounceAnimation(bbt)
+						return True
+		return False
+	def check_bounce_box(self):
+		s=self
+		if s.y < s.spawn_pos[1]:
+			if abs(s.y-s.spawn_pos[1]) >= .31:
+				if s.check_box_below():
+					s.bouncing=True
+					s.jumping=True
+					return
+				if not s.bouncing:
+					s.bouncing=False
+				s.wait_y=True
+	def bounce_on_box(self):
+		s=self
+		if s.jumping:
+			s.y+=time.dt*3
+			if s.y > s.spawn_pos[1]+1:
+				s.jumping=False
+			return
+		jg=raycast(s.world_position,Vec3(0,-1,0),distance=.18,ignore=[s],debug=True)
+		if jg:
+			if jg.entity.collider:
+				if cc.is_box(jg.entity):
+					if jg.entity.vnum == 8:
+						if not s.jumping:
+							s.jumping=True
+							an.BoxBounceAnimation(jg.entity)
+						return
+		s.y-=time.dt*3
 	def box_destroy(self):
 		cc.block_destroy(self)
+	def update(self):
+		if st.gproc() or self.wait_y or not self.can_bounce:
+			return
+		s=self
+		if s.bouncing:
+			s.bounce_on_box()
+			return
+		s.check_bounce_box()
 
 class Normal(Entity):
 	def __init__(self,pos,pse,m,l):

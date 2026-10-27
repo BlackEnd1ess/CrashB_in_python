@@ -303,6 +303,7 @@ def bonus_zone():
 	o.spw_block(ID=3,p=(17,-34.5,U),vx=[4,1])
 	o.spw_block(ID=3,p=(20,-34.5,U),vx=[4,1])
 	#crate
+	c.spawn(ID=3,p=(1,-36.5+.16,U))
 	c.spawn(ID=4,p=(2,-35.9+.16,U))
 	c.spawn(ID=1,p=(2,-35.9+.48,U))
 	c.spawn(ID=7,p=(4.4,-35.4+.16,U))
@@ -326,7 +327,7 @@ def bonus_zone():
 	c.spawn(ID=12,p=(16.97,-34.24,U))
 	c.spawn(ID=1,p=(16.97,-34.24+.32,U))
 	#wumpa fruits
-	mt.wumpa_double_row(POS=(.4,-36.24,U),CNT=3)
+	mt.wumpa_double_row(POS=(.4,-36.24,U),CNT=2)
 	mt.wumpa_double_row(POS=(3,-35.24,U),CNT=3)
 	mt.wumpa_double_row(POS=(8.48,-35.74,U),CNT=4)
 	mt.wumpa_double_row(POS=(20.02,-34.24,U),CNT=3)

@@ -25,7 +25,7 @@ N=npc
 def set_val(c):
 	for _v in {'aq_bonus','walking','jumping','landed','frst_lnd','is_landing','is_attack','is_flip','warped','freezed','injured','b_smash','standup','falling','stun','is_slp','pushed','in_water','dth_block'}:
 		setattr(c,_v,False)#flags
-	for _a in {'frm','wksn','fall_time','slide_fwd','dth_cause','jmp_typ','space_time','crt_wait','sld_wait','atk_cooldown','atk_duration','air_time','stun_time','dth_reset','burr_y'}:
+	for _a in {'frm','wksn','fall_time','slide_fwd','dth_cause','jmp_typ','space_time','crt_wait','sld_wait','atk_cooldown','atk_duration','air_time','stun_time','dth_reset','burr_y','anim_mode'}:
 		setattr(c,_a,0)#values
 	c.jmp_hgt={0:0.8,1:1.0,2:1.2,3:1.5}
 	c.jmp_pwr={0:4.0,1:4.0,2:6.0,3:5.0}
@@ -185,15 +185,16 @@ def c_slide(c):
 	if c.move_speed > 0:
 		c.slide_fwd=c.move_speed
 def c_spin(c):
+	dvg=.4 if not LC.ACTOR.walking else .6
 	for qd in tuple(scene.entities):
 		if not qd or not qd.collider:
 			continue
 		sbp=distance_xz(c,qd)
 		sba=abs(c.y-qd.y)
 		if is_box(qd) and qd.vnum != 13:
-			if qd.c_fall:
+			if qd.c_fall and not c.walking:
 				continue
-			if sbp < .5 and sba < .4:
+			if sbp < .5 and sba < dvg:
 				if qd.vnum in (3,11):
 					qd.empty_destroy()
 				else:
@@ -630,7 +631,6 @@ def box_set_val(cR,Cpse,Cmk,Ctl):
 	cR.poly=Cpse
 	cR.c_ID=Ctl
 	cR.mark=Cmk
-	#debug always_on_top
 	#cR.alpha=.25
 	cR.always_on_top=settings.debg_xray
 	cR.collider.visible=settings.debg_hitbox
@@ -646,6 +646,8 @@ def box_stack(c_pos):
 			sdi+=1
 			if kdi > .34:
 				continue
+			if wm.vnum == 0:
+				wm.wait_y=False
 			if wm.vnum == 12:
 				wm.new_y-=.32
 			wm.c_fall=True

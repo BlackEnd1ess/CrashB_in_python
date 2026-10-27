@@ -357,7 +357,7 @@ def skull_zone():
 	mt.crate_plane(ID=3,POS=(-195.6,3.24,38),CNT=[6,1])
 	mt.crate_plane(ID=12,POS=(-195.6,3.24-.32,38),CNT=[6,1])
 	mt.crate_plane(ID=2,POS=(-195.6,5,38),CNT=[6,1])
-	mt.crate_plane(ID=12,POS=(-195.6,5+.32,38),CNT=[6,1])
+	mt.crate_plane(ID=11,POS=(-195.6,5+.32,38),CNT=[6,1])
 	mt.crate_plane(ID=3,POS=(-193.4,3.24,38),CNT=[3,1])
 	mt.crate_plane(ID=2,POS=(-193.4,5,38),CNT=[3,1])
 	mt.crate_plane(ID=11,POS=(-193.4,5+.32,38),CNT=[3,1])

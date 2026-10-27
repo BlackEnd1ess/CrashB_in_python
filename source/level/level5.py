@@ -246,6 +246,7 @@ def load_crate():
 	mt.crate_row(ID=1,POS=(52.4,1.26,15.7),CNT=3,WAY=0)
 	mt.crate_block(ID=2,POS=(29.8,.36,-1),CNT=[2,2,1])
 	mt.crate_wall(ID=14,POS=(37.1,1.26,9.6),CNT=[1,3])
+	c.spawn(ID=3,p=(37.1+.32,1.26,9.6))
 	mt.crate_wall(ID=1,POS=(43.5,-.34,4.7),CNT=[1,2])
 	c.spawn(ID=4,p=(11.6,.36,-33.1))
 	mt.bounce_twin(POS=(2.3,.36,-33.1),CNT=1)
