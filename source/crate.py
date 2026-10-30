@@ -13,7 +13,7 @@ pp='res/box/'
 cr1=f'{pp}box0.obj'# single texture
 cr2=f'{pp}box1.obj'# double texture
 
-## spawn func
+##spawn func
 def spawn(p,ID,m=0,l=0,pse=False):
 	{0:lambda:Iron(pos=p,m=m,l=l,pse=pse),
 	1:lambda:Normal(pos=p,m=m,l=l,pse=pse),
@@ -40,6 +40,13 @@ def spawn(p,ID,m=0,l=0,pse=False):
 			st.crates_in_level-=1
 	del p,ID,m,l,pse
 
+##sound for iron boxes
+def block_destroy(c):
+	if c.vnum == 14:
+		sn.crate_audio(ID=1)
+		return
+	sn.crate_audio(ID=0)
+
 ##Crate Logics
 class Iron(Entity):
 	def __init__(self,pos,pse,m,l):
@@ -65,6 +72,7 @@ class Iron(Entity):
 						if not bnc:
 							bnc=True
 							an.BoxBounceAnimation(bbt)
+							sn.crate_audio(ID=4)
 						return True
 		return False
 	def check_bounce_box(self):
@@ -81,11 +89,12 @@ class Iron(Entity):
 	def bounce_on_box(self):
 		s=self
 		if s.jumping:
-			s.y+=time.dt*3
-			if s.y > s.spawn_pos[1]+1:
-				s.jumping=False
+			s.y+=time.dt*4.5
+			if s.y > s.spawn_pos[1]+1.5:
+				if s.jumping:
+					s.jumping=False
 			return
-		jg=raycast(s.world_position,Vec3(0,-1,0),distance=.18,ignore=[s],debug=True)
+		jg=raycast(s.world_position,Vec3(0,-1,0),distance=.2,ignore=[s],debug=True)
 		if jg:
 			if jg.entity.collider:
 				if cc.is_box(jg.entity):
@@ -93,10 +102,14 @@ class Iron(Entity):
 						if not s.jumping:
 							s.jumping=True
 							an.BoxBounceAnimation(jg.entity)
+							sn.crate_audio(ID=4)
 						return
 		s.y-=time.dt*3
 	def box_destroy(self):
-		cc.block_destroy(self)
+		if not self.p_snd:
+			self.p_snd=True
+			block_destroy(self)
+			invoke(lambda:setattr(self,'p_snd',False),delay=.3)
 	def update(self):
 		if st.gproc() or self.wait_y or not self.can_bounce:
 			return
@@ -274,10 +287,13 @@ class SwitchEmpty(Entity):
 	def box_destroy(self):
 		if not self.active:
 			self.active=True
-			an.BoxBounceAnimation(self)
+			an.BoxHitAnimation(self)
 			sn.crate_audio(ID=11)
 			return
-		cc.block_destroy(self)
+		if not self.p_snd:
+			self.p_snd=True
+			block_destroy(self)
+			invoke(lambda:setattr(self,'p_snd',False),delay=.3)
 	def update(self):
 		if st.gproc():
 			return
@@ -309,10 +325,13 @@ class SwitchNitro(Entity):
 	def box_destroy(self):
 		if not self.active:
 			self.active=True
-			an.BoxBounceAnimation(self)
+			an.BoxHitAnimation(self)
 			sn.crate_audio(ID=11)
 			return
-		cc.block_destroy(self)
+		if not self.p_snd:
+			self.p_snd=True
+			block_destroy(self)
+			invoke(lambda:setattr(self,'p_snd',False),delay=.3)
 	def c_action(self):
 		s=self
 		s.model=cr1
@@ -448,8 +467,11 @@ class Protected(Entity):
 		s.frm=0
 		del pos,pse,m,l,s
 	def box_destroy(self):
-		s=self
-		cc.block_destroy(s)
+		if not self.p_snd:
+			self.p_snd=True
+			an.BoxHitAnimation(self)
+			block_destroy(self)
+			invoke(lambda:setattr(self,'p_snd',False),delay=.3)
 	def c_destroy(self):
 		sn.crate_audio(ID=4,pit=.35)
 		item.spawn_wumpa(self.position,cnt=random.randint(5,10),c_prg=True)
@@ -497,6 +519,9 @@ class PseudoBox(Entity):#preload animations
 		self.vnum=99
 		an.BoxBounceAnimation(self)
 		an.BoxBreakAnimation(pos=self.position,ID=1)
+		if self.vnum == 99:
+			self.vnum=100
+			an.BoxBounceAnimation(self)
 
 class AirBoxReplacer(Entity):
 	def __init__(self,mark):

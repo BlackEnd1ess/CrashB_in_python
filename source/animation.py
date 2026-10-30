@@ -44,14 +44,37 @@ class BoxBreakAnimation(Entity):
 			return
 		self.refr_anim()
 
-bna={3:'box_bounce',
-	7:'box_spring_wood',
-	6:'box_checkpoint',
-	8:'box_spring_iron',
-	9:'box_switch_empty',
-	10:'box_switch_nitro',
-	14:'box_protected',
-	99:'box_spring_wood'}
+class BoxHitAnimation(Entity):
+	def __init__(self,c):
+		if not c:
+			super().__init__()
+			destroy(s)
+			del c
+			return
+		mdl={6:LC.checkp_break_anim,9:LC.box_switch_emtpy_anim,10:LC.box_switch_nitro_anim,14:LC.box_protected_anim}
+		super().__init__(position=(c.x,c.y-.16,c.z))
+		set_memory_glb_value(self,fps=25,sca=.0008,model=mdl[c.vnum] if c.vnum in mdl else LC.checkp_break_anim)
+		set_glb_color(self,col=color.light_gray,UNLIT=True,brightness=1.3)
+		self.box_root=c
+		del mdl,c
+	def update(self):
+		if st.gproc():
+			return
+		s=self
+		if not s.box_root:
+			destroy(s)
+			return
+		if s.box_root.visible:
+			s.box_root.visible=False
+		s.new_index+=time.dt*s.fps
+		if s.new_index >= len(s.frames):
+			s.box_root.visible=True
+			if s.box_root.vnum == 14:
+				s.box_root.p_snd=False
+			destroy(s)
+			return
+		set_glb_frame(s)
+
 class BoxBounceAnimation(Entity):
 	def __init__(self,c):
 		s=self
@@ -60,9 +83,10 @@ class BoxBounceAnimation(Entity):
 			destroy(s)
 			del s,c
 			return
-		s.glb_model=f'res/box/{bna[c.vnum] if c.vnum in bna else 99}.glb'
+		mdl={3:LC.box_multi_bounce_anim,7:LC.box_spring_wood_bnc,8:LC.box_spring_iron_bnc,
+			99:LC.box_spring_wood_bnc,100:LC.box_spring_iron_bnc}## <- pseudo box
 		super().__init__(position=(c.x,c.y-.16,c.z))
-		set_glb_value(s,fps=25,sca=.0008)
+		set_memory_glb_value(s,fps=25,sca=.0008,model=mdl[c.vnum] if c.vnum in mdl else LC.box_multi_bounce_anim)
 		set_glb_color(s,col=color.light_gray,UNLIT=True,brightness=1.3)
 		s.box_root=c
 		del c,s

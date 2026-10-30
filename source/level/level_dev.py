@@ -92,11 +92,15 @@ def load_crate():
 	#mt.crate_block(ID=1,POS=(0,.16,-2+.32*4),CNT=[1,21,1])
 	#mt.crate_block(ID=5,POS=(0,.16,-3.5),CNT=[1,1,1])
 	#mt.crate_block(ID=2,POS=(-.5,.16,-2+.32),CNT=[20,5,2])
-	
 	mt.box_double_mixxed(POS=(0,.16,0),ID=(8,1))
 	c.spawn(ID=0,p=(0,+.16+.32*2,0))
 	
-	
+	c.spawn(ID=12,p=(1,1.4,0))
+	#c.spawn(ID=3,p=(1,.16,0))
+	#c.spawn(ID=7,p=(-1,.16,0))
+	#c.spawn(ID=8,p=(-.5,.16,0))
+	#c.spawn(ID=9,p=(0,.16,0))
+	#c.spawn(ID=10,p=(.5,.16,0))
 	
 	#mt.box_wall_mixxed(POS=(0,.16,0),ID=(1,4))
 	#mt.crate_block(ID=0,POS=(-7.5,.16,CZ),CNT=[3,3,1])

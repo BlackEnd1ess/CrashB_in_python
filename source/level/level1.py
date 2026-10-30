@@ -278,6 +278,10 @@ def bonus_zone():
 	mt.crate_row(ID=1,POS=(4,-34,U),WAY=2,CNT=4)
 	mt.crate_wall(ID=1,POS=(1,-36.5+.16,U),CNT=[1,3])
 	mt.crate_wall(ID=2,POS=(6,-36.5+.16,U),CNT=[2,2])
+	
+	mt.box_double_mixxed(POS=(10,-36.5+.16,U),ID=(8,1))
+	c.spawn(ID=0,p=(10,-36.5+.16+.32*2,U))
+	
 	mt.bounce_twin(POS=(10.9,-36.5+.16,U),CNT=1)
 	c.spawn(ID=4,p=(9,-36.5+.16,U))
 	del bnh

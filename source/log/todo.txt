@@ -1,4 +1,5 @@
 v1.7.1
+- rem memory old npc's from level
 - l7 skull ptf path
 
 v1.8

@@ -234,9 +234,8 @@ def c_bounce(c):
 	LC.ACTOR.jump_typ(2 if (c.vnum == 3) else 3)
 	if c.vnum == 3:
 		c.box_destroy()
-	else:
-		sn.crate_audio(ID=4)
-	BoxBounceAnimation(c)
+		return
+	sn.crate_audio(ID=4)
 def c_shield():
 	item_hitten=False
 	npc_hitten=False
@@ -273,7 +272,6 @@ def c_shield():
 						return
 				if not LC.ACTOR.walking or (rf.z < LC.ACTOR.z+1.45 and rf.y > LC.ACTOR.y):
 					handle_cshield_box(rf)
-
 
 ## camera actor
 def cam_indoor(c):
@@ -475,6 +473,8 @@ def check_ceiling(c):
 						ve.box_destroy()
 						if ve.vnum == 3:
 							BoxBounceAnimation(ve)
+						if (ve.vnum == 0 and not ve.jumping and ve.bouncing):
+							get_damage(LC.ACTOR,2)
 				c.y=c.y
 				c.jumping=False
 def check_floor(c):
@@ -669,20 +669,15 @@ def check_nitro_stack():
 						break
 			if not box_above:
 				np.can_jmp=True
-def block_destroy(c):
-	if not c.p_snd:
-		c.p_snd=True
-		if c.vnum == 14:
-			BoxBounceAnimation(c)
-			sn.crate_audio(ID=1)
-		else:
-			sn.crate_audio(ID=0)
-		invoke(lambda:setattr(c,'p_snd',False),delay=.5)
 def box_jump_action(c):
+	box_hitten=False
 	if (c.vnum in (9,10,11) and c.active) or c.vnum == 0:
 		return
 	if c.vnum in (3,7,8):
 		c_bounce(c)
+		if not box_hitten:
+			box_hitten=False
+			BoxBounceAnimation(c)
 		return
 	if c.vnum != 14:
 		LC.ACTOR.jump_typ(1)
@@ -735,6 +730,10 @@ def reset_crates():
 		if not sr:
 			continue
 		if is_box(sr):
+			if sr.vnum == 0:
+				if sr.jumping or sr.bouncing:
+					sr.jumping=False
+					sr.bouncing=False
 			sr.position=sr.spawn_pos
 			if sr.poly or sr.vnum == 15:
 				sr.enabled=False
@@ -1094,6 +1093,12 @@ def preload_object_animation():
 	LC.explode_wave_anim=NodePath(gltf.load_model('res/effects/impact_wave/impact_wave.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 	LC.box_break_anim=NodePath(gltf.load_model('res/box/box_break.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 	LC.checkp_break_anim=NodePath(gltf.load_model('res/box/box_checkpoint.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+	LC.box_multi_bounce_anim=NodePath(gltf.load_model('res/box/box_bounce.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+	LC.box_spring_wood_bnc=NodePath(gltf.load_model('res/box/box_spring_wood.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+	LC.box_spring_iron_bnc=NodePath(gltf.load_model('res/box/box_spring_iron.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+	LC.box_switch_emtpy_anim=NodePath(gltf.load_model('res/box/box_switch_empty.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+	LC.box_switch_nitro_anim=NodePath(gltf.load_model('res/box/box_switch_nitro.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
+	LC.box_protected_anim=NodePath(gltf.load_model('res/box/box_protected.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 	LC.box_explode_anim=NodePath(gltf.load_model('res/box/box_explode.glb',gltf.GltfSettings(legacy_materials=True,no_srgb=True)))
 	LC.snow_particle=[load_texture(f'res/effects/snow.png')]
 	C.PseudoBox()
